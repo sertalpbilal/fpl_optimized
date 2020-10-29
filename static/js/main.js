@@ -57,18 +57,18 @@ var app = new Vue({
                     }
                     i.is_captain = (i.is_captain == "True");
                     i.team_name = team_codes[parseInt(i.team_code)];
-                    i.now_cost = (parseFloat(i.now_cost) / 10).toFixed(1);
+                    i.now_cost_str = (parseFloat(i.now_cost) / 10).toFixed(1);
                 })
             return sol;
         },
         get_solution_with_details(name) {
             let data = this.get_field_solution(name);
-            let cost = data.map(i => i.now_cost).reduce((a, b) => a+b, 0);
+            let cost = data.map(i => i.now_cost).reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
             let lineup_xp = data.filter(j => !j.starting_lineup || j.starting_lineup == "1").map(i => i.xP * parseInt(i.multiplier)).reduce((a, b) => a + b, 0);
             let bench_xp = data.filter(j => j.starting_lineup == "0").map(i => i.xP).reduce((a, b) => a + b, 0);
             let weighted_xp = lineup_xp + 0.1 * bench_xp;
             let bb_xp = lineup_xp + 1 * bench_xp;
-            return { data: data, cost: cost.toFixed(1), lineup_xp: lineup_xp.toFixed(2), weighted_xp: weighted_xp.toFixed(2), bb_xp: bb_xp.toFixed(2) };
+            return { data: data, cost: (cost / 10).toFixed(1), lineup_xp: lineup_xp.toFixed(2), weighted_xp: weighted_xp.toFixed(2), bb_xp: bb_xp.toFixed(2) };
         }
     },
     computed: {
