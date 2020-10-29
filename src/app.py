@@ -12,6 +12,7 @@ from flask import Flask, render_template, send_from_directory
 app = Flask(__name__)
 app.config['FREEZER_REMOVE_EXTRA_FILES'] = False
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['DEBUG']=False
 jinja_options = app.jinja_options.copy()
 jinja_options.update(dict(
     block_start_string='*%',
@@ -27,7 +28,10 @@ app.jinja_options = jinja_options
 def hello_world():
     latest_directory = max(glob.iglob('build/data/*/*/*'), key=os.path.getctime)
     target = latest_directory.split('/')
-    return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4])
+    if app.config['DEBUG']:
+        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4])
+    else:
+        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4])
 
 def list_all_snapshots():
     pass
@@ -38,6 +42,8 @@ if __name__ == "__main__":
     def read_data(path):
         return send_from_directory('data', path)
     
+    app.config['DEBUG']=True
+
     from app import app
     app.run(host='0.0.0.0', port=5000, debug=True)
 

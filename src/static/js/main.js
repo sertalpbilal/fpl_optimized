@@ -58,7 +58,6 @@ var app = new Vue({
                     i.is_captain = (i.is_captain == "True");
                     i.team_name = team_codes[parseInt(i.team_code)];
                     i.now_cost = (parseFloat(i.now_cost) / 10).toFixed(1);
-                    console.log(i);
                 })
             return sol;
         },

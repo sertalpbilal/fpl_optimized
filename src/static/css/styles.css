@@ -90,6 +90,12 @@ svg.field>g>* {
     margin-right: 1px;
 }
 
+@media screen and (max-width: 480px) {
+    .metric {
+        font-size: 9pt;
+    }
+}
+
 .metric.highlighted {
     color: orange;
 }
