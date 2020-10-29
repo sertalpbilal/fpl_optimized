@@ -1,0 +1,12 @@
+version: '3'
+services:
+  fpl_aa_generator:
+    container_name: fpl_aa
+    build: .
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LANG=C.UTF-8
+    # env_file:
+    #   - ./user.env
+    volumes:
+      - /fpl_aa:/app

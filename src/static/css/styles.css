@@ -1,0 +1,127 @@
+body {
+    background-color: #343436;
+    color: lightgray;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.bg-dark-gray {
+    background-color: #272729;
+}
+
+.bg-light-gray {
+    background-color: #343436;
+}
+
+.bg-squad-card {
+    background-color: #474747;
+}
+
+.border-complement {
+    border-color: #B81636;
+}
+
+.border-field {
+    border-color: #394709;
+}
+
+.card-field,
+.card-field>.card-header {
+    font-size: 13pt;
+}
+
+.field-body {
+    padding: 0px;
+}
+
+.field-body>.field {
+    width: 100%;
+    opacity: 0.6;
+}
+
+svg.field {
+    /* width: 100%; */
+    width: 425px;
+    height: 547px;
+}
+
+svg.field>g>* {
+    stroke: dimgray !important;
+}
+
+.g_jersey>*,
+.g_jersey>*>* {
+    stroke: dimgray !important;
+    fill: gainsboro !important;
+}
+
+#player_name_bg {
+    fill: aquamarine !important;
+    fill-opacity: 1 !important;
+}
+
+#player_name {
+    fill: white !important;
+}
+
+#player_name>tspan {
+    font-size: 2.8px !important;
+}
+
+#player_team_bg {
+    fill: white !important;
+    fill-opacity: 1 !important;
+    opacity: 0.9 !important;
+}
+
+#player_team {
+    fill: #B81636 !important;
+}
+
+.jersey_bench>#jersey_bg,
+.jersey_bench>path {
+    fill: grey !important;
+}
+
+.metric {
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.metric.highlighted {
+    color: orange;
+}
+
+.metric_title {
+    background-color: #00000080;
+}
+
+.metric_value {
+    background-color: rgba(127, 255, 212, 0.116);
+}
+
+
+/* 
+.scenario_title {
+    position: relative;
+} */
+
+.scenario_title>.smallprint {
+    font-size: 7pt;
+}
+
+
+/* 
+.scenario_title:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 100%;
+    margin-left: 15px;
+    background-color: black;
+    color: white;
+    z-index: 1;
+} */
