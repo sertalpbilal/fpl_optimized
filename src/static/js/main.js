@@ -91,7 +91,7 @@ var app = new Vue({
 function load_solution_from_file(name) {
     $.ajax({
         type: "GET",
-        url: `data/${season}/${gw}/${date}/output/${name}.csv`,
+        url: `${repo_name}/data/${season}/${gw}/${date}/output/${name}.csv`,
         dataType: "text",
         success: function(data) {
             tablevals = data.split('\n').map(i => i.split(','));

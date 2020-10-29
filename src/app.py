@@ -27,7 +27,7 @@ app.jinja_options = jinja_options
 def hello_world():
     latest_directory = max(glob.iglob('build/data/*/*/*'), key=os.path.getctime)
     target = latest_directory.split('/')
-    return render_template('week.html', season=target[2], gw=target[3], date=target[4])
+    return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4])
 
 def list_all_snapshots():
     pass
