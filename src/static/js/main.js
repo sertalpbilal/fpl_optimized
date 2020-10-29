@@ -63,7 +63,7 @@ var app = new Vue({
         },
         get_solution_with_details(name) {
             let data = this.get_field_solution(name);
-            let cost = data.map(i => i.now_cost).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            let cost = data.map(i => i.now_cost).reduce((a, b) => a+b, 0);
             let lineup_xp = data.filter(j => !j.starting_lineup || j.starting_lineup == "1").map(i => i.xP * parseInt(i.multiplier)).reduce((a, b) => a + b, 0);
             let bench_xp = data.filter(j => j.starting_lineup == "0").map(i => i.xP).reduce((a, b) => a + b, 0);
             let weighted_xp = lineup_xp + 0.1 * bench_xp;
