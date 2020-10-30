@@ -4,7 +4,7 @@ on:
   push:
     branches: engine
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 10,17 * * *'
 
 jobs:
   build-and-run:
