@@ -36,11 +36,14 @@ def hello_world():
 def list_all_snapshots():
     pass
 
+@app.route('/data/<path:path>')
+def read_data(path):
+    print(path)
+    return send_from_directory('build', 'data/' + path)
+
 if __name__ == "__main__":
     
-    @app.route('/data/<path:path>')
-    def read_data(path):
-        return send_from_directory('data', path)
+    
     
     app.config['DEBUG']=True
 
