@@ -131,3 +131,35 @@ svg.field>g>* {
     color: white;
     z-index: 1;
 } */
+
+main a {
+    color: #bb5b6e;
+}
+
+main a:hover {
+    color: #5bbbb6;
+}
+
+.scenario_detail {
+    font-size: small;
+    text-align: center;
+    color: rgb(197, 197, 197);
+}
+
+@media screen and (max-width: 480px) {
+    .scenario_detail {
+        font-size: x-small;
+    }
+    .qa {
+        font-size: x-small;
+    }
+}
+
+.disclaimer {
+    font-size: small;
+    color: gray !important;
+}
+
+.answer {
+    color: rgb(187, 187, 187);
+}

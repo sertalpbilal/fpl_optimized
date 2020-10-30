@@ -21,10 +21,10 @@
     <div id="app">
 
         <header class="navbar navbar-expand navbar-dark bg-dark-gray container-fluid">
-            <div class="container justify-content-start flex-column flex-md-row">
-                <a class="navbar-brand mr-0 mr-md-2 ml-0 ml-md-3" href="/" aria-label="Bootstrap">FPL Optimized</a>
-                <div class="navbar-nav-scroll text-secondary">
-                    <ul class="navbar-nav flex-row ml-2 mr-2">
+            <div class="container flex-column flex-md-row">
+                <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3" href="/fpl_optimized" aria-label="Bootstrap">FPL Optimized</a>
+                <div class="navbar-nav-scroll text-secondary ml-0 ml-md-3 mr-0 mr-md-3">
+                    <ul class="navbar-nav flex-row">
                         <li class="nav-item breadcrumb-item">2020-21</li>
                         <li class="nav-item breadcrumb-item">GW7</li>
                         <li class="nav-item breadcrumb-item">2020-10-29</li>
@@ -35,9 +35,19 @@
 
         <main class="container pt-3">
             <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card border-dark bg-squad-card text-white">
+                        <div class="card-body text-center">
+                            FPL Optimized brings you optimal squads for the upcoming gameweek. Expected points (xP) are provided by <a href="https://fplreview.com/">FPL Review</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
                 <div class="col-lg-6 col-12 mb-0-lg mb-3">
                     <div class="card card-field border-dark bg-squad-card text-white">
-                        <h5 class="card-header border-complement text-center scenario_title" data-tooltip="No budget limit - no team limit">Unlimited Best 11</h5>
+                        <h5 class="card-header border-complement text-center scenario_title">Ultimate Best 11</h5>
+                        <div class="scenario_detail">Best lineup xP, no bench, no team and budget limit</div>
                         <div class="card-body field-body">
                             <div class="row no-gutters">
                                 <div class="col-3" v-cloak>
@@ -82,7 +92,8 @@
                 </div>
                 <div class="col-lg-6 col-12">
                     <div class="card card-field border-dark bg-squad-card text-white">
-                        <h5 class="card-header border-complement text-center scenario_title" data-tooltip="Best xP from 11 players">Best Lineup</h5>
+                        <h5 class="card-header border-complement text-center scenario_title">Best Lineup</h5>
+                        <div class="scenario_detail">Best lineup xP under £100 and team limit</div>
                         <div class="card-body field-body">
                             <div class="row no-gutters">
                                 <div class="col-3" v-cloak>
@@ -128,7 +139,8 @@
             <div class="row mb-3">
                 <div class="col-lg-6 col-12 mb-0-lg mb-3">
                     <div class="card card-field border-dark bg-squad-card text-white">
-                        <h5 class="card-header border-complement text-center scenario_title" data-tooltip="Best xP with bench weight of 10%">Best 11 - Weighted Squad</h5>
+                        <h5 class="card-header border-complement text-center scenario_title">Best Squad - Weighted</h5>
+                        <div class="scenario_detail">Best squad xP with 10% weight on bench players under £100</div>
                         <div class="card-body field-body">
                             <div class="row no-gutters">
                                 <div class="col-3" v-cloak>
@@ -173,6 +185,7 @@
                 <div class="col-lg-6 col-12">
                     <div class="card card-field border-dark bg-squad-card text-white">
                         <h5 class="card-header border-complement text-center scenario_title" data-tooltip="Best xP including every player">Best Squad - Bench Boost</h5>
+                        <div class="scenario_detail">Best squad xP with Bench Boost chip activated under £100</div>
                         <div class="card-body field-body">
                             <div class="row no-gutters">
                                 <div class="col-3" v-cloak>
@@ -215,6 +228,37 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card border-dark bg-squad-card text-white qa">
+                        <div class="card-body text-left">
+                            <h5>Q/A</h5>
+                            <b>What do you mean by `optimal`?</b>
+                            <p class="answer">All instances are solved to optimality using mathmetical modeling. Data is provided by FPL Review, problems are modeled using <a href="https://github.com/sassoftware/sasoptpy">sasoptpy</a> package and finally solved using
+                                <a href="https://github.com/coin-or/Cbc">open-source CBC solver</a>. You can see the modeling source code
+                                <a href="https://github.com/sertalpbilal/fpl_optimized/blob/engine/src/solve.py">here</a>. Feel free to clone the repository and play with the model.</p>
+                            <b>I found a better squad, how about it?</b>
+                            <p class="answer">You can find another squad with exactly the same objective value, but cannot get anything strictly better. Optimization models are solved to exact optimality.</p>
+                            <b>How often / when do you update this page?</b>
+                            <p class="answer">This page is automatically built everyday using GitHub Actions at 10 AM GMT (5 AM EST) and whenever there is a code change.</p>
+                            <b>I have a suggestion or improvement to your model. How can I contribute?</b>
+                            <p class="answer">Feel free to <a href="https://github.com/sertalpbilal/fpl_optimized/pulls">submit a pull request</a> on GitHub, or <a href="https://github.com/sertalpbilal/fpl_optimized/issues">open an issue</a>.</p>
+                            <b>Are you using these solutions for your team?</b>
+                            <p class="answer">You bet I do! I solve an optimization model every week and use the forecast for next 8 gameweeks, but it is a bigger model. I use
+                                <a href="https://www.sas.com/en_us/software/optimization.html">SAS Optimization</a> for every decision, from transfers to chip usage for my team
+                                <a href="https://fantasy.premierleague.com/entry/2221044/history">Optimized FC (ID: 2221044)</a>. I tweet regularly on optimization, sports analytics, and FPL on <a href="https://twitter.com/sertalpbilal">Twitter</a>.</p>
+                            <b>I would like to use optimization for FPL, too! Where can I start?</b>
+                            <p class="answer">Depends on where you feel more comfortable working at: Solver add-in is available on Microsoft Excel and several open-source and commercial solvers have interfaces to programming languages. I maintain the Python interface for
+                                SAS Optimization that I have mentioned (sasoptpy) and would be happy to answer your questions on Twitter.</p>
+                        </div>
+                        <div class="card-footer text-white disclaimer">
+                            The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
 
     </div>
