@@ -123,7 +123,10 @@ def get_data_fplreview(target_folder, page="massive-data-planner", debug=False):
     inputfield.send_keys("1")
     inputfield.send_keys(Keys.ENTER)
 
-    wait.until(EC.visibility_of_element_located((By.ID, "orderModal_popop2")))
+    try:
+        wait.until(EC.visibility_of_element_located((By.ID, "orderModal_popop2")))
+    except:
+        wait.until(EC.visibility_of_element_located((By.ID, "orderModal_popop")))
     e = chrome.find_elements_by_id("butt")
     print(".", end="", flush=True)
     for i in e:
