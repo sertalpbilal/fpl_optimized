@@ -27,6 +27,12 @@ body {
     border-color: #394709;
 }
 
+#captain_star {
+    fill: rgb(91, 182, 152) !important;
+    /* stroke-width: 0px !important; */
+    stroke: rgb(0, 114, 108) !important;
+}
+
 .card-field,
 .card-field>.card-header {
     font-size: 13pt;
@@ -77,12 +83,12 @@ svg.field>g>* {
 }
 
 #player_team {
-    fill: #B81636 !important;
+    fill: #a10a28 !important;
 }
 
 .jersey_bench>#jersey_bg,
 .jersey_bench>path {
-    fill: grey !important;
+    fill: rgb(170, 170, 170) !important;
 }
 
 .metric {
@@ -133,7 +139,7 @@ svg.field>g>* {
 } */
 
 main a {
-    color: #bb5b6e;
+    color: #c47b89;
 }
 
 main a:hover {
@@ -165,4 +171,25 @@ main a:hover {
 
 .answer {
     color: rgb(187, 187, 187);
+}
+
+.date-line {
+    color: #c47b89;
+    cursor: pointer;
+}
+
+
+/* select {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+}
+
+select::-ms-expand {
+    display: none;
+} */
+
+h5.modal-title {
+    color: black;
 }

@@ -28,6 +28,7 @@ var app = new Vue({
         season: season,
         gw: gw,
         date: date,
+        listdates: listdates,
         solutions: {
             'no_limit_best_11': [],
             'limited_best_15': [],
@@ -69,6 +70,18 @@ var app = new Vue({
             let weighted_xp = lineup_xp + 0.1 * bench_xp;
             let bb_xp = lineup_xp + 1 * bench_xp;
             return { data: data, cost: (cost / 10).toFixed(1), lineup_xp: lineup_xp.toFixed(2), weighted_xp: weighted_xp.toFixed(2), bb_xp: bb_xp.toFixed(2) };
+        },
+        refresh_results() {
+            season = this.season;
+            gw = this.gw;
+            date = this.date;
+            load_solution_from_file("no_limit_best_11");
+            load_solution_from_file("limited_best_15");
+            load_solution_from_file("limited_best_15_weighted");
+            load_solution_from_file("limited_best_15_bb");
+        },
+        close_date() {
+            $("#dateModal").modal('hide');
         }
     },
     computed: {
@@ -83,6 +96,18 @@ var app = new Vue({
         },
         field_solution_4: function() {
             return this.get_solution_with_details("limited_best_15_bb");
+        },
+        seasongwdate: {
+            get: function() {
+                return this.season + " / " + this.gw + " / " + this.date;
+            },
+            set: function(value) {
+                let v = value.split(' / ');
+                this.season = v[0];
+                this.gw = v[1];
+                this.date = v[2];
+                this.refresh_results();
+            }
         }
     }
 })
@@ -107,7 +132,6 @@ load_solution_from_file("no_limit_best_11");
 load_solution_from_file("limited_best_15");
 load_solution_from_file("limited_best_15_weighted");
 load_solution_from_file("limited_best_15_bb");
-
 
 // $.ajax({
 //     type: "GET",
