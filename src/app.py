@@ -15,8 +15,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['DEBUG']=False
 jinja_options = app.jinja_options.copy()
 jinja_options.update(dict(
-    block_start_string='*%',
-    block_end_string='%*',
+    block_start_string='"%',
+    block_end_string='%"',
     variable_start_string='**',
     variable_end_string='**',
     comment_start_string='<#',
@@ -28,10 +28,14 @@ app.jinja_options = jinja_options
 def hello_world():
     latest_directory = max(glob.iglob('build/data/*/*/*'), key=os.path.getctime)
     target = latest_directory.split('/')
+    all_dates = glob.glob('build/data/*/*/*')
+    all_dates.sort(key=os.path.getctime, reverse=True)
+    list_dates = ([i.split('/')[2:] for i in all_dates])
+    list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4])
+        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
     else:
-        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4])
+        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
 def list_all_snapshots():
     pass
