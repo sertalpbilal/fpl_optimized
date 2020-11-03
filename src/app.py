@@ -29,7 +29,7 @@ def hello_world():
     latest_directory = max(glob.iglob('build/data/*/*/*'), key=os.path.getctime)
     target = latest_directory.split('/')
     all_dates = glob.glob('build/data/*/*/*')
-    all_dates.sort(key=os.path.getctime, reverse=True)
+    all_dates.sort(key=os.path.getmtime, reverse=True)
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
