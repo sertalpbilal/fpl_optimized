@@ -24,12 +24,18 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
+def folder_order(fname):
+    f = fname.split('/')
+    item1 = int(f[2].split('-')[0])
+    item2 = int(f[3].split('GW')[1])
+    item3 = f[4]
+    return (item1, item2, item3)
+
 @app.route('/')
 def hello_world():
-    latest_directory = max(glob.iglob('build/data/*/*/*'), key=os.path.getctime)
-    target = latest_directory.split('/')
     all_dates = glob.glob('build/data/*/*/*')
-    all_dates.sort(key=os.path.getmtime, reverse=True)
+    all_dates.sort(key=folder_order, reverse=True)
+    target = all_dates[0].split('/')
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
