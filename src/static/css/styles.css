@@ -94,6 +94,7 @@ svg.field>g>* {
 .metric {
     margin-left: 1px;
     margin-right: 1px;
+    font-size: 10pt;
 }
 
 @media screen and (max-width: 480px) {
@@ -192,4 +193,10 @@ select::-ms-expand {
 
 h5.modal-title {
     color: black;
+}
+
+.col-metric {
+    -ms-flex: 0 0 20%;
+    flex: 0 0 20%;
+    max-width: 20%;
 }

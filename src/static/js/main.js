@@ -33,7 +33,9 @@ var app = new Vue({
             'no_limit_best_11': [],
             'limited_best_15': [],
             'limited_best_15_weighted': [],
-            'limited_best_15_bb': []
+            'limited_best_15_bb': [],
+            'limited_best_differential': [],
+            'limited_best_set_and_forget': []
         }
     },
     methods: {
@@ -59,6 +61,7 @@ var app = new Vue({
                     i.is_captain = (i.is_captain == "True");
                     i.team_name = team_codes[parseInt(i.team_code)];
                     i.now_cost_str = (parseFloat(i.now_cost) / 10).toFixed(1);
+                    i.selected_by_percent = parseFloat(i.selected_by_percent) || -1;
                 })
             return sol;
         },
@@ -69,16 +72,15 @@ var app = new Vue({
             let bench_xp = data.filter(j => j.starting_lineup == "0").map(i => i.xP).reduce((a, b) => a + b, 0);
             let weighted_xp = lineup_xp + 0.1 * bench_xp;
             let bb_xp = lineup_xp + 1 * bench_xp;
-            return { data: data, cost: (cost / 10).toFixed(1), lineup_xp: lineup_xp.toFixed(2), weighted_xp: weighted_xp.toFixed(2), bb_xp: bb_xp.toFixed(2) };
+            let avg_own = data.map(i => i.selected_by_percent).reduce((a, b) => a + b, 0);
+            if (avg_own <= 0) { avg_own = "-" } else { avg_own = (avg_own / data.length).toFixed(2) + "%"; }
+            return { data: data, cost: (cost / 10).toFixed(1), lineup_xp: lineup_xp.toFixed(2), weighted_xp: weighted_xp.toFixed(2), bb_xp: bb_xp.toFixed(2), avg_own: avg_own };
         },
         refresh_results() {
             season = this.season;
             gw = this.gw;
             date = this.date;
-            load_solution_from_file("no_limit_best_11");
-            load_solution_from_file("limited_best_15");
-            load_solution_from_file("limited_best_15_weighted");
-            load_solution_from_file("limited_best_15_bb");
+            load_all();
         },
         close_date() {
             $("#dateModal").modal('hide');
@@ -96,6 +98,12 @@ var app = new Vue({
         },
         field_solution_4: function() {
             return this.get_solution_with_details("limited_best_15_bb");
+        },
+        field_solution_5: function() {
+            return this.get_solution_with_details("limited_best_differential");
+        },
+        field_solution_6: function() {
+            return this.get_solution_with_details("limited_best_set_and_forget");
         },
         seasongwdate: {
             get: function() {
@@ -124,14 +132,25 @@ function load_solution_from_file(name) {
             values_filtered = values.filter(i => i.length > 1);
             let squad = values_filtered.map(i => _.zipObject(keys, i));
             app.setSolution(name, squad);
+        },
+        error: function(xhr, status, error) {
+            if (error == "NOT FOUND") {
+                app.setSolution(name, []);
+            }
         }
     });
 }
 
-load_solution_from_file("no_limit_best_11");
-load_solution_from_file("limited_best_15");
-load_solution_from_file("limited_best_15_weighted");
-load_solution_from_file("limited_best_15_bb");
+function load_all() {
+    load_solution_from_file("no_limit_best_11");
+    load_solution_from_file("limited_best_15");
+    load_solution_from_file("limited_best_15_weighted");
+    load_solution_from_file("limited_best_15_bb");
+    load_solution_from_file("limited_best_differential");
+    load_solution_from_file("limited_best_set_and_forget");
+}
+
+load_all();
 
 // $.ajax({
 //     type: "GET",
