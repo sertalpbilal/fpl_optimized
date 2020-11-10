@@ -134,9 +134,7 @@ function load_solution_from_file(name) {
             app.setSolution(name, squad);
         },
         error: function(xhr, status, error) {
-            if (error == "NOT FOUND") {
-                app.setSolution(name, []);
-            }
+            app.setSolution(name, []);
         }
     });
 }
