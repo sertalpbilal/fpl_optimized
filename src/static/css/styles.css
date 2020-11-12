@@ -179,6 +179,10 @@ main a:hover {
     cursor: pointer;
 }
 
+.date-line:hover {
+    color: #5bbbb6;
+}
+
 
 /* select {
     -moz-appearance: none;
@@ -199,4 +203,17 @@ h5.modal-title {
     -ms-flex: 0 0 20%;
     flex: 0 0 20%;
     max-width: 20%;
+}
+
+span.twitter-link {
+    display: block;
+    float: left;
+}
+
+.twitter-link>a {
+    color: #c47b89;
+}
+
+.twitter-link>a:hover {
+    color: #5bbbb6;
 }
