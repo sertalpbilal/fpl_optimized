@@ -177,6 +177,7 @@ main a:hover {
 .date-line {
     color: #c47b89;
     cursor: pointer;
+    justify-content: center;
 }
 
 .date-line:hover {
@@ -216,4 +217,13 @@ span.twitter-link {
 
 .twitter-link>a:hover {
     color: #5bbbb6;
+}
+
+.index-option {
+    transition: border linear 0.4s;
+    border: 1px solid rgb(131, 131, 131) !important;
+}
+
+.index-option:hover {
+    border: 1px solid aquamarine !important;
 }

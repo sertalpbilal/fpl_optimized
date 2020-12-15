@@ -32,7 +32,19 @@ def folder_order(fname):
     return (item1, item2, item3)
 
 @app.route('/')
-def hello_world():
+def home_page():
+    all_dates = glob.glob('build/data/*/*/*')
+    all_dates.sort(key=folder_order, reverse=True)
+    target = all_dates[0].split('/')
+    list_dates = ([i.split('/')[2:] for i in all_dates])
+    list_dates = [' / '.join(i) for i in list_dates]
+    if app.config['DEBUG']:
+        return render_template('index.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+    else:
+        return render_template('index.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+
+@app.route('/week.html')
+def best_gw_squads():
     all_dates = glob.glob('build/data/*/*/*')
     all_dates.sort(key=folder_order, reverse=True)
     target = all_dates[0].split('/')
@@ -42,6 +54,18 @@ def hello_world():
         return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
     else:
         return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+
+@app.route('/top_squads.html')
+def top_squads():
+    all_dates = glob.glob('build/data/*/*/*')
+    all_dates.sort(key=folder_order, reverse=True)
+    target = all_dates[0].split('/')
+    list_dates = ([i.split('/')[2:] for i in all_dates])
+    list_dates = [' / '.join(i) for i in list_dates]
+    if app.config['DEBUG']:
+        return render_template('top_squads.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+    else:
+        return render_template('top_squads.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
 def list_all_snapshots():
     pass
