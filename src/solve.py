@@ -11,12 +11,13 @@ import sasoptpy as so
 
 
 def solve_all(input_folder, output_folder):
-    solve_no_limit_best_11(input_folder, output_folder)
-    solve_limited_best_squad(input_folder, output_folder)
-    solve_limited_squad_with_bench_weight(input_folder, output_folder)
-    solve_bench_boost_squad(input_folder, output_folder)
-    solve_best_differential_team(input_folder, output_folder)
-    solve_best_set_and_forget(input_folder, output_folder)
+    # solve_no_limit_best_11(input_folder, output_folder)
+    # solve_limited_best_squad(input_folder, output_folder)
+    # solve_limited_squad_with_bench_weight(input_folder, output_folder)
+    # solve_bench_boost_squad(input_folder, output_folder)
+    # solve_best_differential_team(input_folder, output_folder)
+    # solve_best_set_and_forget(input_folder, output_folder)
+    solve_iterative_squads(input_folder, output_folder, 5)
 
 
 def solve_no_limit_best_11(input_folder, output_folder):
@@ -493,6 +494,119 @@ def solve_best_set_and_forget(input_folder, output_folder):
     result_df.to_csv(csvname, encoding='utf-8')
     with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.encoding', 'UTF-8'): 
         print(result_df)
+    print(m.get_objective_value())
+
+
+def solve_iterative_squads(input_folder, output_folder, n=50):
+    """Solves for best squads iteratively for generating an interactive list"""
+    df = pd.read_csv(input_folder / 'element_gameweek.csv')
+    next_week = df['event'].min()
+    element_gameweek_df = df[df['event'] < next_week+3].copy()
+
+    df = pd.read_csv(input_folder / 'element.csv')
+    element_df = df.copy().set_index('id')
+    element_gameweek_df = pd.merge(left=element_gameweek_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
+    elements = element_gameweek_df['player_id'].unique().tolist()
+    gameweeks = element_gameweek_df['event'].unique().tolist()
+    element_gameweek_df.set_index(['player_id', 'event'], inplace=True, drop=True)
+
+    team_codes = element_gameweek_df['team_code'].unique().tolist()
+    
+    types_df = pd.read_csv(input_folder / 'element_type.csv')
+    types = types_df['id'].to_list()
+    types_df.set_index('id', inplace=True, drop=True)
+
+    position = [1,2,3,4]
+    element_gameweek = [(e, g) for e in elements for g in gameweeks]
+
+    m = so.Model(name='iterative_model', session=None)
+    lineup = m.add_variables(elements, gameweeks, name='lineup', vartype=so.BIN)
+    captain = m.add_variables(elements, gameweeks, name='captain', vartype=so.BIN)
+    squad = m.add_variables(elements, name='squad', vartype=so.BIN)
+    bench = m.add_variables(elements, gameweeks, position, name='bench', vartype=so.BIN)
+
+    m.add_constraints(
+        (so.quick_sum(lineup[e, g] for e in elements) == 11 for g in gameweeks),
+        name='lineup_limit_per_week')
+
+    m.add_constraints((
+        so.quick_sum(lineup[e, g] for e in elements if element_df.loc[e]['element_type'] == et) >= types_df.loc[et]['squad_min_play']
+        for et in types for g in gameweeks), name='squad_min')
+
+    m.add_constraints((
+        so.quick_sum(lineup[e, g] for e in elements if element_df.loc[e]['element_type'] == et) <= types_df.loc[et]['squad_max_play']
+        for et in types for g in gameweeks), name='squad_max')
+
+    m.add_constraints((so.quick_sum(captain[e, g] for e in elements) == 1 for g in gameweeks), name='single_captain')
+    m.add_constraints((captain[e, g] <= lineup[e, g] for e in elements for g in gameweeks), name='captain_should_play')
+
+    # Limit constraints
+    m.add_constraints((
+        so.quick_sum(squad[e] for e in elements if element_df.loc[e]['element_type'] == et) == types_df.loc[et]['squad_select']
+        for et in types), name='squad_exact')
+    m.add_constraint(so.quick_sum(squad[e] for e in elements) == 15, name='squad_limit')
+    m.add_constraints(
+        (so.quick_sum(squad[e] for e in elements if element_df.loc[e]['team_code'] == j) <= 3 for j in team_codes),
+        name='player_team_limit')
+    # m.add_constraint(
+    #     so.quick_sum(squad[i] * next_week_df.loc[i]['now_cost'] for i in players) <= 1000,
+    #     name='total_cost_100')
+    m.add_constraints(
+        (lineup[e, g] <= squad[e] for e in elements for g in gameweeks), name='lineup_squad_con')
+    m.add_constraints(
+        (bench[e, g, p] <= squad[e] for e in elements for g in gameweeks for p in position), name='bench_squad_con')
+    m.add_constraints(
+        (so.quick_sum(bench[e, g, p] for e in elements) == 1 for g in gameweeks for p in position), name='bench_position_con')
+    m.add_constraints(
+        (so.quick_sum(bench[e, g, 1] for e in elements if element_df.loc[e]['element_type'] == 1) == 1 for g in gameweeks), name='only_gk_bench1')
+    m.add_constraints(
+        (lineup[e, g] + so.quick_sum(bench[e, g, p] for p in position) == squad[e] for e in elements for g in gameweeks), name='lineup_plus_bench_equal_squad')
+
+    m.set_objective(so.quick_sum(
+        -element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements for g in gameweeks
+    ), sense='N', name='maximize_points')
+
+    mps_str = get_mps_string(m)
+
+    name = "iterative_model"
+
+    with open(output_folder / f"{name}.mps", "w") as f:
+        f.write(mps_str)
+    
+    filename = str(output_folder / f"{name}.mps")
+    solutionname = str(output_folder / f"{name}.sol")
+    csvname = str(output_folder / f"{name}.csv")
+    
+    solve_and_get_solution(filename, solutionname, m)
+    
+    print("DONE")
+
+    # Parse solution
+    solution = {"squad":[], "lineup": {g:[] for g in gameweeks}, "bench": {g:[] for g in gameweeks}, "captain": {g: 0 for g in gameweeks}}
+    for e in elements:
+        if squad[e].get_value() > 0.5:
+            solution['squad'].append(e)
+    for e in elements:
+        for g in gameweeks:
+            if lineup[e, g].get_value() > 0.5:
+                solution['lineup'][g].append(e)
+            elif squad[e].get_value() > 0.5:
+                for p in position:
+                    if bench[e, g, p].get_value() > 0.5:
+                        solution['bench'][g].append(e)
+            if captain[e, g].get_value() > 0.5:
+                solution['captain'][g] = e
+    solution["players"] = [element_df.loc[e]['web_name'] for e in solution['squad']]
+    solution["xP"] = {g: [element_gameweek_df.loc[e, g]['points_md'] for e in solution['squad']] for g in gameweeks}
+    solution["obj"] = {"overall": m.get_objective_value()}
+    solution["cost"] = [float(element_df.loc[e]['now_cost']) for e in solution['squad']]
+    solution["total_cost"] = sum(solution["cost"])
+    for g in gameweeks:
+        solution["obj"][g] = so.quick_sum(-element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements).get_value()
+
+    print(solution)
+    with open(output_folder / "iterative_model.json", "w") as f:
+        json.dump(solution, f)
     print(m.get_objective_value())
 
 
