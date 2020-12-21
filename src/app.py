@@ -45,10 +45,11 @@ def home_page():
 
 @app.route('/week.html')
 def best_gw_squads():
-    all_dates = glob.glob('build/data/*/*/*')
+    all_dates = glob.glob('build/data/*/*/*/output/no_limit_best_11.csv')
+    print(all_dates)
     all_dates.sort(key=folder_order, reverse=True)
     target = all_dates[0].split('/')
-    list_dates = ([i.split('/')[2:] for i in all_dates])
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
         return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
@@ -57,15 +58,27 @@ def best_gw_squads():
 
 @app.route('/top_squads.html')
 def top_squads():
-    all_dates = glob.glob('build/data/*/*/*')
+    all_dates = glob.glob('build/data/*/*/*/output/iterative_model.json')
     all_dates.sort(key=folder_order, reverse=True)
     target = all_dates[0].split('/')
-    list_dates = ([i.split('/')[2:] for i in all_dates])
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
         return render_template('top_squads.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
     else:
         return render_template('top_squads.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+
+@app.route('/team_summary.html')
+def week_summary():
+    all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
+    all_dates.sort(key=folder_order, reverse=True)
+    target = all_dates[0].split('/')
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
+    list_dates = [' / '.join(i) for i in list_dates]
+    if app.config['DEBUG']:
+        return render_template('team_summary.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+    else:
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
 def list_all_snapshots():
     pass

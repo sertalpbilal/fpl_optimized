@@ -25,40 +25,46 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 m-2">
-                            <table class="table table-dark table-striped bg-transparent" style="font-size: x-small">
+                            <table class="table table-dark table-striped bg-transparent table-responsive nowrap" style="width:100%" v-cloak id="top_squads_table">
                                 <thead>
                                     <tr>
                                         <th rowspan="2">ID</th>
-                                        <th rowspan="2">Formation</th>
-                                        <th colspan="11">Lineup</th>
-                                        <th colspan="4">Bench</th>
+                                        <!-- <th rowspan="2">Params</th>
+                                        <th rowspan="2">Objectives</th> -->
+                                        <th rowspan="2">Squad</th>
                                         <th colspan="3">Stats</th>
                                         <th colspan="5">KPI</th>
                                     </tr>
                                     <tr>
-                                        <th>P1</th>
-                                        <th>P2</th>
-                                        <th>P3</th>
-                                        <th>P4</th>
-                                        <th>P5</th>
-                                        <th>P6</th>
-                                        <th>P7</th>
-                                        <th>P8</th>
-                                        <th>P9</th>
-                                        <th>P10</th>
-                                        <th>P11</th>
-                                        <th>B1</th>
-                                        <th>B2</th>
-                                        <th>B3</th>
-                                        <th>B4</th>
                                         <th>Cost</th>
-                                        <th>AO</th>
-                                        <th>SO</th>
+                                        <th>AO%</th>
+                                        <th>SO%</th>
                                         <th>LxP</th>
                                         <th>WxP</th>
                                         <th>BBxP</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr v-for="sol in parsed_solutions">
+                                        <td>{{ sol.id+1 }}</td>
+                                        <!-- <td>{{ sol.params }}</td>
+                                        <td>{{ sol.obj }}</td> -->
+                                        <td class="d-flex flex-column">
+                                            <div class="d-flex flex-row" v-for="(pt, idx) in element_type">
+                                                <!-- flex-md-row flex-column -->
+                                                <div class="squad-names-table m-1" v-for="p in sol.sorted_squad" :class="'ptype-' + p[1]" v-if="p[1] == idx">
+                                                    {{ sol.player_names[p[0]] }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ sol.total_cost / 10 }}</td>
+                                        <td>{{ sol.AO }}</td>
+                                        <td>{{ sol.SO }}</td>
+                                        <td>{{ sol.LxP }}</td>
+                                        <td>{{ sol.WxP }}</td>
+                                        <td>{{ sol.BBxP }}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -72,23 +78,19 @@
             <div class="card border-dark bg-squad-card text-white qa">
                 <div class="card-body text-left">
                     <h5>Q/A</h5>
-                    <b>What do you mean by `optimal`?</b>
+                    <b>What are these squads?</b>
+                    <p class="answer">I use mixed-integer linear programming to find optimal squads to analyze and compare. I use an iterative approach: I find the best possible solution ("the" optimal) and cut off that particular solution until I obtain 50 different solutions.</p>
+                    <b>How do these problems are solved?</b>
                     <p class="answer">All instances are solved to optimality using mathmetical modeling. Data is provided by FPL Review, problems are modeled using <a href="https://github.com/sassoftware/sasoptpy">sasoptpy</a> package and finally solved using
                         <a href="https://github.com/coin-or/Cbc">open-source CBC solver</a>. You can see the modeling source code
                         <a href="https://github.com/sertalpbilal/fpl_optimized/blob/engine/src/solve.py">here</a>. Feel free to clone the repository and play with the model.</p>
-                    <b>I found a better squad, how about it?</b>
+                    <b>What is the purpose?</b>
+                    <p class="answer">The main purpose is to show how optimization can be used in sports, specifically fantasy sports in this case. I hope these squads can give you new ideas for upcoming weeks.</p>
                     <p class="answer">You can find another squad with exactly the same objective value, but cannot get anything strictly better. Optimization models are solved to exact optimality.</p>
                     <b>How often / when do you update this page?</b>
                     <p class="answer">This page is automatically built everyday using GitHub Actions at 10:00 GMT (5 AM EST) and 17:00 GMT (12 PM EST) and whenever there is a code change.</p>
                     <b>I have a suggestion or improvement to your model. How can I contribute?</b>
                     <p class="answer">Feel free to <a href="https://github.com/sertalpbilal/fpl_optimized/pulls">submit a pull request</a> on GitHub, or <a href="https://github.com/sertalpbilal/fpl_optimized/issues">open an issue</a>.</p>
-                    <b>Are you using these solutions for your team?</b>
-                    <p class="answer">You bet I do! I solve an optimization model every week and use the forecast for next 8 gameweeks, but it is a bigger model. I use
-                        <a href="https://www.sas.com/en_us/software/optimization.html">SAS Optimization</a> for every decision, from transfers to chip usage for my team
-                        <a href="https://fantasy.premierleague.com/entry/2221044/history">Optimized FC (ID: 2221044)</a>. I tweet regularly on optimization, sports analytics, and FPL on <a href="https://twitter.com/sertalpbilal">Twitter</a>.</p>
-                    <b>I would like to use optimization for FPL, too! Where can I start?</b>
-                    <p class="answer">Depends on where you feel more comfortable working at: Solver add-in is available on Microsoft Excel and several open-source and commercial solvers have interfaces to programming languages. I maintain the Python interface for SAS Optimization
-                        that I have mentioned (sasoptpy) and would be happy to answer your questions on Twitter.</p>
                 </div>
                 <div class="card-footer text-white disclaimer">
                     The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
@@ -111,12 +113,12 @@
             <div class="modal-body">
                 <div class="form-group">
                     <select class="form-control" v-model="seasongwdate" @change="close_date">
-                              <option v-for="i in listdates">{{ i }}</option>
-                            </select>
+                        <option v-for="i in listdates">{{ i }}</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-"% include 'footer.html' %"
+"% with scripts=["main", "top_squads"] %" "% include 'footer.html' %" "% endwith %"

@@ -6,7 +6,9 @@
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
-
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script>
 
 <script>
     let repo_name = "** repo_name **"
@@ -17,7 +19,9 @@
         "**i** ", "% endfor %"
     ];
 </script>
-<script src="/** repo_name **** url_for('static', filename='js/main.js') **"></script>
+"% for item in scripts %"
+<script src="/** repo_name **** url_for('static', filename='js/' + item +'.js') **"></script>
+"% endfor %"
 </body>
 
 </html>

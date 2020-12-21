@@ -183,7 +183,8 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     full_element_gameweek_df['event'] = full_element_gameweek_df['event'].astype(int)
     element_gameweek_df = pd.merge(left=full_element_gameweek_df, right=combined_games.rename(columns={'id': 'event_id'}), on=['event', 'team'], how='left')
     element_gameweek_df['points_md'] = element_gameweek_df.apply(get_element_event_expected_points, axis=1)
-    element_gameweek_df = element_gameweek_df[['player_id', 'event', 'event_id', 'web_name', 'points_md', 'team', 'opp_team']].copy()
+    element_gameweek_df['xmins_md'] = element_gameweek_df.apply(get_element_event_expected_minutes, axis=1)
+    element_gameweek_df = element_gameweek_df[['player_id', 'event', 'event_id', 'web_name', 'points_md', 'xmins_md', 'team', 'opp_team']].copy()
     element_gameweek_df.sort_values(by=['player_id', 'event'], inplace=True, ignore_index=True)
     element_gameweek_df.to_csv(target_folder / f'element_gameweek.csv')
 
@@ -203,6 +204,21 @@ def get_element_event_expected_points(r):
     else:
         try:
             sc = float(r[f"{int(r['event'])}_Pts"])
+            if np.isnan(sc):
+                return 0
+            elif sc is None:
+                return 0
+            else:
+                return sc
+        except:
+            return 0
+
+def get_element_event_expected_minutes(r):
+    if np.isnan(r['event']):
+        return 0
+    else:
+        try:
+            sc = float(r[f"{int(r['event'])}_xMins"])
             if np.isnan(sc):
                 return 0
             elif sc is None:

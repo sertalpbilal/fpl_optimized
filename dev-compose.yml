@@ -1,0 +1,14 @@
+version: '3'
+services:
+  fpl_aa_web_demo:
+    container_name: fpl_aa_dev
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LANG=C.UTF-8
+    ports:
+      - "8001:5000"
+    volumes:
+      - /fpl_aa:/app

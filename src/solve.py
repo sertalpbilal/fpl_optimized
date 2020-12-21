@@ -8,6 +8,7 @@ import os
 import numpy as np
 import pandas as pd
 import sasoptpy as so
+import random
 
 
 def solve_all(input_folder, output_folder):
@@ -17,7 +18,7 @@ def solve_all(input_folder, output_folder):
     # solve_bench_boost_squad(input_folder, output_folder)
     # solve_best_differential_team(input_folder, output_folder)
     # solve_best_set_and_forget(input_folder, output_folder)
-    solve_iterative_squads(input_folder, output_folder, 5)
+    solve_iterative_squads(input_folder, output_folder, 10)
 
 
 def solve_no_limit_best_11(input_folder, output_folder):
@@ -497,18 +498,26 @@ def solve_best_set_and_forget(input_folder, output_folder):
     print(m.get_objective_value())
 
 
-def solve_iterative_squads(input_folder, output_folder, n=50):
+def solve_iterative_squads(input_folder, output_folder, total_iter=50):
     """Solves for best squads iteratively for generating an interactive list"""
     df = pd.read_csv(input_folder / 'element_gameweek.csv')
     next_week = df['event'].min()
     element_gameweek_df = df[df['event'] < next_week+3].copy()
 
+    sum_md_df = element_gameweek_df.groupby(['player_id', 'web_name'])['points_md'].sum()
+    sum_md_df.sort_values(inplace=True, ascending=False)
+    sum_md_df = sum_md_df.reset_index().set_index('player_id').copy()
+
     df = pd.read_csv(input_folder / 'element.csv')
     element_df = df.copy().set_index('id')
+    element_df['ict_sum'] = element_df['influence'] + element_df['creativity'] + element_df['threat']
     element_gameweek_df = pd.merge(left=element_gameweek_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
+    element_gameweek_df['rawxp'] = element_gameweek_df.apply(lambda r: r['points_md'] * 90 / max(1, r['xmins_md']), axis=1)
     elements = element_gameweek_df['player_id'].unique().tolist()
     gameweeks = element_gameweek_df['event'].unique().tolist()
+    total_weeks = len(gameweeks)
     element_gameweek_df.set_index(['player_id', 'event'], inplace=True, drop=True)
+    popular_element_df = element_df.sort_values(by=['selected_by_percent'], ascending=False)[['web_name', 'selected_by_percent']]
 
     team_codes = element_gameweek_df['team_code'].unique().tolist()
     
@@ -562,52 +571,131 @@ def solve_iterative_squads(input_folder, output_folder, n=50):
     m.add_constraints(
         (lineup[e, g] + so.quick_sum(bench[e, g, p] for p in position) == squad[e] for e in elements for g in gameweeks), name='lineup_plus_bench_equal_squad')
 
-    m.set_objective(so.quick_sum(
-        -element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements for g in gameweeks
-    ), sense='N', name='maximize_points')
+    # Budget Constraint
+    budget_con = m.add_constraint(so.quick_sum(squad[e] * element_df.loc[e]['now_cost'] for e in elements) <= 1000, name='budget_con')
 
-    mps_str = get_mps_string(m)
+    # Every player should play at least once
+    m.add_constraints((so.quick_sum(lineup[e,g] for g in gameweeks) >= squad[e] for e in elements), name='play_at_least_once')
+
+    total_points = so.quick_sum(element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements for g in gameweeks) / total_weeks / element_gameweek_df['points_md'].max()
+    cost_points = so.quick_sum(element_df.loc[e]['now_cost'] * squad[e] for e in elements) / element_df['now_cost'].max()
+    xmin_points = so.quick_sum(element_gameweek_df.loc[e, g]['xmins_md']*lineup[e,g] for e in elements for g in gameweeks) / total_weeks / element_gameweek_df['xmins_md'].max()
+    ep_points = so.quick_sum(element_df.loc[e]['ep_this'] * lineup[e, next_week] for e in elements) / element_df['ep_this'].max()
+    form_points = so.quick_sum(element_df.loc[e]['form'] * lineup[e, next_week] for e in elements) / element_df['form'].max()
+    ppg_points = so.quick_sum(element_df.loc[e]['points_per_game'] * lineup[e, next_week] for e in elements) / element_df['points_per_game'].max()
+    bps_points = so.quick_sum(element_df.loc[e]['bps'] * lineup[e, next_week] for e in elements) / element_df['bps'].max()
+    ict_points = so.quick_sum(element_df.loc[e]['ict_sum'] * lineup[e, next_week] for e in elements) / element_df['ict_sum'].max()
+    rawxP_points = so.quick_sum(element_gameweek_df.loc[e, g]['rawxp'] * lineup[e, g] for e in elements for g in gameweeks) / total_weeks / element_gameweek_df['rawxp'].max()
+    ownership_points = so.quick_sum(element_gameweek_df.loc[e, g]['points_md']*(1-lineup[e, g])*element_df.loc[e]['selected_by_percent']/100.0 for e in elements for g in gameweeks) / total_weeks / element_gameweek_df['points_md'].max()
+
+    m.set_objective(-total_points,
+        sense='N', name='maximize_points')
 
     name = "iterative_model"
 
-    with open(output_folder / f"{name}.mps", "w") as f:
-        f.write(mps_str)
-    
     filename = str(output_folder / f"{name}.mps")
     solutionname = str(output_folder / f"{name}.sol")
     csvname = str(output_folder / f"{name}.csv")
     
-    solve_and_get_solution(filename, solutionname, m)
-    
-    print("DONE")
+    all_solutions = []
+    w1 = 1
+    w2 = w3 = w4 = w5 = w6 = w7 = w8 = w9 = w10 = 0
 
-    # Parse solution
-    solution = {"squad":[], "lineup": {g:[] for g in gameweeks}, "bench": {g:[] for g in gameweeks}, "captain": {g: 0 for g in gameweeks}}
-    for e in elements:
-        if squad[e].get_value() > 0.5:
-            solution['squad'].append(e)
-    for e in elements:
+    random.seed(42)
+
+    for iteration in range(total_iter):
+
+        if iteration > 0:
+            # add squad cut
+            m.add_constraint(so.quick_sum(squad[e] for e in elements if squad[e].get_value() > 0.5) <= 12, name=f"cutoff_{iteration}")
+
+            # change objective
+            w1, w2, w3, w4, w5, w6, w7, w8, w9 = (random.random() for _ in range(9))
+            w10 = random.random()*2-1
+            # m.set_objective(- (
+            #     w1 * total_points + w2 * cost_points + w3 * xmin_points + w4 * ep_points + w5 * form_points + w6 * ppg_points + w7 * bps_points + w8 * ict_points + w9 * rawxP_points + w10 * ownership_points),
+            #     sense='N', name=f'obj_{iteration}')
+
+            # # Idea 1: Discard most popular/owned 1 out of 3 players
+            # selected_ids = [e for e in elements if squad[e].get_value() > 0.5]
+            # selected_els_df = popular_element_df[popular_element_df.index.isin(selected_ids)]
+            # top3_els = selected_els_df.index[:3].to_list()
+            # print('Popular cut', selected_els_df.loc[top3_els]['web_name'])
+            # m.add_constraint(so.quick_sum(squad[e] for e in top3_els) <= 2, name=f'popular_cut_{iteration}')
+
+            # # Idea 2: Discard player with most return 1 out of 3 players
+            # selected_els_df = sum_md_df[sum_md_df.index.isin(selected_ids)]
+            # top3_els = selected_els_df.index[:3].to_list()
+            # print('Return cut', selected_els_df.loc[top3_els]['web_name'])
+            # m.add_constraint(so.quick_sum(squad[e] for e in top3_els) <= 2, name=f'return_cut_{iteration}')
+
+            # # Idea 3: Discard 3 players each time
+
+
+            # # add position cuts
+            # # m.add_constraints((so.quick_sum(squad[e] for e in elements if squad[e].get_value() > 0.5 and element_df.loc[e]['element_type'] == et) <= types_df.loc[et]['squad_select']-1 for et in types), name=f"el_type_cutoff_{iteration}")
+            # # add squad cut
+            # # m.add_constraint(so.quick_sum(squad[e] for e in elements if squad[e].get_value() > 0.5) <= 14, name=f"cutoff_{iteration}")
+            # # budget_adj = iteration // 5
+            # # budget_con.set_rhs(1050 - budget_adj*10)
+            # # m.set_objective(total_points - ownership_weight*missed_ownership_points - budget_weight*cost_value_points, sense='N', name=f'obj_b{budget_weight}_o{ownership_weight}')
+            # # m.set_objective(total_points - ownership_weight*missed_ownership_points, sense='N', name=f'obj_o{ownership_weight}')
+
+
+        mps_str = get_mps_string(m)
+        with open(output_folder / f"{name}.mps", "w") as f:
+            f.write(mps_str)
+        
+        for v in m.get_variables():
+            v.set_value(0)
+
+        solve_and_get_solution(filename, solutionname, m)
+        
+        print(f"DONE {iteration}")
+
+        # Parse solution
+        solution = {"id": iteration, "squad":[], "lineup": {g:[] for g in gameweeks}, "bench": {g:{} for g in gameweeks}, "captain": {g: 0 for g in gameweeks}, "ownership": {}}
+        for e in elements:
+            if squad[e].get_value() > 0.5:
+                solution['squad'].append(e)
+        for e in elements:
+            for g in gameweeks:
+                if lineup[e, g].get_value() > 0.5:
+                    solution['lineup'][g].append(e)
+                elif squad[e].get_value() > 0.5:
+                    for p in position:
+                        if bench[e, g, p].get_value() > 0.5:
+                            solution['bench'][g][p] = e
+                if captain[e, g].get_value() > 0.5:
+                    solution['captain'][g] = e
+        # solution["params"] = {'ownership_weight': ownership_weight} # 'cost_weight': budget_weight,
+        solution["params"] = {'pts_weight': w1, 'cost_weight': w2, 'xmin_weight': w3, 'ep_weight': w4, 'form_weight': w5, 'ppg_weight': w6, 'bps_weight': w7, 'ict_weight': w8, 'rawxp_weight': w9, 'ownership_weight': w10}
+        solution["players"] = [element_df.loc[e]['web_name'] for e in solution['squad']]
+        solution["xP"] = {g: [element_gameweek_df.loc[e, g]['points_md'] for e in solution['squad']] for g in gameweeks}
+        solution["obj"] = {"overall": m.get_objective_value(),
+        "total_points": total_points.get_value(), "cost_points": cost_points.get_value(),
+        "xmin_points": xmin_points.get_value(), "ep_points": ep_points.get_value(),
+        "form_points": form_points.get_value(), "ppg_points": ppg_points.get_value(),
+        "bps_points": bps_points.get_value(), "ict_points": ict_points.get_value(),
+        "rawxP_points": rawxP_points.get_value(), "ownership_points": ownership_points.get_value()} #, "missed_ownership_points": missed_ownership_points.get_value()} #, "budget_points": cost_value_points.get_value()}
+        solution["cost"] = [float(element_df.loc[e]['now_cost']) for e in solution['squad']]
+        solution["total_cost"] = sum(solution["cost"])
+        solution["ownership"]["squad"] = [float(element_df.loc[e]["selected_by_percent"]) for e in solution['squad']]
+        solution["ownership"]["sum"] = sum(solution["ownership"]["squad"])
+        solution["element_type"] = [int(element_df.loc[e]['element_type']) for e in solution['squad']]
+        solution["team_code"] = [int(element_df.loc[e]['team_code']) for e in solution['squad']]
+        solution["weeks"] = gameweeks
         for g in gameweeks:
-            if lineup[e, g].get_value() > 0.5:
-                solution['lineup'][g].append(e)
-            elif squad[e].get_value() > 0.5:
-                for p in position:
-                    if bench[e, g, p].get_value() > 0.5:
-                        solution['bench'][g].append(e)
-            if captain[e, g].get_value() > 0.5:
-                solution['captain'][g] = e
-    solution["players"] = [element_df.loc[e]['web_name'] for e in solution['squad']]
-    solution["xP"] = {g: [element_gameweek_df.loc[e, g]['points_md'] for e in solution['squad']] for g in gameweeks}
-    solution["obj"] = {"overall": m.get_objective_value()}
-    solution["cost"] = [float(element_df.loc[e]['now_cost']) for e in solution['squad']]
-    solution["total_cost"] = sum(solution["cost"])
-    for g in gameweeks:
-        solution["obj"][g] = so.quick_sum(-element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements).get_value()
+            solution["obj"][g] = so.quick_sum(-element_gameweek_df.loc[e, g]['points_md'] * (lineup[e, g]+ captain[e,g] + so.quick_sum(bench[e,g,p]*10**min(-p+1, -1) for p in position)) for e in elements).get_value()
 
-    print(solution)
-    with open(output_folder / "iterative_model.json", "w") as f:
-        json.dump(solution, f)
-    print(m.get_objective_value())
+        print(solution)
+        print(m.get_objective_value())
+        all_solutions.append(solution)
+
+        with open(output_folder / "iterative_model.json", "w") as f:
+            json.dump(all_solutions, f)
+    
+    print(all_solutions)
 
 
 
@@ -643,7 +731,12 @@ def get_mps_string(model):
 
 
 def solve_and_get_solution(mps_file, solution_file, model):
-    r = os.system(f'cbc {mps_file} solve solu {solution_file}')
+
+    if os.path.exists(solution_file):
+        print("File exists!")
+        r = os.system(f'cbc {mps_file} mips {solution_file} solve solu {solution_file}')
+    else:
+        r = os.system(f'cbc {mps_file} solve solu {solution_file}')
     if r == 0:
         with open(solution_file, 'r') as f:
             for line in f:
