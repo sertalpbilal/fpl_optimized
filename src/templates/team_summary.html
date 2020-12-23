@@ -1,0 +1,282 @@
+"% include 'header.html' %"
+
+<main class="container pt-3">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <div class="card-body text-center p-3">
+                    <div class="mx-auto d-flex justify-content-center" v-cloak>
+                        <span>Snapshot</span>
+                        <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                            <li class="nav-item breadcrumb-item">{{ season }}</li>
+                            <li class="nav-item breadcrumb-item">{{ gw }}</li>
+                            <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
+                        </ul>
+                    </div>
+                    <div class="mx-auto d-flex justify-content-center" v-cloak>
+                        <span>Team</span>
+                        <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#teamModal">
+                            {{ valid_team_id }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Prior</h5>
+                <!-- <div class="scenario_detail">Status of the selection using the data available before the deadline.</div> -->
+                <div class="card-body">
+                    <div v-if="team_id !== ''">
+                        <div class="row">
+                            <div class="col-12">
+                                <h6>Net Gain / Loss Analysis</h6>
+                                <div class="explanation text-small">Shows the net gain and loss compared to rest of FPL managers.<br/> x-axis show the net gain by having the player in your lineup, y-axis shows the net loss by not having the player.<br/> Size of the bubble shows the price
+                                    of the player before the deadline.
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 mb-3">
+                                <div id="xp_own_prior" class="plot dark-plot">
+
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div id="xP_prior_table">
+                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="prior_table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Name</th>
+                                                <th>Pos</th>
+                                                <th class="text-right">Exp. Gain</th>
+                                                <th class="text-right">Exp. Loss</th>
+                                                <th class="text-right">Own%</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-cloak>
+                                            <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
+                                                <td>{{ i[1].lineup ? "L" : "B" }}</td>
+                                                <td>{{ i[1].web_name }}</td>
+                                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right" style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
+                                                <td class="text-right text-muted">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td class="text-right">{{ i[1].ownership }}</td>
+                                            </tr>
+                                            <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
+                                                <td></td>
+                                                <td>{{ i[1].web_name }}</td>
+                                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
+                                                <td class="text-right" style="color: #ff8763">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td class="text-right">{{ i[1].ownership }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall Gain - Lineup</b></td>
+                                                <td class="text-right">+{{ lineup_xp_sum }}</td>
+                                                <td></td>
+                                                <td class="text-right">{{ (lineup_own_sum/11).toFixed(1) }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall Gain - Squad</b></td>
+                                                <td class="text-right">+{{ squad_xp_sum }}</td>
+                                                <td></td>
+                                                <td class="text-right">{{ (squad_own_sum/15).toFixed(1) }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall Loss - All Players</b></td>
+                                                <td></td>
+                                                <td class="text-right">{{ rest_xp_sum }}</td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-block mx-auto text-center m-3">Expected Net Change: {{ net_change }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Posterior</h5>
+                <!-- <div class="scenario_detail">Status of the selection using the data after GW is played.</div> -->
+                <div class="card-body">
+                    <div v-if="team_id !== ''">
+                        <div class="row">
+                            <div class="col-12">
+                                <h6>GW Evaluation</h6>
+                                <div class="explanation text-small">Shows the realized versus expected points after the GW.
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 mb-3">
+                                <div id="xp_own_posterior" class="plot dark-plot">
+
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div id="xP_prior_table">
+                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="posterior_table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Name</th>
+                                                <th>Pos</th>
+                                                <th>xP</th>
+                                                <th>rP</th>
+                                                <th>Own%</th>
+                                                <th>Net</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-cloak>
+                                            <!-- <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
+                                                <td>{{ i[1].lineup ? "L" : "B" }}</td>
+                                                <td>{{ i[1].web_name }}</td>
+                                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
+                                                <td class="text-muted">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td>{{ i[1].ownership }}</td>
+                                            </tr>
+                                            <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
+                                                <td></td>
+                                                <td>{{ i[1].web_name }}</td>
+                                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
+                                                <td style="color: #ff8763">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td>{{ i[1].ownership }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall-Lineup</b></td>
+                                                <td>+{{ lineup_xp_sum }}</td>
+                                                <td></td>
+                                                <td>{{ (lineup_own_sum/11).toFixed(1) }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall-Squad</b></td>
+                                                <td>+{{ squad_xp_sum }}</td>
+                                                <td></td>
+                                                <td>{{ (squad_own_sum/15).toFixed(1) }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><b>Overall-Rest</b></td>
+                                                <td></td>
+                                                <td>{{ rest_xp_sum }}</td>
+                                                <td></td>
+                                            </tr> -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-block mx-auto text-center m-3">Expected Points: {{ }}</div>
+                                <div class="d-block mx-auto text-center m-3">Realized Points: {{ }}</div>
+                                <div class="d-block mx-auto text-center m-3">FPL Average: {{ }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-body text-left">
+                    <h5>Q/A</h5>
+                    <b>What is the source of expected values?</b>
+                    <p class="answer"><a href="https://fplreview.com">FPL Review</a>. If you have any questions about the data accuracy, etc... you can find him on <a href="https://twitter.com/fplreview">Twitter</a>.</p>
+                    <b>How do you calculate expected gain and expected loss?</b>
+                    <p>Expected gain is calculated using (Expected Points) * (1-Ownership Ratio). Similarly expected loss is (Expected Points) * (Ownership Ratio).<br/>The logic behind this calculation is simple: if you have a player, you are at an advantage
+                        as much as how many people don't own the player. If a player has xP of 6 and no one owns him, you get +6 compared to others. If ownership at 75%, your gain is averaged at 6*(25%)=1.5. Similarly, if you do not own the same player,
+                        then your net loss will be 6*(75%)=-4.5.</p>
+                    <b>Why some of the players are marked red color?</b>
+                    <p>Players in your squad are marked light blue, while biggest threats (5 players) to your team is marked red/orange.</p>
+                    <b>What is the point of this analysis?</b>
+                    <p>I use an optimization model for all of my FPL decisions, no manual decisions are allowed. So, I needed to a way to evaluate if all is working well with algorithm. I was doing this analysis for some time now, but decided to automate
+                        it. While I'm at it, I wanted to share it with rest of FPL managers. Especially after bad GWs, it should be handy to blame your luck.</p>
+                    <b>Sometimes page is loading very slow.</b>
+                    <p>FPL API does not allow direct connection, so I'm using a CORS proxy. Depending on the load, proxy could be very slow sometimes, but there is nothing I could do, sorry! Reach out to me if you have a solution.</p>
+                </div>
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div class="modal" tabindex="-1" role="dialog" id="dateModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose a date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="form-control" v-model="seasongwdate" @change="close_date">
+                        <option v-for="i in listdates">{{ i }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="teamModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Enter team ID</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="number" class="form-control" id="teamIdEnter" v-model="current_team_id">
+                    <!-- <select class="form-control" v-model="team_id" @change="close_teammodal">
+                        <option v-for="i in listdates">{{ i }}</option>
+                    </select> -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click="saveTeamId">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="waitModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fetching team values...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Fetching team picks from FPL website. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+"% with scripts=["main", "team_summary"] %" "% include 'footer.html' %" "% endwith %"

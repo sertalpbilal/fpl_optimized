@@ -69,16 +69,23 @@ def top_squads():
         return render_template('top_squads.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
 @app.route('/team_summary.html')
-def week_summary():
+def team_summary():
     all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
     all_dates.sort(key=folder_order, reverse=True)
-    target = all_dates[0].split('/')
     list_dates = ([i.split('/')[2:5] for i in all_dates])
-    list_dates = [' / '.join(i) for i in list_dates]
+    filtered_dates = []
+    exist = set()
+    for i in list_dates:
+        if i[1] not in exist:
+            filtered_dates.append(i)
+            exist.add(i[1])
+    filtered_dates.pop(0)
+    target = filtered_dates[0]
+    list_dates = [' / '.join(i) for i in filtered_dates]
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates)
 
 def list_all_snapshots():
     pass
@@ -89,11 +96,7 @@ def read_data(path):
     return send_from_directory('build', 'data/' + path)
 
 if __name__ == "__main__":
-    
-    
-    
     app.config['DEBUG']=True
-
     from app import app
     app.run(host='0.0.0.0', port=5000, debug=True)
 

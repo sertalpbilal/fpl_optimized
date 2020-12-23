@@ -24,7 +24,8 @@ from sys import platform
 FPL_API = {
     'now': "https://fantasy.premierleague.com/api/bootstrap-static/",
     'fixture': "https://fantasy.premierleague.com/api/fixtures/",
-    'live': "https://fantasy.premierleague.com/api/event/{GW}/live/"
+    'live': "https://fantasy.premierleague.com/api/event/{GW}/live/",
+    'picks': "https://fantasy.premierleague.com/api/entry/{PID}/event/{GW}/picks/"
 }
 
 

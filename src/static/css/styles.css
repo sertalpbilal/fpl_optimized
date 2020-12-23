@@ -7,6 +7,14 @@ body {
     display: none;
 }
 
+.text-small {
+    font-size: small;
+}
+
+.text-smaller {
+    font-size: smaller;
+}
+
 .bg-dark-gray {
     background-color: #272729;
 }
@@ -315,4 +323,42 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
         font-size: xx-small;
         padding: .125rem .25rem;
     }
+}
+
+.wait-modal {
+    color: #000;
+}
+
+.plot {
+    font-family: Trebuchet MS;
+}
+
+.dark-plot text {
+    fill: white;
+}
+
+.dark-plot path,
+.dark-plot line {
+    stroke: white;
+}
+
+.m-data-table td,
+.m-data-table th {
+    padding: .2rem;
+}
+
+.owned-row {
+    background-color: #6fcfd62b;
+}
+
+.table-striped tbody tr:nth-of-type(odd).owned-row {
+    background-color: #6fcfd612;
+}
+
+.nonowned-row {
+    background-color: #de63632b;
+}
+
+.table-striped tbody tr:nth-of-type(odd).nonowned-row {
+    background-color: #de636312;
 }
