@@ -7,6 +7,14 @@ body {
     display: none;
 }
 
+.text-small {
+    font-size: small;
+}
+
+.text-smaller {
+    font-size: smaller;
+}
+
 .bg-dark-gray {
     background-color: #272729;
 }
@@ -177,6 +185,7 @@ main a:hover {
 .date-line {
     color: #c47b89;
     cursor: pointer;
+    justify-content: center;
 }
 
 .date-line:hover {
@@ -216,4 +225,140 @@ span.twitter-link {
 
 .twitter-link>a:hover {
     color: #5bbbb6;
+}
+
+.index-option {
+    transition: border linear 0.4s;
+    border: 1px solid rgb(131, 131, 131) !important;
+}
+
+.index-option:hover {
+    border: 1px solid aquamarine !important;
+}
+
+.squad-btn {}
+
+.ptype-1 {
+    background-color: rgb(50, 71, 50);
+}
+
+.ptype-2 {
+    background-color: rgb(45, 45, 66);
+}
+
+.ptype-3 {
+    background-color: rgb(63, 43, 43);
+}
+
+.ptype-4 {
+    background-color: rgb(68, 61, 48);
+}
+
+.table-dark.table-striped tbody tr:nth-of-type(even) {
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+
+
+/* Datatables fixes */
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    color: #ffffff;
+}
+
+.dataTables_wrapper select,
+.dataTables_wrapper input {
+    color: #ffffff;
+    background-color: #343436 !important;
+}
+
+.dataTables_wrapper select option.dtsb-option {
+    background-color: #343436 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #585858 !important;
+}
+
+.dtsb-searchBuilder button {
+    color: white !important;
+    background: #585858 !important;
+}
+
+div.dtsb-searchBuilder button.dtsb-button:hover {
+    color: white !important;
+    background: #343436 !important;
+}
+
+.squad-names-table {
+    cursor: pointer;
+    border: 1px solid #000;
+    color: #fff;
+    padding: .25rem .5rem;
+    /* font-size: .875rem; */
+    line-height: 1.5;
+    border-radius: .2rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+    white-space: nowrap;
+}
+
+.squad-names-table:hover {
+    color: rgb(212, 212, 212);
+    background-color: #343436;
+    border-color: #fff;
+}
+
+@media screen and (max-width: 480px) {
+    .table-responsive {
+        font-size: x-small !important;
+    }
+    .squad-names-table {
+        font-size: xx-small;
+        padding: .125rem .25rem;
+    }
+}
+
+.wait-modal {
+    color: #000;
+}
+
+.plot {
+    font-family: Trebuchet MS;
+}
+
+.dark-plot text {
+    fill: white;
+}
+
+.dark-plot path,
+.dark-plot line {
+    stroke: white;
+}
+
+.m-data-table td,
+.m-data-table th {
+    padding: .2rem;
+}
+
+.owned-row {
+    background-color: #6fcfd62b;
+}
+
+.table-striped tbody tr:nth-of-type(odd).owned-row {
+    background-color: #6fcfd612;
+}
+
+.nonowned-row {
+    background-color: #de63632b;
+}
+
+.table-striped tbody tr:nth-of-type(odd).nonowned-row {
+    background-color: #de636312;
 }
