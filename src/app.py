@@ -56,17 +56,17 @@ def best_gw_squads():
     else:
         return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
-@app.route('/top_squads.html')
-def top_squads():
-    all_dates = glob.glob('build/data/*/*/*/output/iterative_model.json')
-    all_dates.sort(key=folder_order, reverse=True)
-    target = all_dates[0].split('/')
-    list_dates = ([i.split('/')[2:5] for i in all_dates])
-    list_dates = [' / '.join(i) for i in list_dates]
-    if app.config['DEBUG']:
-        return render_template('top_squads.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
-    else:
-        return render_template('top_squads.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+# @app.route('/top_squads.html')
+# def top_squads():
+#     all_dates = glob.glob('build/data/*/*/*/output/iterative_model.json')
+#     all_dates.sort(key=folder_order, reverse=True)
+#     target = all_dates[0].split('/')
+#     list_dates = ([i.split('/')[2:5] for i in all_dates])
+#     list_dates = [' / '.join(i) for i in list_dates]
+#     if app.config['DEBUG']:
+#         return render_template('top_squads.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+#     else:
+#         return render_template('top_squads.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
 
 @app.route('/team_summary.html')
 def team_summary():
