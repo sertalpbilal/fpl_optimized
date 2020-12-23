@@ -28,7 +28,7 @@
     <div class="row mb-3">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Prior</h5>
+                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Expectation</h5>
                 <!-- <div class="scenario_detail">Status of the selection using the data available before the deadline.</div> -->
                 <div class="card-body">
                     <div v-if="team_id !== ''">
@@ -109,7 +109,7 @@
     <div class="row mb-3">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Posterior</h5>
+                <h5 class="card-header border-complement text-center scenario_title">GW Overview - Realization</h5>
                 <!-- <div class="scenario_detail">Status of the selection using the data after GW is played.</div> -->
                 <div class="card-body">
                     <div v-if="team_id !== ''">
@@ -146,7 +146,8 @@
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
-                                                <td class="text-right" style="color: #acc3c5">{{ '+' + ((1-parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
+                                                <td class="text-right" style="color: #acc3c5">{{ (i[1].stats.total_points
+                                                    <0 ? "" : "+") + ((1-parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
                                                 <td></td>
