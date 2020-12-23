@@ -35,8 +35,8 @@
                         <div class="row">
                             <div class="col-12">
                                 <h6>Net Gain / Loss Analysis</h6>
-                                <div class="explanation text-small">Shows the net gain and loss compared to rest of FPL managers.<br/> x-axis show the net gain by having the player in your lineup, y-axis shows the net loss by not having the player.<br/> Size of the bubble shows the price
-                                    of the player before the deadline.
+                                <div class="explanation text-small">Shows the relative gain and loss compared to rest of FPL managers.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble size shows
+                                    the price of the player before the deadline.<br/>These values exclude captaincy.
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 mb-3">
@@ -59,7 +59,7 @@
                                         </thead>
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
-                                                <td>{{ i[1].lineup ? "L" : "B" }}</td>
+                                                <td>{{ i[1].captain ? "C" : (i[1].lineup ? "L" : "B") }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right" style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
@@ -115,8 +115,8 @@
                     <div v-if="team_id !== ''">
                         <div class="row">
                             <div class="col-12">
-                                <h6>GW Evaluation</h6>
-                                <div class="explanation text-small">Shows the realized versus expected points after the GW.
+                                <h6>Aftermath</h6>
+                                <div class="explanation text-small">Shows the realized versus expected points after the GW. <br/> Bubble size shows the ownership percentage of the player.<br/>These values exclude captaincy.
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 mb-3">
@@ -132,30 +132,32 @@
                                                 <th></th>
                                                 <th>Name</th>
                                                 <th>Pos</th>
-                                                <th>xP</th>
-                                                <th>rP</th>
-                                                <th>Own%</th>
-                                                <th>Net</th>
+                                                <th class="text-right">xP</th>
+                                                <th class="text-right">rP</th>
+                                                <th class="text-right">Own%</th>
+                                                <th class="text-right">Net</th>
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <!-- <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
-                                                <td>{{ i[1].lineup ? "L" : "B" }}</td>
+                                            <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
+                                                <td>{{ i[1].captain ? "C" : (i[1].lineup ? "L" : "B") }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
-                                                <td class="text-muted">{{ i[1].xp_non_owned.toFixed(2) }}</td>
-                                                <td>{{ i[1].ownership }}</td>
+                                                <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
+                                                <td class="text-right">{{ i[1].stats.total_points }}</td>
+                                                <td class="text-right">{{ i[1].ownership }}</td>
+                                                <td class="text-right" style="color: #acc3c5">{{ '+' + ((1-parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
                                                 <td></td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
-                                                <td style="color: #ff8763">{{ i[1].xp_non_owned.toFixed(2) }}</td>
-                                                <td>{{ i[1].ownership }}</td>
+                                                <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
+                                                <td class="text-right">{{ i[1].stats.total_points }}</td>
+                                                <td class="text-right">{{ i[1].ownership }}</td>
+                                                <td class="text-right" style="color: #ff8763">{{ (-(parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <td colspan=3><b>Overall-Lineup</b></td>
                                                 <td>+{{ lineup_xp_sum }}</td>
                                                 <td></td>
@@ -178,9 +180,10 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="d-block mx-auto text-center m-3">Expected Points: {{ }}</div>
-                                <div class="d-block mx-auto text-center m-3">Realized Points: {{ }}</div>
-                                <div class="d-block mx-auto text-center m-3">FPL Average: {{ }}</div>
+                                <div class="d-block mx-auto text-center m-3">Expected Gain: {{ (aftermath.net_xp).toFixed(2) }} / Realized Gain: {{ (aftermath.net_rp).toFixed(2) }}</div>
+                                <div class="d-block mx-auto text-center m-3">Expected Loss: {{ (aftermath.fpl_xp).toFixed(2) }} / Realized Loss: {{ (aftermath.fpl_rp).toFixed(2) }}</div>
+                                <hr style="background-color: white" />
+                                <div class="d-block mx-auto text-center m-3">Realized Net Change: {{ (aftermath.net_rp-aftermath.fpl_rp).toFixed(2) }}</div>
                             </div>
                         </div>
                     </div>
@@ -201,6 +204,8 @@
                     <p>Expected gain is calculated using (Expected Points) * (1-Ownership Ratio). Similarly expected loss is (Expected Points) * (Ownership Ratio).<br/>The logic behind this calculation is simple: if you have a player, you are at an advantage
                         as much as how many people don't own the player. If a player has xP of 6 and no one owns him, you get +6 compared to others. If ownership at 75%, your gain is averaged at 6*(25%)=1.5. Similarly, if you do not own the same player,
                         then your net loss will be 6*(75%)=-4.5.</p>
+                    <b>My points differ from these values here.</b>
+                    <p>Since FPL Official API does not release captaincy ratios, points coming from captains are excluded.</p>
                     <b>Why some of the players are marked red color?</b>
                     <p>Players in your squad are marked light blue, while biggest threats (5 players) to your team is marked red/orange.</p>
                     <b>What is the point of this analysis?</b>
