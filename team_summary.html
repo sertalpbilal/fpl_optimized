@@ -94,6 +94,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
+                                <div class="mx-auto text-center d-block">
+                                    <button class="btn btn-secondary btn-sm" @click='$("#lineupModal").modal("show")'>Change Lineup</button>
+                                </div>
                                 <div id="xP_prior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="prior_table">
                                         <thead>
@@ -351,7 +354,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="text-black mb-3">Choose player to swap with <span class="own-color">{{ chosen_player.web_name }}</span> on the squad:</div>
+                <div class="text-black mb-3">Choose player to swap with <span class="own-color">{{ chosen_player.web_name }}</span></div>
                 <div class="form-group">
                     <select class="form-control" id="transfer_out">
                         <option v-for="i in team_squad" v-if="i[1].element_type == chosen_player.element_type" :value="i[1].player_id">{{ i[1].web_name }}</option>
@@ -366,6 +369,68 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="lineupModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Lineup</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-black mb-3 text-center" :class="{'text-danger': !is_formation_valid }">Formation: {{ formation[1] }} {{ is_formation_valid ? "" : "-INVALID-" }}</div>
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <span class="text-black d-block mb-1 text-center">Lineup</span>
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Name</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(ty, id) of el_types">
+                                    <tr v-for="i in team_squad" v-if="i[1].lineup && parseInt(i[1].element_type)==id">
+                                        <td>{{ ty.short }}</td>
+                                        <td>{{ i[1].web_name}} </td>
+                                        <td><button class="button btn-sm" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <span class="text-black d-block mb-1 text-center">Bench</span>
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Name</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(ty, id) of el_types">
+                                    <tr v-for="i in team_squad" v-if="!i[1].lineup && parseInt(i[1].element_type)==id">
+                                        <td>{{ ty.short }}</td>
+                                        <td>{{ i[1].web_name}} </td>
+                                        <td><button class="button btn-sm" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
  </div>

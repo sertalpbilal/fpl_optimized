@@ -22,8 +22,8 @@ let team_codes = {
 }
 
 let element_type = {
-    1: { name: "Goalkeeper", "short": "GK" },
-    2: { name: "Defender", "short": "DF" },
-    3: { name: "Midfielder", "short": "MD" },
-    4: { name: "Forward", "short": "FW" }
+    1: { name: "Goalkeeper", "short": "GK", "id": 1, "min": 1, "max": 1 },
+    2: { name: "Defender", "short": "DF", "id": 2, "min": 3, "max": 5 },
+    3: { name: "Midfielder", "short": "MD", "id": 3, "min": 2, "max": 5 },
+    4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3 }
 }

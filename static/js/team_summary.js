@@ -14,7 +14,8 @@ var app = new Vue({
         rp_ready: false,
         team_data: [],
         sorted_data: [],
-        chosen_player: {}
+        chosen_player: {},
+        el_types: element_type
     },
     methods: {
         refresh_results() {
@@ -118,6 +119,18 @@ var app = new Vue({
                 generate_plots();
             })
             $("#playerModal").modal('hide');
+        },
+        toggleLineupType(e) {
+            console.log(e);
+            let id = e.currentTarget.dataset.id;
+            let el = this.team_data.picks.filter(i => i.element == parseInt(id))[0];
+            if (el.multiplier == 0) {
+                el.multiplier = 1;
+            } else {
+                el.multiplier = 0;
+            }
+            debugger;
+            this.generateList();
         }
     },
     computed: {
@@ -203,6 +216,36 @@ var app = new Vue({
             let fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
             let fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
             return { 'net_xp': gw_xp, 'net_rp': gw_rp, 'fpl_xp': fpl_xp, 'fpl_rp': fpl_rp }
+        },
+        formation: function() {
+            if (!this.is_ready) {
+                return [
+                    [], ""
+                ];
+            }
+            let elcount = [];
+            let squad = this.prior_data.slice(0, 15);
+            debugger;
+            Object.values(this.el_types).forEach(function(e) {
+                let filtered = squad.filter(i => i[1].element_type == e.id && i[1].lineup);
+                elcount.push(filtered.length);
+            })
+            return [elcount, "(" + elcount[0] + ") " + `${elcount[1]}-${elcount[2]}-${elcount[3]}`];
+        },
+        is_formation_valid: function() {
+            if (!this.is_ready) { return true; }
+            let lineup = this.prior_data.filter(i => i[1].lineup);
+            if (lineup.length != 11) {
+                return false;
+            } else {
+                Object.values(this.el_types).forEach(function(e) {
+                    let pos_els = lineup.filter(i => i[1].element_type == e.id);
+                    if (pos_els < e.min) {
+                        return false;
+                    }
+                })
+            }
+            return true;
         }
     }
 })
