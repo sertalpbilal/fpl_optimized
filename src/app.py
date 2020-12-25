@@ -79,7 +79,7 @@ def team_summary():
         if i[1] not in exist:
             filtered_dates.append(i)
             exist.add(i[1])
-    filtered_dates.pop(0)
+    # filtered_dates.pop(0)
     target = filtered_dates[0]
     list_dates = [' / '.join(i) for i in filtered_dates]
     if app.config['DEBUG']:

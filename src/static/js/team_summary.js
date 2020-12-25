@@ -3,15 +3,18 @@ var app = new Vue({
     data: {
         season: season,
         gw: gw,
+        next_gw: next_gw,
         date: date,
         listdates: listdates,
         solutions: [],
-        team_id: "",
+        team_id: "-1",
         el_data: [],
         xp_data: [],
-        rp_data: 0,
+        rp_data: [],
+        rp_ready: false,
         team_data: [],
-        sorted_data: []
+        sorted_data: [],
+        chosen_player: {}
     },
     methods: {
         refresh_results() {
@@ -32,8 +35,10 @@ var app = new Vue({
         },
         saveTeamId(e) {
             this.team_id = $("#teamIdEnter").val();
-            this.close_teammodal();
-            load_team();
+            this.$nextTick(() => {
+                app.close_teammodal();
+                load_team();
+            })
         },
         saveEl(values) {
             this.el_data = values;
@@ -50,8 +55,9 @@ var app = new Vue({
         generateList() {
 
             // PART 1: PRIOR DATA
-            if (this.team_data.length == 0) { return; }
-            if (this.rp_data == 0) { return; }
+            if (!this.is_ready) { return; }
+            this.rp_ready = false;
+
             let pts = this.xp_data;
             let els = this.el_data;
             let team = this.team_data;
@@ -92,14 +98,47 @@ var app = new Vue({
             };
             this.sorted_data = sorted_players;
 
+            // Posterior
+
+            if (this.rp_data.length != 0) {
+                this.rp_ready = true;
+            }
+
+        },
+        setChosenPlayer(d) {
+            this.chosen_player = d;
+        },
+        swapPlayers() {
+            let old_player = $("#transfer_out").val();
+            let new_player = this.chosen_player.player_id;
+            this.team_data.picks.filter(i => i.element == parseInt(old_player))[0].element = parseInt(new_player);
+            this.generateList();
+            this.$nextTick(() => {
+                $(".plot").empty();
+                generate_plots();
+            })
+            $("#playerModal").modal('hide');
         }
     },
     computed: {
-        current_team_id: function() {
-            return this.team_id;
+        is_ready() {
+            if (this.team_id == "-1") {
+                return false;
+            }
+            if (this.team_data.length == 0) { return false; }
+            return true;
+        },
+        current_team_id: {
+            get: function() {
+                if (this.team_id == "-1") {
+                    return "";
+                }
+                return this.team_id;
+            },
+            set: function(v) {}
         },
         valid_team_id: function() {
-            if (this.team_id === "") {
+            if (this.team_id == "-1") {
                 return "Click to enter";
             } else {
                 return this.team_id;
@@ -117,36 +156,40 @@ var app = new Vue({
                 this.refresh_results();
             }
         },
+        team_squad: function() {
+            if (!this.is_ready) { return []; }
+            return app.sorted_data.slice(0, 15);
+        },
         prior_data: {
             get: function() {
-                if (this.team_data.length == 0) {
+                if (!this.is_ready) {
                     return [];
                 }
                 return this.sorted_data;
             }
         },
         lineup_xp_sum: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             return this.prior_data.filter(j => j[1].lineup).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
         },
         lineup_own_sum: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             return this.prior_data.filter(j => j[1].lineup).map(j => parseFloat(j[1].ownership)).reduce((a, b) => a + b, 0).toFixed(2);
         },
         squad_xp_sum: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             return this.prior_data.filter(j => j[1].squad).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
         },
         squad_own_sum: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             return this.prior_data.filter(j => j[1].squad).map(j => parseFloat(j[1].ownership)).reduce((a, b) => a + b, 0).toFixed(2);
         },
         rest_xp_sum: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             return this.prior_data.filter(j => j[1].squad == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0).toFixed(2);
         },
         net_change: function() {
-            if (this.team_data.length == 0) { return 0; }
+            if (!this.is_ready) { return 0; }
             let lineup_xp = this.lineup_xp_sum;
             let other_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0);
             let net_change = parseFloat(lineup_xp) + parseFloat(other_xp);
@@ -154,7 +197,7 @@ var app = new Vue({
             return change;
         },
         aftermath: function() {
-            if (this.team_data.length == 0) { return {}; }
+            if (!this.is_ready) { return {}; }
             let gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
             let gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
             let fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
@@ -233,13 +276,17 @@ function load_gw() {
 
 function load_team() {
     gw = app.gw.slice(2);
-    if (app.team_id == "") {
+    if (app.team_id == "-1") {
         return;
     }
     $("#waitModal").modal({
         backdrop: 'static',
         keyboard: false
     }).modal('show');
+    if (app.gw == next_gw) {
+        gw = "" + (parseInt(gw) - 1);
+        // Show message that last GW is picked up
+    }
     $.ajax({
         type: "GET",
         url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
@@ -271,8 +318,8 @@ function load_team() {
 }
 
 function generate_plots() {
-    if (app.team_data.length == 0) { return; }
-    if (app.rp_data == 0) { return; }
+    if (!app.is_ready) { return; }
+    // if (app.rp_data == 0) { return; }
     plot_bubble_xp_own_prior();
     plot_bubble_xp_own_posterior();
 }
@@ -294,7 +341,7 @@ function plot_bubble_xp_own_prior() {
 
     // Add X axis
     var x = d3.scaleLinear()
-        .domain([0, 6])
+        .domain([0, 7])
         .range([0, width]);
     svg.append("g")
         // .attr("transform", "translate(0," + height + ")")
@@ -316,7 +363,7 @@ function plot_bubble_xp_own_prior() {
 
     // Add Y axis
     var y = d3.scaleLinear()
-        .domain([0, -6])
+        .domain([0, -5])
         .range([height, 0]);
     svg.append("g")
         .attr("opacity", 1)
@@ -395,6 +442,14 @@ function plot_bubble_xp_own_prior() {
             .style("top", "0px");
     }
 
+    var playerclick = function(d) {
+        app.setChosenPlayer(d[1]);
+        $("#playerModal").modal('show');
+    }
+
+    var x_max = 7;
+    var y_max = -5;
+
     // Guidelines
     lines = [5, 10, 25, 50];
     svg.append('g')
@@ -404,9 +459,19 @@ function plot_bubble_xp_own_prior() {
         .append('line')
         .attr("x1", x(0))
         .attr("y1", y(0))
-        .attr("x2", x(6))
+        .attr("x2", function(d) {
+            if (-x_max * d / (100 - d) < y_max) {
+                return x(-y_max / d * (100 - d));
+            }
+            return x(x_max)
+        })
         .attr("y2", function(d) {
-            return y(-6 * d / (100 - d))
+            let x_bound = -x_max * d / (100 - d);
+            let y_bound = y_max;
+            if (x_bound > y_bound) {
+                return y(x_bound);
+            }
+            return y(y_bound);
         })
         .style("stroke", "#91d3ff")
         .style("stroke-width", 1)
@@ -420,9 +485,21 @@ function plot_bubble_xp_own_prior() {
         .data(lines)
         .enter()
         .append('text')
-        .attr("x", x(6) + 5)
+        .attr("x", function(d) {
+            let x_bnd = -x_max * d / (100 - d);
+            let y_bnd = y_max;
+            if (x_bnd < y_bnd) {
+                return x(-y_max / d * (100 - d));
+            }
+            return x(x_max) + 5;
+        })
         .attr("y", function(d) {
-            return y(-6 * d / (100 - d));
+            let x_bnd = -x_max * d / (100 - d);
+            let y_bnd = y_max;
+            if (x_bnd > y_bnd) {
+                return y(x_bnd);
+            }
+            return y(y_bnd) - 15;
         })
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
@@ -433,8 +510,8 @@ function plot_bubble_xp_own_prior() {
         .style("opacity", 0.4);
 
     g_text.append('text')
-        .attr("x", x(6) + 5)
-        .attr("y", y(-6) - 15)
+        .attr("x", x(7) + 5)
+        .attr("y", y(-5) - 15)
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
@@ -455,10 +532,12 @@ function plot_bubble_xp_own_prior() {
         .attr("r", function(d) { return z(d[1].price); })
         .style("fill", "#616362")
         .style("opacity", "0.5")
+        .style("cursor", "pointer")
         .attr("stroke", "#9e9e9e")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
     // Dangerous players
     svg.append('g')
@@ -471,10 +550,12 @@ function plot_bubble_xp_own_prior() {
         .attr("r", function(d) { return z(d[1].price); })
         .style("fill", "#e22f2f")
         .style("opacity", "0.5")
+        .style("cursor", "pointer")
         .attr("stroke", "#fffe53")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
     // Squad
     svg.append('g')
