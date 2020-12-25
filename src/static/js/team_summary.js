@@ -243,6 +243,9 @@ var app = new Vue({
                     if (pos_els < e.min) {
                         return false;
                     }
+                    if (pos_els > e.max) {
+                        return false;
+                    }
                 })
             }
             return true;
