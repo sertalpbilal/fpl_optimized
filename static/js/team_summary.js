@@ -129,7 +129,6 @@ var app = new Vue({
             } else {
                 el.multiplier = 0;
             }
-            debugger;
             this.generateList();
         }
     },
@@ -225,7 +224,6 @@ var app = new Vue({
             }
             let elcount = [];
             let squad = this.prior_data.slice(0, 15);
-            debugger;
             Object.values(this.el_types).forEach(function(e) {
                 let filtered = squad.filter(i => i[1].element_type == e.id && i[1].lineup);
                 elcount.push(filtered.length);
@@ -235,20 +233,21 @@ var app = new Vue({
         is_formation_valid: function() {
             if (!this.is_ready) { return true; }
             let lineup = this.prior_data.filter(i => i[1].lineup);
+            let is_valid = true;
             if (lineup.length != 11) {
                 return false;
             } else {
                 Object.values(this.el_types).forEach(function(e) {
-                    let pos_els = lineup.filter(i => i[1].element_type == e.id);
+                    let pos_els = lineup.filter(i => i[1].element_type == e.id).length;
                     if (pos_els < e.min) {
-                        return false;
+                        is_valid = false;
                     }
                     if (pos_els > e.max) {
-                        return false;
+                        is_valid = false;
                     }
                 })
             }
-            return true;
+            return is_valid;
         }
     }
 })
