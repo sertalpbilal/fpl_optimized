@@ -26,6 +26,13 @@ var app = new Vue({
             load_gw();
             load_team();
         },
+        refresh_gw() {
+            $("#gwModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
+            load_gw();
+        },
         close_date() {
             $("#dateModal").modal('hide');
         },
@@ -218,7 +225,7 @@ var app = new Vue({
         },
         rest_xp_sum: function() {
             if (!this.is_ready) { return 0; }
-            return this.prior_data.filter(j => j[1].squad == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0).toFixed(2);
+            return this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0).toFixed(2);
         },
         net_change: function() {
             if (!this.is_ready) { return 0; }
@@ -326,6 +333,7 @@ function load_gw() {
             let rp_data = elemvals.elements.map(i => [i.id, i.stats])
             app.saveRPData(rp_data);
             app.generateList();
+            $("#gwModal").modal('hide');
             app.$nextTick(() => {
                 $(".plot").empty();
                 generate_plots();
@@ -348,10 +356,6 @@ function load_team() {
         backdrop: 'static',
         keyboard: false
     }).modal('show');
-    if (app.gw == next_gw) {
-        gw = "" + (parseInt(gw) - 1);
-        // Show message that last GW is picked up
-    }
     $.ajax({
         type: "GET",
         url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
@@ -374,10 +378,42 @@ function load_team() {
             })
         },
         error: function(xhr, status, error) {
-            console.log(error);
-            console.error(xhr, status, error);
-            alert("Cannot get picks for given team ID and gameweek");
-            $("#waitModal").modal('hide');
+            if (app.gw == next_gw) {
+                gw = "" + (parseInt(gw) - 1);
+                $.ajax({
+                    type: "GET",
+                    url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
+                    contentType: 'text/plain',
+                    dataType: 'text',
+                    // responseType: 'application/json',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'GET',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(data) {
+                        let teamvals = JSON.parse(data);
+                        app.saveTeamData(teamvals);
+                        $("#waitModal").modal('hide');
+                        app.generateList();
+                        app.$nextTick(() => {
+                            $(".plot").empty();
+                            generate_plots();
+                        })
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        console.error(xhr, status, error);
+                        alert("Cannot get picks for given team ID and gameweek");
+                        $("#waitModal").modal('hide');
+                    }
+                });
+            } else {
+                console.log(error);
+                console.error(xhr, status, error);
+                alert("Cannot get picks for given team ID and gameweek");
+                $("#waitModal").modal('hide');
+            }
         }
     });
 }
