@@ -15,7 +15,8 @@ var app = new Vue({
         team_data: [],
         sorted_data: [],
         chosen_player: {},
-        el_types: element_type
+        el_types: element_type,
+        player_filter: ""
     },
     methods: {
         refresh_results() {
@@ -83,6 +84,22 @@ var app = new Vue({
                 e.net_xp = ((e.lineup == 1) - e.ownership / 100) * e.points_md;
                 e.threat = false;
                 e.stats = rp[e.player_id];
+
+                if (this.rp_data.length != 0) {
+                    if (e.lineup) {
+                        e.net_benefit = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    } else {
+                        e.net_benefit = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    }
+                } else {
+                    e.net_benefit = 0;
+                }
+
+                if (e.net_benefit >= 0) {
+                    e.net_benefit = "+" + (e.net_benefit).toFixed(2);
+                } else if (e.net_benefit < 0) {
+                    e.net_benefit = (e.net_benefit).toFixed(2);
+                }
             });
             let sorted_players = Object.entries(pts).sort((a, b) => {
                 if (a[1].squad == b[1].squad) {
@@ -121,7 +138,6 @@ var app = new Vue({
             $("#playerModal").modal('hide');
         },
         toggleLineupType(e) {
-            console.log(e);
             let id = e.currentTarget.dataset.id;
             let el = this.team_data.picks.filter(i => i.element == parseInt(id))[0];
             if (el.multiplier == 0) {
@@ -130,6 +146,10 @@ var app = new Vue({
                 el.multiplier = 0;
             }
             this.generateList();
+        },
+        refresh_plots() {
+            $(".plot").empty();
+            generate_plots();
         }
     },
     computed: {
@@ -371,6 +391,8 @@ function generate_plots() {
 
 function plot_bubble_xp_own_prior() {
 
+    let pfilter = app.player_filter;
+
     var margin = { top: 40, right: 30, bottom: 40, left: 45 },
         width = 500 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
@@ -460,20 +482,20 @@ function plot_bubble_xp_own_prior() {
         name_color = "white";
         own_color = "white";
         threat_color = "white";
-        if (d[1].squad == true) {
+        if (d.squad == true) {
             name_color = own_color = "#6fcfd6";
-        } else if (d[1].threat == true) {
+        } else if (d.threat == true) {
             name_color = threat_color = "#de6363";
         }
         tooltip
             .html(`
-                <div class="mx-auto d-block text-center" style="color: ${name_color}">${d[1].web_name}</div>
+                <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
-                    <tr><td class="text-right">xP</td><td>${parseFloat(d[1].points_md).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">Own.</td><td>${d[1].ownership}%</td></tr>
-                    <tr><td class="text-right">Price</td><td>£${d[1].price}M</td></tr>
-                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">+${d[1].xp_owned.toFixed(2)}</td></tr>
-                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${d[1].xp_non_owned.toFixed(2)}</td></tr>
+                    <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
+                    <tr><td class="text-right">Own.</td><td>${d.ownership}%</td></tr>
+                    <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
+                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">+${d.xp_owned.toFixed(2)}</td></tr>
+                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${d.xp_non_owned.toFixed(2)}</td></tr>
                 </table>
             `)
             .style("left", (d3.event.pageX + 15) + "px")
@@ -488,7 +510,7 @@ function plot_bubble_xp_own_prior() {
     }
 
     var playerclick = function(d) {
-        app.setChosenPlayer(d[1]);
+        app.setChosenPlayer(d);
         $("#playerModal").modal('show');
     }
 
@@ -566,15 +588,51 @@ function plot_bubble_xp_own_prior() {
         .style("opacity", 0.4);
 
 
+    debugger;
+    let copy = app.prior_data.slice(0, -5).map(i => i[1]);
+    let dangerous = app.prior_data.slice(-5).map(i => i[1]);
+    let your_squad = app.prior_data.filter(i => (i[1].squad == true)).map(i => i[1]);
+    if (pfilter !== "") {
+        const options = {
+            isCaseSensitive: false,
+            // includeScore: false,
+            // shouldSort: true,
+            // includeMatches: false,
+            // findAllMatches: false,
+            minMatchCharLength: 2,
+            // location: 0,
+            threshold: 0.3,
+            distance: 10,
+            useExtendedSearch: true,
+            // ignoreLocation: true,
+            // ignoreFieldNorm: false,
+            keys: ['web_name']
+        };
+        let list_x = copy;
+        const fuse = new Fuse(list_x, options);
+        let filtered = fuse.search(pfilter);
+        copy = filtered.map(i => i.item);
+
+        list_x = dangerous;
+        fuse2 = new Fuse(list_x, options);
+        filtered = fuse2.search(pfilter);
+        dangerous = filtered.map(i => i.item);
+
+        list_x = your_squad;
+        fuse3 = new Fuse(list_x, options);
+        filtered = fuse3.search(pfilter);
+        your_squad = filtered.map(i => i.item);
+    }
+
     // All players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(0, -5).filter(i => (i[1].squad == false)))
+        .data(copy.filter(i => (i.squad == false)))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].xp_owned); })
-        .attr("cy", function(d) { return y(d[1].xp_non_owned); })
-        .attr("r", function(d) { return z(d[1].price); })
+        .attr("cx", function(d) { return x(d.xp_owned); })
+        .attr("cy", function(d) { return y(d.xp_non_owned); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#616362")
         .style("opacity", "0.5")
         .style("cursor", "pointer")
@@ -587,12 +645,12 @@ function plot_bubble_xp_own_prior() {
     // Dangerous players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(-5))
+        .data(dangerous)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].xp_owned); })
-        .attr("cy", function(d) { return y(d[1].xp_non_owned); })
-        .attr("r", function(d) { return z(d[1].price); })
+        .attr("cx", function(d) { return x(d.xp_owned); })
+        .attr("cy", function(d) { return y(d.xp_non_owned); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#e22f2f")
         .style("opacity", "0.5")
         .style("cursor", "pointer")
@@ -605,12 +663,12 @@ function plot_bubble_xp_own_prior() {
     // Squad
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.filter(i => (i[1].squad == true)))
+        .data(your_squad)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].xp_owned); })
-        .attr("cy", function(d) { return y(d[1].xp_non_owned); })
-        .attr("r", function(d) { return z(d[1].price); })
+        .attr("cx", function(d) { return x(d.xp_owned); })
+        .attr("cy", function(d) { return y(d.xp_non_owned); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#6fcfd6")
         .style("opacity", "0.5")
         .attr("stroke", "#ffffff")
@@ -713,20 +771,21 @@ function plot_bubble_xp_own_posterior() {
         name_color = "white";
         own_color = "white";
         threat_color = "white";
-        if (d[1].squad == true) {
+        if (d.squad == true) {
             name_color = own_color = "#6fcfd6";
-        } else if (d[1].threat == true) {
+        } else if (d.threat == true) {
             name_color = threat_color = "#de6363";
         }
         tooltip
             .html(`
-                <div class="mx-auto d-block text-center" style="color: ${name_color}">${d[1].web_name}</div>
+                <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
-                    <tr><td class="text-right">xP</td><td>${parseFloat(d[1].points_md).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">rP</td><td>${parseInt(d[1].stats.total_points)}</td></tr>
-                    <tr><td class="text-right">Mins</td><td>${d[1].stats.minutes}</td></tr>
-                    <tr><td class="text-right">Own.</td><td>${d[1].ownership}%</td></tr>
-                    <tr><td class="text-right">Price</td><td>£${d[1].price}M</td></tr>
+                    <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
+                    <tr><td class="text-right">rP</td><td>${parseInt(d.stats.total_points)}</td></tr>
+                    <tr><td class="text-right">Mins</td><td>${d.stats.minutes}</td></tr>
+                    <tr><td class="text-right">Own.</td><td>${d.ownership}%</td></tr>
+                    <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
+                    <tr><td class="text-right">Net</td><td>${d.net_benefit}</td></tr>
                 </table>
             `)
             .style("left", (d3.event.pageX + 15) + "px")
@@ -791,12 +850,12 @@ function plot_bubble_xp_own_posterior() {
     // All players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(0, -5).filter(i => (i[1].squad == false)))
+        .data(app.prior_data.slice(0, -5).map(i => i[1]).filter(i => (i.squad == false)))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].points_md); })
-        .attr("cy", function(d) { return y(parseInt(d[1].stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d[1].ownership)); })
+        .attr("cx", function(d) { return x(d.points_md); })
+        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
+        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
         .style("fill", "#616362")
         .style("opacity", "0.5")
         .attr("stroke", "#9e9e9e")
@@ -807,12 +866,12 @@ function plot_bubble_xp_own_posterior() {
     // Dangerous players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(-5))
+        .data(app.prior_data.slice(-5).map(i => i[1]))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].points_md); })
-        .attr("cy", function(d) { return y(parseInt(d[1].stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d[1].ownership)); })
+        .attr("cx", function(d) { return x(d.points_md); })
+        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
+        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
         .style("fill", "#e22f2f")
         .style("opacity", "0.5")
         .attr("stroke", "#fffe53")
@@ -823,12 +882,12 @@ function plot_bubble_xp_own_posterior() {
     // Squad
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.filter(i => (i[1].squad == true)))
+        .data(app.prior_data.map(i => i[1]).filter(i => (i.squad == true)))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d[1].points_md); })
-        .attr("cy", function(d) { return y(parseInt(d[1].stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d[1].ownership)); })
+        .attr("cx", function(d) { return x(d.points_md); })
+        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
+        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
         .style("fill", "#6fcfd6")
         .style("opacity", "0.5")
         .attr("stroke", "#ffffff")
