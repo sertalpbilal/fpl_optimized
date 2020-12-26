@@ -93,19 +93,17 @@ var app = new Vue({
                 e.stats = rp[e.player_id];
 
                 if (this.rp_data.length != 0) {
+                    e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    e.net_loss = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
                     if (e.lineup) {
-                        e.net_benefit = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                        e.net_benefit = e.net_gain;
                     } else {
-                        e.net_benefit = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
+                        e.net_benefit = e.net_loss;
                     }
                 } else {
+                    e.net_gain = 0;
+                    e.net_loss = 0;
                     e.net_benefit = 0;
-                }
-
-                if (e.net_benefit >= 0) {
-                    e.net_benefit = "+" + (e.net_benefit).toFixed(2);
-                } else if (e.net_benefit < 0) {
-                    e.net_benefit = (e.net_benefit).toFixed(2);
                 }
             });
             let sorted_players = Object.entries(pts).sort((a, b) => {
@@ -275,6 +273,12 @@ var app = new Vue({
                 })
             }
             return is_valid;
+        },
+        sorted_posterior: function() {
+            if (!this.is_ready) { return {}; }
+            let csquad = this.prior_data.filter(i => i[1].squad).map(i => i[1]);
+            let rest = this.prior_data.filter(i => !i[1].squad).map(i => i[1]).sort((a, b) => a.net_benefit - b.net_benefit);
+            return { squad: csquad, rest: rest };
         }
     }
 })
@@ -442,14 +446,19 @@ function plot_bubble_xp_own_prior() {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    let x_high = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].xp_owned)));
+    let x_low = Math.floor(Math.min(...app.sorted_data.map(i => i[1].xp_owned)));
+    let y_low = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].xp_non_owned)));
+    let y_high = Math.floor(Math.min(...app.sorted_data.map(i => i[1].xp_non_owned)));
+
     // Add X axis
     var x = d3.scaleLinear()
-        .domain([0, 7])
+        .domain([x_low, x_high])
         .range([0, width]);
     svg.append("g")
         // .attr("transform", "translate(0," + height + ")")
         .attr("opacity", 1)
-        .call(d3.axisBottom(x).ticks(5)
+        .call(d3.axisBottom(x).ticks(x_high - x_low)
             .tickSize(height))
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
@@ -460,18 +469,18 @@ function plot_bubble_xp_own_prior() {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 40)
+        .attr("y", height + 35)
         .attr("font-size", "smaller")
-        .text("Net Gain");
+        .text("Exp Gain");
 
     // Add Y axis
     var y = d3.scaleLinear()
-        .domain([0, -5])
+        .domain([y_low, y_high])
         .range([height, 0]);
     svg.append("g")
         .attr("opacity", 1)
         .call(d3.axisRight(y)
-            .ticks(5)
+            .ticks(y_low - y_high)
             .tickSize(width))
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
@@ -485,7 +494,7 @@ function plot_bubble_xp_own_prior() {
         .attr("x", -height / 2)
         .attr("y", -30)
         .attr("font-size", "smaller")
-        .text("Net Loss");
+        .text("Exp Loss");
 
     var z = d3.scaleLinear()
         .domain([0, 13])
@@ -550,32 +559,52 @@ function plot_bubble_xp_own_prior() {
         $("#playerModal").modal('show');
     }
 
-    var x_max = 7;
-    var y_max = -5;
-
     // Guidelines
     lines = [5, 10, 25, 50];
+    lines = lines.map(i => [i, function(d) {
+        x_min = 0;
+        y_min = 0;
+        x_max = 0;
+        y_max = 0;
+        x_gap = 0;
+        y_gap = 0;
+
+        let x_bound = -x_high * d / (100 - d);
+        let y_bound = y_high;
+        if (x_bound > y_bound) {
+            x_max = x_high;
+            y_max = x_bound;
+            x_gap = 5;
+            y_gap = 0;
+        } else {
+            x_max = -y_high / d * (100 - d);
+            y_max = y_bound;
+            x_gap = 0;
+            y_gap = -15;
+        }
+
+        x_bound = -x_low * d / (100 - d);
+        y_bound = y_low;
+        if (x_bound < y_bound) {
+            x_min = x_low;
+            y_min = x_bound;
+        } else {
+            x_min = -y_low / d * (100 - d);
+            y_min = y_bound;
+        }
+
+        return { x: { 'min': x_min, 'max': x_max, 'gap': x_gap }, y: { 'min': y_min, 'max': y_max, 'gap': y_gap } };
+    }(i)]);
+
     svg.append('g')
         .selectAll()
         .data(lines)
         .enter()
         .append('line')
-        .attr("x1", x(0))
-        .attr("y1", y(0))
-        .attr("x2", function(d) {
-            if (-x_max * d / (100 - d) < y_max) {
-                return x(-y_max / d * (100 - d));
-            }
-            return x(x_max)
-        })
-        .attr("y2", function(d) {
-            let x_bound = -x_max * d / (100 - d);
-            let y_bound = y_max;
-            if (x_bound > y_bound) {
-                return y(x_bound);
-            }
-            return y(y_bound);
-        })
+        .attr("x1", function(d) { return x(d[1].x.min) })
+        .attr("y1", function(d) { return y(d[1].y.min) })
+        .attr("x2", function(d) { return x(d[1].x.max) })
+        .attr("y2", function(d) { return y(d[1].y.max) })
         .style("stroke", "#91d3ff")
         .style("stroke-width", 1)
         .style("opacity", 0.5)
@@ -588,33 +617,19 @@ function plot_bubble_xp_own_prior() {
         .data(lines)
         .enter()
         .append('text')
-        .attr("x", function(d) {
-            let x_bnd = -x_max * d / (100 - d);
-            let y_bnd = y_max;
-            if (x_bnd < y_bnd) {
-                return x(-y_max / d * (100 - d));
-            }
-            return x(x_max) + 5;
-        })
-        .attr("y", function(d) {
-            let x_bnd = -x_max * d / (100 - d);
-            let y_bnd = y_max;
-            if (x_bnd > y_bnd) {
-                return y(x_bnd);
-            }
-            return y(y_bnd) - 15;
-        })
+        .attr("x", function(d) { return x(d[1].x.max) + d[1].x.gap; })
+        .attr("y", function(d) { return y(d[1].y.max) + d[1].y.gap; })
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
-        .text(function(d) { return d + "%" })
+        .text(function(d) { return d[0] + "%" })
         .style("font-size", "x-small")
         .style("fill", "#91d3ff")
         .style("opacity", 0.4);
 
     g_text.append('text')
-        .attr("x", x(7) + 5)
-        .attr("y", y(-5) - 15)
+        .attr("x", x(x_high) + 5)
+        .attr("y", y(y_high) - 5)
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
@@ -623,8 +638,6 @@ function plot_bubble_xp_own_prior() {
         .style("fill", "#91d3ff")
         .style("opacity", 0.4);
 
-
-    debugger;
     let copy = app.prior_data.slice(0, -5).map(i => i[1]);
     let dangerous = app.prior_data.slice(-5).map(i => i[1]);
     let your_squad = app.prior_data.filter(i => (i[1].squad == true)).map(i => i[1]);
@@ -731,14 +744,19 @@ function plot_bubble_xp_own_posterior() {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    let x_high = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].net_gain)));
+    let x_low = Math.floor(Math.min(...app.sorted_data.map(i => i[1].net_gain)));
+    let y_low = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].net_loss)));
+    let y_high = Math.floor(Math.min(...app.sorted_data.map(i => i[1].net_loss)));
+
     // Add X axis
     var x = d3.scaleLinear()
-        .domain([0, 8])
+        .domain([x_low, x_high])
         .range([0, width]);
     svg.append("g")
         // .attr("transform", "translate(0," + height + ")")
         .attr("opacity", 1)
-        .call(d3.axisBottom(x).ticks(5)
+        .call(d3.axisBottom(x).ticks(x_high - x_low)
             .tickSize(height))
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
@@ -751,16 +769,15 @@ function plot_bubble_xp_own_posterior() {
         .attr("x", width / 2)
         .attr("y", height + 40)
         .attr("font-size", "smaller")
-        .text("Expected Points");
+        .text("Net Gain");
 
     // Add Y axis
     var y = d3.scaleLinear()
-        .domain([-3, 21])
+        .domain([y_low, y_high])
         .range([height, 0]);
     svg.append("g")
         .attr("opacity", 1)
-        .call(d3.axisRight(y)
-            .ticks(8)
+        .call(d3.axisRight(y).ticks(y_low - y_high)
             .tickSize(width))
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
@@ -774,11 +791,11 @@ function plot_bubble_xp_own_posterior() {
         .attr("x", -height / 2)
         .attr("y", -30)
         .attr("font-size", "smaller")
-        .text("Realized Points");
+        .text("Net Loss");
 
     var z = d3.scaleLinear()
-        .domain([0, 80])
-        .range([3, 13]);
+        .domain([0, 13])
+        .range([0, 8]);
 
     svg.selectAll(".domain").attr("stroke-opacity", 0);
 
@@ -806,12 +823,14 @@ function plot_bubble_xp_own_posterior() {
     var mousemove = function(d) {
         name_color = "white";
         own_color = "white";
-        threat_color = "white";
+        threat_color = "#de6363";
         if (d.squad == true) {
             name_color = own_color = "#6fcfd6";
-        } else if (d.threat == true) {
-            name_color = threat_color = "#de6363";
+            threat_color = "white";
         }
+        // else if (d.threat == true) {
+        //     name_color = "#de6363";
+        // }
         tooltip
             .html(`
                 <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
@@ -821,7 +840,8 @@ function plot_bubble_xp_own_posterior() {
                     <tr><td class="text-right">Mins</td><td>${d.stats.minutes}</td></tr>
                     <tr><td class="text-right">Own.</td><td>${d.ownership}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
-                    <tr><td class="text-right">Net</td><td>${d.net_benefit}</td></tr>
+                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.net_gain)}</td></tr>
+                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${getWithSign(d.net_loss)}</td></tr>
                 </table>
             `)
             .style("left", (d3.event.pageX + 15) + "px")
@@ -835,63 +855,100 @@ function plot_bubble_xp_own_posterior() {
             .style("top", "0px");
     }
 
-    // Guidelines
-    lines = [0.5, 1, 1.5, 2];
+
+    lines = [5, 10, 25, 50];
+    lines = lines.map(i => [i, function(d) {
+        x_min = 0;
+        y_min = 0;
+        x_max = 0;
+        y_max = 0;
+        x_gap = 0;
+        y_gap = 0;
+
+        let x_bound = -x_high * d / (100 - d);
+        let y_bound = y_high;
+        if (x_bound > y_bound) {
+            x_max = x_high;
+            y_max = x_bound;
+            x_gap = 5;
+            y_gap = 0;
+        } else {
+            x_max = -y_high / d * (100 - d);
+            y_max = y_bound;
+            x_gap = 0;
+            y_gap = -15;
+        }
+
+        x_bound = -x_low * d / (100 - d);
+        y_bound = y_low;
+        if (x_bound < y_bound) {
+            x_min = x_low;
+            y_min = x_bound;
+        } else {
+            x_min = -y_low / d * (100 - d);
+            y_min = y_bound;
+        }
+
+        return { x: { 'min': x_min, 'max': x_max, 'gap': x_gap }, y: { 'min': y_min, 'max': y_max, 'gap': y_gap } };
+    }(i)]);
+
     svg.append('g')
         .selectAll()
         .data(lines)
         .enter()
         .append('line')
-        .attr("x1", x(0))
-        .attr("y1", y(0))
-        .attr("x2", x(8))
-        .attr("y2", function(d) {
-            return y(8 * d)
-        })
+        .attr("x1", function(d) { return x(d[1].x.min) })
+        .attr("y1", function(d) { return y(d[1].y.min) })
+        .attr("x2", function(d) { return x(d[1].x.max) })
+        .attr("y2", function(d) { return y(d[1].y.max) })
         .style("stroke", "#91d3ff")
         .style("stroke-width", 1)
         .style("opacity", 0.5)
         .style("stroke-dasharray", "3,5");
 
     // Guidelines text
-    let g_text = svg.append('g');
+    let g_text = svg.append('g')
     g_text
         .selectAll()
         .data(lines)
         .enter()
         .append('text')
-        .attr("x", x(8) + 5)
-        .attr("y", function(d) {
-            return y(8 * d);
-        })
+        .attr("x", function(d) { return x(d[1].x.max) + d[1].x.gap; })
+        .attr("y", function(d) { return y(d[1].y.max) + d[1].y.gap; })
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
-        .text(function(d) { return d; }) //((d - 1) * 100).toFixed(0) + "%" })
+        .text(function(d) { return d[0] + "%" })
         .style("font-size", "x-small")
         .style("fill", "#91d3ff")
         .style("opacity", 0.4);
 
+
     g_text.append('text')
-        .attr("x", x(8) + 5)
-        .attr("y", y(21) - 15)
+        .attr("x", x(x_high) + 5)
+        .attr("y", y(y_high) - 5)
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
-        .text("rP/xP")
+        .text("Own%")
         .style("font-size", "x-small")
         .style("fill", "#91d3ff")
         .style("opacity", 0.4);
+
+    debugger;
+
+    let csquad = app.sorted_posterior.squad; //app.prior_data.filter(i => i[1].squad);
+    let remaining = app.sorted_posterior.rest; //app.prior_data.filter(i => !i[1].squad).map(i => i[1]).sort((a, b) => a.net_benefit - b.net_benefit);
 
     // All players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(0, -5).map(i => i[1]).filter(i => (i.squad == false)))
+        .data(remaining.slice(5))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d.points_md); })
-        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
+        .attr("cx", function(d) { return x(d.net_gain); })
+        .attr("cy", function(d) { return y(d.net_loss); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#616362")
         .style("opacity", "0.5")
         .attr("stroke", "#9e9e9e")
@@ -902,12 +959,12 @@ function plot_bubble_xp_own_posterior() {
     // Dangerous players
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.slice(-5).map(i => i[1]))
+        .data(remaining.slice(0, 5))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d.points_md); })
-        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
+        .attr("cx", function(d) { return x(d.net_gain); })
+        .attr("cy", function(d) { return y(d.net_loss); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#e22f2f")
         .style("opacity", "0.5")
         .attr("stroke", "#fffe53")
@@ -918,12 +975,12 @@ function plot_bubble_xp_own_posterior() {
     // Squad
     svg.append('g')
         .selectAll()
-        .data(app.prior_data.map(i => i[1]).filter(i => (i.squad == true)))
+        .data(csquad.filter(i => (i.squad == true)))
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(d.points_md); })
-        .attr("cy", function(d) { return y(parseInt(d.stats.total_points)); })
-        .attr("r", function(d) { return z(parseFloat(d.ownership)); })
+        .attr("cx", function(d) { return x(d.net_gain); })
+        .attr("cy", function(d) { return y(d.net_loss); })
+        .attr("r", function(d) { return z(d.price); })
         .style("fill", "#6fcfd6")
         .style("opacity", "0.5")
         .attr("stroke", "#ffffff")

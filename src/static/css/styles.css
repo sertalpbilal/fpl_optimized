@@ -355,6 +355,14 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
     background-color: #6fcfd612;
 }
 
+.bench-row {
+    background-color: #c4a9d62b;
+}
+
+.table-striped tbody tr:nth-of-type(odd).bench-row {
+    background-color: #c4a9d612;
+}
+
 .nonowned-row {
     background-color: #de63632b;
 }
@@ -376,7 +384,7 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
 }
 
 .shrink-table {
-    max-width: 50%;
+    width: auto;
 }
 
 .important-value {
