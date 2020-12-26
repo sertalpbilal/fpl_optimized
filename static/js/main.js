@@ -27,3 +27,11 @@ let element_type = {
     3: { name: "Midfielder", "short": "MD", "id": 3, "min": 2, "max": 5 },
     4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3 }
 }
+
+function getWithSign(val, digits = 2) {
+    if (val >= 0) {
+        return "+" + val.toFixed(digits);
+    } else {
+        return val.toFixed(digits);
+    }
+}

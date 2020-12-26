@@ -83,9 +83,9 @@
                     <div v-if="is_ready">
                         <div class="row">
                             <div class="col-12">
-                                <h6>Net Gain / Loss Analysis</h6>
-                                <div class="explanation text-small">Shows the relative gain and loss compared to rest of FPL managers.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble size shows
-                                    the price of the player before the deadline.<br/>These values exclude captaincy.
+                                <h6>Expected Gain / Loss Analysis</h6>
+                                <div class="explanation text-small">Shows the relative <b>expected</b> gain and loss compared to rest of FPL managers.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble
+                                    size shows the price of the player before the deadline.<br/>These values exclude captaincy.
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 mb-3">
@@ -116,12 +116,20 @@
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
-                                                <td>{{ i[1].captain ? "C" : (i[1].lineup ? "L" : "B") }}</td>
+                                            <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
+                                                <td>L</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right" style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
                                                 <td class="text-right text-muted">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td class="text-right">{{ i[1].ownership }}</td>
+                                            </tr>
+                                            <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
+                                                <td>B</td>
+                                                <td>{{ i[1].web_name }}</td>
+                                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
+                                                <td class="text-right" style="color: #9d91a5">{{ i[1].xp_non_owned.toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
@@ -177,8 +185,12 @@
                     <div v-if="is_ready">
                         <div class="row" v-if="rp_ready">
                             <div class="col-12">
-                                <h6>Aftermath</h6>
+                                <!-- <h6>Aftermath</h6>
                                 <div class="explanation text-small">Shows the realized versus expected points after the GW. <br/> Bubble size shows the ownership percentage of the player.<br/>These values exclude captaincy.
+                                </div> -->
+                                <h6>Net Gain / Loss Analysis</h6>
+                                <div class="explanation text-small">Shows the relative <b>net</b> gain and loss.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble size shows the price of the player
+                                    before the deadline.<br/>These values exclude captaincy.
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 mb-3">
@@ -190,7 +202,7 @@
                                 <div class="mx-auto text-center d-block">
                                     <button class="btn btn-secondary btn-sm" @click='refresh_gw'>Refresh</button>
                                 </div>
-                                <div id="xP_prior_table">
+                                <div id="xP_posterior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="posterior_table">
                                         <thead>
                                             <tr>
@@ -200,27 +212,40 @@
                                                 <th class="text-right">xP</th>
                                                 <th class="text-right">rP</th>
                                                 <th class="text-right">Own%</th>
+                                                <th class="text-right">Exp</th>
                                                 <th class="text-right">Net</th>
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <tr v-for="i in prior_data.filter(j => j[1].squad)" class="owned-row">
-                                                <td>{{ i[1].captain ? "C" : (i[1].lineup ? "L" : "B") }}</td>
+                                            <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
+                                                <td>L</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
-                                                <td class="text-right" style="color: #acc3c5">{{ i[1].net_benefit }}</td>
+                                                <td class="text-right">{{ getWithSign(i[1].net_xp) }}</td>
+                                                <td class="text-right" style="color: #acc3c5">{{ getWithSign(i[1].net_benefit) }}</td>
                                             </tr>
-                                            <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
-                                                <td></td>
+                                            <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
+                                                <td>B</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
-                                                <td class="text-right" style="color: #ff8763">{{ i[1].net_benefit }}</td>
+                                                <td class="text-right">{{ getWithSign(i[1].net_xp) }}</td>
+                                                <td class="text-right" style="color: #9d91a5">{{ getWithSign(i[1].net_benefit) }}</td>
+                                            </tr>
+                                            <tr v-for="i in sorted_posterior.rest.slice(0,5)" class="nonowned-row">
+                                                <td></td>
+                                                <td>{{ i.web_name }}</td>
+                                                <td>{{ element_type[i.element_type]['short'] }}</td>
+                                                <td class="text-right">{{ parseFloat(i.points_md).toFixed(2) }}</td>
+                                                <td class="text-right">{{ i.stats.total_points }}</td>
+                                                <td class="text-right">{{ i.ownership }}</td>
+                                                <td class="text-right">{{ getWithSign(i.net_xp) }}</td>
+                                                <td class="text-right" style="color: #ff8763">{{ getWithSign(i.net_benefit) }}</td>
                                             </tr>
                                             <!-- <tr>
                                                 <td colspan=3><b>Overall-Lineup</b></td>
@@ -246,29 +271,29 @@
                             </div>
                             <div class="col-12 m-2">
                                 <div class=" bg-dark p-3">
-                                    <table class="table text-white table-striped  m-data-table mt-1 mb-1 shrink-table mx-auto">
+                                    <table class="table text-white mt-1 mb-1 shrink-table mx-auto">
                                         <thead>
                                             <tr>
                                                 <th></th>
-                                                <th>Expected</th>
-                                                <th>Realized</th>
+                                                <th class="text-right">Expected</th>
+                                                <th class="text-right">Realized</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Gain</td>
-                                                <td>{{ (aftermath.net_xp).toFixed(2) }}</td>
-                                                <td>{{ (aftermath.net_rp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.net_xp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.net_rp).toFixed(2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Loss</td>
-                                                <td>{{ (aftermath.fpl_xp).toFixed(2) }}</td>
-                                                <td>{{ (aftermath.fpl_rp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.fpl_xp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.fpl_rp).toFixed(2) }}</td>
                                             </tr>
                                             <tr>
                                                 <td><b>Net</b></td>
-                                                <td>{{ net_change }}</td>
-                                                <td><b class="important-value">{{ (aftermath.net_rp-aftermath.fpl_rp).toFixed(2) }}</b></td>
+                                                <td class="text-right">{{ net_change }}</td>
+                                                <td class="text-right"><b class="important-value">{{ getWithSign(aftermath.net_rp-aftermath.fpl_rp) }}</b></td>
                                             </tr>
                                         </tbody>
                                     </table>
