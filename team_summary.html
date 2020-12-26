@@ -95,6 +95,9 @@
                                 <div class="input-group mb-1 p-4">
                                     <input type="text" class="form-control" id="playerNameFilter" placeholder="Filter player name" v-model="player_filter" @change="refresh_plots">
                                 </div>
+                                <div class="explanation text-small">
+                                    Click on gray or red colored players to swap them into your squad. Use `Change Lineup` button to set your starting lineup.
+                                </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mx-auto text-center d-block">
@@ -152,8 +155,11 @@
 
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="d-block mx-auto text-center m-3">Expected Net Change: {{ net_change }}</div>
+                            <div class="col-12 m-2">
+                                <div class=" bg-dark p-3">
+                                    <div class="d-block mx-auto text-center m-3">Expected Net <span class="own-color">Gain</span> (Lineup): {{ lineup_xp_sum }} / Expected Net <span class="danger-color">Loss</span> (Remaining): {{ rest_xp_sum }}</div>
+                                    <div class="d-block mx-auto text-center m-3">Expected Net Change: {{ net_change }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -181,6 +187,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
+                                <div class="mx-auto text-center d-block">
+                                    <button class="btn btn-secondary btn-sm" @click='refresh_gw'>Refresh</button>
+                                </div>
                                 <div id="xP_prior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="posterior_table">
                                         <thead>
@@ -235,11 +244,39 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="d-block mx-auto text-center m-3">Expected Gain: {{ (aftermath.net_xp).toFixed(2) }} / Realized Gain: {{ (aftermath.net_rp).toFixed(2) }}</div>
-                                <div class="d-block mx-auto text-center m-3">Expected Loss: {{ (aftermath.fpl_xp).toFixed(2) }} / Realized Loss: {{ (aftermath.fpl_rp).toFixed(2) }}</div>
-                                <hr style="background-color: white" />
-                                <div class="d-block mx-auto text-center m-3">Realized Net Change: {{ (aftermath.net_rp-aftermath.fpl_rp).toFixed(2) }}</div>
+                            <div class="col-12 m-2">
+                                <div class=" bg-dark p-3">
+                                    <table class="table text-white table-striped  m-data-table mt-1 mb-1 shrink-table mx-auto">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Expected</th>
+                                                <th>Realized</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Gain</td>
+                                                <td>{{ (aftermath.net_xp).toFixed(2) }}</td>
+                                                <td>{{ (aftermath.net_rp).toFixed(2) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Loss</td>
+                                                <td>{{ (aftermath.fpl_xp).toFixed(2) }}</td>
+                                                <td>{{ (aftermath.fpl_rp).toFixed(2) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Net</b></td>
+                                                <td>{{ net_change }}</td>
+                                                <td><b class="important-value">{{ (aftermath.net_rp-aftermath.fpl_rp).toFixed(2) }}</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <!-- <div class="d-block mx-auto text-center m-3">Expected Gain: {{ (aftermath.net_xp).toFixed(2) }} / Realized Gain: {{ (aftermath.net_rp).toFixed(2) }}</div>
+                                    <div class="d-block mx-auto text-center m-3">Expected Loss: {{ (aftermath.fpl_xp).toFixed(2) }} / Realized Loss: {{ (aftermath.fpl_rp).toFixed(2) }}</div>
+                                    <hr style="background-color: white" />
+                                    <div class="d-block mx-auto text-center m-3">Realized Net Change: {{ (aftermath.net_rp-aftermath.fpl_rp).toFixed(2) }}</div> -->
+                                </div>
                             </div>
                         </div>
                         <div class="row" v-else>
@@ -340,6 +377,22 @@
             <div class="modal-body">
                 <div class="p-2 wait-modal">
                     Fetching team picks from FPL website. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="gwModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fetching GW values...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Updating GW points from FPL website. Please wait... <br/>
                     <img class="mx-auto d-block" src="static/images/loading.svg">
                 </div>
             </div>
@@ -453,10 +506,11 @@
 <script>
     let repo_name = "fpl_optimized"
     let season = "2020-21";
-    let gw = "GW15";
-    let next_gw = "GW15";
+    let gw = "GW16";
+    let next_gw = "GW16";
     let date = "2020-12-26";
     let listdates = [
+        "2020-21 / GW16 / 2020-12-26 ", 
         "2020-21 / GW15 / 2020-12-26 ", 
         "2020-21 / GW14 / 2020-12-19 ", 
         "2020-21 / GW13 / 2020-12-15 ", 
