@@ -89,8 +89,11 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6 mb-3">
-                                <div id="xp_own_prior" class="plot dark-plot">
+                                <div id="xp_own_prior" class="plot dark-plot mb-3">
 
+                                </div>
+                                <div class="input-group mb-1 p-4">
+                                    <input type="text" class="form-control" id="playerNameFilter" placeholder="Filter player name" v-model="player_filter" @change="refresh_plots">
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -146,6 +149,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
                             <div class="col-12">
@@ -198,8 +202,7 @@
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
-                                                <td class="text-right" style="color: #acc3c5">{{ (i[1].stats.total_points
-                                                    <0 ? "" : "+") + ((1-parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
+                                                <td class="text-right" style="color: #acc3c5">{{ i[1].net_benefit }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
                                                 <td></td>
@@ -208,7 +211,7 @@
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ i[1].ownership }}</td>
-                                                <td class="text-right" style="color: #ff8763">{{ (-(parseFloat(i[1].ownership)/100)*i[1].stats.total_points).toFixed(2) }}</td>
+                                                <td class="text-right" style="color: #ff8763">{{ i[1].net_benefit }}</td>
                                             </tr>
                                             <!-- <tr>
                                                 <td colspan=3><b>Overall-Lineup</b></td>
@@ -444,6 +447,8 @@
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
+
 
 <script>
     let repo_name = "fpl_optimized"
