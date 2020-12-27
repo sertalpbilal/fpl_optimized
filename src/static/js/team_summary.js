@@ -16,7 +16,8 @@ var app = new Vue({
         sorted_data: [],
         chosen_player: {},
         el_types: element_type,
-        player_filter: ""
+        player_filter: "",
+        first_init: true
     },
     methods: {
         refresh_results() {
@@ -155,6 +156,32 @@ var app = new Vue({
         refresh_plots() {
             $(".plot").empty();
             generate_plots();
+        },
+        loadOptimal() {
+            let self = this;
+            $.ajax({
+                type: "GET",
+                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
+                dataType: "text",
+                success: function(data) {
+                    tablevals = data.split('\n').map(i => i.split(','));
+                    keys = tablevals[0];
+                    values = tablevals.slice(1);
+                    values_filtered = values.filter(i => i.length > 1);
+                    let squad = values_filtered.map(i => _.zipObject(keys, i));
+                    self.team_data.picks.forEach(function load(val, index) {
+                        val.element = parseInt(squad[index].player_id);
+                    })
+                    self.generateList();
+                    self.$nextTick(() => {
+                        $(".plot").empty();
+                        generate_plots();
+                    })
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+            });
         }
     },
     computed: {
@@ -427,6 +454,10 @@ function generate_plots() {
     // if (app.rp_data == 0) { return; }
     plot_bubble_xp_own_prior();
     plot_bubble_xp_own_posterior();
+    if (app.first_init) {
+        $('[data-toggle="tooltip"]').tooltip();
+        app.first_init = false;
+    }
 }
 
 function plot_bubble_xp_own_prior() {
@@ -459,7 +490,12 @@ function plot_bubble_xp_own_prior() {
         // .attr("transform", "translate(0," + height + ")")
         .attr("opacity", 1)
         .call(d3.axisBottom(x).ticks(x_high - x_low)
-            .tickSize(height))
+            .tickSize(height)
+        )
+        .call(g => g.selectAll(".tick:first-of-type line")
+            .style("stroke", "#8e8e8e")
+            .style("stroke-width", 2)
+        )
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
             .attr("stroke-dasharray", "3,5"))
@@ -482,6 +518,10 @@ function plot_bubble_xp_own_prior() {
         .call(d3.axisRight(y)
             .ticks(y_low - y_high)
             .tickSize(width))
+        .call(g => g.selectAll(".tick:first-of-type line")
+            .style("stroke", "#8e8e8e")
+            .style("stroke-width", 2)
+        )
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
             .attr("stroke-opacity", 0.2)
             .attr("stroke-dasharray", "3,5"))
@@ -624,8 +664,8 @@ function plot_bubble_xp_own_prior() {
         .attr("pointer-events", "none")
         .text(function(d) { return d[0] + "%" })
         .style("font-size", "x-small")
-        .style("fill", "#91d3ff")
-        .style("opacity", 0.4);
+        .style("fill", "#87b4d2")
+        .style("opacity", 0.9);
 
     g_text.append('text')
         .attr("x", x(x_high) + 5)
@@ -635,8 +675,8 @@ function plot_bubble_xp_own_prior() {
         .attr("pointer-events", "none")
         .text("Own%")
         .style("font-size", "x-small")
-        .style("fill", "#91d3ff")
-        .style("opacity", 0.4);
+        .style("fill", "#87b4d2")
+        .style("opacity", 0.9);
 
     let copy = app.prior_data.slice(0, -5).map(i => i[1]);
     let dangerous = app.prior_data.slice(-5).map(i => i[1]);
@@ -758,7 +798,8 @@ function plot_bubble_xp_own_posterior() {
         .attr("opacity", 1)
         .call(d3.axisBottom(x).ticks(x_high - x_low)
             .tickSize(height))
-        .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        // .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .call(g => g.selectAll(".tick line")
             .attr("stroke-opacity", 0.2)
             .attr("stroke-dasharray", "3,5"))
         .call(g => g.selectAll(".tick text").attr("dy", 11));
@@ -779,7 +820,8 @@ function plot_bubble_xp_own_posterior() {
         .attr("opacity", 1)
         .call(d3.axisRight(y).ticks(y_low - y_high)
             .tickSize(width))
-        .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        // .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .call(g => g.selectAll(".tick line")
             .attr("stroke-opacity", 0.2)
             .attr("stroke-dasharray", "3,5"))
         .call(g => g.selectAll(".tick text").attr("x", -15));
@@ -855,6 +897,22 @@ function plot_bubble_xp_own_posterior() {
             .style("top", "0px");
     }
 
+    let axes = svg.append('g');
+    axes.append('line')
+        .attr("x1", x(0))
+        .attr("x2", x(0))
+        .attr("y1", y(y_low))
+        .attr("y2", y(y_high))
+        .style("stroke", "#8e8e8e")
+        .style("stroke-width", 2);
+    axes.append('line')
+        .attr("x1", x(x_low))
+        .attr("x2", x(x_high))
+        .attr("y1", y(0))
+        .attr("y2", y(0))
+        .style("stroke", "#8e8e8e")
+        .style("stroke-width", 2);
+
 
     lines = [5, 10, 25, 50];
     lines = lines.map(i => [i, function(d) {
@@ -920,8 +978,8 @@ function plot_bubble_xp_own_posterior() {
         .attr("pointer-events", "none")
         .text(function(d) { return d[0] + "%" })
         .style("font-size", "x-small")
-        .style("fill", "#91d3ff")
-        .style("opacity", 0.4);
+        .style("fill", "#87b4d2")
+        .style("opacity", 0.9);
 
 
     g_text.append('text')
@@ -932,10 +990,8 @@ function plot_bubble_xp_own_posterior() {
         .attr("pointer-events", "none")
         .text("Own%")
         .style("font-size", "x-small")
-        .style("fill", "#91d3ff")
-        .style("opacity", 0.4);
-
-    debugger;
+        .style("fill", "#87b4d2")
+        .style("opacity", 0.9);
 
     let csquad = app.sorted_posterior.squad; //app.prior_data.filter(i => i[1].squad);
     let remaining = app.sorted_posterior.rest; //app.prior_data.filter(i => !i[1].squad).map(i => i[1]).sort((a, b) => a.net_benefit - b.net_benefit);
