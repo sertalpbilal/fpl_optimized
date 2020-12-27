@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/fpl_optimized/static/css/styles.css">
+
 </head>
 
 
@@ -50,8 +51,8 @@
         </header>
 
 <main class="container pt-3">
-    <div class="row mb-3">
-        <div class="col-12">
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white">
                 <div class="card-body text-center p-3">
                     <div class="mx-auto d-flex justify-content-center" v-cloak>
@@ -74,7 +75,7 @@
     </div>
 
 
-    <div class="row mb-3">
+    <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">GW Overview - Expectation</h5>
@@ -100,8 +101,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <div class="mx-auto text-center d-block">
-                                    <button class="btn btn-secondary btn-sm" @click='$("#lineupModal").modal("show")'>Change Lineup</button>
+                                <div class="mx-auto d-flex justify-content-center mb-2">
+                                    <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Change Lineup</button>
+                                    <button class="btn btn-secondary btn-sm mr-1" @click="loadOptimal">Load Optimal</button><sup><a href="#" data-toggle="tooltip" data-placement="top" title="Best lineup under 100M budget">[?]</a></sup>
                                 </div>
                                 <div id="xP_prior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="prior_table">
@@ -176,7 +178,7 @@
         </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">GW Overview - Realization</h5>
@@ -318,8 +320,8 @@
     </div>
 
 
-    <div class="row mb-3">
-        <div class="col-12">
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white qa">
                 <div class="card-body text-left">
                     <h5>Q/A</h5>

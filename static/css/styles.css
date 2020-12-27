@@ -7,6 +7,10 @@ body {
     display: none;
 }
 
+[v-cloak]>* {
+    display: none;
+}
+
 .text-small {
     font-size: small;
 }
