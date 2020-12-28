@@ -7,6 +7,7 @@ these pages to static HTML.
 
 import glob
 import os
+import datetime
 
 from flask import Flask, render_template, send_from_directory
 app = Flask(__name__)
@@ -24,6 +25,8 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
+current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+
 def folder_order(fname):
     f = fname.split('/')
     item1 = int(f[2].split('-')[0])
@@ -39,9 +42,9 @@ def home_page():
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('index.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('index.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
     else:
-        return render_template('index.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('index.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
 
 @app.route('/week.html')
 def best_gw_squads():
@@ -52,9 +55,9 @@ def best_gw_squads():
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates)
+        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
 
 # @app.route('/top_squads.html')
 # def top_squads():
@@ -83,9 +86,9 @@ def team_summary():
     target = filtered_dates[0]
     list_dates = [' / '.join(i) for i in filtered_dates]
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates)
+        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates)
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
 def list_all_snapshots():
     pass

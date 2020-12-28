@@ -18,6 +18,7 @@
     let gw = "** gw **";
     let next_gw = "** gw **";
     let date = "** date **";
+    let lastupdate = "** last_update **";
     let listdates = ["% for i in list_dates %"
         "**i** ", "% endfor %"
     ];
@@ -26,5 +27,7 @@
 <script src="/** repo_name **** url_for('static', filename='js/' + item +'.js') **"></script>
 "% endfor %"
 </body>
+
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: ** last_update **</div>
 
 </html>
