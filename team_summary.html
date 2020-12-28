@@ -83,13 +83,11 @@
                 <div class="card-body">
                     <div v-if="is_ready">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12 col-sm-6 mb-3">
                                 <h6>Expected Gain / Loss Analysis</h6>
                                 <div class="explanation text-small">Shows the relative <b>expected</b> gain and loss compared to rest of FPL managers.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble
                                     size shows the price of the player before the deadline.<br/>These values exclude captaincy.
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-3">
                                 <div id="xp_own_prior" class="plot dark-plot mb-3">
 
                                 </div>
@@ -103,12 +101,30 @@
                             <div class="col-12 col-sm-6">
                                 <div class="mx-auto d-flex justify-content-center mb-2">
                                     <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Change Lineup</button>
-                                    <button class="btn btn-secondary btn-sm mr-1" @click="loadOptimal">Load Optimal</button><sup><a href="#" data-toggle="tooltip" data-placement="top" title="Best lineup under 100M budget">[?]</a></sup>
+                                    <!-- <button class="btn btn-secondary btn-sm mr-1" @click="loadOptimal">Load Optimal</button><sup><a href="#" data-toggle="tooltip" data-placement="top" title="Best lineup under 100M budget">[?]</a></sup> -->
+
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="lineupOperations" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Operations
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="saveSquadToFile">Save Squad to File</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadSquadFromFile">
+                                                <label style="cursor: pointer; margin-bottom: 0px;" for="loadFile">Load Squad from File</label>
+                                            </button>
+                                            <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
+                                            <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="xP_prior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="prior_table">
                                         <thead>
                                             <tr>
+                                                <th class="text-muted">ID</th>
                                                 <th></th>
                                                 <th>Name</th>
                                                 <th>Pos</th>
@@ -119,6 +135,7 @@
                                         </thead>
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
+                                                <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td>L</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
@@ -127,6 +144,7 @@
                                                 <td class="text-right">{{ i[1].ownership }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
+                                                <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td>B</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
@@ -135,6 +153,7 @@
                                                 <td class="text-right">{{ i[1].ownership }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
+                                                <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td></td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
@@ -143,19 +162,19 @@
                                                 <td class="text-right">{{ i[1].ownership }}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=3><b>Overall Gain - Lineup</b></td>
+                                                <td colspan=4><b>Overall Gain - Lineup</b></td>
                                                 <td class="text-right">+{{ lineup_xp_sum }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (lineup_own_sum/11).toFixed(1) }}%</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=3><b>Overall Gain - Squad</b></td>
+                                                <td colspan=4><b>Overall Gain - Squad</b></td>
                                                 <td class="text-right">+{{ squad_xp_sum }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (squad_own_sum/15).toFixed(1) }}%</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=3><b>Overall Loss - All Players</b></td>
+                                                <td colspan=4><b>Overall Loss - All Players</b></td>
                                                 <td></td>
                                                 <td class="text-right">{{ rest_xp_sum }}</td>
                                                 <td></td>
@@ -186,16 +205,11 @@
                 <div class="card-body">
                     <div v-if="is_ready">
                         <div class="row" v-if="rp_ready">
-                            <div class="col-12">
-                                <!-- <h6>Aftermath</h6>
-                                <div class="explanation text-small">Shows the realized versus expected points after the GW. <br/> Bubble size shows the ownership percentage of the player.<br/>These values exclude captaincy.
-                                </div> -->
+                            <div class="col-12 col-sm-6 mb-3">
                                 <h6>Net Gain / Loss Analysis</h6>
                                 <div class="explanation text-small">Shows the relative <b>net</b> gain and loss.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble size shows the price of the player
                                     before the deadline.<br/>These values exclude captaincy.
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-3">
                                 <div id="xp_own_posterior" class="plot dark-plot">
 
                                 </div>
@@ -464,7 +478,7 @@
             <div class="modal-body">
                 <div class="text-black mb-3 text-center" :class="{'text-danger': !is_formation_valid }">Formation: {{ formation[1] }} {{ is_formation_valid ? "" : "-INVALID-" }}</div>
                 <div class="row">
-                    <div class="col-12 col-sm-6">
+                    <div class="col-6">
                         <span class="text-black d-block mb-1 text-center">Lineup</span>
                         <table class="table table-sm table-striped table-hover">
                             <thead>
@@ -479,13 +493,13 @@
                                     <tr v-for="i in team_squad" v-if="i[1].lineup && parseInt(i[1].element_type)==id">
                                         <td>{{ ty.short }}</td>
                                         <td>{{ i[1].web_name}} </td>
-                                        <td><button class="button btn-sm" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
+                                        <td><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
                                     </tr>
                                 </template>
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-12 col-sm-6">
+                    <div class="col-6">
                         <span class="text-black d-block mb-1 text-center">Bench</span>
                         <table class="table table-sm table-striped table-hover">
                             <thead>
@@ -500,7 +514,7 @@
                                     <tr v-for="i in team_squad" v-if="!i[1].lineup && parseInt(i[1].element_type)==id">
                                         <td>{{ ty.short }}</td>
                                         <td>{{ i[1].web_name}} </td>
-                                        <td><button class="button btn-sm" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
+                                        <td><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
                                     </tr>
                                 </template>
                             </tbody>

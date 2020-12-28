@@ -182,6 +182,36 @@ var app = new Vue({
                     console.log(xhr, status, error);
                 }
             });
+        },
+        saveSquadToFile() {
+            let squad_array = this.sorted_data.slice(0, 15).map(i => i[1].player_id + "," + i[1].web_name);
+            downloadToFile(squad_array.join('\n'), 'squad.txt', 'text/plain');
+        },
+        loadSquadFromFile(event) {
+            let self = this;
+            if (event.target.files == undefined) {
+                return;
+            }
+            debugger;
+            let file = event.target.files[0]
+            if (file.type == "text/plain") {
+                const reader = new FileReader()
+                reader.onload = function(event) {
+                    let new_squad = event.target.result.split('\n').map(i => i.split(','));
+                    if (new_squad.length != 15) { return; }
+                    self.team_data.picks.forEach(function load(val, index) {
+                        val.element = parseInt(new_squad[index][0]);
+                    });
+                    self.generateList();
+                    self.$nextTick(() => {
+                        $(".plot").empty();
+                        generate_plots();
+                    })
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsText(file);
+            }
+            console.log(event.target.files);
         }
     },
     computed: {
