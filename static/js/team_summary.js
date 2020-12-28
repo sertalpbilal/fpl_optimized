@@ -194,6 +194,7 @@ var app = new Vue({
             }
             debugger;
             let file = event.target.files[0]
+            event.target.value = '';
             if (file.type == "text/plain") {
                 const reader = new FileReader()
                 reader.onload = function(event) {
@@ -206,7 +207,7 @@ var app = new Vue({
                     self.$nextTick(() => {
                         $(".plot").empty();
                         generate_plots();
-                    })
+                    });
                 };
                 reader.onerror = error => reject(error);
                 reader.readAsText(file);
