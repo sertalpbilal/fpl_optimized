@@ -35,3 +35,18 @@ function getWithSign(val, digits = 2) {
         return val.toFixed(digits);
     }
 }
+
+const downloadToFile = (content, filename, contentType) => {
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: contentType });
+
+    a.href = URL.createObjectURL(file);
+    a.download = filename;
+    document.body.append(a);
+    setTimeout(function() {
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }, 100);
+
+};

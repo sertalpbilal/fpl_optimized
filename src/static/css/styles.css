@@ -394,3 +394,15 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
 .important-value {
     color: #f9e86d;
 }
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #dbdddf;
+}
+
+.btn-in-modal {
+    padding: .1rem .4rem;
+    font-size: small;
+}

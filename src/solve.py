@@ -725,8 +725,8 @@ def get_mps_string(model):
         }
 
     mps_str = mps.to_string(formatters=formatters, index=False, header=False, na_rep='')
-    # mps_str = '\n'.join([i[1:] for i in mps_str.split('\n')])
-    mps_str = '\n'.join([i for i in mps_str.split('\n')])
+    if mps_str[0] == " ":
+        mps_str = '\n'.join([i[1:] for i in mps_str.split('\n')])
 
     return mps_str
 
