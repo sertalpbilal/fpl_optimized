@@ -171,6 +171,7 @@ var app = new Vue({
                     let squad = values_filtered.map(i => _.zipObject(keys, i));
                     self.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(squad[index].player_id);
+                        val.multiplier = index < 11 ? 1 : 0;
                     })
                     self.generateList();
                     self.$nextTick(() => {
@@ -184,6 +185,7 @@ var app = new Vue({
             });
         },
         saveSquadToFile() {
+            this.generateList();
             let squad_array = this.sorted_data.slice(0, 15).map(i => i[1].player_id + "," + i[1].web_name);
             downloadToFile(squad_array.join('\n'), 'squad.txt', 'text/plain');
         },
@@ -202,6 +204,7 @@ var app = new Vue({
                     if (new_squad.length != 15) { return; }
                     self.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(new_squad[index][0]);
+                        val.multiplier = index < 11 ? 1 : 0;
                     });
                     self.generateList();
                     self.$nextTick(() => {
