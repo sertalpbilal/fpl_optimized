@@ -15,13 +15,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="/fpl_optimized/static/css/styles.css">
-
 </head>
-
 
 <body>
 
@@ -95,14 +94,14 @@
                                     <input type="text" class="form-control" id="playerNameFilter" placeholder="Filter player name" v-model="player_filter" @change="refresh_plots">
                                 </div>
                                 <div class="explanation text-small">
-                                    Click on gray or red colored players to swap them into your squad. Use `Change Lineup` button to set your starting lineup.
+                                    Click on gray or red colored players to swap them into your squad. Use `Lineup` button to set your starting lineup.
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mx-auto d-flex justify-content-center mb-2">
-                                    <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Change Lineup</button>
+                                    <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Lineup</button>
                                     <!-- <button class="btn btn-secondary btn-sm mr-1" @click="loadOptimal">Load Optimal</button><sup><a href="#" data-toggle="tooltip" data-placement="top" title="Best lineup under 100M budget">[?]</a></sup> -->
-
+                                    <button class="btn btn-secondary btn-sm mr-3" @click='openTransfer'>Transfer</button>
 
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="lineupOperations" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -351,7 +350,7 @@
                     <p>Players in your squad are marked light blue, while biggest threats (5 players) to your team is marked red/orange.</p>
                     <b>What is the point of this analysis?</b>
                     <p>I use an optimization model for all of my FPL decisions, no manual decisions are allowed. So, I needed to a way to evaluate if all is working well with algorithm. I was doing this analysis for some time now, but decided to automate
-                        it. While I'm at it, I wanted to share it with rest of FPL managers. Especially after bad GWs, it should be handy to blame your luck.</p>
+                        it. While I'm at it, I wanted to share it with rest of FPL managers.</p>
                     <b>Sometimes page is loading very slow.</b>
                     <p>FPL API does not allow direct connection, so I'm using a CORS proxy. Depending on the load, proxy could be very slow sometimes, but there is nothing I could do, sorry! Reach out to me if you have a solution.</p>
                 </div>
@@ -529,6 +528,82 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="transferModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Transfer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- <div class="text-black mb-3 text-center" :class="{'text-danger': !is_formation_valid }">Formation: {{ formation[1] }} {{ is_formation_valid ? "" : "-INVALID-" }}</div> -->
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <span class="text-black d-block mb-1 text-center">Squad</span>
+                        <div class="row d-sm-block d-none" style="height: 2.45rem;">
+
+                        </div>
+                        <table class="table table-sm table-striped table-hover text-small" id="transfer_squad_table">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Name</th>
+                                    <th class="text-right">xP</th>
+                                    <th class="text-right">Own%</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-center">Out</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(ty, id) of el_types">
+                                    <tr v-for="i in team_squad" v-if="parseInt(i[1].element_type)==id" :class="{'marked-out': i[1].player_id == swap_pair.out }">
+                                        <td>{{ ty.short }}</td>
+                                        <td>{{ i[1].web_name}} </td>
+                                        <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
+                                        <td class="text-right">{{ i[1].ownership }} </td>
+                                        <td class="text-right">{{ i[1].price }} </td>
+                                        <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="ty.short" :data-id="i[1].player_id" @click="markForTransferOut"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <span class="text-black d-block mb-1 text-center">All Players</span>
+                        <table class="table table-sm table-striped table-hover text-small" id="all_players_table">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Name</th>
+                                    <th class="text-right">xP</th>
+                                    <th class="text-right">Own%</th>
+                                    <th class="text-right">Price</th>
+                                    <th class="text-center">In</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="i in all_except_squad" :class="{'marked-in': i[1].player_id == swap_pair.in }">
+                                    <td>{{ el_types[i[1].element_type].short }}</td>
+                                    <td>{{ i[1].web_name}}</td>
+                                    <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
+                                    <td class="text-right">{{ i[1].ownership }} </td>
+                                    <td class="text-right">{{ i[1].price }} </td>
+                                    <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="el_types[i[1].element_type].short" :data-id="i[1].player_id" @click="markForTransferIn"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
  </div>
 
@@ -539,6 +614,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
@@ -550,7 +626,7 @@
     let gw = "GW17";
     let next_gw = "GW17";
     let date = "2020-12-28";
-    let lastupdate = "2020-12-29T04:15:18.770152+00:00";
+    let lastupdate = "2020-12-29T04:55:07.290437+00:00";
     let listdates = [
         "2020-21 / GW17 / 2020-12-28 ", 
         "2020-21 / GW16 / 2020-12-28 ", 
@@ -572,6 +648,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-29T04:15:18.770152+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-29T04:55:07.290437+00:00</div>
 
 </html> 

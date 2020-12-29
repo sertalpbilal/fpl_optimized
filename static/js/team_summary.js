@@ -17,7 +17,10 @@ var app = new Vue({
         chosen_player: {},
         el_types: element_type,
         player_filter: "",
-        first_init: true
+        first_init: true,
+        swap_pair: { out: -1, in: -1 },
+        transfer_squad_table: "",
+        transfer_table: ""
     },
     methods: {
         refresh_results() {
@@ -44,9 +47,10 @@ var app = new Vue({
             this.solutions = _.cloneDeep(values);
         },
         saveTeamId(e) {
+            let self = this;
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
-                app.close_teammodal();
+                self.close_teammodal();
                 load_team();
             })
         },
@@ -81,9 +85,9 @@ var app = new Vue({
 
             pts.forEach((e) => {
                 // e.info = els[e.player_id];
-                e.element_type = els[e.player_id]['element_type'];
-                e.price = parseFloat(els[e.player_id]['now_cost']) / 10;
-                e.ownership = els[e.player_id]['selected_by_percent'];
+                e.element_type = els[e.player_id].element_type;
+                e.price = parseFloat(els[e.player_id].now_cost) / 10;
+                e.ownership = els[e.player_id].selected_by_percent;
                 e.lineup = lineup.includes(parseInt(e.player_id));
                 e.squad = squad.includes(parseInt(e.player_id));
                 e.captain = (e.player_id == captain);
@@ -136,6 +140,7 @@ var app = new Vue({
             let old_player = $("#transfer_out").val();
             let new_player = this.chosen_player.player_id;
             this.team_data.picks.filter(i => i.element == parseInt(old_player))[0].element = parseInt(new_player);
+
             this.generateList();
             this.$nextTick(() => {
                 $(".plot").empty();
@@ -171,6 +176,7 @@ var app = new Vue({
                     let squad = values_filtered.map(i => _.zipObject(keys, i));
                     self.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(squad[index].player_id);
+                        val.multiplier = index < 11 ? 1 : 0;
                     })
                     self.generateList();
                     self.$nextTick(() => {
@@ -184,6 +190,7 @@ var app = new Vue({
             });
         },
         saveSquadToFile() {
+            this.generateList();
             let squad_array = this.sorted_data.slice(0, 15).map(i => i[1].player_id + "," + i[1].web_name);
             downloadToFile(squad_array.join('\n'), 'squad.txt', 'text/plain');
         },
@@ -202,6 +209,7 @@ var app = new Vue({
                     if (new_squad.length != 15) { return; }
                     self.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(new_squad[index][0]);
+                        val.multiplier = index < 11 ? 1 : 0;
                     });
                     self.generateList();
                     self.$nextTick(() => {
@@ -213,6 +221,107 @@ var app = new Vue({
                 reader.readAsText(file);
             }
             console.log(event.target.files);
+        },
+        initTransferTable() {
+            this.transfer_table = $("#all_players_table").DataTable({
+                "order": [],
+                "lengthChange": false,
+                "pageLength": window.screen.width <= 768 ? 5 : 15,
+                columnDefs: [
+                    { orderable: false, targets: 0 },
+                    { orderable: false, targets: 5 }
+                ],
+            });
+            this.transfer_squad_table = $("#transfer_squad_table").DataTable({
+                "order": [],
+                "lengthChange": false,
+                "pageLength": 15,
+                paging: false,
+                "info": false,
+                columnDefs: [
+                    { orderable: false, targets: 0, searchable: true },
+                    { orderable: false, targets: 5 }
+                ],
+                dom: "ltip"
+            });
+        },
+        clearTransferModal() {
+            if (this.transfer_table !== "") {
+                this.transfer_table.destroy();
+                this.transfer_table = "";
+                this.transfer_squad_table.destroy();
+                this.transfer_squad_table = "";
+            }
+        },
+        openTransfer() {
+            debugger;
+            let self = this;
+            this.clearTransferModal();
+            this.generateList();
+            this.$nextTick(() => {
+                self.$forceUpdate();
+                setTimeout(() => {
+                    self.initTransferTable();
+                    $("#transferModal").modal("show");
+                }, 100);
+            });
+        },
+        markForTransferIn(event) {
+            let id = event.currentTarget.dataset.id;
+            let pos = event.currentTarget.dataset.pos;
+
+            if (this.swap_pair.in == id) { // toggle
+                this.swap_pair.in = -1;
+                this.transfer_squad_table.columns().search('').draw();
+                return;
+            }
+
+            this.swap_pair.in = id;
+            if (this.swap_pair.out !== -1) {
+                this.swapSelected();
+            } else {
+                this.transfer_squad_table.columns(0).search(pos).draw();
+            }
+
+        },
+        markForTransferOut(event) {
+            let id = event.currentTarget.dataset.id;
+            let pos = event.currentTarget.dataset.pos;
+
+            if (this.swap_pair.out == id) { // toggle
+                this.swap_pair.out = -1;
+                this.transfer_table.columns().search('').draw();
+                return;
+            }
+
+            this.swap_pair.out = id;
+            if (this.swap_pair.in !== -1) {
+                this.swapSelected();
+            } else {
+                this.transfer_table.columns(0).search(pos).draw();
+            }
+        },
+        swapSelected() {
+            let old_player = this.swap_pair.out;
+            let new_player = this.swap_pair.in;
+            let self = this;
+
+            this.clearTransferModal();
+
+            this.$nextTick(() => {
+
+                self.team_data.picks.filter(i => i.element == parseInt(old_player))[0].element = parseInt(new_player);
+
+                self.swap_pair.in = -1;
+                self.swap_pair.out = -1;
+
+                self.generateList();
+                self.$nextTick(() => {
+                    self.initTransferTable();
+                    $(".plot").empty();
+                    generate_plots();
+                });
+            });
         }
     },
     computed: {
@@ -253,7 +362,11 @@ var app = new Vue({
         },
         team_squad: function() {
             if (!this.is_ready) { return []; }
-            return app.sorted_data.slice(0, 15);
+            return this.sorted_data.slice(0, 15);
+        },
+        all_except_squad: function() {
+            if (!this.is_ready) { return []; }
+            return this.sorted_data.slice(15).sort(function(a, b) { return b[1].points_md - a[1].points_md });
         },
         prior_data: {
             get: function() {
@@ -1078,6 +1191,10 @@ function plot_bubble_xp_own_posterior() {
 
 
 }
+
+$('#transferModal').on('hidden.bs.modal', function(e) {
+    app.clearTransferModal();
+})
 
 $(document).ready(function() {
     load_gw();
