@@ -265,6 +265,8 @@ span.twitter-link {
 
 /* Datatables fixes */
 
+
+/* 
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_filter,
 .dataTables_wrapper .dataTables_info,
@@ -289,7 +291,7 @@ span.twitter-link {
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     background: #585858 !important;
-}
+} */
 
 .dtsb-searchBuilder button {
     color: white !important;
@@ -405,4 +407,26 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
 .btn-in-modal {
     padding: .1rem .4rem;
     font-size: small;
+}
+
+
+/* All players table styles */
+
+div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
+    width: 7rem;
+    color: gray;
+}
+
+#all_players_table_info {
+    display: none;
+}
+
+#all_players_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
+
+#all_players_table .marked-in,
+#transfer_squad_table .marked-out {
+    background-color: rgb(231, 231, 187);
 }
