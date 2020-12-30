@@ -393,7 +393,7 @@ var app = new Vue({
             }
 
             let el_copy = _.cloneDeep(this.el_data);
-            let all_players = teams.map(i => i.data.picks).flat().map(i => i.element);
+            let all_players = teams.map(i => i.data.picks).flat().filter(i => i.multiplier > 0).map(i => i.element);
             el_copy.forEach((e) => {
                 let cnt = all_players.filter(i => i.toString() == e.id).length;
                 e.selected_by_percent = cnt / teams.length * 100;

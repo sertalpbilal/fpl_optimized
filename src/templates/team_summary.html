@@ -539,7 +539,7 @@
                                         <td>{{ ty.short }}</td>
                                         <td>{{ i[1].web_name}} </td>
                                         <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
-                                        <td class="text-right">{{ i[1].ownership }} </td>
+                                        <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }} </td>
                                         <td class="text-right">{{ i[1].price }} </td>
                                         <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="ty.short" :data-id="i[1].player_id" @click="markForTransferOut"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
                                     </tr>
@@ -565,7 +565,7 @@
                                     <td>{{ el_types[i[1].element_type].short }}</td>
                                     <td>{{ i[1].web_name}}</td>
                                     <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
-                                    <td class="text-right">{{ i[1].ownership }} </td>
+                                    <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }} </td>
                                     <td class="text-right">{{ i[1].price }} </td>
                                     <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="el_types[i[1].element_type].short" :data-id="i[1].player_id" @click="markForTransferIn"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
                                 </tr>
