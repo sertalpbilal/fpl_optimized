@@ -10,6 +10,7 @@ jobs:
   build-and-run:
     name: Run the automated Docker build
     runs-on: ubuntu-latest
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
 
     steps:
       - name: Check current directory
