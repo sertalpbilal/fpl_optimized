@@ -588,7 +588,7 @@
                                         <td>{{ ty.short }}</td>
                                         <td>{{ i[1].web_name}} </td>
                                         <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
-                                        <td class="text-right">{{ i[1].ownership }} </td>
+                                        <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }} </td>
                                         <td class="text-right">{{ i[1].price }} </td>
                                         <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="ty.short" :data-id="i[1].player_id" @click="markForTransferOut"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
                                     </tr>
@@ -614,7 +614,7 @@
                                     <td>{{ el_types[i[1].element_type].short }}</td>
                                     <td>{{ i[1].web_name}}</td>
                                     <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }} </td>
-                                    <td class="text-right">{{ i[1].ownership }} </td>
+                                    <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }} </td>
                                     <td class="text-right">{{ i[1].price }} </td>
                                     <td class="text-center"><button class="button btn-sm btn-in-modal" :data-pos="el_types[i[1].element_type].short" :data-id="i[1].player_id" @click="markForTransferIn"><i class="fa fa-arrow-left" aria-hidden="true"></i></button></td>
                                 </tr>
@@ -652,7 +652,7 @@
     let gw = "GW17";
     let next_gw = "GW17";
     let date = "2020-12-30";
-    let lastupdate = "2020-12-30T06:59:55.842371+00:00";
+    let lastupdate = "2020-12-30T07:28:28.131543+00:00";
     let listdates = [
         "2020-21 / GW17 / 2020-12-30 ", 
         "2020-21 / GW16 / 2020-12-28 ", 
@@ -674,6 +674,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-30T06:59:55.842371+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-30T07:28:28.131543+00:00</div>
 
 </html> 
