@@ -256,7 +256,7 @@ def sample_fpl_teams(gw=None):
 
     # Part 1 - 99% Overall sampling
     selected_ids = random.sample(range(1, total_players), 666)
-    with ProcessPoolExecutor(max_workers=16) as executor:
+    with ProcessPoolExecutor(max_workers=8) as executor:
         random_squads = list(executor.map(get_single_team_data, selected_ids))
     random_squads = [i for i in random_squads if i is not None]
     print("Sampled", len(random_squads), "random teams")
@@ -267,7 +267,7 @@ def sample_fpl_teams(gw=None):
     for target, nsample in pairs:
         print(f"Sampling inside top {target}")
         player_targets = random.sample(range(1, target+1), nsample)
-        with ProcessPoolExecutor(max_workers=16) as executor:
+        with ProcessPoolExecutor(max_workers=8) as executor:
             grabbed_squads = list(executor.map(get_rank_n_player, player_targets, itertools.repeat(gw)))
         grabbed_squads = [i for i in grabbed_squads if i is not None]
         sample_dict[target] = grabbed_squads
@@ -281,16 +281,21 @@ def sample_fpl_teams(gw=None):
 def get_rank_n_player(rank, gw):
     page = ((rank-1)//50)+1
     order = (rank-1) % 50
-    with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
-        page_data = json.loads(url.read().decode())
-    tid = page_data['standings']['results'][order]['entry']
-    return get_single_team_data(tid, gw)
+    try:
+        with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
+            page_data = json.loads(url.read().decode())
+        tid = page_data['standings']['results'][order]['entry']
+        return get_single_team_data(tid, gw)
+    except:
+        print("Encountered page access error, waiting 5 seconds")
+        time.sleep(5)
+        return None
 
 
 def get_single_team_data(tid, gw=16):
     "Returns single team data from FPL API"
     print(f"Getting {tid} for {gw}")
-    time.sleep(0.05)
+    time.sleep(0.1)
     team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
     try:
         with urlopen(FPL_API['team_info'].format(PID=tid)) as url:

@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-run:
-    name: Run the automated Docker build
+    name: Sample values from FPL
     runs-on: ubuntu-latest
 
     steps:
@@ -29,11 +29,6 @@ jobs:
       - name: Run docker image
         run: |
           docker run -t --rm -e LANG=C.UTF-8 -e GW=${{ github.event.inputs.GW }} -v $(pwd)/build:/app/build scraper
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: data-folder
-          path: build/
       - name: Add changes to the branch
         run: |
           cd build
