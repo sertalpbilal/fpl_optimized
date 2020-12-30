@@ -257,7 +257,7 @@ def sample_fpl_teams(gw=None):
     # Part 1 - 99% Overall sampling
     selected_ids = random.sample(range(1, total_players), 666)
     with ProcessPoolExecutor(max_workers=8) as executor:
-        random_squads = list(executor.map(get_single_team_data, selected_ids))
+        random_squads = list(executor.map(get_single_team_data, selected_ids, itertools.repeat(gw)))
     random_squads = [i for i in random_squads if i is not None]
     print("Sampled", len(random_squads), "random teams")
     sample_dict['Overall'] = random_squads
