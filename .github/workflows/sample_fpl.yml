@@ -1,0 +1,44 @@
+name: Sample-FPL
+
+on:
+  workflow_dispatch:
+    inputs:
+      description: 'GW Number'
+      required: true
+
+jobs:
+  build-and-run:
+    name: Run the automated Docker build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check current directory
+        run: pwd
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Checkout webpage branch
+        uses: actions/checkout@v2
+        with:
+          ref: 'webpage'
+          path: ./build
+      - name: Make sure data folder exists
+        run: mkdir -p ./build/sample
+      - name: Build docker image
+        run: docker build -f Dockerfile-scrap -t scraper .
+      - name: Run docker image
+        run: |
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build webapp
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: data-folder
+          path: build/
+      - name: Add changes to the branch
+        run: |
+          cd build
+          git add -u
+          git add .
+          git config user.name "Github Action"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Automated build - Data Sample $GITHUB_RUN_ID"
+          git push

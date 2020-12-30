@@ -8,6 +8,9 @@ var app = new Vue({
         listdates: listdates,
         solutions: [],
         team_id: "-1",
+        ownership_source: "Official FPL API",
+        available_sources: ["Official FPL API"],
+        sample_data: [],
         el_data: [],
         xp_data: [],
         rp_data: [],
@@ -40,6 +43,9 @@ var app = new Vue({
         close_date() {
             $("#dateModal").modal('hide');
         },
+        close_source_modal() {
+            $("#sourceModal").modal('hide');
+        },
         close_teammodal() {
             $("#teamModal").modal('hide');
         },
@@ -63,6 +69,16 @@ var app = new Vue({
         saveTeamData(data) {
             this.team_data = data;
         },
+        saveSampleData(success, data) {
+            if (success) {
+                this.sample_data = data;
+                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1K", "Sample - Top 10K", "Sample - Top 100K", "Sample - Top 1M", "Sample - Ahead of Team"];
+            } else {
+                this.sample_data = [];
+                this.available_sources = ["Official FPL API"];
+                this.ownership_source = this.available_sources[0];
+            }
+        },
         saveRPData(data) {
             this.rp_data = data;
         },
@@ -82,12 +98,15 @@ var app = new Vue({
             let lineup = team.picks.filter(i => i.multiplier >= 1).map(i => i.element);
             let squad = team.picks.map(i => i.element);
             let rp = Object.fromEntries(this.rp_data);
+            let ownership_vals = this.ownership_data;
+            ownership_vals = Object.fromEntries(ownership_vals.map(x => [x.id, x]));
 
             pts.forEach((e) => {
                 // e.info = els[e.player_id];
                 e.element_type = els[e.player_id].element_type;
                 e.price = parseFloat(els[e.player_id].now_cost) / 10;
-                e.ownership = els[e.player_id].selected_by_percent;
+                // e.ownership = els[e.player_id].selected_by_percent;
+                e.ownership = ownership_vals[e.player_id].selected_by_percent;
                 e.lineup = lineup.includes(parseInt(e.player_id));
                 e.squad = squad.includes(parseInt(e.player_id));
                 e.captain = (e.player_id == captain);
@@ -322,6 +341,13 @@ var app = new Vue({
                     generate_plots();
                 });
             });
+        },
+        changeData() {
+            this.generateList();
+            this.$nextTick(() => {
+                $(".plot").empty();
+                generate_plots();
+            });
         }
     },
     computed: {
@@ -331,6 +357,49 @@ var app = new Vue({
             }
             if (this.team_data.length == 0) { return false; }
             return true;
+        },
+        ownership_data: function() {
+            if (this.sample_data.length == 0) {
+                return this.el_data;
+            }
+            let teams = [];
+            switch (this.ownership_source) {
+                case "Official FPL API":
+                    return this.el_data;
+                case "Sample - Overall":
+                    teams = this.sample_data.slice(0, 500).filter(i => i.team !== undefined);
+                    debugger;
+                    break;
+                case "Sample - Top 1K":
+                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 1000);
+                    break;
+                case "Sample - Top 10K":
+                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 10000);
+                    break;
+                case "Sample - Top 100K":
+                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 100000);
+                    break;
+                case "Sample - Top 1M":
+                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 1000000);
+                    break;
+                case "Sample - Ahead of Team":
+                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.rank);
+                    debugger;
+                    break;
+
+                default:
+                    break;
+            }
+
+            let el_copy = _.cloneDeep(this.el_data);
+            let all_players = teams.map(i => i.picks.picks).flat().map(i => i.element);
+            el_copy.forEach((e) => {
+                let cnt = all_players.filter(i => i.toString() == e.id).length;
+                e.selected_by_percent = cnt / teams.length * 100;
+            });
+            return el_copy;
+
+
         },
         current_team_id: {
             get: function() {
@@ -347,6 +416,9 @@ var app = new Vue({
             } else {
                 return this.team_id;
             }
+        },
+        availableDataSources: function() {
+            return this.available_sources;
         },
         seasongwdate: {
             get: function() {
@@ -486,6 +558,25 @@ function load_gw() {
         error: function(xhr, status, error) {
             console.log(error);
             console.error(xhr, status, error);
+        }
+    });
+
+    debugger;
+
+    target_gw = parseInt(gw.slice(2));
+    if (gw == next_gw) {
+        target_gw = parseInt(gw.slice(2)) - 1;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: `sample/${target_gw}/fpl_sampled.json`,
+        dataType: "json",
+        success: function(data) {
+            app.saveSampleData(true, data);
+        },
+        error: function() {
+            app.saveSampleData(false, [])
         }
     });
 
@@ -721,7 +812,7 @@ function plot_bubble_xp_own_prior() {
                 <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">Own.</td><td>${d.ownership}%</td></tr>
+                    <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
                     <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">+${d.xp_owned.toFixed(2)}</td></tr>
                     <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${d.xp_non_owned.toFixed(2)}</td></tr>
@@ -1024,7 +1115,7 @@ function plot_bubble_xp_own_posterior() {
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
                     <tr><td class="text-right">rP</td><td>${parseInt(d.stats.total_points)}</td></tr>
                     <tr><td class="text-right">Mins</td><td>${d.stats.minutes}</td></tr>
-                    <tr><td class="text-right">Own.</td><td>${d.ownership}%</td></tr>
+                    <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
                     <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.net_gain)}</td></tr>
                     <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${getWithSign(d.net_loss)}</td></tr>

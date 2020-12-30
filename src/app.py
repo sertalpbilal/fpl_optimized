@@ -98,6 +98,11 @@ def read_data(path):
     print(path)
     return send_from_directory('build', 'data/' + path)
 
+@app.route('/sample/<path:path>')
+def read_sample(path):
+    print(path)
+    return send_from_directory('build', 'sample/' + path)
+
 if __name__ == "__main__":
     app.config['DEBUG']=True
     from app import app

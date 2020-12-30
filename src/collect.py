@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import pytz
+import random
 import shutil
 import time
 from urllib.request import urlopen
@@ -19,13 +20,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions as EC
 from sys import platform
+from concurrent.futures import ProcessPoolExecutor
 
 
 FPL_API = {
     'now': "https://fantasy.premierleague.com/api/bootstrap-static/",
     'fixture': "https://fantasy.premierleague.com/api/fixtures/",
     'live': "https://fantasy.premierleague.com/api/event/{GW}/live/",
-    'picks': "https://fantasy.premierleague.com/api/entry/{PID}/event/{GW}/picks/"
+    'team_info': "https://fantasy.premierleague.com/api/entry/{PID}/",
+    'picks': "https://fantasy.premierleague.com/api/entry/{PID}/event/{GW}/picks/",
+    'overall': "https://fantasy.premierleague.com/api/leagues-classic/{LID}/standings/?page_standings={P}"
 }
 
 
@@ -229,7 +233,81 @@ def get_element_event_expected_minutes(r):
         except:
             return 0
 
+
+def sample_fpl_teams(gw=None, n=500):
+
+    t0 = time.time()
+    with urlopen(FPL_API['now']) as url:
+        data = json.loads(url.read().decode())
+    total_players = data['total_players']
+    if gw is None:
+        try:
+            gw = list(filter((lambda x: x['is_current']), data['events']))[0]['id']
+        except:
+            gw = list(filter((lambda x: x['is_previous']), data['events']))[0]['id']
+    
+    base_folder = pathlib.Path().resolve()
+    input_folder = pathlib.Path(base_folder / f"build/sample/{gw}/")
+    input_folder.mkdir(parents=True, exist_ok=True)
+
+    # Full random sampling
+    selected_ids = random.sample(range(1, total_players), n)
+    
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        random_squads = list(executor.map(get_single_team_data, selected_ids))
+
+    random_squads = [i for i in random_squads if i is not None]
+    print("Sampled", len(random_squads), "random teams")
+
+    # Targeted sampling
+    pages = list(range(1,21)) + list(range(29,201,9)) + list(range(290,2001,90)) + list(range(2900,20001,900)) + list(range(29000,200001,9000))
+
+    with ProcessPoolExecutor(max_workers=4) as executor:
+        grabbed_squads = list(executor.map(get_n_per_page, pages))
+    grabbed_squads = [item for sublist in grabbed_squads for item in sublist]
+
+    print("Sampled", len(grabbed_squads), "targeted teams")
+
+    with open(input_folder / 'fpl_sampled.json', 'w') as file:
+        json.dump(random_squads + grabbed_squads, file)
+    
+    print('Took', time.time()-t0, 'seconds')
+
+
+def get_n_per_page(page_no):
+    try:
+        with urlopen(FPL_API['overall'].format(LID=314, P=page_no)) as url:
+            page_data = json.loads(url.read().decode())
+        targets = [page_data['standings']['results'][i]['entry'] for i in random.sample(range(0, 50), 5)]
+        results = [get_single_team_data(t) for t in targets]
+        return [i for i in results if i is not None]
+    except Exception as e:
+        print("Pagination error, waiting 3 seconds:", e)
+        time.sleep(3)
+        return [[]]
+
+
+def get_single_team_data(tid, gw=16):
+    "Returns single team data from FPL API"
+    print(f"Getting {tid} for {gw}")
+    time.sleep(0.1)
+    try:
+        with urlopen(FPL_API['team_info'].format(PID=tid)) as url:
+            team_data = json.loads(url.read().decode())
+        team_data.pop('leagues', None)
+        with urlopen(FPL_API['picks'].format(PID=tid, GW=gw)) as url:
+            pick_data = json.loads(url.read().decode())
+        return {'team': team_data, 'picks': pick_data}
+    except Exception as e:
+        print("Encountered error, waiting 3 seconds:", e)
+        time.sleep(3)
+        return None
+
+
 # TODO: fbref?
 
 if __name__ == "__main__":
-    get_all_data()
+    # input_folder, output_folder = create_folders()
+    # get_all_data()
+    # get_single_team_data(2221044, 16)
+    sample_fpl_teams()
