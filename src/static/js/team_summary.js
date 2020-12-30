@@ -10,7 +10,7 @@ var app = new Vue({
         team_id: "-1",
         ownership_source: "Official FPL API",
         available_sources: ["Official FPL API"],
-        sample_data: [],
+        sample_data: {},
         el_data: [],
         xp_data: [],
         rp_data: [],
@@ -72,7 +72,7 @@ var app = new Vue({
         saveSampleData(success, data) {
             if (success) {
                 this.sample_data = data;
-                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1K", "Sample - Top 10K", "Sample - Top 100K", "Sample - Top 1M", "Sample - Ahead of Team"];
+                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -359,46 +359,46 @@ var app = new Vue({
             return true;
         },
         ownership_data: function() {
-            if (this.sample_data.length == 0) {
+            if (Object.keys(this.sample_data).length == 0) {
                 return this.el_data;
             }
+            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"
             let teams = [];
             switch (this.ownership_source) {
                 case "Official FPL API":
                     return this.el_data;
                 case "Sample - Overall":
-                    teams = this.sample_data.slice(0, 500).filter(i => i.team !== undefined);
-                    debugger;
-                    break;
-                case "Sample - Top 1K":
-                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 1000);
-                    break;
-                case "Sample - Top 10K":
-                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 10000);
-                    break;
-                case "Sample - Top 100K":
-                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 100000);
+                    teams = this.sample_data["Overall"].filter(i => i.team != undefined)
                     break;
                 case "Sample - Top 1M":
-                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank < 1000000);
+                    teams = this.sample_data["1000000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 100K":
+                    teams = this.sample_data["100000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 10K":
+                    teams = this.sample_data["10000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 1K":
+                    teams = this.sample_data["1000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 100":
+                    teams = this.sample_data["100"].filter(i => i.team !== undefined);
                     break;
                 case "Sample - Ahead of Team":
-                    teams = this.sample_data.filter(i => i.team !== undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.rank);
-                    debugger;
+                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.rank);
                     break;
-
                 default:
                     break;
             }
 
             let el_copy = _.cloneDeep(this.el_data);
-            let all_players = teams.map(i => i.picks.picks).flat().map(i => i.element);
+            let all_players = teams.map(i => i.data.picks).flat().map(i => i.element);
             el_copy.forEach((e) => {
                 let cnt = all_players.filter(i => i.toString() == e.id).length;
                 e.selected_by_percent = cnt / teams.length * 100;
             });
             return el_copy;
-
 
         },
         current_team_id: {
@@ -560,8 +560,6 @@ function load_gw() {
             console.error(xhr, status, error);
         }
     });
-
-    debugger;
 
     target_gw = parseInt(gw.slice(2));
     if (gw == next_gw) {

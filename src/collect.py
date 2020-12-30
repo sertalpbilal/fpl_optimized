@@ -3,6 +3,7 @@
 
 import datetime
 import json
+import math
 import os
 import pathlib
 import pytz
@@ -11,6 +12,7 @@ import shutil
 import time
 from urllib.request import urlopen
 
+import itertools
 import numpy as np
 import pandas as pd
 from selenium import webdriver
@@ -234,7 +236,9 @@ def get_element_event_expected_minutes(r):
             return 0
 
 
-def sample_fpl_teams(gw=None, n=500):
+def sample_fpl_teams(gw=None):
+
+    sample_dict = dict()
 
     t0 = time.time()
     with urlopen(FPL_API['now']) as url:
@@ -250,54 +254,50 @@ def sample_fpl_teams(gw=None, n=500):
     input_folder = pathlib.Path(base_folder / f"build/sample/{gw}/")
     input_folder.mkdir(parents=True, exist_ok=True)
 
-    # Full random sampling
-    selected_ids = random.sample(range(1, total_players), n)
-    
-    with ProcessPoolExecutor(max_workers=4) as executor:
+    # Part 1 - 99% Overall sampling
+    selected_ids = random.sample(range(1, total_players), 666)
+    with ProcessPoolExecutor(max_workers=16) as executor:
         random_squads = list(executor.map(get_single_team_data, selected_ids))
-
     random_squads = [i for i in random_squads if i is not None]
     print("Sampled", len(random_squads), "random teams")
+    sample_dict['Overall'] = random_squads
 
-    # Targeted sampling
-    pages = list(range(1,21)) + list(range(29,201,9)) + list(range(290,2001,90)) + list(range(2900,20001,900)) + list(range(29000,200001,9000))
-
-    with ProcessPoolExecutor(max_workers=4) as executor:
-        grabbed_squads = list(executor.map(get_n_per_page, pages))
-    grabbed_squads = [item for sublist in grabbed_squads for item in sublist]
-
-    print("Sampled", len(grabbed_squads), "targeted teams")
+    # Part 2 - Various Ranges
+    pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
+    for target, nsample in pairs:
+        print(f"Sampling inside top {target}")
+        player_targets = random.sample(range(1, target+1), nsample)
+        with ProcessPoolExecutor(max_workers=16) as executor:
+            grabbed_squads = list(executor.map(get_rank_n_player, player_targets, itertools.repeat(gw)))
+        grabbed_squads = [i for i in grabbed_squads if i is not None]
+        sample_dict[target] = grabbed_squads
 
     with open(input_folder / 'fpl_sampled.json', 'w') as file:
-        json.dump(random_squads + grabbed_squads, file)
+        json.dump(sample_dict, file)
     
     print('Took', time.time()-t0, 'seconds')
 
 
-def get_n_per_page(page_no):
-    try:
-        with urlopen(FPL_API['overall'].format(LID=314, P=page_no)) as url:
-            page_data = json.loads(url.read().decode())
-        targets = [page_data['standings']['results'][i]['entry'] for i in random.sample(range(0, 50), 5)]
-        results = [get_single_team_data(t) for t in targets]
-        return [i for i in results if i is not None]
-    except Exception as e:
-        print("Pagination error, waiting 3 seconds:", e)
-        time.sleep(3)
-        return [[]]
+def get_rank_n_player(rank, gw):
+    page = ((rank-1)//50)+1
+    order = (rank-1) % 50
+    with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
+        page_data = json.loads(url.read().decode())
+    tid = page_data['standings']['results'][order]['entry']
+    return get_single_team_data(tid, gw)
 
 
 def get_single_team_data(tid, gw=16):
     "Returns single team data from FPL API"
     print(f"Getting {tid} for {gw}")
-    time.sleep(0.1)
+    time.sleep(0.05)
+    team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
     try:
         with urlopen(FPL_API['team_info'].format(PID=tid)) as url:
             team_data = json.loads(url.read().decode())
-        team_data.pop('leagues', None)
         with urlopen(FPL_API['picks'].format(PID=tid, GW=gw)) as url:
             pick_data = json.loads(url.read().decode())
-        return {'team': team_data, 'picks': pick_data}
+        return {'team': {key: team_data[key] for key in team_keys}, 'data': pick_data}
     except Exception as e:
         print("Encountered error, waiting 3 seconds:", e)
         time.sleep(3)
@@ -309,5 +309,6 @@ def get_single_team_data(tid, gw=16):
 if __name__ == "__main__":
     # input_folder, output_folder = create_folders()
     # get_all_data()
-    # get_single_team_data(2221044, 16)
+    # r = get_single_team_data(2221044, 16)
+    # print(r)
     sample_fpl_teams()
