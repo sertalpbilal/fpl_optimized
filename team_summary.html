@@ -79,7 +79,6 @@
         </div>
     </div>
 
-
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -350,8 +349,11 @@
                     <p>Expected gain is calculated using (Expected Points) * (1-Ownership Ratio). Similarly expected loss is (Expected Points) * (Ownership Ratio).<br/>The logic behind this calculation is simple: if you have a player, you are at an advantage
                         as much as how many people don't own the player. If a player has xP of 6 and no one owns him, you get +6 compared to others. If ownership at 75%, your gain is averaged at 6*(25%)=1.5. Similarly, if you do not own the same player,
                         then your net loss will be 6*(75%)=-4.5.</p>
-                    <b>My points differ from these values here.</b>
-                    <p>Since FPL Official API does not release captaincy ratios, points coming from captains are excluded.</p>
+                    <b>There is a significant difference between "FPL API" and "Sample - Overall" expected loss values. What is the reason?</b>
+                    <p>FPL API does not show whether owned players are on the bench or on the starting lineup. When using FPL API values, we consider all players of other managers as if all of their players are playing. For the sampling methods, we only
+                        use other managers' starting lineup, which should be a better approximation.</p>
+                    <b>My realized points differ from these values here.</b>
+                    <p>Since FPL Official API does not release captaincy ratios, points coming from captains are excluded. I'm planning add them for sampling methods soon.</p>
                     <b>Why some of the players are marked red color?</b>
                     <p>Players in your squad are marked light blue, while biggest threats (5 players) to your team is marked red/orange.</p>
                     <b>What is the point of this analysis?</b>
@@ -652,7 +654,7 @@
     let gw = "GW17";
     let next_gw = "GW17";
     let date = "2020-12-30";
-    let lastupdate = "2020-12-30T10:12:40.855465+00:00";
+    let lastupdate = "2020-12-30T16:11:52.569557+00:00";
     let listdates = [
         "2020-21 / GW17 / 2020-12-30 ", 
         "2020-21 / GW16 / 2020-12-28 ", 
@@ -674,6 +676,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-30T10:12:40.855465+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2020-12-30T16:11:52.569557+00:00</div>
 
 </html> 

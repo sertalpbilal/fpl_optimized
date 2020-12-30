@@ -695,6 +695,10 @@ function generate_plots() {
 
 function plot_bubble_xp_own_prior() {
 
+    if (app.sorted_data.length == 0) {
+        return;
+    }
+
     let pfilter = app.player_filter;
 
     var margin = { top: 40, right: 30, bottom: 40, left: 45 },
@@ -1003,6 +1007,10 @@ function plot_bubble_xp_own_prior() {
 }
 
 function plot_bubble_xp_own_posterior() {
+
+    if (app.sorted_data.length == 0) {
+        return;
+    }
 
     var margin = { top: 40, right: 30, bottom: 45, left: 45 },
         width = 500 - margin.left - margin.right,
