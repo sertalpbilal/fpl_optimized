@@ -38,7 +38,7 @@ var app = new Vue({
                 backdrop: 'static',
                 keyboard: false
             }).modal('show');
-            load_gw();
+            call_gw_stats(this.gw.slice(2));
         },
         close_date() {
             $("#dateModal").modal('hide');
@@ -580,8 +580,12 @@ function load_gw() {
 
     // https://fantasy.premierleague.com/api/event/14/live/
 
-    gw_no = app.gw.slice(2);
+    let gw_no = app.gw.slice(2);
 
+    call_gw_stats(gw_no);
+}
+
+function call_gw_stats(gw_no) {
     $.ajax({
         type: "GET",
         url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/event/${gw_no}/live/`,
@@ -610,6 +614,7 @@ function load_gw() {
         }
     });
 }
+
 
 function load_team() {
     gw = app.gw.slice(2);
