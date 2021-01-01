@@ -466,16 +466,20 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
     background: transparent !important;
 }
 
-.table-striped tbody tr:nth-of-type(even) {
+#trend_table_wrapper .table-striped tbody tr:nth-of-type(even) {
     background-color: #474747 !important;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
+#trend_table_wrapper .table-striped tbody tr:nth-of-type(odd) {
     background-color: #5a5a5a !important;
 }
 
-table.DTFC_Cloned tr {
+#trend_table_wrapper table.DTFC_Cloned tr {
     background-color: #474747 !important;
+}
+
+#trend_table_wrapper div.dataTables_processing {
+    color: black;
 }
 
 
