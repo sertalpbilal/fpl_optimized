@@ -538,6 +538,11 @@ var app = new Vue({
 })
 
 function load_gw() {
+
+    let season = app.season;
+    let gw = app.gw;
+    let date = app.date;
+
     $.ajax({
         type: "GET",
         url: `data/${season}/${gw}/${date}/input/element_gameweek.csv`,
@@ -572,7 +577,7 @@ function load_gw() {
         }
     });
 
-    target_gw = parseInt(gw.slice(2));
+    target_gw = parseInt((gw).slice(2));
 
     $.ajax({
         type: "GET",
@@ -641,7 +646,7 @@ function call_gw_stats(gw_no) {
 
 
 function load_team() {
-    gw = app.gw.slice(2);
+    let gw = app.gw.slice(2);
     if (app.team_id == "-1") {
         return;
     }

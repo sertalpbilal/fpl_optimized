@@ -93,6 +93,7 @@ def team_summary():
             exist.add(i[1])
     # filtered_dates.pop(0)
     target = filtered_dates[0]
+    next_gw = target[1]
     if active_gw != -1:
         for i in filtered_dates:
             if f"GW{active_gw}" == i[1]:
@@ -100,9 +101,9 @@ def team_summary():
                 print(f"Active GW {active_gw}")
     list_dates = [' / '.join(i) for i in filtered_dates]
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw)
+        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw)
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw)
 
 
 @app.route('/ownership_trend.html')
