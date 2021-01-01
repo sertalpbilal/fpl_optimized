@@ -430,3 +430,56 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 #transfer_squad_table .marked-out {
     background-color: rgb(231, 231, 187);
 }
+
+.bottom-gap-bordered {
+    position: relative;
+}
+
+.bottom-gap-bordered:before {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    left: 0.2rem;
+    right: 0.2rem;
+    border-bottom: solid white 1px;
+}
+
+#trend_table .sorting:before,
+#trend_table .sorting_asc:before,
+#trend_table .sorting_desc:before,
+#trend_table .sorting:after,
+#trend_table .sorting_asc:after,
+#trend_table .sorting_desc:after {
+    top: auto !important;
+}
+
+
+/* .midrule td,
+.midrule th:not(.bottom-gap-bordered) {
+    border-bottom: 1px solid white !important;
+} */
+
+
+/* Trend table format */
+
+#trend_table_wrapper div.dataTables_scrollBody {
+    background: transparent !important;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #474747 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #5a5a5a !important;
+}
+
+table.DTFC_Cloned tr {
+    background-color: #474747 !important;
+}
+
+
+/* 
+#trend_table_wrapper .dt-buttons.btn-group.flex-wrap {
+    position: absolute;
+} */
