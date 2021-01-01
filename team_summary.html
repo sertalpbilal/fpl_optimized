@@ -15,10 +15,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css"> -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
+
     <link rel="stylesheet" href="/fpl_optimized/static/css/styles.css">
 </head>
 
@@ -26,26 +32,37 @@
 
     <div id="app">
 
-        <header class="navbar navbar-expand navbar-dark bg-dark-gray container-fluid">
-            <div class="container flex-column flex-md-row">
-                <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3" href="/fpl_optimized" aria-label="Bootstrap">FPL Optimized</a>
-                <div class="navbar-nav-scroll text-secondary ml-0 ml-md-3 mr-0 mr-md-3">
-                    <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="week.html">Optimal Squads</a>
-                        </li>
-                        <!-- <li class="nav-item">
+        <header class="bg-dark-gray">
+            <div class="container">
+                <nav class="navbar navbar-expand-md navbar-dark  container-fluid pl-0 pr-0">
+                    <!-- <div class="container flex-column flex-md-row"> -->
+                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3" href="/fpl_optimized" aria-label="Bootstrap">FPL Optimized</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse text-secondary flex-row-reverse" id="menuToggler">
+                        <!-- ml-0 ml-md-3 mr-0 mr-md-3 -->
+                        <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="week.html">Optimal Squads</a>
+                            </li>
+                            <!-- <li class="nav-item">
                             <a class="nav-link" href="top_squads.html">Top 50 Squads</a>
                         </li> -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="team_summary.html">GW Summary</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
-                        </li>
-                    </ul>
-                </div>
+                            <li class="nav-item">
+                                <a class="nav-link" href="team_summary.html">GW Summary</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="ownership_trend.html">Ownership Trends</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- </div> -->
+                </nav>
             </div>
         </header>
 
@@ -219,7 +236,7 @@
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <div class="mx-auto text-center d-block">
+                                <div class="mx-auto text-center d-block mb-2">
                                     <button class="btn btn-secondary btn-sm" @click='refresh_gw'>Refresh</button>
                                 </div>
                                 <div id="xP_posterior_table">
@@ -641,10 +658,17 @@
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+
+<!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
 
 
@@ -653,10 +677,10 @@
     let season = "2020-21";
     let gw = "GW17";
     let next_gw = "GW17";
-    let date = "2020-12-31";
-    let lastupdate = "2021-01-01T04:15:53.169601+00:00";
+    let date = "2021-01-01";
+    let lastupdate = "2021-01-01T05:40:34.254827+00:00";
     let listdates = [
-        "2020-21 / GW17 / 2020-12-31 ", 
+        "2020-21 / GW17 / 2021-01-01 ", 
         "2020-21 / GW16 / 2020-12-28 ", 
         "2020-21 / GW15 / 2020-12-26 ", 
         "2020-21 / GW14 / 2020-12-19 ", 
@@ -676,6 +700,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-01T04:15:53.169601+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-01T05:40:34.254827+00:00</div>
 
 </html> 

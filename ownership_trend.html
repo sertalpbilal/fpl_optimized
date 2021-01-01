@@ -67,72 +67,68 @@
         </header>
 
 
-
 <main class="container pt-3">
 
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-dark bg-squad-card text-white">
-                <div class="card-body text-center p-3">
-                    <span>FPL Optimized brings you optimal squads for the upcoming gameweeks with daily predictions. Expected points (xP) are provided by <a href="https://fplreview.com/">FPL Review</a>.</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Optimal Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>6 different objectives is optimized with daily expected points for the upcoming GW.</span>
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Ownership Trends</h5>
+                <!-- <div class="scenario_detail">Status of the selection using the data available before the deadline.</div> -->
+                <div class="card-body">
+
+                    <div id="ownership_graph" class="mb-3 mx-auto">
+
                     </div>
-                    <a href="week.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <!-- <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Top 50 Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center p-4 text-center">
-                        <span>An interactive list of 50 optimal squads obtained using iterative optimization to analyze and compare.</span>
+
+                    <table id="trend_table" class="table table-striped table-borderless table-sm text-white text-small w-100" v-if="is_fully_ready" v-cloak>
+                        <thead>
+                            <tr>
+                                <th colspan=2></th>
+                                <th colspan=3 class="text-center bottom-gap-bordered">FPL API</th>
+                                <th colspan=2 class="text-center bottom-gap-bordered">Sample - Top 1K</th>
+                                <th colspan=3></th>
+                            </tr>
+                            <tr class="midrule">
+                                <th>Name</th>
+                                <th>Team</th>
+                                <th class="text-right">Now</th>
+                                <th class="text-right">Last GW</th>
+                                <th class="text-right">Trend</th>
+                                <th class="text-right">Last GW</th>
+                                <th class="text-right">Estimated</th>
+                                <th class="text-center">Pos</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="i in element_now.values">
+                                <td>{{ i.web_name }}</td>
+                                <td>{{ team_codes[i.team_code].short }}</td>
+                                <td class="text-right">{{ i.selected_by_percent }}</td>
+                                <td class="text-right">{{ last_gw_data[i.id] }}</td>
+                                <td class="text-right">{{ getWithSign(parseFloat(i.selected_by_percent) - parseFloat(last_gw_data[i.id])) }}</td>
+                                <td class="text-right">{{ parseFloat(sample_last_gw[i.id]).toFixed(2) }}</td>
+                                <td class="text-right">{{ (sample_estimated[i.id]).toFixed(2) }}</td>
+                                <td class="text-center">{{ element_type[i.element_type].short }}</td>
+                                <td class="text-right">{{ parseInt(i.now_cost)/10 }}</td>
+                                <td class="text-right">{{ i.id }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-center d-block mx-auto" id="loading_box">
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
                     </div>
-                    <a href="top_squads.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div> -->
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">GW Summary <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>A comparison of expected and realized points before and after GW for given team ID.</span>
-                    </div>
-                    <a href="team_summary.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership Trends <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Ownership data and estimations for upcoming GW.</span>
-                    </div>
-                    <a href="ownership_trend.html" class="stretched-link"></a>
                 </div>
             </div>
         </div>
     </div>
-
-
 
 
 </main>
 
-</div>
+ </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.js" integrity="sha512-M17tsaj3tHw5m/gI+8XjDLTuPZ0cpTofhFLJUT9niFa/DK8WAhsSLW764iSaaXoAoivXEFUP6VxvpiahJPQ4fg==" crossorigin="anonymous"></script>
@@ -162,11 +158,89 @@
     let date = "2021-01-01";
     let lastupdate = "2021-01-01T05:40:34.254827+00:00";
     let listdates = [
+        "2020-21 / GW17 / 2021-01-01 ", 
+        "2020-21 / GW17 / 2020-12-31 ", 
+        "2020-21 / GW17 / 2020-12-30 ", 
+        "2020-21 / GW17 / 2020-12-29 ", 
+        "2020-21 / GW17 / 2020-12-28 ", 
+        "2020-21 / GW16 / 2020-12-28 ", 
+        "2020-21 / GW16 / 2020-12-27 ", 
+        "2020-21 / GW16 / 2020-12-26 ", 
+        "2020-21 / GW15 / 2020-12-26 ", 
+        "2020-21 / GW15 / 2020-12-25 ", 
+        "2020-21 / GW15 / 2020-12-24 ", 
+        "2020-21 / GW15 / 2020-12-23 ", 
+        "2020-21 / GW15 / 2020-12-22 ", 
+        "2020-21 / GW15 / 2020-12-21 ", 
+        "2020-21 / GW15 / 2020-12-20 ", 
+        "2020-21 / GW15 / 2020-12-19 ", 
+        "2020-21 / GW14 / 2020-12-19 ", 
+        "2020-21 / GW14 / 2020-12-18 ", 
+        "2020-21 / GW14 / 2020-12-17 ", 
+        "2020-21 / GW14 / 2020-12-16 ", 
+        "2020-21 / GW14 / 2020-12-15 ", 
+        "2020-21 / GW13 / 2020-12-15 ", 
+        "2020-21 / GW13 / 2020-12-14 ", 
+        "2020-21 / GW13 / 2020-12-13 ", 
+        "2020-21 / GW13 / 2020-12-12 ", 
+        "2020-21 / GW12 / 2020-12-11 ", 
+        "2020-21 / GW12 / 2020-12-10 ", 
+        "2020-21 / GW12 / 2020-12-09 ", 
+        "2020-21 / GW12 / 2020-12-08 ", 
+        "2020-21 / GW12 / 2020-12-07 ", 
+        "2020-21 / GW12 / 2020-12-06 ", 
+        "2020-21 / GW12 / 2020-12-05 ", 
+        "2020-21 / GW11 / 2020-12-05 ", 
+        "2020-21 / GW11 / 2020-12-04 ", 
+        "2020-21 / GW11 / 2020-12-03 ", 
+        "2020-21 / GW11 / 2020-12-02 ", 
+        "2020-21 / GW11 / 2020-12-01 ", 
+        "2020-21 / GW11 / 2020-11-30 ", 
+        "2020-21 / GW11 / 2020-11-29 ", 
+        "2020-21 / GW11 / 2020-11-28 ", 
+        "2020-21 / GW10 / 2020-11-27 ", 
+        "2020-21 / GW10 / 2020-11-26 ", 
+        "2020-21 / GW10 / 2020-11-25 ", 
+        "2020-21 / GW10 / 2020-11-24 ", 
+        "2020-21 / GW10 / 2020-11-23 ", 
+        "2020-21 / GW10 / 2020-11-22 ", 
+        "2020-21 / GW10 / 2020-11-21 ", 
+        "2020-21 / GW9 / 2020-11-21 ", 
+        "2020-21 / GW9 / 2020-11-20 ", 
+        "2020-21 / GW9 / 2020-11-19 ", 
+        "2020-21 / GW9 / 2020-11-18 ", 
+        "2020-21 / GW9 / 2020-11-17 ", 
+        "2020-21 / GW9 / 2020-11-16 ", 
+        "2020-21 / GW9 / 2020-11-15 ", 
+        "2020-21 / GW9 / 2020-11-14 ", 
+        "2020-21 / GW9 / 2020-11-13 ", 
+        "2020-21 / GW9 / 2020-11-12 ", 
+        "2020-21 / GW9 / 2020-11-11 ", 
+        "2020-21 / GW9 / 2020-11-10 ", 
+        "2020-21 / GW9 / 2020-11-09 ", 
+        "2020-21 / GW9 / 2020-11-08 ", 
+        "2020-21 / GW9 / 2020-11-07 ", 
+        "2020-21 / GW9 / 2020-11-06 ", 
+        "2020-21 / GW8 / 2020-11-06 ", 
+        "2020-21 / GW8 / 2020-11-05 ", 
+        "2020-21 / GW8 / 2020-11-04 ", 
+        "2020-21 / GW8 / 2020-11-03 ", 
+        "2020-21 / GW8 / 2020-11-02 ", 
+        "2020-21 / GW8 / 2020-11-01 ", 
+        "2020-21 / GW8 / 2020-10-31 ", 
+        "2020-21 / GW8 / 2020-10-30 ", 
+        "2020-21 / GW7 / 2020-10-30 ", 
+        "2020-21 / GW7 / 2020-10-29 ", 
+        "2020-21 / GW7 / 2020-10-28 ", 
     ];
 </script>
+
+<script src="/fpl_optimized/static/js/main.js"></script>
+
+<script src="/fpl_optimized/static/js/ownership_trend.js"></script>
 
 </body>
 
 <div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-01T05:40:34.254827+00:00</div>
 
-</html>
+</html> 
