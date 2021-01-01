@@ -562,9 +562,6 @@ function load_gw() {
     });
 
     target_gw = parseInt(gw.slice(2));
-    if (gw == next_gw) {
-        target_gw = parseInt(gw.slice(2)) - 1;
-    }
 
     $.ajax({
         type: "GET",
@@ -574,9 +571,25 @@ function load_gw() {
             app.saveSampleData(true, data);
         },
         error: function() {
-            app.saveSampleData(false, [])
+            console.log("Cannot get GW sample, trying last week")
+            if (gw == next_gw) {
+                target_gw = parseInt(gw.slice(2)) - 1;
+            }
+            $.ajax({
+                type: "GET",
+                url: `sample/${target_gw}/fpl_sampled.json`,
+                dataType: "json",
+                success: function(data) {
+                    app.saveSampleData(true, data);
+                },
+                error: function() {
+                    app.saveSampleData(false, [])
+                }
+            });
         }
     });
+
+
 
     // https://fantasy.premierleague.com/api/event/14/live/
 
