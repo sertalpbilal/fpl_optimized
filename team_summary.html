@@ -67,10 +67,16 @@
         </header>
 
 <main class="container pt-3">
-    <div class="row" v-cloak>
+    <div class="row sticky-top" v-cloak>
         <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white">
                 <div class="card-body text-center p-3">
+
+                    <div class="mx-auto d-flex justify-content-center" v-cloak v-if="is_active">
+                        <span>Active GW: <span style="color: orange">{{ active_gw }}</span></span>
+
+                    </div>
+
                     <div class="mx-auto d-flex justify-content-center" v-cloak>
                         <span>Snapshot</span>
                         <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
@@ -78,6 +84,7 @@
                             <li class="nav-item breadcrumb-item">{{ gw }}</li>
                             <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
                         </ul>
+
                     </div>
                     <div class="mx-auto d-flex justify-content-center" v-cloak>
                         <span>Data</span>
@@ -107,7 +114,7 @@
                             <div class="col-12 col-sm-6 mb-3">
                                 <h6>Expected Gain / Loss Analysis</h6>
                                 <div class="explanation text-small">Shows the relative <b>expected</b> gain and loss compared to rest of FPL managers.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble
-                                    size shows the price of the player before the deadline.<br/>These values exclude captaincy.
+                                    size shows the price of the player before the deadline.<br/><span v-if="!is_using_captain">These values exclude captaincy.</span>
                                 </div>
                                 <div id="xp_own_prior" class="plot dark-plot mb-3">
 
@@ -157,7 +164,7 @@
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
                                                 <td class="text-muted">{{ i[1].player_id }}</td>
-                                                <td>L</td>
+                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right" style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
@@ -229,7 +236,7 @@
                             <div class="col-12 col-sm-6 mb-3">
                                 <h6>Net Gain / Loss Analysis</h6>
                                 <div class="explanation text-small">Shows the relative <b>net</b> gain and loss.<br/> x-axis show the relative gain by having the player in your lineup, y-axis shows the relative loss by not having the player.<br/> Bubble size shows the price of the player
-                                    before the deadline.<br/>These values exclude captaincy.
+                                    before the deadline.<br/><span v-if="!is_using_captain">These values exclude captaincy.</span>
                                 </div>
                                 <div id="xp_own_posterior" class="plot dark-plot">
 
@@ -675,10 +682,10 @@
 <script>
     let repo_name = "fpl_optimized"
     let season = "2020-21";
-    let gw = "GW18";
-    let next_gw = "GW18";
+    let gw = "GW17";
+    let next_gw = "GW17";
     let date = "2021-01-01";
-    let lastupdate = "2021-01-01T17:15:04.255710+00:00";
+    let lastupdate = "2021-01-01T19:41:07.260614+00:00";
     let listdates = [
         "2020-21 / GW18 / 2021-01-01 ", 
         "2020-21 / GW17 / 2021-01-01 ", 
@@ -693,6 +700,8 @@
         "2020-21 / GW8 / 2020-11-06 ", 
         "2020-21 / GW7 / 2020-10-30 ", 
     ];
+    let is_active = true ;
+    let active_gw = 17 ;
 </script>
 
 <script src="/fpl_optimized/static/js/main.js"></script>
@@ -701,6 +710,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-01T17:15:04.255710+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-01T19:41:07.260614+00:00</div>
 
 </html> 
