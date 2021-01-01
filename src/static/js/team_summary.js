@@ -6,6 +6,8 @@ var app = new Vue({
         next_gw: next_gw,
         date: date,
         listdates: listdates,
+        is_active: is_active,
+        active_gw: active_gw,
         solutions: [],
         team_id: "-1",
         ownership_source: "Official FPL API",
@@ -23,7 +25,8 @@ var app = new Vue({
         first_init: true,
         swap_pair: { out: -1, in: -1 },
         transfer_squad_table: "",
-        transfer_table: ""
+        transfer_table: "",
+        captaincy_enabled: false
     },
     methods: {
         refresh_results() {
@@ -218,7 +221,6 @@ var app = new Vue({
             if (event.target.files == undefined) {
                 return;
             }
-            debugger;
             let file = event.target.files[0]
             event.target.value = '';
             if (file.type == "text/plain") {
@@ -273,7 +275,6 @@ var app = new Vue({
             }
         },
         openTransfer() {
-            debugger;
             let self = this;
             this.clearTransferModal();
             this.generateList();
@@ -358,6 +359,16 @@ var app = new Vue({
             if (this.team_data.length == 0) { return false; }
             return true;
         },
+        is_using_sample: function() {
+            if (this.ownership_source == "Official FPL API") {
+                return false;
+            }
+            return true;
+        },
+        is_using_captain: function() {
+            if (!this.is_using_sample) { return false; }
+            return this.captaincy_enabled;
+        },
         ownership_data: function() {
             if (Object.keys(this.sample_data).length == 0) {
                 return this.el_data;
@@ -386,7 +397,7 @@ var app = new Vue({
                     teams = this.sample_data["100"].filter(i => i.team !== undefined);
                     break;
                 case "Sample - Ahead of Team":
-                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.rank);
+                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
                     break;
                 default:
                     break;

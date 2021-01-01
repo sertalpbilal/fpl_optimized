@@ -8,6 +8,7 @@ these pages to static HTML.
 import glob
 import os
 import datetime
+from collect import get_fpl_info
 
 from flask import Flask, render_template, send_from_directory
 app = Flask(__name__)
@@ -73,6 +74,14 @@ def best_gw_squads():
 
 @app.route('/team_summary.html')
 def team_summary():
+    is_active_gw = 'false'
+    active_gw = -1
+    data = get_fpl_info('now')
+    gws = [i for i in data['events'] if i['is_current'] == True]
+    if len(gws) == 1:
+        is_active_gw = 'true'
+        active_gw = gws[0]['id']
+
     all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
     all_dates.sort(key=folder_order, reverse=True)
     list_dates = ([i.split('/')[2:5] for i in all_dates])
@@ -84,11 +93,16 @@ def team_summary():
             exist.add(i[1])
     # filtered_dates.pop(0)
     target = filtered_dates[0]
+    if active_gw != -1:
+        for i in filtered_dates:
+            if f"GW{active_gw}" == i[1]:
+                target = i
+                print(f"Active GW {active_gw}")
     list_dates = [' / '.join(i) for i in filtered_dates]
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw)
 
 
 @app.route('/ownership_trend.html')

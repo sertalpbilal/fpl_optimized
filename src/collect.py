@@ -309,6 +309,13 @@ def get_single_team_data(tid, gw=16):
         return None
 
 
+def get_fpl_info(info_type, **kwargs):
+    "Return requested fpl info"
+    with urlopen(FPL_API[info_type].format(**kwargs)) as url:
+        data = json.loads(url.read().decode())
+    return data
+
+
 # TODO: fbref?
 
 if __name__ == "__main__":
@@ -316,4 +323,9 @@ if __name__ == "__main__":
     # get_all_data()
     # r = get_single_team_data(2221044, 16)
     # print(r)
-    sample_fpl_teams()
+    # sample_fpl_teams()
+
+    # r = get_fpl_info('live', GW=17)
+    # print(r)
+
+    pass

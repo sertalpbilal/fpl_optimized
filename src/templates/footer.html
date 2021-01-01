@@ -30,6 +30,10 @@
     let listdates = ["% for i in list_dates %"
         "**i** ", "% endfor %"
     ];
+    let is_active = ** is_active |
+        default ("false", true) ** ;
+    let active_gw = ** active_gw |
+        default (-1, false) ** ;
 </script>
 "% for item in scripts %"
 <script src="/** repo_name **** url_for('static', filename='js/' + item +'.js') **"></script>
