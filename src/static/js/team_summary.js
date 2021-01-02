@@ -109,18 +109,40 @@ var app = new Vue({
                 e.element_type = els[e.player_id].element_type;
                 e.price = parseFloat(els[e.player_id].now_cost) / 10;
                 // e.ownership = els[e.player_id].selected_by_percent;
-                e.ownership = ownership_vals[e.player_id].selected_by_percent;
+                if ('effective_ownership' in ownership_vals[e.player_id] && this.is_using_captain) {
+                    e.ownership = ownership_vals[e.player_id].effective_ownership;
+                } else {
+                    e.ownership = ownership_vals[e.player_id].selected_by_percent;
+                }
                 e.lineup = lineup.includes(parseInt(e.player_id));
                 e.squad = squad.includes(parseInt(e.player_id));
                 e.captain = (e.player_id == captain);
+
                 e.xp_owned = (1 - e.ownership / 100) * e.points_md;
                 e.xp_non_owned = -e.ownership / 100 * e.points_md;
-                e.net_xp = ((e.lineup == 1) - e.ownership / 100) * e.points_md;
+                if (this.is_using_captain) {
+                    e.net_xp = ((e.lineup + e.captain) - e.ownership / 100) * e.points_md;
+                } else {
+                    e.net_xp = ((e.lineup == 1) - e.ownership / 100) * e.points_md;
+                }
+
+                if (this.is_using_captain) {
+                    e.xp_owned_captain = ((e.captain + 1) - e.ownership / 100) * e.points_md;
+                    e.net_xp_captain = ((e.captain + e.lineup) - e.ownership / 100) * e.points_md;
+                } else {
+                    e.xp_owned_captain = 0;
+                    e.net_xp_captain = 0;
+                }
+
                 e.threat = false;
                 e.stats = rp[e.player_id];
 
                 if (this.rp_data.length != 0) {
-                    e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    if (this.is_using_captain) {
+                        e.net_gain = ((e.captain + 1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    } else {
+                        e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                    }
                     e.net_loss = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
                     if (e.lineup) {
                         e.net_benefit = e.net_gain;
@@ -179,6 +201,15 @@ var app = new Vue({
                 el.multiplier = 0;
             }
             this.generateList();
+        },
+        chooseCaptain(e) {
+            let id = e.currentTarget.dataset.id;
+            let el = this.team_data.picks.filter(i => i.element == parseInt(id))[0];
+            this.team_data.picks.forEach((e) => {
+                e.is_captain = false;
+            })
+            el.is_captain = true;
+            this.changeData();
         },
         refresh_plots() {
             $(".plot").empty();
@@ -349,6 +380,10 @@ var app = new Vue({
                 $(".plot").empty();
                 generate_plots();
             });
+        },
+        toggleCaptaincy() {
+            this.captaincy_enabled = !this.captaincy_enabled;
+            this.changeData();
         }
     },
     computed: {
@@ -403,11 +438,15 @@ var app = new Vue({
                     break;
             }
 
+            debugger;
             let el_copy = _.cloneDeep(this.el_data);
             let all_players = teams.map(i => i.data.picks).flat().filter(i => i.multiplier > 0).map(i => i.element);
+            let captains = teams.map(i => i.data.picks).flat().filter(i => i.is_captain).map(i => i.element);
             el_copy.forEach((e) => {
                 let cnt = all_players.filter(i => i.toString() == e.id).length;
                 e.selected_by_percent = cnt / teams.length * 100;
+                let captain_cnt = captains.filter(i => i.toString() == e.id).length;
+                e.effective_ownership = (cnt + captain_cnt) / teams.length * 100;
             });
             return el_copy;
 
@@ -461,7 +500,11 @@ var app = new Vue({
         },
         lineup_xp_sum: function() {
             if (!this.is_ready) { return 0; }
-            return this.prior_data.filter(j => j[1].lineup).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
+            if (this.is_using_captain) {
+                return this.prior_data.filter(j => j[1].lineup).map(j => j[1].xp_owned_captain).reduce((a, b) => a + b, 0).toFixed(2);
+            } else {
+                return this.prior_data.filter(j => j[1].lineup).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
+            }
         },
         lineup_own_sum: function() {
             if (!this.is_ready) { return 0; }
@@ -469,7 +512,11 @@ var app = new Vue({
         },
         squad_xp_sum: function() {
             if (!this.is_ready) { return 0; }
-            return this.prior_data.filter(j => j[1].squad).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
+            if (this.is_using_captain) {
+                return this.prior_data.filter(j => j[1].squad).map(j => j[1].xp_owned_captain).reduce((a, b) => a + b, 0).toFixed(2);
+            } else {
+                return this.prior_data.filter(j => j[1].squad).map(j => j[1].xp_owned).reduce((a, b) => a + b, 0).toFixed(2);
+            }
         },
         squad_own_sum: function() {
             if (!this.is_ready) { return 0; }
@@ -484,15 +531,24 @@ var app = new Vue({
             let lineup_xp = this.lineup_xp_sum;
             let other_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0);
             let net_change = parseFloat(lineup_xp) + parseFloat(other_xp);
-            let change = "" + net_change < 0 ? net_change.toFixed(2) : "+" + net_change.toFixed(2);
+            // let change = "" + net_change < 0 ? net_change.toFixed(2) : "+" + net_change.toFixed(2);
+            let change = getWithSign(net_change);
             return change;
         },
         aftermath: function() {
             if (!this.is_ready) { return {}; }
-            let gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-            let gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-            let fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-            let fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+            let gw_xp = gw_rap = fpl_xp = fpl_rp = 0;
+            if (this.is_using_captain) {
+                gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 + j[1].captain - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+            } else {
+                gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+            }
             return { 'net_xp': gw_xp, 'net_rp': gw_rp, 'fpl_xp': fpl_xp, 'fpl_rp': fpl_rp }
         },
         formation: function() {
@@ -753,6 +809,10 @@ function plot_bubble_xp_own_prior() {
     let y_low = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].xp_non_owned)));
     let y_high = Math.floor(Math.min(...app.sorted_data.map(i => i[1].xp_non_owned)));
 
+    if (app.is_using_captain) {
+        x_high = Math.ceil(Math.max(...app.sorted_data.map(i => i[1].xp_owned_captain)));
+    }
+
     // Add X axis
     var x = d3.scaleLinear()
         .domain([x_low, x_high])
@@ -850,8 +910,23 @@ function plot_bubble_xp_own_prior() {
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
                     <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
-                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">+${d.xp_owned.toFixed(2)}</td></tr>
-                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${d.xp_non_owned.toFixed(2)}</td></tr>
+                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.xp_owned)}</td></tr>
+                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${getWithSign(d.xp_non_owned)}</td></tr>
+                </table>
+            `)
+            .style("left", (d3.event.pageX + 15) + "px")
+            .style("top", (d3.event.pageY + 15) + "px")
+    }
+    var mousemove_captain = function(d) {
+        tooltip
+            .html(`
+                <div class="mx-auto d-block text-center" style="color: orange">${d.web_name} (Captain)</div>
+                <table class="table table-striped table-sm table-dark mb-0">
+                    <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
+                    <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
+                    <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
+                    <tr><td class="text-right">Net Gain</td><td style="color: orange">${getWithSign(d.xp_owned_captain)}</td></tr>
+                    <tr><td class="text-right">Net Loss</td><td style="color: white">${getWithSign(d.xp_non_owned)}</td></tr>
                 </table>
             `)
             .style("left", (d3.event.pageX + 15) + "px")
@@ -871,7 +946,11 @@ function plot_bubble_xp_own_prior() {
     }
 
     // Guidelines
-    lines = [5, 10, 25, 50];
+    if (app.is_using_captain) {
+        lines = [5, 10, 25, 50, 100];
+    } else {
+        lines = [5, 10, 25, 50];
+    }
     lines = lines.map(i => [i, function(d) {
         x_min = 0;
         y_min = 0;
@@ -1036,6 +1115,28 @@ function plot_bubble_xp_own_prior() {
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
+
+    if (app.is_using_captain) {
+
+        let captain = your_squad.filter(i => i.captain);
+
+        svg.append('g')
+            .selectAll()
+            .data(captain)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d) { return x(d.xp_owned_captain); })
+            .attr("cy", function(d) { return y(d.xp_non_owned); })
+            .attr("r", function(d) { return z(d.price); })
+            .style("fill", "#042235")
+            .style("opacity", "0.5")
+            .attr("stroke", "orange")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove_captain)
+            .on("mouseleave", mouseleave);
+
+    }
+
     // risk color: e22f2f - stroke fffe53
     // own color: 6fcfd6 - stroke ffffff
 }
@@ -1188,8 +1289,8 @@ function plot_bubble_xp_own_posterior() {
         .style("stroke", "#8e8e8e")
         .style("stroke-width", 2);
 
-
     lines = [5, 10, 25, 50];
+
     lines = lines.map(i => [i, function(d) {
         x_min = 0;
         y_min = 0;
@@ -1318,8 +1419,6 @@ function plot_bubble_xp_own_posterior() {
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
-
-
 
 }
 

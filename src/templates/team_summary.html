@@ -25,6 +25,12 @@
                         <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#sourceModal">
                             {{ ownership_source }}
                         </div>
+                        <template v-if="is_using_sample">
+                            <span class="ml-2">(Captaincy</span>
+                            <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak @click="toggleCaptaincy">
+                                {{ captaincy_enabled ? "On" : "Off"}}
+                            </div>)
+                        </template>
                     </div>
                     <div class="mx-auto d-flex justify-content-center" v-cloak>
                         <span>Team</span>
@@ -101,8 +107,11 @@
                                                 <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-right" style="color: #acc3c5">+{{ i[1].xp_owned.toFixed(2) }}</td>
-                                                <td class="text-right text-muted">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <template>
+                                                    <td class="text-right" style="color: orange" v-if="is_using_captain && i[1].captain">{{ getWithSign(i[1].xp_owned_captain ) }}</td>
+                                                    <td class="text-right" style="color: #acc3c5" v-else>{{ getWithSign(i[1].xp_owned) }}</td>
+                                                </template>
+                                                <td class="text-right text-muted">{{ getWithSign(i[1].xp_non_owned) }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
@@ -110,8 +119,8 @@
                                                 <td>B</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-right text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
-                                                <td class="text-right" style="color: #9d91a5">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
+                                                <td class="text-right" style="color: #9d91a5">{{ getWithSign(i[1].xp_non_owned) }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
                                             </tr>
                                             <tr v-for="i in prior_data.slice(-5).reverse()" class="nonowned-row">
@@ -119,19 +128,19 @@
                                                 <td></td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-right text-muted">+{{ i[1].xp_owned.toFixed(2) }}</td>
-                                                <td class="text-right" style="color: #ff8763">{{ i[1].xp_non_owned.toFixed(2) }}</td>
+                                                <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
+                                                <td class="text-right" style="color: #ff8763">{{ getWithSign(i[1].xp_non_owned) }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan=4><b>Overall Gain - Lineup</b></td>
-                                                <td class="text-right">+{{ lineup_xp_sum }}</td>
+                                                <td class="text-right">{{ getWithSign(lineup_xp_sum) }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (lineup_own_sum/11).toFixed(1) }}%</td>
                                             </tr>
                                             <tr>
                                                 <td colspan=4><b>Overall Gain - Squad</b></td>
-                                                <td class="text-right">+{{ squad_xp_sum }}</td>
+                                                <td class="text-right">{{ getWithSign(squad_xp_sum) }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (squad_own_sum/15).toFixed(1) }}%</td>
                                             </tr>
@@ -196,14 +205,21 @@
                                         </thead>
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
-                                                <td>L</td>
+                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
-                                                <td class="text-right">{{ getWithSign(i[1].net_xp) }}</td>
-                                                <td class="text-right" style="color: #acc3c5">{{ getWithSign(i[1].net_benefit) }}</td>
+                                                <template v-if="is_using_captain && i[1].captain">
+                                                    <td class="text-right">{{ getWithSign(i[1].net_xp) }}</td>
+                                                    <td class="text-right" class="captain_color">{{ getWithSign(i[1].net_benefit) }}</td>
+                                                </template>
+                                                <template v-else>
+                                                    <td class="text-right">{{ getWithSign(i[1].net_xp) }}</td>
+                                                    <td class="text-right" style="color: #acc3c5">{{ getWithSign(i[1].net_benefit) }}</td>
+                                                </template>
+
                                             </tr>
                                             <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
                                                 <td>B</td>
@@ -470,6 +486,7 @@
                                 <tr>
                                     <th>Pos</th>
                                     <th>Name</th>
+                                    <th v-if="is_using_captain">Cap</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -477,7 +494,8 @@
                                 <template v-for="(ty, id) of el_types">
                                     <tr v-for="i in team_squad" v-if="i[1].lineup && parseInt(i[1].element_type)==id">
                                         <td>{{ ty.short }}</td>
-                                        <td>{{ i[1].web_name}} </td>
+                                        <td>{{ i[1].web_name}} <span class="captain_color" v-if="is_using_captain && i[1].captain">[C]</span></td>
+                                        <td v-if="is_using_captain"><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="chooseCaptain"><i class="fa fa-star" aria-hidden="true"></i></button></td>
                                         <td><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
                                     </tr>
                                 </template>
