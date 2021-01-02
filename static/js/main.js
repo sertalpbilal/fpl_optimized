@@ -30,7 +30,7 @@ let element_type = {
 
 function getWithSign(val, digits = 2) {
     if (val >= 0) {
-        return "+" + val.toFixed(digits);
+        return "+" + parseFloat(val).toFixed(digits);
     } else {
         return val.toFixed(digits);
     }
