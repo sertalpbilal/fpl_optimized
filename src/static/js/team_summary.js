@@ -230,6 +230,7 @@ var app = new Vue({
                     self.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(squad[index].player_id);
                         val.multiplier = index < 11 ? 1 : 0;
+                        val.is_captain = squad[index].is_captain == "True";
                     })
                     self.generateList();
                     self.$nextTick(() => {
@@ -438,7 +439,6 @@ var app = new Vue({
                     break;
             }
 
-            debugger;
             let el_copy = _.cloneDeep(this.el_data);
             let all_players = teams.map(i => i.data.picks).flat().filter(i => i.multiplier > 0).map(i => i.element);
             let captains = teams.map(i => i.data.picks).flat().filter(i => i.is_captain).map(i => i.element);
