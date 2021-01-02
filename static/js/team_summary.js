@@ -673,7 +673,7 @@ function load_gw() {
 function call_gw_stats(gw_no) {
     $.ajax({
         type: "GET",
-        url: `http://178.128.168.158:8080/https://fantasy.premierleague.com/api/event/${gw_no}/live/`,
+        url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/event/${gw_no}/live/`,
         contentType: 'text/plain',
         dataType: 'text',
         headers: {
@@ -712,7 +712,7 @@ function load_team() {
     }).modal('show');
     $.ajax({
         type: "GET",
-        url: `http://178.128.168.158:8080/https://fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
+        url: `https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
         contentType: 'text/plain',
         dataType: 'text',
         // responseType: 'application/json',
