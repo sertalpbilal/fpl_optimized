@@ -36,6 +36,10 @@ function getWithSign(val, digits = 2) {
     }
 }
 
+function getSum(arr) {
+    return arr.reduce((a, b) => a + b, 0)
+}
+
 const downloadToFile = (content, filename, contentType) => {
     const a = document.createElement('a');
     const file = new Blob([content], { type: contentType });
