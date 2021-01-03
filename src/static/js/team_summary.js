@@ -16,6 +16,7 @@ var app = new Vue({
         el_data: [],
         xp_data: [],
         rp_data: [],
+        fixture_data: [],
         rp_ready: false,
         team_data: [],
         sorted_data: [],
@@ -84,6 +85,9 @@ var app = new Vue({
         },
         saveRPData(data) {
             this.rp_data = data;
+        },
+        saveFixtureData(data) {
+            this.fixture_data = data;
         },
         generateList() {
 
@@ -401,6 +405,9 @@ var app = new Vue({
             }
             return true;
         },
+        is_live_gw: function() {
+            return this.gw.slice(2) == active_gw;
+        },
         is_using_captain: function() {
             if (!this.is_using_sample) { return false; }
             return this.captaincy_enabled;
@@ -532,24 +539,41 @@ var app = new Vue({
             let other_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].xp_non_owned).reduce((a, b) => a + b, 0);
             let net_change = parseFloat(lineup_xp) + parseFloat(other_xp);
             // let change = "" + net_change < 0 ? net_change.toFixed(2) : "+" + net_change.toFixed(2);
-            let change = getWithSign(net_change);
-            return change;
+            return net_change;
         },
         aftermath: function() {
             if (!this.is_ready) { return {}; }
-            let gw_xp = gw_rap = fpl_xp = fpl_rp = 0;
+            debugger;
+            // let games = this.fixture_data.filter(i => i.event == this.gw.slice(2));
+            let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
+            let exp_gain = exp_loss = real_gain = real_loss = exp_gain_live = exp_loss_live = 0;
+            let team_lineup = this.prior_data.filter(j => j[1].lineup);
+            let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            let rest_players = this.prior_data.filter(j => !j[1].lineup);
+            let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+
             if (this.is_using_captain) {
-                gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 + j[1].captain - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
+                exp_gain_live = getSum(team_lineup_live.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
+                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (1 + j[1].captain - j[1].ownership / 100)))
+                exp_loss = getSum(rest_players.map(j => j[1].points_md * (j[1].ownership / 100)));
+                exp_loss_live = getSum(rest_players_live.map(j => j[1].points_md * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+
+                played_own = getSum(team_lineup_live.map(i => 1 + i[1].captain)) + "/" + getSum(team_lineup.map(i => 1 + i[1].captain));
+                played_nonown = rest_players_live.length + "/" + rest_players.length;
             } else {
-                gw_xp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].points_md * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                gw_rp = this.prior_data.filter(j => j[1].lineup).map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                fpl_xp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].points_md * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
-                fpl_rp = this.prior_data.filter(j => j[1].lineup == false).map(j => j[1].stats.total_points * (j[1].ownership / 100)).reduce((a, b) => a + b, 0);
+                exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 - j[1].ownership / 100)));
+                exp_gain_live = getSum(team_lineup_live.map(j => j[1].points_md * (1 - j[1].ownership / 100)));
+                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)));
+                exp_loss = getSum(rest_players.map(j => j[1].points_md * (j[1].ownership / 100)));
+                exp_loss_live = getSum(rest_players_live.map(j => j[1].points_md * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+
+                played_own = team_lineup_live.length + "/" + team_lineup.length;
+                played_nonown = rest_players_live.length + "/" + rest_players.length;
             }
-            return { 'net_xp': gw_xp, 'net_rp': gw_rp, 'fpl_xp': fpl_xp, 'fpl_rp': fpl_rp }
+            return { exp_gain: exp_gain, exp_loss: exp_loss, real_gain: real_gain, real_loss: real_loss, exp_gain_live: exp_gain_live, exp_loss_live: exp_loss_live, played_own: played_own, played_nonown: played_nonown }
         },
         formation: function() {
             if (!this.is_ready) {
@@ -696,6 +720,33 @@ function call_gw_stats(gw_no) {
             console.log(error);
             console.error(xhr, status, error);
             alert(`Cannot get GW ${gw_no} results.`);
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/`,
+        contentType: 'text/plain',
+        dataType: 'text',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function(data) {
+            let fixtures = JSON.parse(data);
+            app.saveFixtureData(fixtures);
+            app.generateList();
+            $("#gwModal").modal('hide');
+            app.$nextTick(() => {
+                $(".plot").empty();
+                generate_plots();
+            })
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+            console.error(xhr, status, error);
+            alert(`Cannot get fixture data.`);
         }
     });
 }

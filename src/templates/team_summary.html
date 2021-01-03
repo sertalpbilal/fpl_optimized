@@ -155,10 +155,10 @@
 
                                 </div>
                             </div>
-                            <div class="col-12 m-2">
-                                <div class=" bg-dark p-3">
-                                    <div class="d-block mx-auto text-center m-3">Expected Net <span class="own-color">Gain</span> (Lineup): {{ lineup_xp_sum }} / Expected Net <span class="danger-color">Loss</span> (Remaining): {{ rest_xp_sum }}</div>
-                                    <div class="d-block mx-auto text-center m-3">Expected Net Change: {{ net_change }}</div>
+                            <div class="col-12 mt-2">
+                                <div class=" bg-dark p-3 text-small">
+                                    <div class="d-block mx-auto text-center mb-1 border-bottom">Expected Net <span class="own-color">Gain</span> (Lineup): {{ lineup_xp_sum }} <br/> Expected Net <span class="danger-color">Loss</span> (Rest): {{ rest_xp_sum }}</div>
+                                    <div class="d-block mx-auto text-center mt-1">Expected Net Change: {{ getWithSign(net_change) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -263,31 +263,39 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="col-12 m-2">
+                            <div class="col-12 mt-2">
                                 <div class=" bg-dark p-3">
-                                    <table class="table text-white mt-1 mb-1 shrink-table mx-auto">
+                                    <table class="table text-white mt-1 mb-1 shrink-table mx-auto text-small table-sm">
                                         <thead>
                                             <tr>
                                                 <th></th>
                                                 <th class="text-right">Expected</th>
                                                 <th class="text-right">Realized</th>
+                                                <th class="text-right" v-if="is_live_gw">Out of</th>
+                                                <th class="text-right" v-if="is_live_gw">Played</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Gain</td>
-                                                <td class="text-right">{{ (aftermath.net_xp).toFixed(2) }}</td>
-                                                <td class="text-right">{{ (aftermath.net_rp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.exp_gain).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.real_gain).toFixed(2) }}</td>
+                                                <td class="text-right" v-if="is_live_gw">{{ (aftermath.exp_gain_live).toFixed(2) }}</td>
+                                                <td class="text-right" v-if="is_live_gw">{{ aftermath.played_own }}</td>
                                             </tr>
                                             <tr>
                                                 <td>Loss</td>
-                                                <td class="text-right">{{ (aftermath.fpl_xp).toFixed(2) }}</td>
-                                                <td class="text-right">{{ (aftermath.fpl_rp).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.exp_loss).toFixed(2) }}</td>
+                                                <td class="text-right">{{ (aftermath.real_loss).toFixed(2) }}</td>
+                                                <td class="text-right" v-if="is_live_gw">{{ (aftermath.exp_loss_live).toFixed(2) }}</td>
+                                                <td class="text-right" v-if="is_live_gw">{{ aftermath.played_nonown }}</td>
                                             </tr>
                                             <tr>
                                                 <td><b>Net</b></td>
-                                                <td class="text-right">{{ net_change }}</td>
-                                                <td class="text-right"><b class="important-value">{{ getWithSign(aftermath.net_rp-aftermath.fpl_rp) }}</b></td>
+                                                <td class="text-right">{{ getWithSign(net_change) }}</td>
+                                                <td class="text-right"><b class="important-value">{{ getWithSign(aftermath.real_gain-aftermath.real_loss) }}</b></td>
+                                                <td class="text-right" v-if="is_live_gw">{{ getWithSign(aftermath.exp_gain_live-aftermath.exp_loss_live) }}</td>
+                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>
