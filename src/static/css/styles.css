@@ -514,3 +514,8 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 #fpl_analytics_table_wrapper div.dataTables_processing {
     color: black;
 }
+
+#fpl_analytics_table_wrapper a,
+#fpl_analytics_table a {
+    color: #c6e5ff;
+}
