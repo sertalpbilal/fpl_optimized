@@ -119,6 +119,20 @@ def ownership_trend():
         return render_template('ownership_trend.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
 
+@app.route('/fpl_analytics_league.html')
+def fpl_analytics():
+    all_dates = glob.glob('build/data/*/*/*/input/fpl_analytics_league.csv')
+    all_dates.sort(key=folder_order, reverse=True)
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
+    target = list_dates[0]
+    list_dates = [' / '.join(i) for i in list_dates]
+    if app.config['DEBUG']:
+        return render_template('fpl_analytics_league.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+    else:
+        return render_template('fpl_analytics_league.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+
+
+
 def list_all_snapshots():
     pass
 
