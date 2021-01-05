@@ -70,83 +70,96 @@
         </header>
 
 
-
 <main class="container pt-3">
 
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
+
                 <div class="card-body text-center p-3">
-                    <span>FPL Optimized brings you optimal squads for the upcoming gameweeks with daily predictions. Expected points (xP) are provided by <a href="https://fplreview.com/">FPL Review</a>.</span>
+                    <div class="mx-auto d-flex justify-content-center" v-cloak>
+                        <span>Last Update:</span>
+                        <ul class="d-flex flex-row mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                            <!-- <li class="nav-item breadcrumb-item">{{ season }}</li>
+                            <li class="nav-item breadcrumb-item">{{ gw }}</li> -->
+                            <li class="nav-item breadcrumb-item">{{ date }}</li>
+                        </ul>
+                    </div>
+
                 </div>
+
+
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Optimal Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>6 different objectives is optimized with daily expected points for the upcoming GW.</span>
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">FPL Analytics xP League</h5>
+                <div class="scenario_detail">FPL Analytics League is generated using <a href="https://fplreview.com/season-review/">fplreview.com season review</a> tool. DM on Twitter to add your team ID to the list.</div>
+                <div class="card-body">
+
+
+                    <table id="fpl_analytics_table" class="table table-striped table-borderless table-sm text-white text-small w-100" v-if="is_ready" v-cloak>
+                        <thead>
+                            <tr>
+                                <th colspan=1></th>
+                                <th colspan=5 class="text-center bottom-gap-bordered">Points</th>
+                                <th colspan=5 class="text-center bottom-gap-bordered">Ranks</th>
+                            </tr>
+                            <tr class="midrule">
+                                <th>Twitter</th>
+                                <th class="text-right">FPL</th>
+                                <th class="text-right">xG</th>
+                                <th class="text-right">IO</th>
+                                <th class="text-right">MD</th>
+                                <th class="text-right">Luck</th>
+                                <th class="text-right">FPL</th>
+                                <th class="text-right">xG</th>
+                                <th class="text-center">IO</th>
+                                <th class="text-right">MD</th>
+                                <th class="text-right">Luck</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="i in league_data">
+                                <td><a :href="'https://twitter.com/' + i.twitter">{{ i.twitter }}</a></td>
+                                <td class="text-right">{{ parseInt(i.FPL) }}</td>
+                                <td class="text-right">{{ parseFloat(i.xG).toFixed(2) }}</td>
+                                <td class="text-right">{{ parseFloat(i.IO).toFixed(2) }}</td>
+                                <td class="text-right">{{ parseFloat(i.MD).toFixed(2) }}</td>
+                                <td class="text-right">{{ parseFloat(i.Luck).toFixed(2) }}</td>
+                                <td class="text-right">{{ i.FPL_Rank }}</td>
+                                <td class="text-right">{{ i.xG_Rank }}</td>
+                                <td class="text-right">{{ i.IO_Rank }}</td>
+                                <td class="text-right">{{ i.MD_Rank }}</td>
+                                <td class="text-right">{{ i.Luck_Rank }}</td>
+                                <!-- <td>{{ team_codes[i.team_code].short }}</td>
+                                <td class="text-right">{{ i.selected_by_percent }}</td>
+                                <td class="text-right">{{ last_gw_data[i.id] }}</td>
+                                <td class="text-right">{{ getWithSign(parseFloat(i.selected_by_percent) - parseFloat(last_gw_data[i.id])) }}</td>
+                                <td class="text-right">{{ parseFloat(sample_last_gw[i.id]).toFixed(2) }}</td>
+                                <td class="text-right">{{ (sample_estimated[i.id]).toFixed(2) }}</td>
+                                <td class="text-center">{{ element_type[i.element_type].short }}</td>
+                                <td class="text-right">{{ parseInt(i.now_cost)/10 }}</td>
+                                <td class="text-right">{{ i.id }}</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-center d-block mx-auto" id="loading_box" v-else>
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
                     </div>
-                    <a href="week.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <!-- <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Top 50 Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center p-4 text-center">
-                        <span>An interactive list of 50 optimal squads obtained using iterative optimization to analyze and compare.</span>
-                    </div>
-                    <a href="top_squads.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div> -->
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">GW Summary <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>A comparison of expected and realized points before and after GW for given team ID.</span>
-                    </div>
-                    <a href="team_summary.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership Trends <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Ownership data between last GW and last update. Refreshed every 6 hours.</span>
-                    </div>
-                    <a href="ownership_trend.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">FPL Analytics League</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Expected points league of FPL Analytics team. Send DM on Twitter to add your team ID.</span>
-                    </div>
-                    <a href="fpl_analytics_league.html" class="stretched-link"></a>
                 </div>
             </div>
         </div>
     </div>
 
 
-
-
 </main>
 
-</div>
+ </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.js" integrity="sha512-M17tsaj3tHw5m/gI+8XjDLTuPZ0cpTofhFLJUT9niFa/DK8WAhsSLW764iSaaXoAoivXEFUP6VxvpiahJPQ4fg==" crossorigin="anonymous"></script>
@@ -176,13 +189,18 @@
     let date = "2021-01-05";
     let lastupdate = "2021-01-05T18:54:27.875692+00:00";
     let listdates = [
+        "2020-21 / GW18 / 2021-01-05 ", 
     ];
     let is_active = false ;
     let active_gw = -1 ;
 </script>
 
+<script src="/fpl_optimized/static/js/main.js"></script>
+
+<script src="/fpl_optimized/static/js/fpl_analytics_league.js"></script>
+
 </body>
 
 <div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-05T18:54:27.875692+00:00</div>
 
-</html>
+</html> 
