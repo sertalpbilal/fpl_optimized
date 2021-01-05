@@ -24,7 +24,7 @@ jobs:
         run: docker build -f Dockerfile-scrap -t scraper .
       - name: Run docker image
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build scraper bash -c "python3 refresh_league.py"
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build scraper bash -c "cd /app && python3 refresh_league.py"
       - name: Add changes to the branch
         run: |
           cd build
