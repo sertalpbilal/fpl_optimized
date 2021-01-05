@@ -79,8 +79,9 @@ def team_summary():
     data = get_fpl_info('now')
     gws = [i for i in data['events'] if i['is_current'] == True]
     if len(gws) == 1:
-        is_active_gw = 'true'
-        active_gw = gws[0]['id']
+        if gws[0]['finished'] == False:
+            is_active_gw = 'true'
+            active_gw = gws[0]['id']
 
     all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
     all_dates.sort(key=folder_order, reverse=True)
