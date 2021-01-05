@@ -1,0 +1,27 @@
+"% include 'header.html' %"
+
+
+<main class="container pt-3">
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <div class="card-body text-center p-3">
+                    <div class="mx-auto d-flex justify-content-center" v-cloak>
+                        <div class="text-center text-muted">Expected values for FPL Analytics folks using <a href="https://fplreview.com/season-review/">fplreview.com season review</a> tool. DM on Twitter to add your team ID.</div>
+                        <span>Snapshot</span>
+                        <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                            <li class="nav-item breadcrumb-item">{{ season }}</li>
+                            <li class="nav-item breadcrumb-item">{{ gw }}</li>
+                            <li class="nav-item breadcrumb-item">{{ date }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+
+"% with scripts=["main", "ownership_trend"] %" "% include 'footer.html' %" "% endwith %"
