@@ -1,0 +1,36 @@
+name: Update FPL Analytics League
+
+on:
+  workflow_dispatch
+
+jobs:
+  build-and-run:
+    name: Fetch FPLReview for Analytics League
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check current directory
+        run: pwd
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Checkout webpage branch
+        uses: actions/checkout@v2
+        with:
+          ref: 'webpage'
+          path: ./build
+      - name: Make sure data folder exists
+        run: mkdir -p ./build/data
+      - name: Build docker image
+        run: docker build -f Dockerfile-scrap -t scraper .
+      - name: Run docker image
+        run: |
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build scraper bash -c "python3 refresh_league.py"
+      - name: Add changes to the branch
+        run: |
+          cd build
+          git add -u
+          git add .
+          git config user.name "Github Action"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Manual Update - Analytics League $GITHUB_RUN_ID"
+          git push

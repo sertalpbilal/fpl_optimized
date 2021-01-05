@@ -403,8 +403,8 @@ def get_team_season_review(team, debug=False):
 # TODO: fbref?
 
 if __name__ == "__main__":
-    input_folder, output_folder = create_folders()
-    get_fpl_analytics_league(input_folder)
+    # input_folder, output_folder = create_folders()
+    # get_fpl_analytics_league(input_folder)
     # get_all_data()
     # r = get_single_team_data(2221044, 16)
     # print(r)
