@@ -491,3 +491,26 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 .captain_color {
     color: orange;
 }
+
+
+/* FPL Analytics table format */
+
+#fpl_analytics_table_wrapper div.dataTables_scrollBody {
+    background: transparent !important;
+}
+
+#fpl_analytics_table_wrapper .table-striped tbody tr:nth-of-type(even) {
+    background-color: #474747 !important;
+}
+
+#fpl_analytics_table_wrapper .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #5a5a5a !important;
+}
+
+#fpl_analytics_table_wrapper table.DTFC_Cloned tr {
+    background-color: #474747 !important;
+}
+
+#fpl_analytics_table_wrapper div.dataTables_processing {
+    color: black;
+}

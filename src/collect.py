@@ -41,6 +41,7 @@ def get_all_data():
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder)
     generate_intermediate_layer(input_folder)
+    get_fpl_analytics_league(input_folder)
     return input_folder, output_folder
 
 
@@ -322,7 +323,17 @@ def get_fpl_analytics_league(target_folder, debug=False):
     base_folder = pathlib.Path().resolve()
     with open(base_folder / 'static/json/fpl_analytics.json') as f:
         data = json.load(f)
+
+    with ProcessPoolExecutor(max_workers=8) as executor:
+        review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
     
+    df = pd.DataFrame(review_values)
+    print(df)
+    df.to_csv(target_folder / 'fpl_analytics_league.csv')
+    
+
+def get_team_season_review(team, debug=False):
+
     env = read_static()
 
     options = webdriver.ChromeOptions()
@@ -351,44 +362,33 @@ def get_fpl_analytics_league(target_folder, debug=False):
     chrome.implicitly_wait(40)
     chrome.maximize_window()
     chrome.get(r"https://fplreview.com/season-review")
-    all_data = []
 
-    for team in data:
-        team_vals = {'twitter': team['twitter']}
-        print(f"Parsing {team['twitter']} season review")
-        wait.until(EC.presence_of_element_located((By.NAME, "TeamID")))
-        inputfield = chrome.find_element_by_name('TeamID')
-        inputfield.send_keys(team['id'])
-        time.sleep(1)
-        inputfield.send_keys(Keys.ENTER)
-        wait.until(EC.presence_of_element_located((By.ID, "points_table")))
-        score_table = chrome.find_element(By.ID, 'points_table')
-        rows = score_table.find_elements_by_tag_name('tr')
-        result_row = rows[1].find_elements_by_tag_name('td')
-        rank_row = rows[2].find_elements_by_tag_name('td')
-        wait.until(EC.text_to_be_present_in_element((By.XPATH, '//tr[2]/td[6]'), '%'))        
-        team_vals['FPL'] = float(result_row[1].text)
-        team_vals['xG'] = float(result_row[2].text)
-        team_vals['IO'] = float(result_row[3].text)
-        team_vals['MD'] = float(result_row[4].text)
-        team_vals['Luck'] = float(result_row[5].text)
-        team_vals['FPL_Rank'] = int(rank_row[1].text.replace(',', ''))
-        team_vals['xG_Rank'] = int(rank_row[2].text.replace(',', ''))
-        team_vals['IO_Rank'] = int(rank_row[3].text.replace(',', ''))
-        team_vals['MD_Rank'] = int(rank_row[4].text.replace(',', ''))
-        team_vals['Luck_Rank'] = rank_row[5].text
-        inputfield = chrome.find_element_by_name('TeamID')
-        inputfield.clear()
-        all_data.append(team_vals)
-    
-    df = pd.DataFrame(all_data)
-    print(df)
-    df.to_csv(target_folder / 'fpl_analytics_league.csv')
-    
-
-def get_team_season_review(team_id):
-    pass
-
+    team_vals = {'twitter': team['twitter']}
+    print(f"Parsing {team['twitter']} season review")
+    wait.until(EC.presence_of_element_located((By.NAME, "TeamID")))
+    inputfield = chrome.find_element_by_name('TeamID')
+    inputfield.send_keys(team['id'])
+    time.sleep(2)
+    inputfield.send_keys(Keys.ENTER)
+    wait.until(EC.presence_of_element_located((By.ID, "points_table")))
+    score_table = chrome.find_element(By.ID, 'points_table')
+    rows = score_table.find_elements_by_tag_name('tr')
+    result_row = rows[1].find_elements_by_tag_name('td')
+    rank_row = rows[2].find_elements_by_tag_name('td')
+    wait.until(EC.text_to_be_present_in_element((By.XPATH, '//tr[2]/td[6]'), '%'))        
+    team_vals['FPL'] = float(result_row[1].text)
+    team_vals['xG'] = float(result_row[2].text)
+    team_vals['IO'] = float(result_row[3].text)
+    team_vals['MD'] = float(result_row[4].text)
+    team_vals['Luck'] = float(result_row[5].text)
+    team_vals['FPL_Rank'] = int(rank_row[1].text.replace(',', ''))
+    team_vals['xG_Rank'] = int(rank_row[2].text.replace(',', ''))
+    team_vals['IO_Rank'] = int(rank_row[3].text.replace(',', ''))
+    team_vals['MD_Rank'] = int(rank_row[4].text.replace(',', ''))
+    team_vals['Luck_Rank'] = rank_row[5].text
+    chrome.close()
+    print(f"Done {team['twitter']}")
+    return team_vals
 
 
 # TODO: fbref?
