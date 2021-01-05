@@ -370,7 +370,16 @@ def get_team_season_review(team, debug=False):
     inputfield.send_keys(team['id'])
     time.sleep(2)
     inputfield.send_keys(Keys.ENTER)
-    wait.until(EC.presence_of_element_located((By.ID, "points_table")))
+    try:
+        wait.until(EC.presence_of_element_located((By.ID, "points_table")))
+    except:
+        inputfield = chrome.find_element_by_name('TeamID')
+        inputfield.clear()
+        inputfield.send_keys(team['id'])
+        time.sleep(4)
+        inputfield.send_keys(Keys.ENTER)
+        print("First wait failed, trying again")
+        wait.until(EC.presence_of_element_located((By.ID, "points_table")))
     score_table = chrome.find_element(By.ID, 'points_table')
     rows = score_table.find_elements_by_tag_name('tr')
     result_row = rows[1].find_elements_by_tag_name('td')
