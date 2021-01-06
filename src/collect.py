@@ -160,14 +160,13 @@ def get_data_fplreview(target_folder, page="massive-data-planner", debug=False):
 
     time.sleep(2)
 
-    if platform == "linux":
-        shutil.move("/tmp/fplreview.csv", target_folder / f"fplreview-{page}.csv")
-    else:
+    if platform == "win32":
         shutil.move(r"C:\temp\fplreview.csv", target_folder / f"fplreview-{page}.csv")
-  
-    if platform == "darwin":
+    elif platform == "linux":
+        shutil.move("/tmp/fplreview.csv", target_folder / f"fplreview-{page}.csv")
+    elif platform == "darwin":
         shutil.move((os.path.expanduser("~/Downloads/fplreview.csv")), target_folder / f"fplreview-{page}.csv")
-        
+  
     chrome.close()
     print("Done")
 
