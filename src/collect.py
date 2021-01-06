@@ -112,7 +112,9 @@ def get_data_fplreview(target_folder, page="massive-data-planner", debug=False):
             "download.prompt_for_download": False,
         })
         chrome = webdriver.Chrome(executable_path=env['unix_driver'], options=options, desired_capabilities=capa)
-    
+    elif platform == "darwin":
+        chrome=webdriver.Chrome()
+        
     print(".", end="", flush=True)
     wait = WebDriverWait(chrome, 30)
     chrome.implicitly_wait(30)
