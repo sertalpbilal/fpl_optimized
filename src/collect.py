@@ -41,7 +41,6 @@ def get_all_data():
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder)
     generate_intermediate_layer(input_folder)
-    get_fpl_analytics_league(input_folder)
     return input_folder, output_folder
 
 
