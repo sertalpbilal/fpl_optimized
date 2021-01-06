@@ -58,7 +58,8 @@ var app = new Vue({
                 });
                 this.table.buttons().container()
                     .appendTo('.col-md-6:eq(0)');
-                draw_md_vs_fpl();
+                draw_comparison_plot("md_vs_fpl_graph", x_tag = "MD", y_tag = "FPL", x_title = "MD Points", y_title = "FPL Points");
+                draw_comparison_plot("io_vs_fpl_graph", x_tag = "IO", y_tag = "FPL", x_title = "IO Points", y_title = "FPL Points");
             })
         },
     },
@@ -69,13 +70,13 @@ var app = new Vue({
     }
 })
 
-function draw_md_vs_fpl() {
+function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
 
     var margin = { top: 10, right: 30, bottom: 35, left: 45 },
         width = 450 - margin.left - margin.right,
         height = 450 - margin.top - margin.bottom;
 
-    var svg = d3.select("#md_vs_fpl_graph")
+    var svg = d3.select(`#${target_id}`)
         .append("svg")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
         .attr("class", "mx-auto d-block")
@@ -84,11 +85,11 @@ function draw_md_vs_fpl() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     debugger;
-    let x_high = Math.max(...app.league_data.map(i => parseFloat(i.MD))) + 20;
-    let x_low = Math.min(...app.league_data.map(i => parseFloat(i.MD))) - 20;
+    let x_high = Math.max(...app.league_data.map(i => parseFloat(i[x_tag]))) + 20;
+    let x_low = Math.min(...app.league_data.map(i => parseFloat(i[x_tag]))) - 20;
 
-    let y_high = Math.max(...app.league_data.map(i => parseFloat(i.FPL))) + 20;
-    let y_low = Math.min(...app.league_data.map(i => parseFloat(i.FPL))) - 20;
+    let y_high = Math.max(...app.league_data.map(i => parseFloat(i[y_tag]))) + 20;
+    let y_low = Math.min(...app.league_data.map(i => parseFloat(i[y_tag]))) - 20;
 
     var x = d3.scaleLinear()
         .domain([x_low, x_high])
@@ -120,7 +121,7 @@ function draw_md_vs_fpl() {
         .attr("y", height + 30)
         .attr("font-size", "8pt")
         .attr("fill", "#9a9a9a")
-        .text("MD Points");
+        .text(x_title);
 
 
     // Add Y axis
@@ -156,7 +157,7 @@ function draw_md_vs_fpl() {
         .attr("y", -30)
         .attr("font-size", "8pt")
         .attr("fill", "#9a9a9a")
-        .text("FPL Points");
+        .text(y_title);
 
     var tooltip = d3.select("body")
         .append("div")
@@ -179,7 +180,7 @@ function draw_md_vs_fpl() {
             //     .style("opacity", 0.9)
             // .style("fill", "orange")
             // .attr("r", 6)
-        d3.select(`#inner-circle-${d.twitter}`)
+        d3.selectAll(`.inner-circle-${d.twitter}`)
             .style("opacity", 0.9)
             .style("fill", "orange")
             .attr("r", 6)
@@ -191,10 +192,10 @@ function draw_md_vs_fpl() {
             .html(`
                 <div class="mx-auto d-block text-center text-white">${d.twitter}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
-                    <tr><td class="text-right">FPL</td><td>${parseInt(d.FPL)}</td></tr>
-                    <tr><td class="text-right">MD</td><td>${parseFloat(d.MD).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">FPL Rank</td><td>${d.FPL_Rank}</td></tr>
-                    <tr><td class="text-right">MD Rank</td><td>${d.MD_Rank}</td></tr>
+                    <tr><td class="text-right">${x_tag}</td><td>${d[x_tag]}</td></tr>
+                    <tr><td class="text-right">${y_tag}</td><td>${d[y_tag]}</td></tr>
+                    <tr><td class="text-right">${x_tag} Rank</td><td>${d[x_tag + "_Rank"]}</td></tr>
+                    <tr><td class="text-right">${y_tag} Rank</td><td>${d[y_tag + "_Rank"]}</td></tr>
                     <tr><td class="text-right">Luck</td><td>${d.Luck}</td></tr>
                 </table>
             `)
@@ -207,7 +208,7 @@ function draw_md_vs_fpl() {
             //     .style("opacity", 0.6)
             // .style("fill", "#c53e3e")
             // .attr("r", 5);
-        d3.select(`#inner-circle-${d.twitter}`)
+        d3.selectAll(`.inner-circle-${d.twitter}`)
             .style("opacity", 0.6)
             .style("fill", "#c53e3e")
             .attr("r", 5);
@@ -237,7 +238,7 @@ function draw_md_vs_fpl() {
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
-        .text("FPL=MD")
+        .text(`${x_tag}=${y_tag}`)
         .style("font-size", "5pt")
         .style("fill", "#87b4d2")
         .style("opacity", 0.9);
@@ -248,9 +249,9 @@ function draw_md_vs_fpl() {
         .data(app.league_data)
         .enter()
         .append("circle")
-        .attr("id", function(d) { return `inner-circle-${d.twitter}` })
-        .attr("cx", function(d) { return x(parseFloat(d.MD)); })
-        .attr("cy", function(d) { return y(parseFloat(d.FPL)); })
+        .attr("class", function(d) { return `inner-circle-${d.twitter}` })
+        .attr("cx", function(d) { return x(parseFloat(d[x_tag])); })
+        .attr("cy", function(d) { return y(parseFloat(d[y_tag])); })
         .attr("r", 5)
         .style("fill", "#c53e3e")
         .style("stroke", "white")
@@ -264,8 +265,8 @@ function draw_md_vs_fpl() {
         .data(app.league_data)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(parseFloat(d.MD)); })
-        .attr("cy", function(d) { return y(parseFloat(d.FPL)); })
+        .attr("cx", function(d) { return x(parseFloat(d[x_tag])); })
+        .attr("cy", function(d) { return y(parseFloat(d[y_tag])); })
         .attr("r", 8)
         .style("fill", "transparent")
         .style("stroke", "transparent")
@@ -274,9 +275,6 @@ function draw_md_vs_fpl() {
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
-
-
-
 
 }
 
