@@ -184,8 +184,8 @@ function draw_md_vs_fpl() {
             .html(`
                 <div class="mx-auto d-block text-center text-white">${d.twitter}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
-                    <tr><td class="text-right">FPL</td><td>${parseFloat(d.MD).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">MD</td><td>${parseInt(d.FPL)}</td></tr>
+                    <tr><td class="text-right">FPL</td><td>${parseInt(d.FPL)}</td></tr>
+                    <tr><td class="text-right">MD</td><td>${parseFloat(d.MD).toFixed(2)}</td></tr>
                     <tr><td class="text-right">FPL Rank</td><td>${d.FPL_Rank}</td></tr>
                     <tr><td class="text-right">MD Rank</td><td>${d.MD_Rank}</td></tr>
                     <tr><td class="text-right">Luck</td><td>${d.Luck}</td></tr>
