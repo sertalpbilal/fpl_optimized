@@ -175,8 +175,15 @@ function draw_md_vs_fpl() {
     // Mouse events
     var mouseover = function(d) {
         tooltip.style("opacity", 1)
-        d3.select(this)
-            .style("opacity", 1)
+            // d3.select(this)
+            //     .style("opacity", 0.9)
+            // .style("fill", "orange")
+            // .attr("r", 6)
+        d3.select(`#inner-circle-${d.twitter}`)
+            .style("opacity", 0.9)
+            .style("fill", "orange")
+            .attr("r", 6)
+
     }
 
     var mousemove = function(d) {
@@ -196,11 +203,44 @@ function draw_md_vs_fpl() {
     }
     var mouseleave = function(d) {
         tooltip.style("opacity", 0)
-        d3.select(this)
-            .style("opacity", 0.6);
+            // d3.select(this)
+            //     .style("opacity", 0.6)
+            // .style("fill", "#c53e3e")
+            // .attr("r", 5);
+        d3.select(`#inner-circle-${d.twitter}`)
+            .style("opacity", 0.6)
+            .style("fill", "#c53e3e")
+            .attr("r", 5);
         tooltip.style("left", "0px")
             .style("top", "0px");
     }
+
+    // Add diagonal first
+    left_point = Math.max(y_low, x_low)
+    right_point = Math.min(y_high, x_high)
+    svg.append('g')
+        .style("id", "diagonal")
+        .append("line")
+        .attr("x1", x(left_point))
+        .attr("y1", y(left_point))
+        .attr("x2", x(right_point))
+        .attr("y2", y(right_point))
+        .style("stroke", "#91d3ff")
+        .style("stroke-width", 1)
+        .style("opacity", 0.5)
+        .style("stroke-dasharray", "3,5");
+
+    svg.append('g')
+        .append('text')
+        .attr("x", x(right_point) + 2)
+        .attr("y", y(right_point))
+        .attr("text-anchor", "left")
+        .attr("alignment-baseline", "middle")
+        .attr("pointer-events", "none")
+        .text("FPL=MD")
+        .style("font-size", "5pt")
+        .style("fill", "#87b4d2")
+        .style("opacity", 0.9);
 
     // Add dots
     svg.append('g')
@@ -208,15 +248,34 @@ function draw_md_vs_fpl() {
         .data(app.league_data)
         .enter()
         .append("circle")
+        .attr("id", function(d) { return `inner-circle-${d.twitter}` })
         .attr("cx", function(d) { return x(parseFloat(d.MD)); })
         .attr("cy", function(d) { return y(parseFloat(d.FPL)); })
         .attr("r", 5)
         .style("fill", "#c53e3e")
         .style("stroke", "white")
+        .style("stroke-width", 1)
+        .style("opacity", 0.6);
+
+
+    // Add mouseover 
+    svg.append('g')
+        .selectAll()
+        .data(app.league_data)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d) { return x(parseFloat(d.MD)); })
+        .attr("cy", function(d) { return y(parseFloat(d.FPL)); })
+        .attr("r", 8)
+        .style("fill", "transparent")
+        .style("stroke", "transparent")
+        .style("stroke-width", 1)
         .style("opacity", 0.6)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
+
+
 
 
 }
