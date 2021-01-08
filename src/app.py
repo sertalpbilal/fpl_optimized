@@ -7,6 +7,7 @@ these pages to static HTML.
 
 import glob
 import os
+import sys
 import datetime
 from collect import get_fpl_info
 
@@ -29,7 +30,10 @@ app.jinja_options = jinja_options
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
 def folder_order(fname):
-    f = fname.split('/')
+    if sys.platform == 'win32':
+        f = [j for i in fname.split('\\') for j in i.split('/')]
+    else:
+        f = fname.split('/')
     item1 = int(f[2].split('-')[0])
     item2 = int(f[3].split('GW')[1])
     item3 = f[4]
