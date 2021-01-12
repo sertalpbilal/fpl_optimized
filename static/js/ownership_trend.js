@@ -198,7 +198,7 @@ function draw_ownership_plot() {
 
 $(document).ready(function() {
     get_element_data("now", season, gw, date);
-    for (let i of listdates.slice(1, 7)) {
+    for (let i of listdates.slice(1, 11)) {
         let point = i.split('/').map(i => i.trim());
         get_element_data('historic', point[0], point[1], point[2]);
     }

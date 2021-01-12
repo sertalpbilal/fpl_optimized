@@ -548,10 +548,12 @@ var app = new Vue({
             let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
             let exp_gain = exp_loss = real_gain = real_loss = exp_gain_live = exp_loss_live = 0;
             let team_lineup = this.prior_data.filter(j => j[1].lineup);
-            let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => j[1].event_id !== "").filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            // let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
             let rest_players = this.prior_data.filter(j => !j[1].lineup);
+            let rest_players_with_game = this.prior_data.filter(j => !j[1].lineup).filter(j => j[1].event_id !== "");
             let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => j[1].event_id !== "").filter(j => games_with_id[parseInt(j[1].event_id)].started);
-            //this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            //let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
 
             if (this.is_using_captain) {
                 exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
@@ -572,7 +574,7 @@ var app = new Vue({
                 real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
 
                 played_own = team_lineup_live.length + "/" + team_lineup.length;
-                played_nonown = rest_players_live.length + "/" + rest_players.length;
+                played_nonown = rest_players_live.length + "/" + rest_players_with_game.length;
             }
             return { exp_gain: exp_gain, exp_loss: exp_loss, real_gain: real_gain, real_loss: real_loss, exp_gain_live: exp_gain_live, exp_loss_live: exp_loss_live, played_own: played_own, played_nonown: played_nonown }
         },
