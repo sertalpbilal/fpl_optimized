@@ -550,7 +550,8 @@ var app = new Vue({
             let team_lineup = this.prior_data.filter(j => j[1].lineup);
             let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
             let rest_players = this.prior_data.filter(j => !j[1].lineup);
-            let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => j[1].event_id !== "").filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            //this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
 
             if (this.is_using_captain) {
                 exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
