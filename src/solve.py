@@ -731,11 +731,14 @@ def get_mps_string(model):
     return mps_str
 
 
-def solve_and_get_solution(mps_file, solution_file, model):
+def solve_and_get_solution(mps_file, solution_file, model, use_initial=None):
 
     if os.path.exists(solution_file):
         print("File exists!")
         r = os.system(f'cbc {mps_file} mips {solution_file} solve solu {solution_file}')
+    elif use_initial is not None:
+        print("Using earlier initial!")
+        r = os.system(f'cbc {mps_file} mips {use_initial} solve solu {solution_file}')
     else:
         r = os.system(f'cbc {mps_file} solve solu {solution_file}')
     if r == 0:
