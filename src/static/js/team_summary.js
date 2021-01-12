@@ -96,6 +96,7 @@ var app = new Vue({
             this.rp_ready = false;
 
             let pts = this.xp_data;
+            pts = _.uniqBy(pts, function(p) { return p.player_id });
             let els = this.el_data;
             let team = this.team_data;
             let cgw = this.gw.slice(2);
