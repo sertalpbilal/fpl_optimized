@@ -1,6 +1,7 @@
 name: Populate-Website
 
 on:
+  workflow_dispatch:
   push:
     branches: engine
   schedule:
