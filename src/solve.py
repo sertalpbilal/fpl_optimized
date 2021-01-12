@@ -28,6 +28,7 @@ def solve_no_limit_best_11(input_folder, output_folder):
     next_week_df = df[df['event'] == next_week].copy()
 
     df = pd.read_csv(input_folder / 'element.csv')
+    next_week_df = next_week_df.groupby(['player_id'], as_index=False).first()
     next_week_df = pd.merge(left=next_week_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
     players = next_week_df['player_id'].unique().tolist()
     next_week_df.set_index('player_id', inplace=True, drop=True)
@@ -91,6 +92,7 @@ def solve_limited_best_squad(input_folder, output_folder):
     next_week_df = df[df['event'] == next_week].copy()
 
     df = pd.read_csv(input_folder / 'element.csv')
+    next_week_df = next_week_df.groupby(['player_id'], as_index=False).first()
     next_week_df = pd.merge(left=next_week_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
     players = next_week_df['player_id'].unique().tolist()
     next_week_df.set_index('player_id', inplace=True, drop=True)
@@ -173,6 +175,7 @@ def solve_limited_squad_with_bench_weight(input_folder, output_folder):
     next_week_df = df[df['event'] == next_week].copy()
 
     df = pd.read_csv(input_folder / 'element.csv')
+    next_week_df = next_week_df.groupby(['player_id'], as_index=False).first()
     next_week_df = pd.merge(left=next_week_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
     players = next_week_df['player_id'].unique().tolist()
     next_week_df.set_index('player_id', inplace=True, drop=True)
@@ -254,6 +257,7 @@ def solve_bench_boost_squad(input_folder, output_folder):
     next_week_df = df[df['event'] == next_week].copy()
 
     df = pd.read_csv(input_folder / 'element.csv')
+    next_week_df = next_week_df.groupby(['player_id'], as_index=False).first()
     next_week_df = pd.merge(left=next_week_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
     players = next_week_df['player_id'].unique().tolist()
     next_week_df.set_index('player_id', inplace=True, drop=True)
@@ -335,6 +339,7 @@ def solve_best_differential_team(input_folder, output_folder):
     next_week_df = df[df['event'] == next_week].copy()
 
     df = pd.read_csv(input_folder / 'element.csv')
+    next_week_df = next_week_df.groupby(['player_id'], as_index=False).first()
     next_week_df = pd.merge(left=next_week_df, right=df, how='inner', left_on=['player_id'], right_on=['id'], suffixes=('', '_extra'))
     players = next_week_df['player_id'].unique().tolist()
     next_week_df.set_index('player_id', inplace=True, drop=True)
@@ -416,8 +421,9 @@ def solve_best_differential_team(input_folder, output_folder):
 def solve_best_set_and_forget(input_folder, output_folder):
     """Solves the budget (1000) and team limited best squad (lineup+subs) with weighted bench total of 8 gameweeks"""
     df = pd.read_csv(input_folder / 'element_gameweek.csv')
-    next_week = df['event'].min()
+    # next_week = df['event'].min()
     # next_week_df = df[df['event'] == next_week].copy()
+    df = df.groupby(['player_id', 'event'], as_index=False).first()
     next_week_df = df.groupby(['player_id', 'web_name', 'team'])['points_md'].sum()
     next_week_df = next_week_df.reset_index()
 
