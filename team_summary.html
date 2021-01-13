@@ -525,7 +525,7 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="playerDetailModal">
+<div class="modal" tabindex="-1" role="dialog" id="ExpPlayerDetailModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -543,24 +543,26 @@
                 <div class="table-responsive">
                     <table class="table table-sm">
                         <thead>
-                            <th width="30%" class="text-left">xP</th>
-                            <th width="30%" class="text-left">Ownership</th>
-                            <th width="20%" class="text-right">Exp Gain</th>
-                            <th width="20%" class="text-right">Exp Loss</th>
+                            <tr>
+                                <th width="25%" class="text-center">Ownership</th>
+                                <th width="25%" class="text-center">xP</th>
+                                <th width="25%" class="text-right">Exp Gain</th>
+                                <th width="25%" class="text-right">Exp Loss</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-right">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
-                                    </div>
-                                </td>
                                 <td class="text-right">
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="basic-addon2">%</span>
                                         </div>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
                                     </div>
                                 </td>
                                 <td class="text-right">{{ getWithSign(chosen_player_detail.xp_owned) }}</td>
@@ -598,6 +600,56 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" @click="swapPlayers">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="RealPlayerDetailModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Player Details: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th width="25%" class="text-center">Ownership</th>
+                                <th width="25%" class="text-center">rP</th>
+                                <th width="25%" class="text-right">Net Gain</th>
+                                <th width="25%" class="text-right">Net Loss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-right">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_rp" @blur="changeData">
+                                    </div>
+                                </td>
+                                <td class="text-right">{{ getWithSign(chosen_player_detail.rp_owned) }}</td>
+                                <td class="text-right">{{ getWithSign(chosen_player_detail.rp_non_owned) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary" @click="swapPlayers">Submit</button> -->
             </div>
         </div>
     </div>
@@ -773,7 +825,7 @@
     let gw = "GW18";
     let next_gw = "GW19";
     let date = "2021-01-12";
-    let lastupdate = "2021-01-13T16:29:40.861608+00:00";
+    let lastupdate = "2021-01-13T16:54:50.871713+00:00";
     let listdates = [
         "2020-21 / GW19 / 2021-01-13 ", 
         "2020-21 / GW18 / 2021-01-12 ", 
@@ -799,6 +851,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-13T16:29:40.861608+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-13T16:54:50.871713+00:00</div>
 
 </html> 
