@@ -27,7 +27,8 @@ var app = new Vue({
         swap_pair: { out: -1, in: -1 },
         transfer_squad_table: "",
         transfer_table: "",
-        captaincy_enabled: false
+        captaincy_enabled: false,
+        overridden_values: {}
     },
     methods: {
         refresh_results() {
@@ -95,7 +96,15 @@ var app = new Vue({
             if (!this.is_ready) { return; }
             this.rp_ready = false;
 
-            let pts = this.xp_data;
+            let pts = _.cloneDeep(this.xp_data);
+            pts = _.uniqBy(pts, function(p) { return p.player_id });
+
+            let overriden_xp = Object.entries(this.overridden_values).filter(i => i[1].xp);
+            overriden_xp.forEach((w) => {
+                t = pts.find(e => e.player_id == w[0]);
+                t.points_md = w[1].xp;
+            })
+
             let els = this.el_data;
             let team = this.team_data;
             let cgw = this.gw.slice(2);
@@ -105,7 +114,7 @@ var app = new Vue({
             let lineup = team.picks.filter(i => i.multiplier >= 1).map(i => i.element);
             let squad = team.picks.map(i => i.element);
             let rp = Object.fromEntries(this.rp_data);
-            let ownership_vals = this.ownership_data;
+            let ownership_vals = this.final_ownership_data;
             ownership_vals = Object.fromEntries(ownership_vals.map(x => [x.id, x]));
 
             pts.forEach((e) => {
@@ -183,6 +192,10 @@ var app = new Vue({
         },
         setChosenPlayer(d) {
             this.chosen_player = d;
+        },
+        openSwapModel() {
+            $("#playerDetailModal").modal('hide');
+            $("#playerModal").modal('show');
         },
         swapPlayers() {
             let old_player = $("#transfer_out").val();
@@ -389,6 +402,10 @@ var app = new Vue({
         toggleCaptaincy() {
             this.captaincy_enabled = !this.captaincy_enabled;
             this.changeData();
+        },
+        clearOverridden() {
+            app.overridden_values = {};
+            this.changeData()
         }
     },
     computed: {
@@ -411,6 +428,17 @@ var app = new Vue({
         is_using_captain: function() {
             if (!this.is_using_sample) { return false; }
             return this.captaincy_enabled;
+        },
+        final_ownership_data: function() {
+            let ownership_data = _.cloneDeep(this.ownership_data);
+            debugger;
+            let overriden_vals = Object.entries(this.overridden_values).filter(i => i[1].ownership);
+            overriden_vals.forEach((w) => {
+                t = ownership_data.find(e => e.id == w[0]);
+                t.selected_by_percent = w[1].ownership;
+                t.effective_ownership = w[1].ownership;
+            });
+            return ownership_data;
         },
         ownership_data: function() {
             if (Object.keys(this.sample_data).length == 0) {
@@ -543,7 +571,6 @@ var app = new Vue({
         },
         aftermath: function() {
             if (!this.is_ready) { return {}; }
-            debugger;
             // let games = this.fixture_data.filter(i => i.event == this.gw.slice(2));
             let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
             let exp_gain = exp_loss = real_gain = real_loss = exp_gain_live = exp_loss_live = 0;
@@ -616,6 +643,41 @@ var app = new Vue({
             let csquad = this.prior_data.filter(i => i[1].squad).map(i => i[1]);
             let rest = this.prior_data.filter(i => !i[1].squad).map(i => i[1]).sort((a, b) => a.net_benefit - b.net_benefit);
             return { squad: csquad, rest: rest };
+        },
+        chosen_player_xp: {
+            get: function() {
+                return rounded(this.chosen_player.points_md);
+            },
+            set: function(v) {
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values) {
+                    this.$set(this.overridden_values[pid], 'xp', v)
+                } else {
+                    this.$set(this.overridden_values, pid, { 'xp': v })
+                }
+            }
+        },
+        chosen_player_ownership: {
+            get: function() {
+                if (_.isEmpty(this.chosen_player)) { return "-" }
+                let ownership_data = this.final_ownership_data;
+                let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
+                if (player) {
+                    if (this.is_using_captain) {
+                        return rounded(val = player.effective_ownership, digits = 1)
+                    } else {
+                        return rounded(val = player.selected_by_percent, digits = 1)
+                    }
+                } else { return "-" }
+            },
+            set: function(v) {
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values) {
+                    this.$set(this.overridden_values[pid], 'ownership', v)
+                } else {
+                    this.$set(this.overridden_values, pid, { 'ownership': v })
+                }
+            }
         }
     }
 })
@@ -996,7 +1058,15 @@ function plot_bubble_xp_own_prior() {
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
-        $("#playerModal").modal('show');
+        //$("#playerModal").modal('show');
+        $("#playerDetailModal").modal('show');
+        // add lines
+        // svg.append('line')
+        //     .attr('id', 'chosen_xp')
+        //     .attr('x1', 0)
+        //     .attr('y1', 0)
+        //     .attr('x2', 100)
+        //     .attr('y2', 100);
     }
 
     // Guidelines
@@ -1164,10 +1234,12 @@ function plot_bubble_xp_own_prior() {
         .attr("r", function(d) { return z(d.price); })
         .style("fill", "#6fcfd6")
         .style("opacity", "0.5")
+        .style("cursor", "pointer")
         .attr("stroke", "#ffffff")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
 
     if (app.is_using_captain) {
@@ -1478,6 +1550,14 @@ function plot_bubble_xp_own_posterior() {
 
 $('#transferModal').on('hidden.bs.modal', function(e) {
     app.clearTransferModal();
+})
+
+$('#playerModal').on('hidden.bs.modal', function(e) {
+    $("svg #chosen_xp").remove()
+})
+
+$('#playerDetailModal').on('hidden.bs.modal', function(e) {
+    $("svg #chosen_xp").remove()
 })
 
 $(document).ready(function() {

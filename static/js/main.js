@@ -28,7 +28,18 @@ let element_type = {
     4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3 }
 }
 
+function rounded(val, digits = 2) {
+    if (val === undefined || val === "") {
+        return "-";
+    } else {
+        return parseFloat(val).toFixed(digits);
+    }
+}
+
 function getWithSign(val, digits = 2) {
+    if (val === undefined) {
+        return "";
+    }
     if (val >= 0) {
         return "+" + parseFloat(val).toFixed(digits);
     } else {

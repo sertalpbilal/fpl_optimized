@@ -153,6 +153,8 @@
                                             <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
                                             <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
                                             <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
+                                            <div class="dropdown-divider"></div>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
                                         </div>
                                     </div>
@@ -165,6 +167,7 @@
                                                 <th></th>
                                                 <th>Name</th>
                                                 <th>Pos</th>
+                                                <th class="text-right">xP</th>
                                                 <th class="text-right">Exp. Gain</th>
                                                 <th class="text-right">Exp. Loss</th>
                                                 <th class="text-right">Own%</th>
@@ -176,6 +179,7 @@
                                                 <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <template>
                                                     <td class="text-right" style="color: orange" v-if="is_using_captain && i[1].captain">{{ getWithSign(i[1].xp_owned_captain ) }}</td>
                                                     <td class="text-right" style="color: #acc3c5" v-else>{{ getWithSign(i[1].xp_owned) }}</td>
@@ -188,6 +192,7 @@
                                                 <td>B</td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
                                                 <td class="text-right" style="color: #9d91a5">{{ getWithSign(i[1].xp_non_owned) }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
@@ -197,24 +202,25 @@
                                                 <td></td>
                                                 <td>{{ i[1].web_name }}</td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                                <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
                                                 <td class="text-right" style="color: #ff8763">{{ getWithSign(i[1].xp_non_owned) }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=4><b>Overall Gain - Lineup</b></td>
+                                                <td colspan=5><b>Overall Gain - Lineup</b></td>
                                                 <td class="text-right">{{ getWithSign(lineup_xp_sum) }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (lineup_own_sum/11).toFixed(1) }}%</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=4><b>Overall Gain - Squad</b></td>
+                                                <td colspan=5><b>Overall Gain - Squad</b></td>
                                                 <td class="text-right">{{ getWithSign(squad_xp_sum) }}</td>
                                                 <td></td>
                                                 <td class="text-right">{{ (squad_own_sum/15).toFixed(1) }}%</td>
                                             </tr>
                                             <tr>
-                                                <td colspan=4><b>Overall Loss - All Players</b></td>
+                                                <td colspan=5><b>Overall Loss - All Players</b></td>
                                                 <td></td>
                                                 <td class="text-right">{{ rest_xp_sum }}</td>
                                                 <td></td>
@@ -519,6 +525,59 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="playerDetailModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Player Detail: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small">
+                <div class="d-block mx-auto text-center" v-if="!chosen_player.squad">
+                    <button class="btn btn-secondary btn-sm mb-1" @click="openSwapModel">
+                        Transfer In
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <th width="30%" class="text-left">xP</th>
+                            <th width="30%" class="text-left">Ownership</th>
+                            <th width="20%" class="text-right">Exp Gain</th>
+                            <th width="20%" class="text-right">Exp Loss</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-right">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right">{{ getWithSign(chosen_player.xp_owned) }}</td>
+                                <td class="text-right">{{ getWithSign(chosen_player.xp_non_owned) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary" @click="swapPlayers">Submit</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal" tabindex="-1" role="dialog" id="playerModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -529,7 +588,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="text-black mb-3">Choose player to swap with <span class="own-color">{{ chosen_player.web_name }}</span></div>
+                <div class="text-black mb-3">Choose player to swap with <span style="color: darkred">{{ chosen_player.web_name }}</span></div>
                 <div class="form-group">
                     <select class="form-control" id="transfer_out">
                         <option v-for="i in team_squad" v-if="i[1].element_type == chosen_player.element_type" :value="i[1].player_id">{{ i[1].web_name }}</option>
@@ -714,7 +773,7 @@
     let gw = "GW18";
     let next_gw = "GW19";
     let date = "2021-01-12";
-    let lastupdate = "2021-01-12T22:18:19.948277+00:00";
+    let lastupdate = "2021-01-13T03:49:22.795097+00:00";
     let listdates = [
         "2020-21 / GW19 / 2021-01-12 ", 
         "2020-21 / GW18 / 2021-01-12 ", 
@@ -740,6 +799,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-12T22:18:19.948277+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-13T03:49:22.795097+00:00</div>
 
 </html> 
