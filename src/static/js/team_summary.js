@@ -646,7 +646,12 @@ var app = new Vue({
         },
         chosen_player_xp: {
             get: function() {
-                return rounded(this.chosen_player.points_md);
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values && this.overridden_values[pid].xp) {
+                    return rounded(this.overridden_values[pid].xp);
+                } else {
+                    return rounded(this.chosen_player.points_md);
+                }
             },
             set: function(v) {
                 let pid = this.chosen_player.player_id;
@@ -660,15 +665,20 @@ var app = new Vue({
         chosen_player_ownership: {
             get: function() {
                 if (_.isEmpty(this.chosen_player)) { return "-" }
-                let ownership_data = this.final_ownership_data;
-                let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
-                if (player) {
-                    if (this.is_using_captain) {
-                        return rounded(val = player.effective_ownership, digits = 1)
-                    } else {
-                        return rounded(val = player.selected_by_percent, digits = 1)
-                    }
-                } else { return "-" }
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values && this.overridden_values[pid].ownership) {
+                    return rounded(this.overridden_values[pid].ownership);
+                } else {
+                    let ownership_data = this.final_ownership_data;
+                    let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
+                    if (player) {
+                        if (this.is_using_captain) {
+                            return rounded(val = player.effective_ownership, digits = 1)
+                        } else {
+                            return rounded(val = player.selected_by_percent, digits = 1)
+                        }
+                    } else { return "-" }
+                }
             },
             set: function(v) {
                 let pid = this.chosen_player.player_id;
@@ -677,6 +687,17 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'ownership': v })
                 }
+            }
+        },
+        chosen_player_detail: function() {
+            if (_.isEmpty(this.chosen_player)) { return {} }
+            let pid = this.chosen_player.player_id;
+            if (pid in this.overridden_values) {
+                let xp = this.chosen_player_xp;
+                let own = this.chosen_player_ownership;
+                return { xp_owned: xp * (1 - own / 100), xp_non_owned: -xp * own / 100 }
+            } else {
+                return { xp_owned: this.chosen_player.xp_owned, xp_non_owned: this.chosen_player.xp_non_owned }
             }
         }
     }
