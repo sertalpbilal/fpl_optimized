@@ -113,7 +113,7 @@ var app = new Vue({
             let captain = team.picks.filter(i => i.is_captain)[0].element;
             let lineup = team.picks.filter(i => i.multiplier >= 1).map(i => i.element);
             let squad = team.picks.map(i => i.element);
-            let rp = Object.fromEntries(this.rp_data);
+            let rp = this.final_rp_data;
             let ownership_vals = this.final_ownership_data;
             ownership_vals = Object.fromEntries(ownership_vals.map(x => [x.id, x]));
 
@@ -194,7 +194,7 @@ var app = new Vue({
             this.chosen_player = d;
         },
         openSwapModel() {
-            $("#playerDetailModal").modal('hide');
+            $("#ExpPlayerDetailModal").modal('hide');
             $("#playerModal").modal('show');
         },
         swapPlayers() {
@@ -429,9 +429,14 @@ var app = new Vue({
             if (!this.is_using_sample) { return false; }
             return this.captaincy_enabled;
         },
+        final_rp_data: function() {
+            let rp_raw = _.cloneDeep(this.rp_data);
+            let rp = Object.fromEntries(rp_raw);
+            Object.entries(this.overridden_values).filter(i => i[1].rp).forEach((w) => { rp[w[0]].total_points = w[1].rp });
+            return rp;
+        },
         final_ownership_data: function() {
             let ownership_data = _.cloneDeep(this.ownership_data);
-            debugger;
             let overriden_vals = Object.entries(this.overridden_values).filter(i => i[1].ownership);
             overriden_vals.forEach((w) => {
                 t = ownership_data.find(e => e.id == w[0]);
@@ -695,11 +700,35 @@ var app = new Vue({
             if (pid in this.overridden_values) {
                 let xp = this.chosen_player_xp;
                 let own = this.chosen_player_ownership;
-                return { xp_owned: xp * (1 - own / 100), xp_non_owned: -xp * own / 100 }
+                let rp = this.chosen_player_rp;
+                let capt_multiplier = this.chosen_player.captain * this.is_using_captain
+                return { xp_owned: xp * (capt_multiplier + 1 - own / 100), xp_non_owned: -xp * own / 100, rp_owned: rp * (capt_multiplier + 1 - own / 100), rp_non_owned: -rp * own / 100 }
             } else {
-                return { xp_owned: this.chosen_player.xp_owned, xp_non_owned: this.chosen_player.xp_non_owned }
+                let own = this.chosen_player_ownership
+                let rp = this.chosen_player_rp
+                let capt_multiplier = this.chosen_player.captain * this.is_using_captain
+                return { xp_owned: this.chosen_player.xp_owned, xp_non_owned: this.chosen_player.xp_non_owned, rp_owned: rp * (capt_multiplier + 1 - own / 100), rp_non_owned: -rp * own / 100 }
             }
-        }
+        },
+        chosen_player_rp: {
+            get: function() {
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values && this.overridden_values[pid].rp) {
+                    return rounded(this.overridden_values[pid].rp);
+                } else {
+                    let rp_vals = this.final_rp_data;
+                    if (pid in rp_vals) { return rp_vals[pid].total_points } else { return 0 }
+                }
+            },
+            set: function(v) {
+                let pid = this.chosen_player.player_id;
+                if (pid in this.overridden_values) {
+                    this.$set(this.overridden_values[pid], 'rp', v)
+                } else {
+                    this.$set(this.overridden_values, pid, { 'rp': v })
+                }
+            }
+        },
     }
 })
 
@@ -1030,6 +1059,8 @@ function plot_bubble_xp_own_prior() {
         tooltip.style("opacity", 1)
         d3.select(this)
             .style("opacity", 1)
+        app.chosen_player = d;
+        drawLineForXP();
     }
     var mousemove = function(d) {
         name_color = "white";
@@ -1047,8 +1078,8 @@ function plot_bubble_xp_own_prior() {
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
                     <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
-                    <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.xp_owned)}</td></tr>
-                    <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${getWithSign(d.xp_non_owned)}</td></tr>
+                    <tr><td class="text-right">Exp Gain</td><td style="color: ${own_color}">${getWithSign(d.xp_owned)}</td></tr>
+                    <tr><td class="text-right">Exp Loss</td><td style="color: ${threat_color}">${getWithSign(d.xp_non_owned)}</td></tr>
                 </table>
             `)
             .style("left", (d3.event.pageX + 15) + "px")
@@ -1075,19 +1106,31 @@ function plot_bubble_xp_own_prior() {
             .style("opacity", 0.5);
         tooltip.style("left", "0px")
             .style("top", "0px");
+        $("svg #chosen_xp").remove();
+    }
+
+    var drawLineForXP = function() {
+        let v = app.chosen_player_xp;
+        svg.append('line')
+            .attr('id', 'chosen_xp')
+            .attr("pointer-events", "none")
+            .attr('x1', x(0))
+            .attr('y1', y(-v))
+            .attr('x2', x(v))
+            .attr('y2', y(0))
+            .style('stroke', 'yellow')
+            .style("stroke-dasharray", "2,4");
     }
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
         //$("#playerModal").modal('show');
-        $("#playerDetailModal").modal('show');
-        // add lines
-        // svg.append('line')
-        //     .attr('id', 'chosen_xp')
-        //     .attr('x1', 0)
-        //     .attr('y1', 0)
-        //     .attr('x2', 100)
-        //     .attr('y2', 100);
+        $("#ExpPlayerDetailModal").modal('show');
+        setTimeout(drawLineForXP, 50);
+    }
+
+    if (!_.isEmpty(app.chosen_player)) {
+        drawLineForXP();
     }
 
     // Guidelines
@@ -1420,6 +1463,18 @@ function plot_bubble_xp_own_posterior() {
             .style("top", "0px");
     }
 
+    var playerclick = function(d) {
+        app.setChosenPlayer(d);
+        $("#RealPlayerDetailModal").modal('show');
+        // add lines
+        // svg.append('line')
+        //     .attr('id', 'chosen_xp')
+        //     .attr('x1', 0)
+        //     .attr('y1', 0)
+        //     .attr('x2', 100)
+        //     .attr('y2', 100);
+    }
+
     let axes = svg.append('g');
     axes.append('line')
         .attr("x1", x(0))
@@ -1531,9 +1586,11 @@ function plot_bubble_xp_own_posterior() {
         .style("fill", "#616362")
         .style("opacity", "0.5")
         .attr("stroke", "#9e9e9e")
+        .style("cursor", "pointer")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
     // Dangerous players
     svg.append('g')
@@ -1547,9 +1604,11 @@ function plot_bubble_xp_own_posterior() {
         .style("fill", "#e22f2f")
         .style("opacity", "0.5")
         .attr("stroke", "#fffe53")
+        .style("cursor", "pointer")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
     // Squad
     svg.append('g')
@@ -1563,9 +1622,11 @@ function plot_bubble_xp_own_posterior() {
         .style("fill", "#6fcfd6")
         .style("opacity", "0.5")
         .attr("stroke", "#ffffff")
+        .style("cursor", "pointer")
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .on("mouseleave", mouseleave)
+        .on("click", playerclick);
 
 }
 
@@ -1577,7 +1638,11 @@ $('#playerModal').on('hidden.bs.modal', function(e) {
     $("svg #chosen_xp").remove()
 })
 
-$('#playerDetailModal').on('hidden.bs.modal', function(e) {
+$('#ExpPlayerDetailModal').on('hidden.bs.modal', function(e) {
+    $("svg #chosen_xp").remove()
+})
+
+$('#RealPlayerDetailModal').on('hidden.bs.modal', function(e) {
     $("svg #chosen_xp").remove()
 })
 
