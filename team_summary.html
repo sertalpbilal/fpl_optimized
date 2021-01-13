@@ -529,7 +529,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Player Detail: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
+                <h5 class="modal-title">Player Details: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -563,8 +563,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-right">{{ getWithSign(chosen_player.xp_owned) }}</td>
-                                <td class="text-right">{{ getWithSign(chosen_player.xp_non_owned) }}</td>
+                                <td class="text-right">{{ getWithSign(chosen_player_detail.xp_owned) }}</td>
+                                <td class="text-right">{{ getWithSign(chosen_player_detail.xp_non_owned) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -773,7 +773,7 @@
     let gw = "GW18";
     let next_gw = "GW19";
     let date = "2021-01-12";
-    let lastupdate = "2021-01-13T10:39:41.642773+00:00";
+    let lastupdate = "2021-01-13T14:21:15.103065+00:00";
     let listdates = [
         "2020-21 / GW19 / 2021-01-13 ", 
         "2020-21 / GW18 / 2021-01-12 ", 
@@ -799,6 +799,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-13T10:39:41.642773+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-13T14:21:15.103065+00:00</div>
 
 </html> 
