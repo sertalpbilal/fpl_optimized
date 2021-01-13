@@ -1124,7 +1124,6 @@ function plot_bubble_xp_own_prior() {
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
-        //$("#playerModal").modal('show');
         $("#ExpPlayerDetailModal").modal('show');
         setTimeout(drawLineForXP, 50);
     }
@@ -1424,9 +1423,11 @@ function plot_bubble_xp_own_posterior() {
 
     // Mouse events
     var mouseover = function(d) {
+        app.setChosenPlayer(d);
         tooltip.style("opacity", 1)
         d3.select(this)
             .style("opacity", 1)
+        drawLineForRP();
     }
     var mousemove = function(d) {
         name_color = "white";
@@ -1461,18 +1462,26 @@ function plot_bubble_xp_own_posterior() {
             .style("opacity", 0.5);
         tooltip.style("left", "0px")
             .style("top", "0px");
+        $("svg #chosen_xp").remove();
+    }
+
+    var drawLineForRP = function() {
+        let v = app.chosen_player_rp;
+        svg.append('line')
+            .attr('id', 'chosen_xp')
+            .attr("pointer-events", "none")
+            .attr('x1', x(0))
+            .attr('y1', y(-v))
+            .attr('x2', x(v))
+            .attr('y2', y(0))
+            .style('stroke', 'yellow')
+            .style("stroke-dasharray", "2,4");
     }
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
         $("#RealPlayerDetailModal").modal('show');
-        // add lines
-        // svg.append('line')
-        //     .attr('id', 'chosen_xp')
-        //     .attr('x1', 0)
-        //     .attr('y1', 0)
-        //     .attr('x2', 100)
-        //     .attr('y2', 100);
+        setTimeout(drawLineForRP, 50);
     }
 
     let axes = svg.append('g');
