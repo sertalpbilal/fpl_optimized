@@ -808,26 +808,26 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="customInputWrapper">
-                    <table id="customInputTable" class="table table-sm table-striped text-small table-responsive" :class="{'d-none': !edit_table_ready}">
+                <div id="customInputWrapper" class="text-smaller">
+                    <!-- text-smaller -->
+                    <table id="customInputTable" class="table table-sm table-striped edit-table-size">
                         <thead>
                             <tr>
-                                <th style="width: 5%" class="text-right">ID</th>
-                                <th style="width: 25%">Name</th>
-                                <th style="width: 15%" class="text-center">Ownership</th>
-                                <th style="width: 10%" class="text-center">xP</th>
-                                <th style="width: 10%" class="text-center">rP</th>
-                                <th style="width: 15%" class="text-right">Expected</th>
-                                <th style="width: 15%" class="text-right">Realized</th>
+                                <th class="text-right">ID</th>
+                                <th>Name</th>
+                                <th class="text-center">Ownership</th>
+                                <th class="text-center">xP</th>
+                                <th class="text-center">rP</th>
+                                <th class="text-right">Expected</th>
+                                <th class="text-right">Realized</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="i in edit_table_cache">
-                                <td class="text-right">{{ i.player_id }}</td>
+                                <td class="text-right text-muted">{{ i.player_id }}</td>
                                 <td>{{ i.web_name }}</td>
-                                <!-- <td>{{ i[1].ownership }}%</td> -->
                                 <td>
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group-sm input-perc">
                                         <input type="number" class="form-control" v-model="i.ownership" :data-id="i.player_id" @blur="overrideValue($event.target, 'ownership')">
                                         <div class="input-group-append">
                                             <span class="input-group-text">%</span>
@@ -835,12 +835,12 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group-sm input-numeric">
                                         <input type="number" class="form-control" v-model="i.points_md" :data-id="i.player_id" @blur="overrideValue($event.target, 'xp')">
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group input-group-sm input-numeric">
                                         <input :disabled="!rp_ready" type="number" class="form-control" v-model="i.rp" :data-id="i.player_id" @blur="overrideValue($event.target, 'rp')">
                                     </div>
                                 </td>
@@ -849,10 +849,10 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div class="p-2 wait-modal" :class="{'d-none': edit_table_ready}">
+                    <!-- <div class="p-2 wait-modal" :class="{'d-none': edit_table_ready}">
                         Refreshing the table. Please wait... <br/>
                         <img class="mx-auto d-block" src="static/images/loading.svg">
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="modal-footer">
@@ -893,7 +893,7 @@
     let gw = "GW18";
     let next_gw = "GW19";
     let date = "2021-01-12";
-    let lastupdate = "2021-01-14T16:32:58.729391+00:00";
+    let lastupdate = "2021-01-14T19:22:18.506445+00:00";
     let listdates = [
         "2020-21 / GW19 / 2021-01-14 ", 
         "2020-21 / GW18 / 2021-01-12 ", 
@@ -919,6 +919,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-14T16:32:58.729391+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-14T19:22:18.506445+00:00</div>
 
 </html> 

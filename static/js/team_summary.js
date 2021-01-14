@@ -411,11 +411,17 @@ var app = new Vue({
         },
         initEditTable() {
             this.edit_table = $("#customInputTable").DataTable({
-                "order": [],
-                "lengthChange": false,
-                "pageLength": 10,
-                "ordering": false
+                order: [],
+                info: false,
+                scrollX: "100%",
+                lengthChange: false,
+                pageLength: 10,
+                ordering: false,
+                autoWidth: true
             });
+            setTimeout(() => {
+                app.edit_table.columns.adjust();
+            }, 50)
         },
         clearEditTable() {
             if (this.edit_table !== "") {
@@ -438,7 +444,7 @@ var app = new Vue({
                         self.initEditTable();
                         $("#customInputModal").modal('show');
                         this.edit_table_ready = true;
-                    }, 100);
+                    }, 150);
                 });
             }, 50)
         },

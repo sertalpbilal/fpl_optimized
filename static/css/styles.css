@@ -519,3 +519,21 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 #fpl_analytics_table a {
     color: #c6e5ff;
 }
+
+#customInputTable,
+#customInputTable input,
+#customInputTable span {
+    /* font-size: smaller; */
+}
+
+#customInputTable td {
+    vertical-align: middle;
+}
+
+#customInputTable .input-perc {
+    min-width: 85px;
+}
+
+#customInputTable .input-numeric {
+    min-width: 50px;
+}
