@@ -150,7 +150,7 @@ var app = new Vue({
                 e.threat = false;
                 e.stats = rp[e.player_id];
 
-                if (this.rp_data) {
+                if (this.rp_data !== undefined && this.rp_data.length > 0) {
                     e.rp = e.stats.total_points;
                     if (this.is_using_captain) {
                         e.net_gain = ((e.captain + 1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
@@ -187,7 +187,7 @@ var app = new Vue({
 
             // Posterior
 
-            if (this.rp_data) {
+            if (this.rp_data !== undefined && this.rp_data.length > 0) {
                 this.rp_ready = true;
             }
 
@@ -526,6 +526,7 @@ var app = new Vue({
         final_rp_data: function() {
             let x = this.cnt;
             if (!this.rp_data) { return []; }
+            if (this.rp_data.length == 0) { return []; }
             let rp_raw = _.cloneDeep(this.rp_data);
             let rp = Object.fromEntries(rp_raw);
             Object.entries(this.overridden_values).filter(i => i[1].rp).forEach((w) => { rp[w[0]].total_points = w[1].rp });
