@@ -11,6 +11,17 @@ var app = new Vue({
         table: ""
     },
     methods: {
+        close_date() {
+            $("#dateModal").modal('hide');
+        },
+        clear_all() {
+            this.is_ready = false;
+            if (this.table !== "") {
+                this.table.destroy();
+                this.table = "";
+            }
+            $(".points_graph svg").remove();
+        },
         get_table() {
             $.ajax({
                 type: "GET",
@@ -58,21 +69,42 @@ var app = new Vue({
                 });
                 this.table.buttons().container()
                     .appendTo('.col-md-6:eq(0)');
-                draw_comparison_plot("md_vs_fpl_graph", x_tag = "MD", y_tag = "FPL", x_title = "MD Points", y_title = "FPL Points");
-                draw_comparison_plot("io_vs_fpl_graph", x_tag = "IO", y_tag = "FPL", x_title = "IO Points", y_title = "FPL Points");
+                draw_comparison_plot("md_vs_fpl_graph", x_tag = "MD", y_tag = "FPL", x_title = "MD Points", y_title = "FPL Points", suffix = "", secondary_suffix = "_Rank");
+                draw_comparison_plot("io_vs_fpl_graph", x_tag = "IO", y_tag = "FPL", x_title = "IO Points", y_title = "FPL Points", suffix = "", secondary_suffix = "_Rank");
+                draw_comparison_plot("md_vs_fpl_rank_gr", x_tag = "MD", y_tag = "FPL", x_title = "MD Rank", y_title = "FPL Rank", suffix = "_Rank", secondary_suffix = "", reverse = true);
+                draw_comparison_plot("io_vs_fpl_rank_gr", x_tag = "IO", y_tag = "FPL", x_title = "IO Rank", y_title = "FPL Rank", suffix = "_Rank", secondary_suffix = "", reverse = true);
             })
+        },
+        refresh_results() {
+            season = this.season;
+            gw = this.gw;
+            date = this.date;
+            this.clear_all();
+            this.get_table();
         },
     },
     computed: {
         is_fully_ready() {
             return (this.table != "");
+        },
+        seasongwdate: {
+            get: function() {
+                return this.season + " / " + this.gw + " / " + this.date;
+            },
+            set: function(value) {
+                let v = value.split(' / ');
+                this.season = v[0];
+                this.gw = v[1];
+                this.date = v[2];
+                this.refresh_results();
+            }
         }
     }
 })
 
-function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
+function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix = "", secondary_suffix = "_Rank", reverse = false) {
 
-    var margin = { top: 10, right: 30, bottom: 35, left: 45 },
+    var margin = { top: 10, right: 30, bottom: 35, left: 55 },
         width = 450 - margin.left - margin.right,
         height = 450 - margin.top - margin.bottom;
 
@@ -85,15 +117,28 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     debugger;
-    let x_high = Math.max(...app.league_data.map(i => parseFloat(i[x_tag]))) + 20;
-    let x_low = Math.min(...app.league_data.map(i => parseFloat(i[x_tag]))) - 20;
+    let x_high = Math.max(...app.league_data.map(i => parseFloat(i[x_tag + suffix]))) + 20;
+    let x_low = Math.min(...app.league_data.map(i => parseFloat(i[x_tag + suffix]))) - 20;
 
-    let y_high = Math.max(...app.league_data.map(i => parseFloat(i[y_tag]))) + 20;
-    let y_low = Math.min(...app.league_data.map(i => parseFloat(i[y_tag]))) - 20;
+    let y_high = Math.max(...app.league_data.map(i => parseFloat(i[y_tag + suffix]))) + 20;
+    let y_low = Math.min(...app.league_data.map(i => parseFloat(i[y_tag + suffix]))) - 20;
 
-    var x = d3.scaleLinear()
-        .domain([x_low, x_high])
-        .range([0, width]);
+    if (reverse) {
+        [x_high, x_low] = [x_low + 20, x_high - 20];
+        [y_high, y_low] = [y_low + 20, y_high - 20];
+    }
+
+    // Add Y axis
+    if (reverse) {
+        var x = d3.scaleLog().base(2)
+            .domain([x_low, x_high])
+            .range([0, width]);
+    } else {
+        var x = d3.scaleLinear()
+            .domain([x_low, x_high])
+            .range([0, width]);
+    }
+
     svg.append("g")
         // .attr("transform", "translate(0," + height + ")")
         .attr("opacity", 1)
@@ -125,9 +170,16 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
 
 
     // Add Y axis
-    var y = d3.scaleLinear()
-        .domain([y_high, y_low])
-        .range([0, height]);
+    if (reverse) {
+        var y = d3.scaleLog().base(2)
+            .domain([y_high, y_low])
+            .range([0, height]);
+    } else {
+        var y = d3.scaleLinear()
+            .domain([y_high, y_low])
+            .range([0, height]);
+    }
+
     svg.append("g")
         .attr("opacity", 1)
         .call(d3.axisRight(y)
@@ -154,7 +206,7 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -30)
+        .attr("y", -45)
         .attr("font-size", "8pt")
         .attr("fill", "#9a9a9a")
         .text(y_title);
@@ -184,7 +236,26 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
             .style("opacity", 0.9)
             .style("fill", "orange")
             .attr("r", 6)
-
+        svg.append('line')
+            .attr('class', 'guide')
+            .attr('x1', x(x_low))
+            .attr('y1', y(d[y_tag + suffix]))
+            .attr('x2', x(d[x_tag + suffix]))
+            .attr('y2', y(d[y_tag + suffix]))
+            .attr("pointer-events", "none")
+            .style("stroke", "white")
+            .style("stroke-dasharray", "3,5")
+            .style("opacity", "0.5");
+        svg.append('line')
+            .attr('class', 'guide')
+            .attr('x1', x(d[x_tag + suffix]))
+            .attr('y1', y(d[y_tag + suffix]))
+            .attr('x2', x(d[x_tag + suffix]))
+            .attr('y2', y(y_low))
+            .attr("pointer-events", "none")
+            .style("stroke", "white")
+            .style("stroke-dasharray", "3,5")
+            .style("opacity", "0.5")
     }
 
     var mousemove = function(d) {
@@ -192,10 +263,10 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
             .html(`
                 <div class="mx-auto d-block text-center text-white">${d.twitter}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
-                    <tr><td class="text-right">${x_tag}</td><td>${d[x_tag]}</td></tr>
-                    <tr><td class="text-right">${y_tag}</td><td>${d[y_tag]}</td></tr>
-                    <tr><td class="text-right">${x_tag} Rank</td><td>${d[x_tag + "_Rank"]}</td></tr>
-                    <tr><td class="text-right">${y_tag} Rank</td><td>${d[y_tag + "_Rank"]}</td></tr>
+                    <tr><td class="text-right">${x_tag + suffix}</td><td>${d[x_tag + suffix]}</td></tr>
+                    <tr><td class="text-right">${y_tag + suffix}</td><td>${d[y_tag + suffix]}</td></tr>
+                    <tr><td class="text-right">${x_tag + secondary_suffix}</td><td>${d[x_tag + secondary_suffix]}</td></tr>
+                    <tr><td class="text-right">${y_tag + secondary_suffix}</td><td>${d[y_tag + secondary_suffix]}</td></tr>
                     <tr><td class="text-right">Luck</td><td>${d.Luck}</td></tr>
                 </table>
             `)
@@ -214,11 +285,17 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
             .attr("r", 5);
         tooltip.style("left", "0px")
             .style("top", "0px");
+        $(".guide").remove();
     }
 
     // Add diagonal first
-    left_point = Math.max(y_low, x_low)
-    right_point = Math.min(y_high, x_high)
+    let left_point = Math.max(y_low, x_low);
+    let right_point = Math.min(y_high, x_high);
+    if (reverse) {
+        left_point = Math.max(y_high, x_high);
+        right_point = Math.min(y_low, x_low);
+    }
+
     svg.append('g')
         .style("id", "diagonal")
         .append("line")
@@ -234,7 +311,7 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
     svg.append('g')
         .append('text')
         .attr("x", x(right_point) + 2)
-        .attr("y", y(right_point))
+        .attr("y", y(right_point) - 2)
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none")
@@ -243,6 +320,7 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
         .style("fill", "#87b4d2")
         .style("opacity", 0.9);
 
+
     // Add dots
     svg.append('g')
         .selectAll()
@@ -250,8 +328,8 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
         .enter()
         .append("circle")
         .attr("class", function(d) { return `inner-circle-${d.twitter}` })
-        .attr("cx", function(d) { return x(parseFloat(d[x_tag])); })
-        .attr("cy", function(d) { return y(parseFloat(d[y_tag])); })
+        .attr("cx", function(d) { return x(parseFloat(d[x_tag + suffix])); })
+        .attr("cy", function(d) { return y(parseFloat(d[y_tag + suffix])); })
         .attr("r", 5)
         .style("fill", "#c53e3e")
         .style("stroke", "white")
@@ -265,8 +343,8 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title) {
         .data(app.league_data)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return x(parseFloat(d[x_tag])); })
-        .attr("cy", function(d) { return y(parseFloat(d[y_tag])); })
+        .attr("cx", function(d) { return x(parseFloat(d[x_tag + suffix])); })
+        .attr("cy", function(d) { return y(parseFloat(d[y_tag + suffix])); })
         .attr("r", 8)
         .style("fill", "transparent")
         .style("stroke", "transparent")

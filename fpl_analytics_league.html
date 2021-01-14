@@ -78,8 +78,8 @@
 
                 <div class="card-body text-center p-3">
                     <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Last Update:</span>
-                        <ul class="d-flex flex-row mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                        <span>Snapshot:</span>
+                        <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
                             <!-- <li class="nav-item breadcrumb-item">{{ season }}</li>
                             <li class="nav-item breadcrumb-item">{{ gw }}</li> -->
                             <li class="nav-item breadcrumb-item">{{ date }}</li>
@@ -175,6 +175,18 @@
 
                             </div>
                         </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mx-auto d-block text-center">FPL Rank vs MD Rank</div>
+                            <div id="md_vs_fpl_rank_gr" class="points_graph">
+
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mx-auto d-block text-center">FPL Rank vs IO Rank</div>
+                            <div id="io_vs_fpl_rank_gr" class="points_graph">
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -182,6 +194,26 @@
         </div>
     </div>
 
+
+    <div class="modal" tabindex="-1" role="dialog" id="dateModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Choose a date</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <select class="form-control" v-model="seasongwdate" @change="close_date">
+                            <option v-for="i in listdates">{{ i }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </main>
@@ -214,7 +246,7 @@
     let gw = "GW19";
     let next_gw = "GW19";
     let date = "2021-01-14";
-    let lastupdate = "2021-01-14T10:45:34.815793+00:00";
+    let lastupdate = "2021-01-14T14:58:54.494792+00:00";
     let listdates = [
         "2020-21 / GW19 / 2021-01-14 ", 
         "2020-21 / GW19 / 2021-01-13 ", 
@@ -237,6 +269,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-14T10:45:34.815793+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-14T14:58:54.494792+00:00</div>
 
 </html> 
