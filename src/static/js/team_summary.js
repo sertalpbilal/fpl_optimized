@@ -120,6 +120,7 @@ var app = new Vue({
             pts.forEach((e) => {
                 // e.info = els[e.player_id];
                 e.element_type = els[e.player_id].element_type;
+                e.team_code = els[e.player_id].team_code;
                 e.price = parseFloat(els[e.player_id].now_cost) / 10;
                 // e.ownership = els[e.player_id].selected_by_percent;
                 if ('effective_ownership' in ownership_vals[e.player_id] && this.is_using_captain) {
@@ -1246,7 +1247,8 @@ function plot_bubble_xp_own_prior() {
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
-        $("#ExpPlayerDetailModal").modal('show');
+        // $("#ExpPlayerDetailModal").modal('show');
+        $("#singlePlayerDetailModal").modal('show');
         setTimeout(drawLineForXP, 50);
     }
 
