@@ -40,10 +40,10 @@
                         </div>
                         <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_using_sample">
                             <div class="d-flex flex-column metric">
-                                <div class="text-center p-0">Captaincy</div>
+                                <div class="text-center p-0">Captain/Chips</div>
                                 <div class="setting-value text-center p-0">
                                     <span class="setting-line ml-2" v-cloak @click="toggleCaptaincy">
-                                        {{ captaincy_enabled ? "On" : "Off"}}
+                                        {{ captaincy_enabled ? "Enabled" : "Disabled"}}
                                     </span>
                                 </div>
                             </div>
@@ -536,14 +536,19 @@
                 </fieldset>
 
                 <fieldset class="popup_info_small top_field">
-                    <legend>Values</legend>
+                    <legend>Values (Editable)</legend>
 
                     <div class="row no-gutters">
                         <div class="col-4" v-cloak>
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Ownership</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_ownership }}%
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">%</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -551,7 +556,9 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Exp Points</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_xp }}
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -559,13 +566,13 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Real Points</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_rp }}
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_rp" @blur="changeData">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </fieldset>
 
                 <fieldset class="popup_info_small top_field">
@@ -588,7 +595,60 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="row no-gutters" v-if="is_using_sample">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Selected</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.selected }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.selected * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Lineup</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.lineup_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.lineup_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Bench</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.benched_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.benched_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" v-if="is_using_sample">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Captain</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.captained_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.captained_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Triple Captain</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.tc_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.tc_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Effective Own.</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.multiplier_sum }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.multiplier_sum * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </fieldset>
             </div>

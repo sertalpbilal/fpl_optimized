@@ -28,7 +28,7 @@ var app = new Vue({
         swap_pair: { out: -1, in: -1 },
         transfer_squad_table: "",
         transfer_table: "",
-        captaincy_enabled: false,
+        captaincy_enabled: true,
         overridden_values: undefined,
         edit_table_cache: undefined,
         edit_table: "",
@@ -85,7 +85,7 @@ var app = new Vue({
         saveSampleData(success, data) {
             if (success) {
                 this.sample_data = data;
-                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"];
+                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -195,9 +195,10 @@ var app = new Vue({
         },
         setChosenPlayer(d) {
             this.chosen_player = d;
+            app.cnt = this.cnt + 1;
         },
         openSwapModel() {
-            $("#ExpPlayerDetailModal").modal('hide');
+            $("#singlePlayerDetailModal").modal('hide');
             $("#playerModal").modal('show');
         },
         swapPlayers() {
@@ -549,6 +550,39 @@ var app = new Vue({
             });
             return ownership_data;
         },
+        flatten_sample_data: function() {
+            return this.active_sample_data.map(i => i.data.picks).flat();
+        },
+        active_sample_data: function() {
+            switch (this.ownership_source) {
+                case "Official FPL API":
+                    return [];
+                case "Sample - Overall":
+                    teams = this.sample_data["Overall"].filter(i => i.team != undefined)
+                    break;
+                case "Sample - Top 1M":
+                    teams = this.sample_data["1000000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 100K":
+                    teams = this.sample_data["100000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 10K":
+                    teams = this.sample_data["10000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 1K":
+                    teams = this.sample_data["1000"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Top 100":
+                    teams = this.sample_data["100"].filter(i => i.team !== undefined);
+                    break;
+                case "Sample - Ahead":
+                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
+                    break;
+                default:
+                    break;
+            }
+            return teams;
+        },
         ownership_data: function() {
             if (Object.keys(this.sample_data).length == 0) {
                 return this.el_data;
@@ -584,13 +618,14 @@ var app = new Vue({
             }
 
             let el_copy = _.cloneDeep(this.el_data);
-            let all_players = teams.map(i => i.data.picks).flat().filter(i => i.multiplier > 0).map(i => i.element);
-            let captains = teams.map(i => i.data.picks).flat().filter(i => i.is_captain).map(i => i.element);
+            let all_players = teams.map(i => i.data.picks).flat(); //.filter(i => i.multiplier > 0).map(i => i.element);
             el_copy.forEach((e) => {
-                let cnt = all_players.filter(i => i.toString() == e.id).length;
+                let this_player_picks = all_players.filter(i => i.element == e.id);
+                let cnt = this_player_picks.length;
                 e.selected_by_percent = cnt / teams.length * 100;
-                let captain_cnt = captains.filter(i => i.toString() == e.id).length;
-                e.effective_ownership = (cnt + captain_cnt) / teams.length * 100;
+                //let captain_cnt = captains.filter(i => i.toString() == e.id).length;
+                let sum_of_multiplier = getSum(this_player_picks.map(i => i.multiplier));
+                e.effective_ownership = sum_of_multiplier / teams.length * 100;
             });
             return el_copy;
 
@@ -848,6 +883,24 @@ var app = new Vue({
                 this.cnt = this.cnt + 1;
             }
         },
+        chosen_player_stats: function() {
+            if (_.isEmpty(this.chosen_player)) { return {} }
+            let x = this.cnt;
+            let pid = this.chosen_player.player_id;
+            let sample_data = this.flatten_sample_data;
+            if (this.is_using_sample) {
+                let this_player_picks = app.flatten_sample_data.filter(i => i.element == pid);
+                let captain_picks = this_player_picks.filter(i => i.is_captain);
+                let lineup_picks = this_player_picks.filter(i => i.multiplier > 0);
+                let bench_picks = this_player_picks.filter(i => i.multiplier == 0);
+                let tc_picks = this_player_picks.filter(i => i.multiplier == 3);
+                let multiplier_sum = getSum(this_player_picks.map(i => i.multiplier));
+                debugger;
+                return { 'total': parseInt(sample_data.length / 15), 'selected': this_player_picks.length, 'lineup_by': lineup_picks.length, 'benched_by': bench_picks.length, 'captained_by': captain_picks.length, 'tc_by': tc_picks.length, 'multiplier_sum': multiplier_sum }
+            } else {
+                return {}
+            }
+        }
     }
 })
 
@@ -1241,13 +1294,12 @@ function plot_bubble_xp_own_prior() {
             .style("stroke-dasharray", "2,4");
     }
 
-    if (($("#ExpPlayerDetailModal").data('bs.modal') || {})._isShown) {
+    if (($("#singlePlayerDetailModal").data('bs.modal') || {})._isShown) {
         drawLineForXP();
     }
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
-        // $("#ExpPlayerDetailModal").modal('show');
         $("#singlePlayerDetailModal").modal('show');
         setTimeout(drawLineForXP, 50);
     }
@@ -1598,13 +1650,13 @@ function plot_bubble_xp_own_posterior() {
             .style("stroke-dasharray", "2,4");
     }
 
-    if (($("#RealPlayerDetailModal").data('bs.modal') || {})._isShown) {
+    if (($("#singlePlayerDetailModal").data('bs.modal') || {})._isShown) {
         drawLineForRP();
     }
 
     var playerclick = function(d) {
         app.setChosenPlayer(d);
-        $("#RealPlayerDetailModal").modal('show');
+        $("#singlePlayerDetailModal").modal('show');
         setTimeout(drawLineForRP, 50);
     }
 
@@ -1771,11 +1823,7 @@ $('#playerModal').on('hidden.bs.modal', function(e) {
     $("svg #chosen_xp").remove()
 })
 
-$('#ExpPlayerDetailModal').on('hidden.bs.modal', function(e) {
-    $("svg #chosen_xp").remove()
-})
-
-$('#RealPlayerDetailModal').on('hidden.bs.modal', function(e) {
+$('#singlePlayerDetailModal').on('hidden.bs.modal', function(e) {
     $("svg #chosen_xp").remove()
 })
 

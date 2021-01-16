@@ -600,4 +600,17 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 .player-info-bar {
     margin-left: 1px;
     margin-right: 1px;
+    margin-bottom: 2px;
+}
+
+.player-info-bar .input-group input {
+    padding: 0px;
+    height: unset;
+    text-align: center;
+    background-color: #ffd4db;
+}
+
+.player-info-bar .input-group-append span.input-group-text {
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
