@@ -574,3 +574,43 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 .settings-button:hover {
     color: #5bbbb6;
 }
+
+.popup_info_small {
+    border: 1px solid #e8e8e8;
+    color: black;
+    padding: 10px;
+}
+
+.popup_info_small legend {
+    font-size: medium !important;
+    width: auto;
+    margin-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.player-info-title {
+    background-color: #ececec;
+}
+
+.player-info-value {
+    background-color: #5bbbb666;
+}
+
+.player-info-bar {
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-bottom: 2px;
+}
+
+.player-info-bar .input-group input {
+    padding: 0px;
+    height: unset;
+    text-align: center;
+    background-color: #ffd4db;
+}
+
+.player-info-bar .input-group-append span.input-group-text {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

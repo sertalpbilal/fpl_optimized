@@ -109,10 +109,10 @@
                         </div>
                         <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_using_sample">
                             <div class="d-flex flex-column metric">
-                                <div class="text-center p-0">Captaincy</div>
+                                <div class="text-center p-0">Captain/Chips</div>
                                 <div class="setting-value text-center p-0">
                                     <span class="setting-line ml-2" v-cloak @click="toggleCaptaincy">
-                                        {{ captaincy_enabled ? "On" : "Off"}}
+                                        {{ captaincy_enabled ? "Enabled" : "Disabled"}}
                                     </span>
                                 </div>
                             </div>
@@ -560,7 +560,8 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="ExpPlayerDetailModal">
+
+<div class="modal" tabindex="-1" role="dialog" id="singlePlayerDetailModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -569,52 +570,156 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-small">
-                <div class="d-block mx-auto text-center" v-if="!chosen_player.squad">
-                    <button class="btn btn-secondary btn-sm mb-1" @click="openSwapModel">
-                        Transfer In
-                    </button>
-                </div>
-                <div class="">
-                    <table class="table table-sm mx-auto w-75">
-                        <thead>
-                            <tr>
-                                <th style="width: 60%">Info</th>
-                                <th style="width: 40%">Value</th>
-                            </tr>
-                        </thead>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Ownership</td>
-                                <td>
+            <div class="modal-body text-small" v-if="is_ready && !(_.isEmpty(chosen_player))">
+                <fieldset class="popup_info_small top_field">
+                    <legend>Info</legend>
+
+                    <div class="row no-gutters">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Team</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ team_codes[app.chosen_player.team_code].name }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Position</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ element_type[app.chosen_player.element_type].name }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Price</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player.price }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </fieldset>
+
+                <fieldset class="popup_info_small top_field">
+                    <legend>Values (Editable)</legend>
+
+                    <div class="row no-gutters">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Ownership</div>
+                                <div class="player-info-value text-center p-0">
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="basic-addon2">%</span>
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Expected Points (xP)</td>
-                                <td>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Exp Points</div>
+                                <div class="player-info-value text-center p-0">
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
                                     </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Exp. Gain</td>
-                                <td class="text-left">{{ getWithSign(chosen_player_detail.xp_owned) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Exp. Loss</td>
-                                <td class="text-left">{{ getWithSign(chosen_player_detail.xp_non_owned) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Real Points</div>
+                                <div class="player-info-value text-center p-0">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" v-model.lazy="chosen_player_rp" @blur="changeData">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="popup_info_small top_field">
+                    <legend>Stats</legend>
+
+                    <div class="row no-gutters">
+                        <div class="col-6" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Exp. Gain / Loss</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ getWithSign(chosen_player_detail.xp_owned) }} / {{ getWithSign(chosen_player_detail.xp_non_owned) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Real Gain / Loss</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ getWithSign(chosen_player_detail.rp_owned) }} / {{ getWithSign(chosen_player_detail.rp_non_owned) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" v-if="is_using_sample">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Selected</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.selected }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.selected * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Lineup</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.lineup_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.lineup_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Bench</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.benched_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.benched_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" v-if="is_using_sample">
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Captain</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.captained_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.captained_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Triple Captain</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.tc_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.tc_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" v-cloak>
+                            <div class="d-flex flex-column player-info-bar">
+                                <div class="player-info-title text-center p-0">Effective Own.</div>
+                                <div class="player-info-value text-center p-0">
+                                    {{ chosen_player_stats.multiplier_sum }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.multiplier_sum * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary">Refresh</button>
@@ -649,65 +754,6 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="RealPlayerDetailModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Player Details: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-small">
-                <div class="">
-                    <table class="table table-sm mx-auto w-75">
-                        <thead>
-                            <tr>
-                                <th style="width: 60%">Info</th>
-                                <th style="width: 40%">Value</th>
-                            </tr>
-                        </thead>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Ownership</td>
-                                <td>
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="basic-addon3">%</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Realized Points (rP)</td>
-                                <td class="text-right">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" v-model.lazy="chosen_player_rp" @blur="changeData">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Realized Gain</td>
-                                <td class="text-left">{{ getWithSign(chosen_player_detail.rp_owned) }}</td>
-
-                            </tr>
-                            <tr>
-                                <td>Realized Loss</td>
-                                <td class="text-left">{{ getWithSign(chosen_player_detail.rp_non_owned) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Refresh</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="modal" tabindex="-1" role="dialog" id="lineupModal">
     <div class="modal-dialog" role="document">
@@ -946,7 +992,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-16T16:26:25.785865+00:00";
+    let lastupdate = "2021-01-16T22:16:45.701803+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-16 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -973,6 +1019,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T16:26:25.785865+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T22:16:45.701803+00:00</div>
 
 </html> 
