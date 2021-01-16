@@ -496,6 +496,12 @@ var app = new Vue({
             this.cnt += 1
             this.generateList()
             this.edit_overridden_buffer = {}
+        },
+        openPlayerDetails(event) {
+            let id = event.target.dataset.id;
+            let d = this.prior_data.find(i => i[1].player_id == id)[1];
+            this.setChosenPlayer(d);
+            $("#singlePlayerDetailModal").modal('show');
         }
     },
     computed: {
@@ -895,7 +901,6 @@ var app = new Vue({
                 let bench_picks = this_player_picks.filter(i => i.multiplier == 0);
                 let tc_picks = this_player_picks.filter(i => i.multiplier == 3);
                 let multiplier_sum = getSum(this_player_picks.map(i => i.multiplier));
-                debugger;
                 return { 'total': parseInt(sample_data.length / 15), 'selected': this_player_picks.length, 'lineup_by': lineup_picks.length, 'benched_by': bench_picks.length, 'captained_by': captain_picks.length, 'tc_by': tc_picks.length, 'multiplier_sum': multiplier_sum }
             } else {
                 return {}

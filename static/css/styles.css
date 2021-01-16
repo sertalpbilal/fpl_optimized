@@ -614,3 +614,12 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
+.clickable_username {
+    cursor: pointer;
+}
+
+.clickable_username:hover {
+    text-decoration: underline;
+    color: #5bbbb6;
+}

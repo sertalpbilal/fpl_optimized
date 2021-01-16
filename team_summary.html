@@ -212,7 +212,7 @@
                                             <tr v-for="i in prior_data_lineup" class="owned-row">
                                                 <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
-                                                <td>{{ i[1].web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <template>
@@ -225,7 +225,7 @@
                                             <tr v-for="i in prior_data_bench" class="bench-row">
                                                 <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td>B</td>
-                                                <td>{{ i[1].web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
@@ -235,7 +235,7 @@
                                             <tr v-for="i in prior_data_danger" class="nonowned-row">
                                                 <td class="text-muted">{{ i[1].player_id }}</td>
                                                 <td></td>
-                                                <td>{{ i[1].web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ rounded(i[1].points_md) }}</td>
                                                 <td class="text-right text-muted">{{ getWithSign(i[1].xp_owned) }}</td>
@@ -316,7 +316,7 @@
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
                                                 <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
-                                                <td>{{ i[1].web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
@@ -333,7 +333,7 @@
                                             </tr>
                                             <tr v-for="i in prior_data.filter(j => j[1].squad && !j[1].lineup)" class="bench-row">
                                                 <td>B</td>
-                                                <td>{{ i[1].web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
@@ -343,7 +343,7 @@
                                             </tr>
                                             <tr v-for="i in sorted_posterior.rest.slice(0,5)" class="nonowned-row">
                                                 <td></td>
-                                                <td>{{ i.web_name }}</td>
+                                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i.player_id">{{ i.web_name }}</span></td>
                                                 <td>{{ element_type[i.element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i.points_md).toFixed(2) }}</td>
                                                 <td class="text-right">{{ i.stats.total_points }}</td>
@@ -565,7 +565,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Player Details: <span style="color: darkred">{{ chosen_player.web_name }}</span></h5>
+                <h5 class="modal-title">Player Details: <span style="color: darkred">{{ chosen_player.web_name }}</span>
+                    <span class="ml-1">
+                        <button class="btn btn-secondary btn-sm mb-1" @click="openSwapModel" v-if="!chosen_player.squad">
+                            Transfer In
+                        </button>
+                    </span>
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -992,7 +998,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-16T22:16:45.701803+00:00";
+    let lastupdate = "2021-01-16T22:33:12.589342+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-16 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1019,6 +1025,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T22:16:45.701803+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T22:33:12.589342+00:00</div>
 
 </html> 
