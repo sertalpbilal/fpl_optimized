@@ -3,6 +3,11 @@ body {
     color: lightgray;
 }
 
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
 [v-cloak] {
     display: none;
 }
