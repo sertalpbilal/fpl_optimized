@@ -494,7 +494,6 @@ var app = new Vue({
             this.cnt += 1
             this.generateList()
             this.edit_overridden_buffer = {}
-                // this.startEditTable();
         }
     },
     computed: {
@@ -781,7 +780,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'xp': v })
                 }
-                this.cnt += 1;
+                this.cnt = this.cnt + 1;
             }
         },
         chosen_player_ownership: {
@@ -789,7 +788,7 @@ var app = new Vue({
                 if (_.isEmpty(this.chosen_player)) { return "-" }
                 let pid = this.chosen_player.player_id;
                 if (pid in this.overridden_values && this.overridden_values[pid].ownership) {
-                    return rounded(this.overridden_values[pid].ownership);
+                    return rounded(this.overridden_values[pid].ownership, digits = 1);
                 } else {
                     let ownership_data = this.final_ownership_data;
                     let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
@@ -809,7 +808,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'ownership': v })
                 }
-                this.cnt += 1;
+                this.cnt = this.cnt + 1;
             }
         },
         chosen_player_detail: function() {
@@ -845,6 +844,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'rp': v })
                 }
+                this.cnt = this.cnt + 1;
             }
         },
     }
