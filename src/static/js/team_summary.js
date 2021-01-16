@@ -85,7 +85,7 @@ var app = new Vue({
         saveSampleData(success, data) {
             if (success) {
                 this.sample_data = data;
-                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"];
+                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -553,7 +553,7 @@ var app = new Vue({
             if (Object.keys(this.sample_data).length == 0) {
                 return this.el_data;
             }
-            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"
+            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"
             let teams = [];
             switch (this.ownership_source) {
                 case "Official FPL API":
@@ -576,7 +576,7 @@ var app = new Vue({
                 case "Sample - Top 100":
                     teams = this.sample_data["100"].filter(i => i.team !== undefined);
                     break;
-                case "Sample - Ahead of Team":
+                case "Sample - Ahead":
                     teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
                     break;
                 default:

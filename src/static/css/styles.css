@@ -223,6 +223,12 @@ h5.modal-title {
     max-width: 20%;
 }
 
+.col-top-settings {
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
 span.twitter-link {
     display: block;
     float: left;
@@ -541,4 +547,30 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 
 #customInputTable .input-numeric {
     min-width: 50px;
+}
+
+.setting-value {
+    background-color: rgb(227 255 246 / 12%);
+    min-height: 21.18px;
+}
+
+.setting-line {
+    cursor: pointer;
+    justify-content: center;
+    color: #caa7ad;
+}
+
+.setting-line:hover {
+    color: #5bbbb6;
+}
+
+.settings-button {
+    line-height: unset;
+    font-size: unset;
+    color: #caa7ad;
+    border: 0px;
+}
+
+.settings-button:hover {
+    color: #5bbbb6;
 }

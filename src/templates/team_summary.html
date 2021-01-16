@@ -7,40 +7,78 @@
                 <div class="card-body text-center p-3">
 
 
-
-
-
-                    <div class="mx-auto d-flex justify-content-center" v-cloak v-if="is_active">
-                        <span>Active GW: <span style="color: orange">{{ active_gw }}</span></span>
-
-                    </div>
-
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Snapshot</span>
-                        <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
-                            <li class="nav-item breadcrumb-item">{{ season }}</li>
-                            <li class="nav-item breadcrumb-item">{{ gw }}</li>
-                            <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
-                        </ul>
-
-                    </div>
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Data</span>
-                        <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#sourceModal">
-                            {{ ownership_source }}
+                    <div class="row no-gutters">
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_active">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Active GW</div>
+                                <div class="setting-value text-center p-0">
+                                    <span style="color: orange">{{ active_gw }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <template v-if="is_using_sample">
-                            <span class="ml-2">(Captaincy</span>
-                            <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak @click="toggleCaptaincy">
-                                {{ captaincy_enabled ? "On" : "Off"}}
-                            </div>)
-                        </template>
-                    </div>
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Team</span>
-                        <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#teamModal">
-                            {{ valid_team_id }}
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Snapshot</div>
+                                <div class="setting-value text-center p-0">
+                                    <ul class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                                        <li class="nav-item breadcrumb-item">{{ season }}</li>
+                                        <li class="nav-item breadcrumb-item">{{ gw }}</li>
+                                        <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Ownership Data</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#sourceModal">
+                                        {{ ownership_source }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_using_sample">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Captaincy</div>
+                                <div class="setting-value text-center p-0">
+                                    <span class="setting-line ml-2" v-cloak @click="toggleCaptaincy">
+                                        {{ captaincy_enabled ? "On" : "Off"}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Team</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#teamModal">
+                                        {{ valid_team_id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_ready">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Custom Input</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm dropdown-toggle bg-none m-0 p-0 settings-button" type="button" id="generalOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Options
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit Values</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -78,7 +116,7 @@
 
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="lineupOperations" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          Operations
+                                            Operations
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="saveSquadToFile">Save Squad to File</button>
@@ -87,9 +125,6 @@
                                             </button>
                                             <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
                                             <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
-                                            <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit Values</button>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
                                         </div>
