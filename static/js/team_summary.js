@@ -85,7 +85,7 @@ var app = new Vue({
         saveSampleData(success, data) {
             if (success) {
                 this.sample_data = data;
-                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"];
+                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -494,7 +494,6 @@ var app = new Vue({
             this.cnt += 1
             this.generateList()
             this.edit_overridden_buffer = {}
-                // this.startEditTable();
         }
     },
     computed: {
@@ -553,7 +552,7 @@ var app = new Vue({
             if (Object.keys(this.sample_data).length == 0) {
                 return this.el_data;
             }
-            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead of Team"
+            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"
             let teams = [];
             switch (this.ownership_source) {
                 case "Official FPL API":
@@ -576,7 +575,7 @@ var app = new Vue({
                 case "Sample - Top 100":
                     teams = this.sample_data["100"].filter(i => i.team !== undefined);
                     break;
-                case "Sample - Ahead of Team":
+                case "Sample - Ahead":
                     teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
                     break;
                 default:
@@ -781,7 +780,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'xp': v })
                 }
-                this.cnt += 1;
+                this.cnt = this.cnt + 1;
             }
         },
         chosen_player_ownership: {
@@ -789,7 +788,7 @@ var app = new Vue({
                 if (_.isEmpty(this.chosen_player)) { return "-" }
                 let pid = this.chosen_player.player_id;
                 if (pid in this.overridden_values && this.overridden_values[pid].ownership) {
-                    return rounded(this.overridden_values[pid].ownership);
+                    return rounded(this.overridden_values[pid].ownership, digits = 1);
                 } else {
                     let ownership_data = this.final_ownership_data;
                     let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
@@ -809,7 +808,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'ownership': v })
                 }
-                this.cnt += 1;
+                this.cnt = this.cnt + 1;
             }
         },
         chosen_player_detail: function() {
@@ -845,6 +844,7 @@ var app = new Vue({
                 } else {
                     this.$set(this.overridden_values, pid, { 'rp': v })
                 }
+                this.cnt = this.cnt + 1;
             }
         },
     }

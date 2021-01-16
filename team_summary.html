@@ -75,36 +75,73 @@
             <div class="card border-dark bg-squad-card text-white">
                 <div class="card-body text-center p-3">
 
-                    <div class="mx-auto d-flex justify-content-center" v-cloak v-if="is_active">
-                        <span>Active GW: <span style="color: orange">{{ active_gw }}</span></span>
 
-                    </div>
-
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Snapshot</span>
-                        <ul class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
-                            <li class="nav-item breadcrumb-item">{{ season }}</li>
-                            <li class="nav-item breadcrumb-item">{{ gw }}</li>
-                            <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
-                        </ul>
-
-                    </div>
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Data</span>
-                        <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#sourceModal">
-                            {{ ownership_source }}
+                    <div class="row no-gutters">
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_active">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Active GW</div>
+                                <div class="setting-value text-center p-0">
+                                    <span style="color: orange">{{ active_gw }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <template v-if="is_using_sample">
-                            <span class="ml-2">(Captaincy</span>
-                            <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak @click="toggleCaptaincy">
-                                {{ captaincy_enabled ? "On" : "Off"}}
-                            </div>)
-                        </template>
-                    </div>
-                    <div class="mx-auto d-flex justify-content-center" v-cloak>
-                        <span>Team</span>
-                        <div class="d-flex flex-row date-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#teamModal">
-                            {{ valid_team_id }}
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Snapshot</div>
+                                <div class="setting-value text-center p-0">
+                                    <ul class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#dateModal">
+                                        <li class="nav-item breadcrumb-item">{{ season }}</li>
+                                        <li class="nav-item breadcrumb-item">{{ gw }}</li>
+                                        <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Ownership Data</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#sourceModal">
+                                        {{ ownership_source }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_using_sample">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Captaincy</div>
+                                <div class="setting-value text-center p-0">
+                                    <span class="setting-line ml-2" v-cloak @click="toggleCaptaincy">
+                                        {{ captaincy_enabled ? "On" : "Off"}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Team</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="d-flex flex-row setting-line mb-0 p-0 ml-2" v-cloak data-toggle="modal" data-target="#teamModal">
+                                        {{ valid_team_id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_ready">
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">Custom Input</div>
+                                <div class="setting-value text-center p-0">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm dropdown-toggle bg-none m-0 p-0 settings-button" type="button" id="generalOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Options
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit Values</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,7 +180,7 @@
 
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="lineupOperations" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          Operations
+                                            Operations
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="saveSquadToFile">Save Squad to File</button>
@@ -152,9 +189,6 @@
                                             </button>
                                             <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
                                             <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
-                                            <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit Values</button>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
                                         </div>
@@ -541,19 +575,19 @@
                         Transfer In
                     </button>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-sm">
+                <div class="">
+                    <table class="table table-sm mx-auto w-75">
                         <thead>
                             <tr>
-                                <th width="25%" class="text-center">Ownership</th>
-                                <th width="25%" class="text-center">xP</th>
-                                <th width="25%" class="text-right">Exp Gain</th>
-                                <th width="25%" class="text-right">Exp Loss</th>
+                                <th style="width: 60%">Info</th>
+                                <th style="width: 40%">Value</th>
                             </tr>
+                        </thead>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-right">
+                                <td>Ownership</td>
+                                <td>
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
                                         <div class="input-group-append">
@@ -561,13 +595,22 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-right">
+                            </tr>
+                            <tr>
+                                <td>Expected Points (xP)</td>
+                                <td>
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_xp" @blur="changeData">
                                     </div>
                                 </td>
-                                <td class="text-right">{{ getWithSign(chosen_player_detail.xp_owned) }}</td>
-                                <td class="text-right">{{ getWithSign(chosen_player_detail.xp_non_owned) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Exp. Gain</td>
+                                <td class="text-left">{{ getWithSign(chosen_player_detail.xp_owned) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Exp. Loss</td>
+                                <td class="text-left">{{ getWithSign(chosen_player_detail.xp_non_owned) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -616,33 +659,43 @@
                 </button>
             </div>
             <div class="modal-body text-small">
-                <div class="table-responsive">
-                    <table class="table table-sm">
+                <div class="">
+                    <table class="table table-sm mx-auto w-75">
                         <thead>
                             <tr>
-                                <th width="25%" class="text-center">Ownership</th>
-                                <th width="25%" class="text-center">rP</th>
-                                <th width="25%" class="text-right">Net Gain</th>
-                                <th width="25%" class="text-right">Net Loss</th>
+                                <th style="width: 60%">Info</th>
+                                <th style="width: 40%">Value</th>
                             </tr>
+                        </thead>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-right">
+                                <td>Ownership</td>
+                                <td>
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_ownership" @blur="changeData">
                                         <div class="input-group-append">
-                                            <span class="input-group-text" id="basic-addon2">%</span>
+                                            <span class="input-group-text" id="basic-addon3">%</span>
                                         </div>
                                     </div>
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>Realized Points (rP)</td>
                                 <td class="text-right">
                                     <div class="input-group input-group-sm">
                                         <input type="text" class="form-control" v-model.lazy="chosen_player_rp" @blur="changeData">
                                     </div>
                                 </td>
-                                <td class="text-right">{{ getWithSign(chosen_player_detail.rp_owned) }}</td>
-                                <td class="text-right">{{ getWithSign(chosen_player_detail.rp_non_owned) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Realized Gain</td>
+                                <td class="text-left">{{ getWithSign(chosen_player_detail.rp_owned) }}</td>
+
+                            </tr>
+                            <tr>
+                                <td>Realized Loss</td>
+                                <td class="text-left">{{ getWithSign(chosen_player_detail.rp_non_owned) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -893,7 +946,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-16T14:42:54.751733+00:00";
+    let lastupdate = "2021-01-16T16:00:22.130047+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-16 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -920,6 +973,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T14:42:54.751733+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-16T16:00:22.130047+00:00</div>
 
 </html> 
