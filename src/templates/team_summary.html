@@ -246,7 +246,7 @@
                                         </thead>
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
-                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
+                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
                                                 <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>

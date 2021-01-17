@@ -778,7 +778,7 @@ var app = new Vue({
                 exp_loss_live = getSum(rest_players_live.map(j => j[1].points_md * (j[1].ownership / 100)));
                 real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
 
-                played_own = getSum(team_lineup_live.map(i => 1 + i[1].captain)) + "/" + getSum(team_lineup.map(i => 1 + i[1].captain));
+                played_own = getSum(team_lineup_live.map(i => i[1].multiplier)) + "/" + getSum(team_lineup.map(i => i[1].multiplier));
                 played_nonown = rest_players_live.length + "/" + rest_players_with_game.length;
             } else {
                 exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 - j[1].ownership / 100)));
