@@ -142,10 +142,10 @@
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data_lineup" class="owned-row">
                                                 <td class="text-muted">{{ i[1].player_id }}</td>
-                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
+                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
                                                 <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-right">{{ rounded(i[1].points_md) }}</td>
+                                                <td class="text-right">{{ rounded(i[1].points_md) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>
                                                 <template>
                                                     <td class="text-right" style="color: orange" v-if="is_using_captain && i[1].captain">{{ getWithSign(i[1].xp_owned_captain ) }}</td>
                                                     <td class="text-right" style="color: #acc3c5" v-else>{{ getWithSign(i[1].xp_owned) }}</td>
@@ -249,7 +249,7 @@
                                                 <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
                                                 <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                                <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}</td>
+                                                <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>
                                                 <td class="text-right">{{ i[1].stats.total_points }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td>
                                                 <template v-if="is_using_captain && i[1].captain">
@@ -701,7 +701,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-small">
                 <div class="text-black mb-3 text-center" :class="{'text-danger': !is_formation_valid }">Formation: {{ formation[1] }} {{ is_formation_valid ? "" : "-INVALID-" }}</div>
                 <div class="row">
                     <div class="col-6">
@@ -712,6 +712,7 @@
                                     <th>Pos</th>
                                     <th>Name</th>
                                     <th v-if="is_using_captain">Cap</th>
+                                    <th v-if="is_using_captain">TC</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -719,8 +720,9 @@
                                 <template v-for="(ty, id) of el_types">
                                     <tr v-for="i in team_squad" v-if="i[1].lineup && parseInt(i[1].element_type)==id">
                                         <td>{{ ty.short }}</td>
-                                        <td>{{ i[1].web_name}} <span class="captain_color" v-if="is_using_captain && i[1].captain">[C]</span></td>
+                                        <td>{{ i[1].web_name}} <span class="captain_color" v-if="is_using_captain && i[1].captain">{{ i[1].multiplier == 3 ? "[TC]" : "[C]" }}</span></td>
                                         <td v-if="is_using_captain"><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="chooseCaptain"><i class="fa fa-star" aria-hidden="true"></i></button></td>
+                                        <td v-if="is_using_captain"><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="chooseTripleCaptain"><i class="fa fa-star" aria-hidden="true"></i></button></td>
                                         <td><button class="button btn-sm btn-in-modal" :data-id="i[1].player_id" @click="toggleLineupType"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></td>
                                     </tr>
                                 </template>
