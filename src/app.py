@@ -6,6 +6,7 @@ these pages to static HTML.
 """
 
 import glob
+import json
 import os
 import sys
 import datetime
@@ -105,10 +106,14 @@ def team_summary():
                 target = i
                 print(f"Active GW {active_gw}")
     list_dates = [' / '.join(i) for i in filtered_dates]
+
+    with open('static/json/fpl_analytics.json') as f:
+        league_list = f.read()
+
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw)
+        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw)
+        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
 @app.route('/ownership_trend.html')

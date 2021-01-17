@@ -11,6 +11,8 @@ var app = new Vue({
         active_gw: active_gw,
         solutions: [],
         team_id: "-1",
+        using_last_gw_team: false,
+        league_list: league_list,
         ownership_source: "Official FPL API",
         available_sources: ["Official FPL API"],
         sample_data: {},
@@ -62,6 +64,14 @@ var app = new Vue({
         close_teammodal() {
             $("#teamModal").modal('hide');
         },
+        selectLeagueTeam() {
+            this.team_id = $("#fpl_analytics_league_select").val();
+            if (this.team_id == "") { return; }
+            this.$nextTick(() => {
+                this.close_teammodal();
+                load_team();
+            })
+        },
         setSolutions(values) {
             this.solutions = _.cloneDeep(values);
         },
@@ -69,6 +79,7 @@ var app = new Vue({
             let self = this;
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
+                $("#fpl_analytics_league_select").val("");
                 self.close_teammodal();
                 load_team();
             })
@@ -86,6 +97,7 @@ var app = new Vue({
             if (success) {
                 this.sample_data = data;
                 this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
+                this.ownership_source = this.available_sources[1];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -144,7 +156,7 @@ var app = new Vue({
                 e.xp_owned = (1 - e.ownership / 100) * e.points_md;
                 e.xp_non_owned = -e.ownership / 100 * e.points_md;
                 if (this.is_using_captain) {
-                    e.net_xp = (e.multiplier - e.ownership / 100) * parseFloat(e.points_md); // xxx
+                    e.net_xp = (e.multiplier - e.ownership / 100) * parseFloat(e.points_md);
                 } else {
                     e.net_xp = ((e.lineup == 1) - e.ownership / 100) * parseFloat(e.points_md);
                 }
@@ -160,8 +172,9 @@ var app = new Vue({
                 e.threat = false;
                 e.stats = rp[e.player_id];
 
-                if (this.rp_data !== undefined && this.rp_data.length > 0) {
+                if (e.stats !== undefined && this.rp_data !== undefined && this.rp_data.length > 0) {
                     e.rp = e.stats.total_points;
+                    e.minutes = e.stats.minutes;
                     e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
                     e.net_loss = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
                     if (e.lineup) {
@@ -554,13 +567,14 @@ var app = new Vue({
         final_xp_data: function() {
             let x = this.cnt;
             let pts = _.cloneDeep(this.xp_data);
-            pts = _.uniqBy(pts, function(p) { return p.player_id });
+            pts = pts.filter(i => i.event == this.gw.slice(2));
+            let pts_grouped = _(pts).groupBy('player_id').values().map((group) => ({...group[0], qty: group.length, event_list: group.map(k => k.event_id) })).value();
             let overriden_xp = Object.entries(this.overridden_values).filter(i => i[1].xp);
             overriden_xp.forEach((w) => {
-                t = pts.find(e => e.player_id == w[0]);
+                t = pts_grouped.find(e => e.player_id == w[0]);
                 t.points_md = w[1].xp;
             })
-            return pts;
+            return pts_grouped;
         },
         final_rp_data: function() {
             let x = this.cnt;
@@ -761,35 +775,40 @@ var app = new Vue({
             if (!this.is_ready) { return {}; }
             // let games = this.fixture_data.filter(i => i.event == this.gw.slice(2));
             let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
+            let this_gw_games = this.fixture_data.filter(i => i.event == this.gw.slice(2))
+            let this_gw_games_dict = Object.fromEntries(this_gw_games.map(i => [i.id, i]));
             let exp_gain = exp_loss = real_gain = real_loss = exp_gain_live = exp_loss_live = 0;
-            let team_lineup = this.prior_data.filter(j => j[1].lineup);
-            let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => j[1].event_id !== "").filter(j => games_with_id[parseInt(j[1].event_id)].started);
-            // let team_lineup_live = this.prior_data.filter(j => j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+
+            let team_lineup = this.prior_data.filter(j => j[1].multiplier > 0);
+            let team_lineup_details = team_lineup.filter(j => j[1].event_list.length > 0).map(j => j[1].event_list.map(k => [...j, k, this_gw_games_dict[parseInt(k)]])).flat().filter(i => i[3] !== undefined);
+            let team_lineup_live = team_lineup_details.filter(i => i[3].started);
+
+
             let rest_players = this.prior_data.filter(j => !j[1].lineup);
-            let rest_players_with_game = this.prior_data.filter(j => !j[1].lineup).filter(j => j[1].event_id !== "");
-            let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => j[1].event_id !== "").filter(j => games_with_id[parseInt(j[1].event_id)].started);
-            //let rest_players_live = this.prior_data.filter(j => !j[1].lineup).filter(j => games_with_id[parseInt(j[1].event_id)].started);
+            let rest_players_with_game = rest_players.filter(j => j[1].event_list.length > 0);
+            let rest_players_details = rest_players_with_game.map(j => j[1].event_list.map(k => [...j, k, this_gw_games_dict[parseInt(k)]])).flat().filter(i => i[3] !== undefined)
+            let rest_players_live = rest_players_details.filter(i => i[3].started);
 
             if (this.is_using_captain) {
-                exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
-                exp_gain_live = getSum(team_lineup_live.map(j => j[1].points_md * (1 + j[1].captain - j[1].ownership / 100)));
-                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (1 + j[1].captain - j[1].ownership / 100)))
-                exp_loss = getSum(rest_players.map(j => j[1].points_md * (j[1].ownership / 100)));
-                exp_loss_live = getSum(rest_players_live.map(j => j[1].points_md * (j[1].ownership / 100)));
-                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+                exp_gain = getSum(team_lineup.map(j => (j[1].points_md) * (j[1].multiplier - j[1].ownership / 100)));
+                exp_gain_live = getSum(team_lineup_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].multiplier - j[1].ownership / 100))); // xxx
+                real_gain = getSum(team_lineup.map(j => j[1].rp * (j[1].multiplier - j[1].ownership / 100)))
+                exp_loss = getSum(rest_players.map(j => (j[1].points_md) * (j[1].ownership / 100)));
+                exp_loss_live = getSum(rest_players_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].rp * (j[1].ownership / 100)));
 
-                played_own = getSum(team_lineup_live.map(i => i[1].multiplier)) + "/" + getSum(team_lineup.map(i => i[1].multiplier));
-                played_nonown = rest_players_live.length + "/" + rest_players_with_game.length;
+                played_own = getSum(team_lineup_live.map(i => i[1].multiplier)) + "/" + getSum(team_lineup_details.map(i => i[1].multiplier));
+                played_nonown = rest_players_live.length + "/" + rest_players_details.length;
             } else {
-                exp_gain = getSum(team_lineup.map(j => j[1].points_md * (1 - j[1].ownership / 100)));
-                exp_gain_live = getSum(team_lineup_live.map(j => j[1].points_md * (1 - j[1].ownership / 100)));
-                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)));
-                exp_loss = getSum(rest_players.map(j => j[1].points_md * (j[1].ownership / 100)));
-                exp_loss_live = getSum(rest_players_live.map(j => j[1].points_md * (j[1].ownership / 100)));
-                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+                exp_gain = getSum(team_lineup.map(j => (j[1].points_md) * (1 - j[1].ownership / 100)));
+                exp_gain_live = getSum(team_lineup_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (1 - j[1].ownership / 100))); // xxx
+                real_gain = getSum(team_lineup.map(j => j[1].rp * (1 - j[1].ownership / 100)))
+                exp_loss = getSum(rest_players.map(j => (j[1].points_md) * (j[1].ownership / 100)));
+                exp_loss_live = getSum(rest_players_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].rp * (j[1].ownership / 100)));
 
-                played_own = team_lineup_live.length + "/" + team_lineup.length;
-                played_nonown = rest_players_live.length + "/" + rest_players_with_game.length;
+                played_own = getSum(team_lineup_live.map(i => 1)) + "/" + getSum(team_lineup_details.map(i => 1));
+                played_nonown = rest_players_live.length + "/" + rest_players_details.length;
             }
             return { exp_gain: exp_gain, exp_loss: exp_loss, real_gain: real_gain, real_loss: real_loss, exp_gain_live: exp_gain_live, exp_loss_live: exp_loss_live, played_own: played_own, played_nonown: played_nonown }
         },
@@ -985,21 +1004,23 @@ function load_gw() {
             app.saveSampleData(true, data);
         },
         error: function() {
-            console.log("Cannot get GW sample, trying last week")
-            if (gw == next_gw) {
-                target_gw = parseInt(gw.slice(2)) - 1;
-            }
-            $.ajax({
-                type: "GET",
-                url: `sample/${target_gw}/fpl_sampled.json`,
-                dataType: "json",
-                success: function(data) {
-                    app.saveSampleData(true, data);
-                },
-                error: function() {
-                    app.saveSampleData(false, [])
-                }
-            });
+            console.log("This gw has no sample data");
+            app.saveSampleData(false, []);
+            // console.log("Cannot get GW sample, trying last week")
+            // if (gw == next_gw) {
+            //     target_gw = parseInt(gw.slice(2)) - 1;
+            // }
+            // $.ajax({
+            //     type: "GET",
+            //     url: `sample/${target_gw}/fpl_sampled.json`,
+            //     dataType: "json",
+            //     success: function(data) {
+            //         app.saveSampleData(true, data);
+            //     },
+            //     error: function() {
+            //         app.saveSampleData(false, [])
+            //     }
+            // });
         }
     });
 
@@ -1094,6 +1115,7 @@ function load_team() {
             let teamvals = JSON.parse(data);
             app.saveTeamData(teamvals);
             $("#waitModal").modal('hide');
+            app.using_last_gw_team = false;
             app.generateList();
             app.$nextTick(() => {
                 $(".plot").empty();
@@ -1118,6 +1140,7 @@ function load_team() {
                         let teamvals = JSON.parse(data);
                         app.saveTeamData(teamvals);
                         $("#waitModal").modal('hide');
+                        app.using_last_gw_team = true;
                         app.generateList();
                         app.$nextTick(() => {
                             $(".plot").empty();
@@ -1648,8 +1671,8 @@ function plot_bubble_xp_own_posterior() {
                 <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">rP</td><td>${parseInt(d.stats.total_points)}</td></tr>
-                    <tr><td class="text-right">Mins</td><td>${d.stats.minutes}</td></tr>
+                    <tr><td class="text-right">rP</td><td>${parseInt(d.rp)}</td></tr>
+                    <tr><td class="text-right">Mins</td><td>${d.minutes}</td></tr>
                     <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
                     <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.net_gain)}</td></tr>
