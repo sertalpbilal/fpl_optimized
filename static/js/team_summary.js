@@ -110,6 +110,7 @@ var app = new Vue({
             let cgw = this.gw.slice(2);
             pts = pts.filter(x => x.event == cgw);
             els = Object.fromEntries(els.map(x => [x.id, x]));
+            let all_team_picks = team.picks;
             let captain = team.picks.filter(i => i.is_captain)[0].element;
             let lineup = team.picks.filter(i => i.multiplier >= 1).map(i => i.element);
             let squad = team.picks.map(i => i.element);
@@ -128,6 +129,14 @@ var app = new Vue({
                 } else {
                     e.ownership = ownership_vals[e.player_id].selected_by_percent;
                 }
+
+                let match_found = all_team_picks.find((k) => k.element == e.player_id);
+                if (match_found) {
+                    e.multiplier = match_found.multiplier;
+                } else {
+                    e.multiplier = 0;
+                }
+
                 e.lineup = lineup.includes(parseInt(e.player_id));
                 e.squad = squad.includes(parseInt(e.player_id));
                 e.captain = (e.player_id == captain);
@@ -135,14 +144,14 @@ var app = new Vue({
                 e.xp_owned = (1 - e.ownership / 100) * e.points_md;
                 e.xp_non_owned = -e.ownership / 100 * e.points_md;
                 if (this.is_using_captain) {
-                    e.net_xp = ((e.lineup + e.captain) - e.ownership / 100) * parseFloat(e.points_md);
+                    e.net_xp = (e.multiplier - e.ownership / 100) * parseFloat(e.points_md); // xxx
                 } else {
                     e.net_xp = ((e.lineup == 1) - e.ownership / 100) * parseFloat(e.points_md);
                 }
 
                 if (this.is_using_captain) {
-                    e.xp_owned_captain = ((e.captain + 1) - e.ownership / 100) * e.points_md;
-                    e.net_xp_captain = ((e.captain + e.lineup) - e.ownership / 100) * e.points_md;
+                    e.xp_owned_captain = ((e.multiplier) - e.ownership / 100) * e.points_md;
+                    e.net_xp_captain = ((e.multiplier) - e.ownership / 100) * e.points_md;
                 } else {
                     e.xp_owned_captain = 0;
                     e.net_xp_captain = 0;
@@ -153,14 +162,14 @@ var app = new Vue({
 
                 if (this.rp_data !== undefined && this.rp_data.length > 0) {
                     e.rp = e.stats.total_points;
-                    if (this.is_using_captain) {
-                        e.net_gain = ((e.captain + 1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
-                    } else {
-                        e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
-                    }
+                    e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
                     e.net_loss = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
                     if (e.lineup) {
-                        e.net_benefit = e.net_gain;
+                        if (this.is_using_captain) {
+                            e.net_benefit = ((e.multiplier - parseFloat(e.ownership) / 100) * e.stats.total_points);
+                        } else {
+                            e.net_benefit = e.net_gain;
+                        }
                     } else {
                         e.net_benefit = e.net_loss;
                     }
@@ -227,9 +236,26 @@ var app = new Vue({
             let id = e.currentTarget.dataset.id;
             let el = this.team_data.picks.filter(i => i.element == parseInt(id))[0];
             this.team_data.picks.forEach((e) => {
-                e.is_captain = false;
+                if (e.is_captain) {
+                    e.multiplier = 1;
+                    e.is_captain = false;
+                }
             })
             el.is_captain = true;
+            el.multiplier = 2;
+            this.changeData();
+        },
+        chooseTripleCaptain(e) {
+            let id = e.currentTarget.dataset.id;
+            let el = this.team_data.picks.filter(i => i.element == parseInt(id))[0];
+            this.team_data.picks.forEach((e) => {
+                if (e.is_captain) {
+                    e.multiplier = 1;
+                    e.is_captain = false;
+                }
+            })
+            el.is_captain = true;
+            el.multiplier = 3;
             this.changeData();
         },
         refresh_plots() {
