@@ -315,7 +315,7 @@
                                         </thead>
                                         <tbody v-cloak>
                                             <tr v-for="i in prior_data.filter(j => j[1].lineup)" class="owned-row">
-                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? "C" : "L") : "L" }}</td>
+                                                <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
                                                 <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
                                                 <td>{{ element_type[i[1].element_type]['short'] }}</td>
                                                 <td class="text-right">{{ parseFloat(i[1].points_md).toFixed(2) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>
@@ -1000,7 +1000,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-17T02:50:46.341956+00:00";
+    let lastupdate = "2021-01-17T03:50:00.524032+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-16 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1027,6 +1027,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-17T02:50:46.341956+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-17T03:50:00.524032+00:00</div>
 
 </html> 
