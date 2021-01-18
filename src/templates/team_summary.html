@@ -615,7 +615,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Selected</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.selected }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.selected * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.selected }} / {{ chosen_player_stats.total }} =</span> {{ (chosen_player_stats.selected * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
@@ -623,7 +623,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Lineup</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.lineup_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.lineup_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.lineup_by }} / {{ chosen_player_stats.total }} =</span> {{ (chosen_player_stats.lineup_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
@@ -631,7 +631,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Bench</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.benched_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.benched_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.benched_by }} / {{ chosen_player_stats.total }} =</span> {{ (chosen_player_stats.benched_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
@@ -642,7 +642,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Captain</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.captained_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.captained_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.captained_by }} / {{ chosen_player_stats.total }} = </span>{{ (chosen_player_stats.captained_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
@@ -650,7 +650,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Triple Captain</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.tc_by }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.tc_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.tc_by }} / {{ chosen_player_stats.total }} = </span> {{ (chosen_player_stats.tc_by * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
@@ -658,7 +658,7 @@
                             <div class="d-flex flex-column player-info-bar">
                                 <div class="player-info-title text-center p-0">Effective Own.</div>
                                 <div class="player-info-value text-center p-0">
-                                    {{ chosen_player_stats.multiplier_sum }} / {{ chosen_player_stats.total }} = {{ (chosen_player_stats.multiplier_sum * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
+                                    <span class="text-calc">{{ chosen_player_stats.multiplier_sum }} / {{ chosen_player_stats.total }} = </span> {{ (chosen_player_stats.multiplier_sum * 100 / Math.max(chosen_player_stats.total, 1)).toFixed(1) }}%
                                 </div>
                             </div>
                         </div>
