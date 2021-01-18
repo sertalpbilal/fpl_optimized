@@ -11,6 +11,8 @@ var app = new Vue({
         active_gw: active_gw,
         solutions: [],
         team_id: "-1",
+        using_last_gw_team: false,
+        league_list: league_list,
         ownership_source: "Official FPL API",
         available_sources: ["Official FPL API"],
         sample_data: {},
@@ -62,6 +64,14 @@ var app = new Vue({
         close_teammodal() {
             $("#teamModal").modal('hide');
         },
+        selectLeagueTeam() {
+            this.team_id = $("#fpl_analytics_league_select").val();
+            if (this.team_id == "") { return; }
+            this.$nextTick(() => {
+                this.close_teammodal();
+                load_team();
+            })
+        },
         setSolutions(values) {
             this.solutions = _.cloneDeep(values);
         },
@@ -69,6 +79,7 @@ var app = new Vue({
             let self = this;
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
+                $("#fpl_analytics_league_select").val("");
                 self.close_teammodal();
                 load_team();
             })
@@ -86,6 +97,7 @@ var app = new Vue({
             if (success) {
                 this.sample_data = data;
                 this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
+                this.ownership_source = this.available_sources[1];
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -160,8 +172,9 @@ var app = new Vue({
                 e.threat = false;
                 e.stats = rp[e.player_id];
 
-                if (this.rp_data !== undefined && this.rp_data.length > 0) {
+                if (e.stats !== undefined && this.rp_data !== undefined && this.rp_data.length > 0) {
                     e.rp = e.stats.total_points;
+                    e.minutes = e.stats.minutes;
                     e.net_gain = ((1 - parseFloat(e.ownership) / 100) * e.stats.total_points);
                     e.net_loss = (-(parseFloat(e.ownership) / 100) * e.stats.total_points);
                     if (e.lineup) {
@@ -779,22 +792,22 @@ var app = new Vue({
             if (this.is_using_captain) {
                 exp_gain = getSum(team_lineup.map(j => (j[1].points_md) * (j[1].multiplier - j[1].ownership / 100)));
                 exp_gain_live = getSum(team_lineup_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].multiplier - j[1].ownership / 100))); // xxx
-                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (j[1].multiplier - j[1].ownership / 100)))
+                real_gain = getSum(team_lineup.map(j => j[1].rp * (j[1].multiplier - j[1].ownership / 100)))
                 exp_loss = getSum(rest_players.map(j => (j[1].points_md) * (j[1].ownership / 100)));
                 exp_loss_live = getSum(rest_players_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].ownership / 100)));
-                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].rp * (j[1].ownership / 100)));
 
-                played_own = getSum(team_lineup_live.map(i => i[1].multiplier)) + " / " + getSum(team_lineup_details.map(i => i[1].multiplier));
+                played_own = getSum(team_lineup_live.map(i => i[1].multiplier)) + "/" + getSum(team_lineup_details.map(i => i[1].multiplier));
                 played_nonown = rest_players_live.length + "/" + rest_players_details.length;
             } else {
                 exp_gain = getSum(team_lineup.map(j => (j[1].points_md) * (1 - j[1].ownership / 100)));
                 exp_gain_live = getSum(team_lineup_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (1 - j[1].ownership / 100))); // xxx
-                real_gain = getSum(team_lineup.map(j => j[1].stats.total_points * (1 - j[1].ownership / 100)))
+                real_gain = getSum(team_lineup.map(j => j[1].rp * (1 - j[1].ownership / 100)))
                 exp_loss = getSum(rest_players.map(j => (j[1].points_md) * (j[1].ownership / 100)));
                 exp_loss_live = getSum(rest_players_live.map(j => (j[1].points_md / Math.max(j[1].event_list.length, 1)) * (j[1].ownership / 100)));
-                real_loss = getSum(rest_players.map(j => j[1].stats.total_points * (j[1].ownership / 100)));
+                real_loss = getSum(rest_players.map(j => j[1].rp * (j[1].ownership / 100)));
 
-                played_own = getSum(team_lineup_live.map(i => 1)) + " / " + getSum(team_lineup_details.map(i => 1));
+                played_own = getSum(team_lineup_live.map(i => 1)) + "/" + getSum(team_lineup_details.map(i => 1));
                 played_nonown = rest_players_live.length + "/" + rest_players_details.length;
             }
             return { exp_gain: exp_gain, exp_loss: exp_loss, real_gain: real_gain, real_loss: real_loss, exp_gain_live: exp_gain_live, exp_loss_live: exp_loss_live, played_own: played_own, played_nonown: played_nonown }
@@ -991,21 +1004,23 @@ function load_gw() {
             app.saveSampleData(true, data);
         },
         error: function() {
-            console.log("Cannot get GW sample, trying last week")
-            if (gw == next_gw) {
-                target_gw = parseInt(gw.slice(2)) - 1;
-            }
-            $.ajax({
-                type: "GET",
-                url: `sample/${target_gw}/fpl_sampled.json`,
-                dataType: "json",
-                success: function(data) {
-                    app.saveSampleData(true, data);
-                },
-                error: function() {
-                    app.saveSampleData(false, [])
-                }
-            });
+            console.log("This gw has no sample data");
+            app.saveSampleData(false, []);
+            // console.log("Cannot get GW sample, trying last week")
+            // if (gw == next_gw) {
+            //     target_gw = parseInt(gw.slice(2)) - 1;
+            // }
+            // $.ajax({
+            //     type: "GET",
+            //     url: `sample/${target_gw}/fpl_sampled.json`,
+            //     dataType: "json",
+            //     success: function(data) {
+            //         app.saveSampleData(true, data);
+            //     },
+            //     error: function() {
+            //         app.saveSampleData(false, [])
+            //     }
+            // });
         }
     });
 
@@ -1100,6 +1115,7 @@ function load_team() {
             let teamvals = JSON.parse(data);
             app.saveTeamData(teamvals);
             $("#waitModal").modal('hide');
+            app.using_last_gw_team = false;
             app.generateList();
             app.$nextTick(() => {
                 $(".plot").empty();
@@ -1124,6 +1140,7 @@ function load_team() {
                         let teamvals = JSON.parse(data);
                         app.saveTeamData(teamvals);
                         $("#waitModal").modal('hide');
+                        app.using_last_gw_team = true;
                         app.generateList();
                         app.$nextTick(() => {
                             $(".plot").empty();
@@ -1654,8 +1671,8 @@ function plot_bubble_xp_own_posterior() {
                 <div class="mx-auto d-block text-center" style="color: ${name_color}">${d.web_name}</div>
                 <table class="table table-striped table-sm table-dark mb-0">
                     <tr><td class="text-right">xP</td><td>${parseFloat(d.points_md).toFixed(2)}</td></tr>
-                    <tr><td class="text-right">rP</td><td>${parseInt(d.stats.total_points)}</td></tr>
-                    <tr><td class="text-right">Mins</td><td>${d.stats.minutes}</td></tr>
+                    <tr><td class="text-right">rP</td><td>${parseInt(d.rp)}</td></tr>
+                    <tr><td class="text-right">Mins</td><td>${d.minutes}</td></tr>
                     <tr><td class="text-right">Own.</td><td>${parseFloat(d.ownership).toFixed(1)}%</td></tr>
                     <tr><td class="text-right">Price</td><td>£${d.price}M</td></tr>
                     <tr><td class="text-right">Net Gain</td><td style="color: ${own_color}">${getWithSign(d.net_gain)}</td></tr>
