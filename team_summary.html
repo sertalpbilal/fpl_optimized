@@ -780,7 +780,7 @@
             <div class="modal-body text-small">
                 <div class="text-black mb-3 text-center" :class="{'text-danger': !is_formation_valid }">Formation: {{ formation[1] }} {{ is_formation_valid ? "" : "-INVALID-" }}</div>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <span class="text-black d-block mb-1 text-center">Lineup</span>
                         <table class="table table-sm table-striped table-hover">
                             <thead>
@@ -789,7 +789,7 @@
                                     <th>Name</th>
                                     <th v-if="is_using_captain">Cap</th>
                                     <th v-if="is_using_captain">TC</th>
-                                    <th></th>
+                                    <th>To Bench</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -805,14 +805,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <span class="text-black d-block mb-1 text-center">Bench</span>
                         <table class="table table-sm table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>Pos</th>
                                     <th>Name</th>
-                                    <th></th>
+                                    <th>To Lineup</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1009,7 +1009,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-18T22:22:49.748446+00:00";
+    let lastupdate = "2021-01-19T03:02:34.269382+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-18 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1036,6 +1036,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-18T22:22:49.748446+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-19T03:02:34.269382+00:00</div>
 
 </html> 
