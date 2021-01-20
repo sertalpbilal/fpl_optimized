@@ -97,7 +97,9 @@ var app = new Vue({
             if (success) {
                 this.sample_data = data;
                 this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
-                this.ownership_source = this.available_sources[1];
+                if (this.ownership_source == this.available_sources[0]) {
+                    this.ownership_source = this.available_sources[1];
+                }
             } else {
                 this.sample_data = [];
                 this.available_sources = ["Official FPL API"];
@@ -1281,14 +1283,15 @@ function plot_bubble_xp_own_prior() {
         .style("font-size", "small");
 
     // Mouse events
-    var mouseover = function(d) {
+    var mouseover = function(event, d) {
         tooltip.style("opacity", 0.8)
         d3.select(this)
-            .style("opacity", 1)
+            .style("opacity", 1);
+        // app.chosen_player = d;
         app.chosen_player = d;
         drawLineForXP();
     }
-    var mousemove = function(d) {
+    var mousemove = function(event, d) {
         name_color = "white";
         own_color = "white";
         threat_color = "white";
@@ -1308,10 +1311,10 @@ function plot_bubble_xp_own_prior() {
                     <tr><td class="text-right">Exp Loss</td><td style="color: ${threat_color}">${getWithSign(d.xp_non_owned)}</td></tr>
                 </table>
             `)
-            .style("left", (d3.event.pageX + 15) + "px")
-            .style("top", (d3.event.pageY + 15) + "px")
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY + 15) + "px")
     }
-    var mousemove_captain = function(d) {
+    var mousemove_captain = function(event, d) {
         tooltip
             .html(`
                 <div class="mx-auto d-block text-center" style="color: orange">${d.web_name} (Captain)</div>
@@ -1323,10 +1326,10 @@ function plot_bubble_xp_own_prior() {
                     <tr><td class="text-right">Net Loss</td><td style="color: white">${getWithSign(d.xp_non_owned)}</td></tr>
                 </table>
             `)
-            .style("left", (d3.event.pageX + 15) + "px")
-            .style("top", (d3.event.pageY + 15) + "px")
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY + 15) + "px")
     }
-    var mouseleave = function(d) {
+    var mouseleave = function(event, d) {
         tooltip.style("opacity", 0)
         d3.select(this)
             .style("opacity", 0.5);
@@ -1352,7 +1355,7 @@ function plot_bubble_xp_own_prior() {
         drawLineForXP();
     }
 
-    var playerclick = function(d) {
+    var playerclick = function(event, d) {
         app.setChosenPlayer(d);
         $("#singlePlayerDetailModal").modal('show');
         setTimeout(drawLineForXP, 50);
@@ -1648,14 +1651,14 @@ function plot_bubble_xp_own_posterior() {
         .style("font-size", "small");
 
     // Mouse events
-    var mouseover = function(d) {
+    var mouseover = function(event, d) {
         app.setChosenPlayer(d);
         tooltip.style("opacity", 0.8)
         d3.select(this)
             .style("opacity", 1)
         drawLineForRP();
     }
-    var mousemove = function(d) {
+    var mousemove = function(event, d) {
         name_color = "white";
         own_color = "white";
         threat_color = "#de6363";
@@ -1679,10 +1682,10 @@ function plot_bubble_xp_own_posterior() {
                     <tr><td class="text-right">Net Loss</td><td style="color: ${threat_color}">${getWithSign(d.net_loss)}</td></tr>
                 </table>
             `)
-            .style("left", (d3.event.pageX + 15) + "px")
-            .style("top", (d3.event.pageY + 15) + "px")
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY + 15) + "px")
     }
-    var mouseleave = function(d) {
+    var mouseleave = function(event, d) {
         tooltip.style("opacity", 0)
         d3.select(this)
             .style("opacity", 0.5);
@@ -1708,7 +1711,7 @@ function plot_bubble_xp_own_posterior() {
         drawLineForRP();
     }
 
-    var playerclick = function(d) {
+    var playerclick = function(event, d) {
         app.setChosenPlayer(d);
         $("#singlePlayerDetailModal").modal('show');
         setTimeout(drawLineForRP, 50);

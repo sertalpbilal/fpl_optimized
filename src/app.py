@@ -55,7 +55,7 @@ def home_page():
 @app.route('/week.html')
 def best_gw_squads():
     all_dates = glob.glob('build/data/*/*/*/output/no_limit_best_11.csv')
-    print(all_dates)
+    # print(all_dates)
     all_dates.sort(key=folder_order, reverse=True)
     target = all_dates[0].split('/')
     list_dates = ([i.split('/')[2:5] for i in all_dates])
@@ -79,33 +79,7 @@ def best_gw_squads():
 
 @app.route('/team_summary.html')
 def team_summary():
-    is_active_gw = 'false'
-    active_gw = -1
-    data = get_fpl_info('now')
-    gws = [i for i in data['events'] if i['is_current'] == True]
-    if len(gws) == 1:
-        if gws[0]['finished'] == False:
-            is_active_gw = 'true'
-            active_gw = gws[0]['id']
-
-    all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
-    all_dates.sort(key=folder_order, reverse=True)
-    list_dates = ([i.split('/')[2:5] for i in all_dates])
-    filtered_dates = []
-    exist = set()
-    for i in list_dates:
-        if i[1] not in exist:
-            filtered_dates.append(i)
-            exist.add(i[1])
-    # filtered_dates.pop(0)
-    target = filtered_dates[0]
-    next_gw = target[1]
-    if active_gw != -1:
-        for i in filtered_dates:
-            if f"GW{active_gw}" == i[1]:
-                target = i
-                print(f"Active GW {active_gw}")
-    list_dates = [' / '.join(i) for i in filtered_dates]
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
     with open('static/json/fpl_analytics.json') as f:
         league_list = f.read()
@@ -141,10 +115,56 @@ def fpl_analytics():
     else:
         return render_template('fpl_analytics_league.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
+@app.route('/live_gw.html')
+def live_gw_page():
+    page_name = 'live_gw.html'
+
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+
+    with open('static/json/fpl_analytics.json') as f:
+        league_list = f.read()
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="..", 
+            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+    else:
+        return render_template(page_name, repo_name="fpl_optimized", 
+            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
 def list_all_snapshots():
     pass
+
+def list_one_per_gw():
+
+    is_active_gw = 'false'
+    active_gw = -1
+    data = get_fpl_info('now')
+    gws = [i for i in data['events'] if i['is_current'] == True]
+    if len(gws) == 1:
+        if gws[0]['finished'] == False:
+            is_active_gw = 'true'
+            active_gw = gws[0]['id']
+
+    all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
+    all_dates.sort(key=folder_order, reverse=True)
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
+    filtered_dates = []
+    exist = set()
+    for i in list_dates:
+        if i[1] not in exist:
+            filtered_dates.append(i)
+            exist.add(i[1])
+    # filtered_dates.pop(0)
+    target = filtered_dates[0]
+    next_gw = target[1]
+    if active_gw != -1:
+        for i in filtered_dates:
+            if f"GW{active_gw}" == i[1]:
+                target = i
+                print(f"Active GW {active_gw}")
+    list_dates = [' / '.join(i) for i in filtered_dates]
+    return target, list_dates, next_gw, is_active_gw, active_gw
 
 @app.route('/data/<path:path>')
 def read_data(path):
