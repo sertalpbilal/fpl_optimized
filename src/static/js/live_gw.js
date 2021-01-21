@@ -874,10 +874,9 @@ function refreshFixtureData() {
         keyboard: false
     }).modal('show');
     $(".svg-wrapper").empty()
-    load_fixture_data(() => {
-        draw_live_graphs(() => {
-            $("#fixtureModal").modal('hide');
-        });
+    load_fixture_data().then(() => {
+        refresh_all_graphs();
+        $("#fixtureModal").modal('hide');
     });
 }
 
