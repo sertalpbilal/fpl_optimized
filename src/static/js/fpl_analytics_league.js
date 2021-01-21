@@ -226,7 +226,7 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix 
         .style("font-size", "small");
 
     // Mouse events
-    var mouseover = function(d) {
+    var mouseover = function(event, d) {
         tooltip.style("opacity", 1)
             // d3.select(this)
             //     .style("opacity", 0.9)
@@ -258,7 +258,7 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix 
             .style("opacity", "0.5")
     }
 
-    var mousemove = function(d) {
+    var mousemove = function(event, d) {
         tooltip
             .html(`
                 <div class="mx-auto d-block text-center text-white">${d.twitter}</div>
@@ -270,10 +270,10 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix 
                     <tr><td class="text-right">Luck</td><td>${d.Luck}</td></tr>
                 </table>
             `)
-            .style("left", (d3.event.pageX + 15) + "px")
-            .style("top", (d3.event.pageY + 15) + "px")
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY + 15) + "px")
     }
-    var mouseleave = function(d) {
+    var mouseleave = function(event, d) {
         tooltip.style("opacity", 0)
             // d3.select(this)
             //     .style("opacity", 0.6)
