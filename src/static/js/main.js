@@ -282,3 +282,9 @@ function modify_time(origin, hour) {
     t0.setHours(t0.getHours() + hour);
     return t0.getTime();
 }
+
+function getScreenCoords(x, y, ctm) {
+    var xn = ctm.e + x * ctm.a + y * ctm.c;
+    var yn = ctm.f + x * ctm.b + y * ctm.d;
+    return { x: xn, y: yn };
+}

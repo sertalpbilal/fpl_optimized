@@ -6,6 +6,7 @@ var app = new Vue({
         gw: gw,
         next_gw: next_gw,
         date: date,
+        now_dt: undefined,
         listdates: listdates,
         is_active: is_active,
         active_gw: active_gw,
@@ -30,6 +31,7 @@ var app = new Vue({
         this.rp_data = [];
         this.sample_data = {};
         this.team_info = {};
+        this.now_dt = new Date().getTime();
     },
     watch: {
         team_data: function(old_value, new_value) {
@@ -429,6 +431,7 @@ async function load_fixture_data() {
 }
 
 let axis_functions = {};
+let target_stat = {};
 
 function init_timeline() {
 
@@ -647,6 +650,7 @@ function draw_user_graph(options = {}) {
     if (!app.is_ready) { return; }
 
     let graph_id = "graph-" + options.stat;
+    target_stat[graph_id] = options.stat;
 
     var margin = { top: 25, right: 5, bottom: 20, left: 15 },
         width = 250 - margin.left - margin.right,
@@ -822,13 +826,52 @@ function draw_user_graph(options = {}) {
                 .y((d) => y(d.average.realized))
             );
     }
-
+    reset_graph_values();
 }
 
+function reset_graph_values() {
+    let graph_types = ["graph-points", "graph-diff", "graph-gain", "graph-loss"];
+    let x_raw = app.now_dt;
+    for (let i of graph_types) {
+        update_graph_hover_values(x_raw, i);
+    }
+}
+
+function update_graph_hover_values(x_raw, gid) {
+
+    let raw_data = app.get_graph_checkpoints;
+    let x_targets = raw_data.map(i => i.time);
+
+    let id_left = d3.bisect(x_targets, x_raw) - 1;
+    let id_right = id_left + 1;
+    if (id_left == -1) {
+        id_left = 0;
+        id_right = 0;
+    }
+    if (id_right == x_targets.length) {
+        id_left = id_right = x_targets.length - 1;
+    }
+    let x_left = raw_data[id_left];
+    let x_right = raw_data[id_right];
+    let ratio = (x_raw - x_left.time) / Math.max(x_right.time - x_left.time, 1);
+    const find_y = (left_val, right_val) => left_val * (1 - ratio) + right_val * ratio;
+    const stat = target_stat[gid];
+    let expected_y = find_y(x_left.expected[stat], x_right.expected[stat]);
+    $("#" + stat + "-expected-you").html(expected_y.toFixed(2));
+    let realized_y = find_y(x_left.realized[stat], x_right.realized[stat]);
+    $("#" + stat + "-realized-you").html(realized_y.toFixed(0));
+    if (stat == "points") {
+        let expected_y = find_y(x_left.average.expected, x_right.average.expected);
+        $("#" + stat + "-expected-avg").html(expected_y.toFixed(2));
+        let realized_y = find_y(x_left.average.realized, x_right.average.realized);
+        $("#" + stat + "-realized-avg").html(realized_y.toFixed(2));
+    }
+}
 
 function synced_enter(e, d) {
     let x_now = d3.pointer(e)[0];
     let x_raw = axis_functions[d].x.invert(x_now);
+
     $("svg.active-graph").each((i, svg) => {
         let gid = svg.id;
         let x = axis_functions[gid].x;
@@ -852,10 +895,16 @@ function synced_enter(e, d) {
             .attr("font-size", "3pt")
             .attr("fill", "white")
             .text(new Date(x_raw).toLocaleString());
+
+        if (gid == "timeline") { return; }
+
+        update_graph_hover_values(x_raw, gid);
+
     })
 }
 
 function synced_move(e, d) {
+
     let x_now = d3.pointer(e)[0];
     let x_raw = axis_functions[d].x.invert(x_now);
     $("svg.active-graph").each((i, svg) => {
@@ -863,18 +912,22 @@ function synced_move(e, d) {
         let target = d3.select($(svg).find(".svg-actual")[0]);
         let x = axis_functions[gid].x;
         let y = axis_functions[gid].y;
+
         target.select(".guide")
             .attr('x1', x(x_raw))
             .attr('x2', x(x_raw));
         target.select(".guidetext")
             .attr('x', x(x_raw))
             .text(new Date(x_raw).toLocaleString());
+
+        update_graph_hover_values(x_raw, gid);
     })
 }
 
 function synced_leave() {
     $("line.guide").remove();
     $("text.guidetext").remove();
+    reset_graph_values();
 }
 
 
