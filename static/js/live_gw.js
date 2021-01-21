@@ -428,9 +428,13 @@ async function load_fixture_data() {
     });
 }
 
+let axis_functions = {};
+
 function init_timeline() {
 
     if (!app.is_rp_ready || !app.is_fixture_ready) { return; }
+
+    let graph_id = "timeline";
 
     var margin = { top: 9, right: 5, bottom: 20, left: 5 },
         width = 450 - margin.left - margin.right,
@@ -438,14 +442,14 @@ function init_timeline() {
 
     let cnv = d3.select("#d3-timeline")
         .append("svg")
-        .attr("id", "timeline-svg")
+        .attr("id", graph_id)
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
-        .attr('class', 'pull-center')
+        .attr('class', 'pull-center active-graph')
         .style('display', 'block')
         .style('min-width', '700px')
         .style('padding-bottom', '10px');
 
-    let svg = cnv.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
     let game_color = (d) => {
@@ -476,9 +480,14 @@ function init_timeline() {
             .tickSize(height)
         );
 
+    axis_functions[graph_id] = {};
+    axis_functions[graph_id].x = x;
+
     // Axis -y
     var y = d3.scaleBand().domain(vals.map(i => i.order)).range([height, 0]).paddingInner(0.1).paddingOuter(0.05);
     svg.append('g').call(d3.axisLeft(y).tickSize(0).tickValues([]));
+
+    axis_functions[graph_id].y = y;
 
     svg.call(g => g.selectAll(".tick text")
             .attr("fill", "white"))
@@ -623,44 +632,9 @@ function init_timeline() {
         .attr("fill", "white")
         .text("Now");
 
-    svg.on('mouseenter', (e) => {
-        let x_now = d3.pointer(e)[0];
-        svg.append('line')
-            .attr('id', 'guide')
-            .attr('x1', x_now)
-            .attr('y1', y.range()[0])
-            .attr('x2', x_now)
-            .attr('y2', y.range()[1])
-            .style('stroke', 'yellow')
-            .style("stroke-dasharray", "3,1")
-            .style("opacity", 0.5)
-            .attr("pointer-events", "none");
-        let val = x.invert(x_now);
-        svg.append('text')
-            .attr('id', 'guidetext')
-            .attr("text-anchor", "middle")
-            .attr("x", x_now)
-            .attr("y", -2)
-            .attr("font-size", "3pt")
-            .attr("fill", "white")
-            .text(new Date(val).toLocaleString());
-    })
-
-    svg.on('mousemove', (e) => {
-        let x_now = d3.pointer(e)[0];
-        let val = x.invert(x_now);
-        svg.select("#guide")
-            .attr('x1', x_now)
-            .attr('x2', x_now);
-        svg.select("#guidetext")
-            .attr('x', x_now)
-            .text(new Date(val).toLocaleString());
-    })
-
-    svg.on('mouseleave', () => {
-        svg.select("#guide").remove();
-        svg.select("#guidetext").remove();
-    })
+    svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
+    svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
+    svg.on('mouseleave.foo', (e) => { synced_leave() });
 
     let left_offset = document.querySelector("#now").getBoundingClientRect().x - window.innerWidth / 2;
     $("#d3-timeline").scrollLeft(left_offset);
@@ -672,19 +646,21 @@ function draw_user_graph(options = {}) {
 
     if (!app.is_ready) { return; }
 
+    let graph_id = "graph-" + options.stat;
+
     var margin = { top: 25, right: 5, bottom: 20, left: 15 },
         width = 250 - margin.left - margin.right,
         height = 180 - margin.top - margin.bottom;
 
     let cnv = d3.select(options.target)
         .append("svg")
-        .attr("id", "timeline-svg")
+        .attr("id", graph_id)
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
-        .attr('class', 'pull-center')
+        .attr('class', 'pull-center active-graph')
         .style('display', 'block')
         .style('padding-bottom', '10px');
 
-    let svg = cnv.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
     // Min max values
@@ -717,12 +693,17 @@ function draw_user_graph(options = {}) {
             .tickSize(height)
         );
 
+    axis_functions[graph_id] = {};
+    axis_functions[graph_id].x = x;
+
     // Axis -y
     // var y = d3.scaleBand().domain(vals.map(i => i.order)).range([height, 0]).paddingInner(0.1).paddingOuter(0.05);
     // svg.append('g').call(d3.axisLeft(y).tickSize(0).tickValues([]));
 
     var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
     svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisLeft(y).tickSize(width));
+
+    axis_functions[graph_id].y = y;
 
     svg.call(g => g.selectAll(".tick text")
             .attr("fill", "white"))
@@ -781,7 +762,9 @@ function draw_user_graph(options = {}) {
         .attr("fill", "white")
         .text(options.title);
 
-
+    svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
+    svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
+    svg.on('mouseleave.foo', (e) => { synced_leave() });
 
     // expected values line
 
@@ -843,12 +826,60 @@ function draw_user_graph(options = {}) {
 }
 
 
-function init_plots() {
-
+function synced_enter(e, d) {
+    let x_now = d3.pointer(e)[0];
+    let x_raw = axis_functions[d].x.invert(x_now);
+    $("svg.active-graph").each((i, svg) => {
+        let gid = svg.id;
+        let x = axis_functions[gid].x;
+        let y = axis_functions[gid].y;
+        let target = d3.select($(svg).find(".svg-actual")[0]);
+        target.append('line')
+            .attr('class', 'guide')
+            .attr('x1', x(x_raw))
+            .attr('y1', y.range()[0])
+            .attr('x2', x(x_raw))
+            .attr('y2', y.range()[1])
+            .style('stroke', 'yellow')
+            .style("stroke-dasharray", "3,1")
+            .style("opacity", 0.5)
+            .attr("pointer-events", "none");
+        target.append('text')
+            .attr('class', 'guidetext')
+            .attr("text-anchor", "middle")
+            .attr("x", x(x_raw))
+            .attr("y", -2)
+            .attr("font-size", "3pt")
+            .attr("fill", "white")
+            .text(new Date(x_raw).toLocaleString());
+    })
 }
 
+function synced_move(e, d) {
+    let x_now = d3.pointer(e)[0];
+    let x_raw = axis_functions[d].x.invert(x_now);
+    $("svg.active-graph").each((i, svg) => {
+        let gid = svg.id;
+        let target = d3.select($(svg).find(".svg-actual")[0]);
+        let x = axis_functions[gid].x;
+        let y = axis_functions[gid].y;
+        target.select(".guide")
+            .attr('x1', x(x_raw))
+            .attr('x2', x(x_raw));
+        target.select(".guidetext")
+            .attr('x', x(x_raw))
+            .text(new Date(x_raw).toLocaleString());
+    })
+}
+
+function synced_leave() {
+    $("line.guide").remove();
+    $("text.guidetext").remove();
+}
+
+
 function zoomInSvg() {
-    let svgEl = document.querySelector("#timeline-svg");
+    let svgEl = document.querySelector("svg#timeline");
     let currentWidth = svgEl.getBoundingClientRect().width;
     let currentMinWidth = parseInt(svgEl.style.minWidth.replace("px", ""));
     if (currentMinWidth < currentWidth) {
@@ -861,7 +892,7 @@ function zoomInSvg() {
 }
 
 function zoomOutSvg() {
-    let svgEl = document.querySelector("#timeline-svg");
+    let svgEl = document.querySelector("svg#timeline");
     let currentMinWidth = parseInt(svgEl.style.minWidth.replace("px", ""));
     if (currentMinWidth > 200) {
         svgEl.style.minWidth = (currentMinWidth - 100) + "px";
