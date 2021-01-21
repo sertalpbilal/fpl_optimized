@@ -90,130 +90,133 @@ const downloadToFile = (content, filename, contentType) => {
 
 };
 
-function get_fixture(gw, callback) {
-    $.ajax({
-        type: "GET",
-        url: 'https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/',
-        dataType: "json",
-        success: function(data) {
-            let filtered_games = data.filter(i => i.event == gw);
-            callback(undefined, filtered_games);
-        },
-        error: function() {
-            console.log("Cannot get fixture");
-            callback("No data", undefined);
-        }
-    });
-}
-
-function get_sample_data(target_gw, callback) {
-
-    $.ajax({
-        type: "GET",
-        url: `sample/${target_gw}/fpl_sampled.json`,
-        dataType: "json",
-        success: function(data) {
-            callback(undefined, data);
-        },
-        error: function() {
-            console.log("GW" + target_gw + " has no sample data");
-            callback("No data", undefined);
-        }
-    });
-
-}
-
-function get_cached_element_data({ season, gw, date }, callback) {
-    $.ajax({
-        type: "GET",
-        url: `data/${season}/${gw}/${date}/input/element.csv`,
-        dataType: "text",
-        success: function(data) {
-            tablevals = data.split('\n').map(i => i.split(','));
-            keys = tablevals[0];
-            values = tablevals.slice(1);
-            let el_data = values.map(i => _.zipObject(keys, i));
-            callback(undefined, el_data);
-        },
-        error: function(xhr, status, error) {
-            console.log(error);
-            console.error(xhr, status, error);
-            callback("No data", undefined);
-        }
-    });
-}
-
-function get_team_info(team_id, callback) {
-    if (app.team_id == "-1") { callback("Team ID not valid", undefined); }
-    // 
-
-    $.ajax({
-        type: "GET",
-        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/`,
-        contentType: 'text/plain',
-        dataType: 'text',
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        success: function(data) {
-            let teaminfo = JSON.parse(data);
-            callback(undefined, teaminfo)
-        },
-        error: function(xhr, status, error) {
-            callback("Cannot get team info", undefined)
-        }
-    });
-}
-
-function get_team_picks({ gw, team_id, force_last_gw, next_gw }, callback) {
-
-    if (app.team_id == "-1") { callback("Team ID not valid", undefined); }
-
-    $.ajax({
-        type: "GET",
-        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${gw}/picks/`,
-        contentType: 'text/plain',
-        dataType: 'text',
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        success: function(data) {
-            let teamvals = JSON.parse(data);
-            callback(undefined, { body: teamvals, is_last_gw: false })
-        },
-        error: function(xhr, status, error) {
-            if (force_last_gw && gw == next_gw) {
-                let last_gw = "" + (parseInt(gw) - 1);
-
-                $.ajax({
-                    type: "GET",
-                    url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${last_gw}/picks/`,
-                    contentType: 'text/plain',
-                    dataType: 'text',
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'GET',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    success: function(data) {
-                        let teamvals = JSON.parse(data);
-                        callback(undefined, { body: teamvals, is_last_gw: true })
-                    },
-                    error: function(xhr, status, error) {
-                        callback("Cannot get picks for last GW", undefined)
-                    }
-                });
-            } else {
-                callback("Cannot get picks for this GW", undefined)
+function get_fixture(gw) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/?event=${gw}`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                let filtered_games = data.filter(i => i.event == gw);
+                resolve(filtered_games);
+            },
+            error: function() {
+                console.log("Cannot get fixture");
+                reject("No data");
             }
-        }
+        });
+    });
+}
+
+function get_sample_data(target_gw) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `sample/${target_gw}/fpl_sampled.json`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                console.log("GW" + target_gw + " has no sample data");
+                reject("No data");
+            }
+        });
     });
 
+}
 
+function get_cached_element_data({ season, gw, date }) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `data/${season}/${gw}/${date}/input/element.csv`,
+            dataType: "text",
+            async: true,
+            success: function(data) {
+                tablevals = data.split('\n').map(i => i.split(','));
+                keys = tablevals[0];
+                values = tablevals.slice(1);
+                let el_data = values.map(i => _.zipObject(keys, i));
+                resolve(el_data);
+            },
+            error: function(xhr, status, error) {
+                console.log(error);
+                console.error(xhr, status, error);
+                reject("No data");
+            }
+        });
+    });
+}
+
+function get_team_info(team_id) {
+    return new Promise((resolve, reject) => {
+        if (team_id == "-1") { reject("Invalid team ID"); }
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/`,
+            dataType: 'json',
+            async: true,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(xhr, status, error) {
+                reject("Cannot get team info")
+            }
+        });
+    });
+}
+
+function get_team_picks({ gw, team_id, force_last_gw, next_gw }) {
+    return new Promise((resolve, reject) => {
+        if (team_id == "-1") { reject("Team ID not valid"); }
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${gw}/picks/`,
+            dataType: 'json',
+            async: true,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                resolve({ body: data, is_last_gw: false })
+            },
+            error: function(xhr, status, error) {
+                if (force_last_gw && gw == next_gw) {
+                    let last_gw = "" + (parseInt(gw) - 1);
+
+                    $.ajax({
+                        type: "GET",
+                        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${last_gw}/picks/`,
+                        dataType: 'json',
+                        async: true,
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'GET',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        success: function(data) {
+                            resolve({ body: data, is_last_gw: true })
+                        },
+                        error: function(xhr, status, error) {
+                            reject("Cannot get picks for last GW")
+                        }
+                    });
+                } else {
+                    reject("Cannot get picks for this GW")
+                }
+            }
+        });
+    });
 }
 
 function teamInfoDetails(team_info, field) {
@@ -229,8 +232,53 @@ function teamInfoDetails(team_info, field) {
     }
 }
 
+function getXPData({ season, gw, date }) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `data/${season}/${gw}/${date}/input/element_gameweek.csv`,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                tablevals = data.split('\n').map(i => i.split(','));
+                keys = tablevals[0];
+                values = tablevals.slice(1);
+                let xp_data = values.map(i => _.zipObject(keys, i));
+                let filtered_data = xp_data.filter(i => i.event == gw.slice(2))
+                resolve(filtered_data);
+            },
+            error: function(xhr, status, error) {
+                reject("Could not get XP data");
+            }
+        });
+    });
+}
+
+function getRPData(gw) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/event/${gw}/live/`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data.elements);
+            },
+            error: function(xhr, status, error) {
+                reject("Error when getting live RP data");
+            }
+        });
+    });
+}
+
 let rank_formatter = Intl.NumberFormat('en');
 
 function formatted_rank(value) {
     return rank_formatter.format(value)
+}
+
+function modify_time(origin, hour) {
+    let t0 = new Date(origin);
+    t0.setHours(t0.getHours() + hour);
+    return t0.getTime();
 }

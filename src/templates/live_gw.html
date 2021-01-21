@@ -182,17 +182,56 @@
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Timeline</h5>
                 <div class="scenario_detail">
-                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomOutSvg()">-</button>
-                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomInSvg()">+</button>
+                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomOutSvg()">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomInSvg()">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn btn-secondary btn-sm zoomButton" onclick="refreshFixtureData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div id="d3-timeline">
+                    <div id="d3-timeline" class="svg-wrapper">
 
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="row" v-cloak id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Graphs</h5>
+                <div class="scenario_detail">
+                    Expected and realized values over the GW duration
+                </div>
+                <div class="card-body" v-if="is_ready">
+                    <div class="row">
+                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-points">
+
+                        </div>
+                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-diff">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-gain">
+
+                        </div>
+                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-loss">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </main>
 
 <div class="modal" tabindex="-1" role="dialog" id="sourceModal">
@@ -255,6 +294,22 @@
             <div class="modal-body">
                 <div class="p-2 wait-modal">
                     Fetching team picks from FPL website. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="fixtureModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fetching fixture values...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Refreshing fixture data from FPL website. Please wait... <br/>
                     <img class="mx-auto d-block" src="static/images/loading.svg">
                 </div>
             </div>

@@ -37,14 +37,24 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
             break;
     }
 
+
     let el_copy = _.cloneDeep(fpl_data);
     let all_players = teams.map(i => i.data.picks).flat();
+    let grouped_players = _.groupBy(all_players, (i) => i.element);
+
     el_copy.forEach((e) => {
-        let this_player_picks = all_players.filter(i => i.element == e.id);
-        let cnt = this_player_picks.length;
-        e.selected_by_percent = cnt / teams.length * 100;
-        let sum_of_multiplier = getSum(this_player_picks.map(i => i.multiplier));
-        e.effective_ownership = sum_of_multiplier / teams.length * 100;
+        // let this_player_picks = all_players.filter(i => i.element == e.id);
+        let this_player_picks = grouped_players[e.id];
+        if (this_player_picks !== undefined) {
+            let cnt = this_player_picks.length;
+            e.selected_by_percent = cnt / teams.length * 100;
+            let sum_of_multiplier = getSum(this_player_picks.map(i => i.multiplier));
+            e.effective_ownership = sum_of_multiplier / teams.length * 100;
+        } else {
+            e.selected_by_percent = 0;
+            e.effective_ownership = 0;
+        }
+
     });
     return el_copy;
 }

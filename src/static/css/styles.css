@@ -657,3 +657,8 @@ button.btn.btn-sm.zoomButton {
     padding: 0px;
     margin: 2px;
 }
+
+.tooltip-inside,
+.tooltip {
+    pointer-events: none;
+}
