@@ -858,8 +858,10 @@ function update_graph_hover_values(x_raw, gid) {
     const stat = target_stat[gid];
     let expected_y = find_y(x_left.expected[stat], x_right.expected[stat]);
     $("#" + stat + "-expected-you").html(expected_y.toFixed(2));
+    let digits = 2;
+    if (stat == "points") { digits = 0; }
     let realized_y = find_y(x_left.realized[stat], x_right.realized[stat]);
-    $("#" + stat + "-realized-you").html(realized_y.toFixed(0));
+    $("#" + stat + "-realized-you").html(realized_y.toFixed(digits));
     if (stat == "points") {
         let expected_y = find_y(x_left.average.expected, x_right.average.expected);
         $("#" + stat + "-expected-avg").html(expected_y.toFixed(2));
