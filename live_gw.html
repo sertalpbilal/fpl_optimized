@@ -281,43 +281,207 @@
                     Expected and realized values over the GW duration
                 </div>
                 <div class="card-body" v-if="is_ready">
-                    <div class="row text-small mb-1 pt-1 pb-1" style="background-color:#343436">
-                        <div class="legend-box col-6 offset-md-2 col-md-2 text-center">
-                            <svg width="20" height="10"><g>
-                                <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
-                            </g></svg> Expected (You)
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="svg-wrapper live-graph" id="graph-wrapper-points">
+
+                            </div>
+                            <div class="row no-gutters text-small mb-1 pt-1 pb-1">
+
+                                <div class="col-6 col-md-3" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
+                                                </g></svg> Expected (You)
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="points-expected-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6"  fill="none"></line>
+                                                </g></svg> Realized (You)
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="points-realized-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#ffc356" stroke-dasharray="4,1" fill="none"></line>
+                                                </g></svg> Expected (Avg)
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="points-expected-avg">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#de6363"  fill="none"></line>
+                                                </g></svg> Realized (Avg)
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="points-realized-avg">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="legend-box  col-6 col-md-2 text-center">
-                            <svg width="20" height="10"><g>
-                                <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6"  fill="none"></line>
-                            </g></svg> Realized (You)
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="svg-wrapper live-graph" id="graph-wrapper-diff">
+
+                            </div>
+                            <div class="row no-gutters text-small mb-1 pt-1 pb-1">
+
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
+                                                </g></svg> Expected
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="diff-expected-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6"  fill="none"></line>
+                                                </g></svg> Realized
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="diff-realized-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="legend-box  col-6 col-md-2 text-center">
-                            <svg width="20" height="10"><g>
-                                <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#ffc356" stroke-dasharray="4,1" fill="none"></line>
-                            </g></svg> Expected (Average)
-                        </div>
-                        <div class="legend-box  col-6 col-md-2 text-center">
-                            <svg width="20" height="10"><g>
-                                <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#de6363"  fill="none"></line>
-                            </g></svg> Realized (Average)
-                        </div>
+
                     </div>
                     <div class="row">
-                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-points">
 
-                        </div>
-                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-diff">
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="svg-wrapper live-graph" id="graph-wrapper-gain">
 
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-gain">
+                            </div>
+                            <div class="row no-gutters text-small mb-1 pt-1 pb-1">
 
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
+                                                </g></svg> Expected
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="gain-expected-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6"  fill="none"></line>
+                                                </g></svg> Realized
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="gain-realized-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="svg-wrapper live-graph col-12 col-md-6" id="graph-wrapper-loss">
 
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="svg-wrapper live-graph" id="graph-wrapper-loss">
+
+                            </div>
+                            <div class="row no-gutters text-small mb-1 pt-1 pb-1">
+
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
+                                                </g></svg> Expected
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="loss-expected-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                <svg width="20" height="10"><g>
+                                                    <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6"  fill="none"></line>
+                                                </g></svg> Realized
+                                            </div>
+                                        </div>
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="loss-realized-you">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+
+
                     </div>
 
                 </div>
@@ -445,7 +609,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-21T16:29:34.282527+00:00";
+    let lastupdate = "2021-01-21T19:45:27.695189+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-21 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -474,6 +638,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-21T16:29:34.282527+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-21T19:45:27.695189+00:00</div>
 
 </html> 

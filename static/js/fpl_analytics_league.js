@@ -168,7 +168,6 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix 
         .attr("fill", "#9a9a9a")
         .text(x_title);
 
-
     // Add Y axis
     if (reverse) {
         var y = d3.scaleLog().base(2)
