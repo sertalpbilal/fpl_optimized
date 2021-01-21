@@ -158,7 +158,7 @@ var app = new Vue({
             let cloned_fixture = this.gameweek_games_with_metadata;
 
             let all_discrete_events = cloned_fixture.map(i => [{ type: 'start', dt: i.start_dt, game: i }, { type: 'end', dt: i.end_dt, game: i }]).flat();
-            all_discrete_events.push({ type: 'now', dt: new Date(), game: undefined })
+            all_discrete_events.push({ type: 'now', dt: new Date(app.now_dt), game: undefined })
             all_discrete_events.sort((a, b) => { return a.dt - b.dt });
             all_discrete_events = _.cloneDeep(all_discrete_events)
 
@@ -610,7 +610,7 @@ function init_timeline() {
         .on("mouseleave", mouseleave)
         .on("mousemove", mousemove);
 
-    let right_now = new Date();
+    let right_now = new Date(app.now_dt);
     let now_time = right_now.getTime();
 
     let now_group = svg.append('g');
@@ -731,7 +731,7 @@ function draw_user_graph(options = {}) {
 
     svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
 
-    let right_now = new Date();
+    let right_now = new Date(app.now_dt);
     let now_time = right_now.getTime();
 
     // Now line
@@ -957,6 +957,7 @@ function refreshFixtureData() {
         backdrop: 'static',
         keyboard: false
     }).modal('show');
+    app.now_dt = new Date().getTime();
     $(".svg-wrapper").empty()
     load_fixture_data().then(() => {
         refresh_all_graphs();
