@@ -8,6 +8,7 @@ function sample_compact_number(value) {
 function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
 
     let teams = [];
+    if (Object.keys(sample_data).length == 0) { ownership_source = "Official FPL API"; }
 
     switch (ownership_source) {
         case "Official FPL API":
