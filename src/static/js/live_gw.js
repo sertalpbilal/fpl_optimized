@@ -21,7 +21,8 @@ var app = new Vue({
         ownership_source: "Official FPL API",
         available_sources: ["Official FPL API"],
         sample_data: undefined,
-        selected_game: undefined
+        // selected_game: undefined
+        modal_selected_game: undefined
     },
     created: function() {
         this.gw_fixture = [];
@@ -67,6 +68,18 @@ var app = new Vue({
             const ownership = this.ownership_data;
             return Object.fromEntries(ownership.map(i => [i.id, i]))
         },
+        el_by_id() {
+            if (this.el_data == undefined) { return undefined; }
+            return Object.fromEntries(this.el_data.map(i => [i.id, i]));
+        },
+        xp_by_id() {
+            if (this.xp_data == undefined) { return undefined; }
+            return Object.fromEntries(this.xp_data.map(i => [i.player_id, i]));
+        },
+        rp_by_id() {
+            if (this.rp_data == undefined) { return undefined; }
+            return Object.fromEntries(this.rp_data.map(i => [i.id, i]));
+        },
         current_team_id: {
             get() {
                 if (this.team_id == "-1") {
@@ -92,16 +105,11 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
-
             if (!this.is_rp_ready) { return [] };
-
-
 
             const xp_data = this.grouped_xp_data;
             const rp_data = this.rp_data;
             const team_data = this.team_data;
-
-
 
             const fixture_data = this.gw_fixture;
             const ownership_vals = this.ownership_by_id;
@@ -113,8 +121,6 @@ var app = new Vue({
             let xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
             let rp_by_id = Object.fromEntries(rp_data.map(i => [i.id, i]));
             let cloned_fixture = _.cloneDeep(fixture_data);
-
-
 
             // TODO: Assign expected totals and realized totals to every game
             cloned_fixture.forEach((game) => {
@@ -144,10 +150,6 @@ var app = new Vue({
                 game.rp_team_loss = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.rp_net));
 
             })
-
-
-
-
             return cloned_fixture;
         },
         get_graph_checkpoints() {
@@ -224,6 +226,25 @@ var app = new Vue({
 
             return team_checkpoints;
 
+        },
+        selected_game_info() {
+            if (!this.is_rp_ready || this.modal_selected_game == undefined) { return undefined; };
+            let xp_by_id = this.xp_by_id;
+            let el_by_id = this.el_by_id;
+            let game_info = _.cloneDeep(this.gameweek_games_with_metadata[this.modal_selected_game]);
+            if (game_info == undefined) { return undefined; }
+            game_info.data = {};
+            for (let i of game_info.stats) {
+                let j = game_info.data[i.identifier] = {};
+                j["home"] = i.h.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
+                j["away"] = i.a.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
+                j["total"] = j["home"].length + j["away"].length;
+            }
+            game_info.player_details.forEach((p) => { p.web_name = xp_by_id[p.id].web_name });
+            game_info.player_details.sort((a, b) => { return b.rp - a.rp || b.xp - a.xp });
+            game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
+            // debugger;
+            return game_info;
         }
     },
     methods: {
@@ -250,6 +271,8 @@ var app = new Vue({
                 game.start_dt = new Date(game.kickoff_time);
                 game.end_dt = new Date(game.start_dt.getTime() + (105 * 60 * 1000));
                 game.duration = 105 * 60 * 1000;
+                game.team_h_name = teams_ordered[game.team_h - 1].name;
+                game.team_a_name = teams_ordered[game.team_a - 1].name;
                 game.label = teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
                 game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
                 let order = 0;
@@ -518,6 +541,7 @@ function init_timeline() {
         .append("div")
         .style("opacity", 0)
         .attr("class", "tooltip bg-dark text-white")
+        .attr("id", "timeline-tooltip")
         .style("background-color", "white")
         .style("border", "solid")
         .style("border-width", "2px")
@@ -525,11 +549,22 @@ function init_timeline() {
         .style("padding", "5px")
         .style("color", "black");
 
+    function mouseclick(d) {
+        let game = d3.select(this);
+        app.modal_selected_game = game.attr('data-index');
+        app.$nextTick(() => {
+            Tooltip.style("opacity", 0)
+                .style("left", "0px")
+                .style("top", "0px");
+            $("#matchReportModal").modal('show');
+        })
+    }
+
     function mouseenter(d) {
         let game = d3.select(this);
         game.attr("opacity", 1);
         game.attr("fill", "red");
-        app.selected_game = game.attr('data-index');
+        // app.selected_game = game.attr('data-index');
         Tooltip.style("opacity", 0.85);
     }
 
@@ -537,7 +572,7 @@ function init_timeline() {
         let game = d3.select(this);
         game.attr("opacity", 0.7);
         game.attr("fill", game_color(game.attr('data-index')));
-        app.selected_game = undefined;
+        // app.selected_game = undefined;
         Tooltip.style("opacity", 0)
             .style("left", "0px")
             .style("top", "0px");
@@ -608,7 +643,8 @@ function init_timeline() {
         .style("cursor", "pointer")
         .on("mouseenter", mouseenter)
         .on("mouseleave", mouseleave)
-        .on("mousemove", mousemove);
+        .on("mousemove", mousemove)
+        .on("click", mouseclick);
 
     let right_now = new Date(app.now_dt);
     let now_time = right_now.getTime();
@@ -1012,4 +1048,6 @@ async function app_initialize() {
 
 $(document).ready(function() {
     app_initialize();
+    // app.modal_selected_game = 0;
+    // $("#matchReportModal").modal('show');
 });

@@ -51,6 +51,19 @@ let element_type = {
     4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3 }
 }
 
+let stat_types = {
+    goals_scored: { name: "Goals", icon: "fas fa-futbol" },
+    assists: { name: "Assists", icon: "fas fa-hands-helping" },
+    bonus: { name: "Bonus", icon: "fas fa-coins" },
+    bps: { name: "BPS" },
+    own_goals: { name: "Own Goals", icon: "far fa-grimace" },
+    penalties_missed: { name: "Penalties Missed", icon: "far fa-thumbs-down" },
+    penalties_saved: { name: "Penalties Saved", icon: "fas fa-chess-rook" },
+    saves: { name: "Saves", icon: "far fa-hand-paper" },
+    red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
+    yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" }
+}
+
 function rounded(val, digits = 2) {
     if (val === undefined || val === "") {
         return "-";

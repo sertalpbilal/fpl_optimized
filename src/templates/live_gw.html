@@ -503,6 +503,84 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="matchReportModal">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Match Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small" v-if="selected_game_info !== undefined">
+                <div>
+                    <table class="table table-sm table-striped match-report-main">
+                        <thead>
+                            <tr class="d-flex">
+                                <th class="col-5">{{ selected_game_info.team_h_name}}</th>
+                                <th class="col-2">vs</th>
+                                <th class="col-5">{{ selected_game_info.team_a_name }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="selected_game_info.started">
+                            <tr class="d-flex">
+                                <td class="col-5">{{ selected_game_info.team_h_score }}</td>
+                                <td class="col-2">-</td>
+                                <td class="col-5">{{ selected_game_info.team_a_score }}</td>
+                            </tr>
+                            <tr class="d-flex" v-for="(value, key) in selected_game_info.data" v-if="value.total > 0 && value.total < 10">
+                                <td class="col-5">{{ value.home.join(", ") }}</td>
+                                <td class="col-2"><i :class="stat_types[key].icon"></i> <br/> {{ stat_types[key].name }} </td>
+                                <td class="col-5">{{ value.away.join(", ") }}</td>
+                            </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>xP</th>
+                                    <th v-if="selected_game_info.started">rP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="i in selected_game_info.players.home" v-if="i.rp > 0 || i.xp > 0.5">
+                                    <td>{{ i.web_name }}</td>
+                                    <td>{{ (i.xp).toFixed(1) }}</td>
+                                    <td v-if="selected_game_info.started">{{ i.rp }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>xP</th>
+                                    <th v-if="selected_game_info.started">rP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="i in selected_game_info.players.away" v-if="i.rp > 0 || i.xp > 0.5">
+                                    <td>{{ i.web_name }}</td>
+                                    <td>{{ (i.xp).toFixed(1) }}</td>
+                                    <td v-if="selected_game_info.started">{{ i.rp }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     let league_list = JSON.parse( ** league_list |

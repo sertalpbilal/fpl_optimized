@@ -666,3 +666,18 @@ button.btn.btn-sm.zoomButton {
 .legend-box {
     background-color: #343436;
 }
+
+.match-report-main tr td:first-child,
+.match-report-main tr th:first-child {
+    text-align: right;
+}
+
+.match-report-main tr td:nth-child(2),
+.match-report-main tr th:nth-child(2) {
+    text-align: center;
+}
+
+.match-report-main td {
+    /* display: flex;
+    align-items: center; */
+}
