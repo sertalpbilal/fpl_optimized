@@ -24,15 +24,8 @@ var app = new Vue({
         // selected_game: undefined
         modal_selected_game: undefined
     },
-    created: function() {
-        this.gw_fixture = [];
-        this.team_data = [];
-        this.el_data = [];
-        this.xp_data = [];
-        this.rp_data = [];
-        this.sample_data = {};
-        this.team_info = {};
-        this.now_dt = new Date().getTime();
+    beforeMount: function() {
+        this.initEmptyData();
     },
     watch: {
         team_data: function(old_value, new_value) {
@@ -40,7 +33,19 @@ var app = new Vue({
         },
         ownership_source: function(old_value, new_value) {
             refresh_all_graphs();
-        }
+        },
+        sample_data: function(old_value, new_value) {
+            refresh_all_graphs();
+        },
+        xp_data: function(old_value, new_value) {
+            refresh_all_graphs();
+        },
+        rp_data: function(old_value, new_value) {
+            refresh_all_graphs();
+        },
+        gw_fixture: function(old_value, new_value) {
+            refresh_all_graphs();
+        },
     },
     computed: {
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
@@ -56,6 +61,7 @@ var app = new Vue({
                 this.season = v[0];
                 this.gw = v[1];
                 this.date = v[2];
+                app_initialize();
             }
         },
         is_using_sample() {
@@ -105,8 +111,6 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
-            if (!this.is_rp_ready) { return [] };
-
             const xp_data = this.grouped_xp_data;
             const rp_data = this.rp_data;
             const team_data = this.team_data;
@@ -133,13 +137,28 @@ var app = new Vue({
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
-                    e.rp_detail = rp_by_id[e.id].explain.find(i => i.fixture == game.id).stats.map(i => [i.identifier, i.points, i.value]);
-                    e.rp = getSum(e.rp_detail.map(i => i[1]));
+
+                    if (this.is_rp_ready) {
+                        let find = rp_by_id[e.id].explain.find(i => i.fixture == game.id);
+                        if (find == undefined) {
+                            e.rp_detail = [];
+                            e.rp = 0;
+                        } else {
+                            e.rp_detail = rp_by_id[e.id].explain.find(i => i.fixture == game.id).stats.map(i => [i.identifier, i.points, i.value]);
+                            e.rp = getSum(e.rp_detail.map(i => i[1]));
+                        }
+                    } else {
+                        e.rp_detail = [];
+                        e.rp = 0;
+                    }
+
                     let player_match = picks_by_id[e.id];
                     e.ownership = this.is_using_sample ? ownership_vals[e.id].effective_ownership / 100 : ownership_vals[e.id].selected_by_percent / 100;
                     e.multiplier = player_match ? player_match.multiplier : 0;
                     e.xp_net = (e.multiplier - e.ownership) * e.xp;
                     e.rp_net = (e.multiplier - e.ownership) * e.rp;
+
+
                 })
                 game.player_details = player_with_data;
                 game.xp_sum = getSum(game.player_details.map(i => i.xp));
@@ -154,8 +173,8 @@ var app = new Vue({
         },
         get_graph_checkpoints() {
 
-
             const gw_info = this.gameweek_info;
+            if (_.isEmpty(gw_info)) { return [] }
 
             let cloned_fixture = this.gameweek_games_with_metadata;
 
@@ -228,7 +247,7 @@ var app = new Vue({
 
         },
         selected_game_info() {
-            if (!this.is_rp_ready || this.modal_selected_game == undefined) { return undefined; };
+            if (this.modal_selected_game == undefined) { return undefined; };
             let xp_by_id = this.xp_by_id;
             let el_by_id = this.el_by_id;
             let game_info = _.cloneDeep(this.gameweek_games_with_metadata[this.modal_selected_game]);
@@ -248,6 +267,17 @@ var app = new Vue({
         }
     },
     methods: {
+        initEmptyData() {
+            this.gw_fixture = [];
+            this.team_data = [];
+            this.el_data = [];
+            this.xp_data = [];
+            this.rp_data = [];
+            this.sample_data = {};
+            this.team_info = {};
+            this.now_dt = new Date().getTime();
+            this.modal_selected_game = undefined;
+        },
         saveTeamData(data) {
             this.team_data = data;
         },
@@ -285,6 +315,16 @@ var app = new Vue({
                 game.order = order;
             })
             this.gw_fixture = sorted_fixture;
+
+            let start_dt = sorted_fixture[0].start_dt;
+            let end_dt = sorted_fixture[sorted_fixture.length - 1].end_dt;
+
+            if (new Date(this.now_dt) > end_dt) {
+                this.now_dt = modify_time(end_dt.getTime(), 2);
+            } else if (new Date(this.now_dt) < start_dt) {
+                this.now_dt = modify_time(start_dt.getTime(), -2);
+            }
+
         },
         saveSampleData(success, data) {
             if (success) {
@@ -400,57 +440,91 @@ var app = new Vue({
 
             return { xp_total: xp_total, rp_total: rp_total, xp_gain: xp_gain, rp_gain: rp_gain, xp_loss: xp_loss, rp_loss: rp_loss, xp_diff: xp_diff, rp_diff: rp_diff, avg_expected: average_expected, avg_realized: average_realized }
         },
+        openModalFor(id) {
+            this.modal_selected_game = id;
+            this.$nextTick(() => {
+                $("#matchReportModal").modal('show');
+            })
+        }
     },
 })
 
 async function load_team_data() {
+
+    if (app.team_id == -1) { return; }
 
     $("#waitModal").modal({
         backdrop: 'static',
         keyboard: false
     }).modal('show');
 
-    get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
+    await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
         app.using_last_gw_team = response.is_last_gw;
-        app.$nextTick(() => {
-            refresh_live_graphs();
-        })
+    }).catch(error => {
+        console.error(error);
+        debugger;
     });
 
-    return get_team_info(app.team_id).then((data) => {
-        app.saveTeamInfo(data);
-    });
+    return get_team_info(app.team_id)
+        .then((data) => {
+            app.saveTeamInfo(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 async function load_element_data() {
-    return get_cached_element_data({ season: app.season, gw: app.gw, date: app.date }).then((data) => {
-        app.saveEl(data);
-    });
+    return get_cached_element_data({ season: app.season, gw: app.gw, date: app.date })
+        .then((data) => {
+            app.saveEl(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 async function load_xp_data() {
-    return getXPData({ season: app.season, gw: app.gw, date: app.date }).then((data) => {
-        app.saveXP(data);
-    });
+    return getXPData({ season: app.season, gw: app.gw, date: app.date })
+        .then((data) => {
+            app.saveXP(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 async function load_rp_data() {
-    return getRPData(app.gw.slice(2)).then((data) => {
-        app.saveRP(data);
-    });
+    return getRPData(app.gw.slice(2))
+        .then((data) => {
+            app.saveRP(data);
+        })
+        .catch(error => {
+            app.saveRP([]);
+            console.error(error);
+        });
 }
 
 async function load_sample_data() {
-    return get_sample_data(app.gw.slice(2)).then((data) => {
-        app.saveSampleData(true, data);
-    });
+    return get_sample_data(app.gw.slice(2))
+        .then((data) => {
+            app.saveSampleData(true, data);
+        })
+        .catch(error => {
+            // Delete sample data and force official FPL API values
+            app.saveSampleData(false, []);
+        });
 }
 
 async function load_fixture_data() {
-    return get_fixture(app.gw.slice(2)).then((data) => {
-        app.saveFixtureData(data);
-    });
+    return get_fixture(app.gw.slice(2))
+        .then((data) => {
+            app.saveFixtureData(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 let axis_functions = {};
@@ -458,13 +532,13 @@ let target_stat = {};
 
 function init_timeline() {
 
-    if (!app.is_rp_ready || !app.is_fixture_ready) { return; }
+    if (!app.is_fixture_ready) { return; }
 
     let graph_id = "timeline";
 
     var margin = { top: 9, right: 5, bottom: 20, left: 5 },
         width = 450 - margin.left - margin.right,
-        height = 30 * (app.gameweek_info.channels * 2) - margin.top - margin.bottom;
+        height = 20 + 20 * (app.gameweek_info.channels + 1) - margin.top - margin.bottom;
 
     let cnv = d3.select("#d3-timeline")
         .append("svg")
@@ -704,8 +778,8 @@ function draw_user_graph(options = {}) {
     svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
     // Min max values
-
     let data = app.get_graph_checkpoints;
+    if (data.length == 0) { return; }
 
     let x_high = data[data.length - 1].time;
     let x_low = data[0].time;
@@ -998,17 +1072,8 @@ function refreshFixtureData() {
     app.now_dt = new Date().getTime();
     $(".svg-wrapper").empty()
     load_fixture_data().then(() => {
-        refresh_all_graphs();
         $("#fixtureModal").modal('hide');
     });
-}
-
-function draw_live_graphs(callback = () => {}) {
-    draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" });
-    draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" });
-    draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" });
-    draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" });
-    callback();
 }
 
 function refresh_all_graphs() {
@@ -1016,34 +1081,42 @@ function refresh_all_graphs() {
         backdrop: 'static',
         keyboard: false
     }).modal('show');
-    $(".svg-wrapper").empty()
-    init_timeline();
-    draw_live_graphs(() => {
+    $(".svg-wrapper").empty();
+    app.$nextTick(() => {
+        init_timeline();
+        draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" });
+        draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" });
+        draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" });
+        draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" });
         $("#waitModal").modal('hide');
     });
 }
 
-function refresh_live_graphs() {
-    $("#waitModal").modal({
+async function app_initialize(refresh_team = false) {
+
+    $("#updateModal").modal({
         backdrop: 'static',
         keyboard: false
     }).modal('show');
-    $(".live-graph").empty()
-    draw_live_graphs(() => {
-        $("#waitModal").modal('hide');
-    });
-}
 
-async function app_initialize() {
+    app.initEmptyData();
+
     Promise.all([
-        load_fixture_data(),
-        load_element_data(),
-        load_xp_data(),
-        load_rp_data(),
-        load_sample_data()
-    ]).then((values) => {
-        init_timeline();
-    })
+            load_fixture_data(),
+            load_element_data(),
+            load_xp_data(),
+            load_rp_data(),
+            load_sample_data(),
+            load_team_data()
+        ]).then((values) => {
+            $(".svg-wrapper").empty()
+            refresh_all_graphs();
+            $("#updateModal").modal('hide');
+        })
+        .catch((error) => {
+            console.error("An error has occured: " + error);
+            $("#updateModal").modal('hide');
+        })
 }
 
 $(document).ready(function() {

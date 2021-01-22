@@ -652,6 +652,10 @@ span.setting-value-text {
     overflow-x: auto;
 }
 
+.scrollable-x {
+    overflow-x: auto;
+}
+
 button.btn.btn-sm.zoomButton {
     width: 25px;
     padding: 0px;
@@ -680,4 +684,14 @@ button.btn.btn-sm.zoomButton {
 .match-report-main td {
     /* display: flex;
     align-items: center; */
+}
+
+.nav-tabs.main-blocks .nav-link {
+    background-color: #5a5d5c;
+    color: #caa7ad;
+}
+
+.nav-tabs.main-blocks .nav-link.active {
+    background-color: #fff;
+    color: black;
 }

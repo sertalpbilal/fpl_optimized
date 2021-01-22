@@ -187,7 +187,7 @@ function get_team_info(team_id) {
     });
 }
 
-function get_team_picks({ gw, team_id, force_last_gw, next_gw }) {
+function get_team_picks({ gw, team_id, force_last_gw }) {
     return new Promise((resolve, reject) => {
         if (team_id == "-1") { reject("Team ID not valid"); }
         $.ajax({
@@ -204,7 +204,7 @@ function get_team_picks({ gw, team_id, force_last_gw, next_gw }) {
                 resolve({ body: data, is_last_gw: false })
             },
             error: function(xhr, status, error) {
-                if (force_last_gw && gw == next_gw) {
+                if (force_last_gw) {
                     let last_gw = "" + (parseInt(gw) - 1);
 
                     $.ajax({

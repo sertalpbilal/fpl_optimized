@@ -82,7 +82,7 @@
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0">Gameweek</div>
                                 <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                    <ul class="d-flex flex-row  mb-0 p-0">
+                                    <ul class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#gwModal">
                                         <!-- <li class="nav-item breadcrumb-item">{{ season }}</li> -->
                                         <li class="nav-item breadcrumb-item">{{ gw }}</li>
                                         <!-- <li class="nav-item breadcrumb-item">{{ date }}</li> -->
@@ -106,7 +106,7 @@
                                 <div class="text-center p-0">Team</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#teamModal">
-                                        {{ valid_team_id }} <span style="color: orange" class="ml-2" v-if="!(using_last_gw_team) && team_data.active_chip !== undefined && team_data.active_chip !== null">{{ team_data.active_chip ? "(" + (team_data.active_chip).toUpperCase() + ")": "" }}</span>
+                                        {{ valid_team_id }} <span style="color: orange" class="ml-2" v-if="is_ready && !(using_last_gw_team) && team_data.active_chip !== undefined && team_data.active_chip !== null">{{ team_data.active_chip ? "(" + (team_data.active_chip).toUpperCase() + ")": "" }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -249,29 +249,116 @@
         </div>
     </div>
 
-    <div class="row" v-cloak id="timeline-wrapper">
-        <div class="col-12 mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Timeline</h5>
-                <div class="scenario_detail">
-                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomOutSvg()">
-                        <i class="fa fa-minus" aria-hidden="true"></i>
-                    </button>
-                    <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomInSvg()">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
-                    </button>
-                    <button class="btn btn-secondary btn-sm zoomButton" onclick="refreshFixtureData()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div id="d3-timeline" class="svg-wrapper">
+    <ul class="nav nav-tabs main-blocks text-small" id="timeline-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="timeline-graph-tab" data-toggle="tab" href="#timeline-graph" role="tab" aria-controls="home" aria-selected="true">Timeline</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="timeline-table-tab" data-toggle="tab" href="#timeline-table" role="tab" aria-controls="profile" aria-selected="false">Game Table</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="timeline-graph" role="tabpanel" aria-labelledby="timeline-graph-tab">
+            <div class="row" v-cloak id="timeline-wrapper">
+                <div class="col-12 mb-3">
+                    <div class="card card-field border-dark bg-squad-card text-white">
+                        <h5 class="card-header border-complement text-center scenario_title">Timeline</h5>
+                        <div class="scenario_detail">
+                            <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomOutSvg()">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-sm zoomButton" onclick="zoomInSvg()">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-sm zoomButton" onclick="refreshFixtureData()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="d3-timeline" class="svg-wrapper">
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="timeline-table" role="tabpanel" aria-labelledby="timeline-table-tab">
+            <div class="row" v-cloak>
+                <div class="col-12 mb-3">
+                    <div class="card card-field border-dark bg-squad-card text-white">
+                        <h5 class="card-header border-complement text-center scenario_title">Game Table</h5>
+                        <div class="card-body text-small">
+                            <div class="scrollable-x">
+                                <table class="table table-sm table-striped text-white text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Game No</th>
+                                            <th class="text-center" v-for="(game, id) in gameweek_games_with_metadata">{{ id+1 }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Link</td>
+                                            <td v-for="(game,id) in gameweek_games_with_metadata"><button class="btn btn-secondary btn-sm" @click="openModalFor(id)">Details</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Home</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.team_h_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Away</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.team_a_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kickoff</td>
+                                            <td v-for="game in gameweek_games_with_metadata">
+                                                {{ new Date(game.node_info.start).toLocaleDateString() }} <br/> {{ new Date(game.node_info.start).toLocaleTimeString() }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Started</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? "Yes" : "No" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Finished</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished ? "Yes" : "No" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>xP Sum</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.xp_sum).toFixed(1) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>rP Sum</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? game.rp_sum : "-" }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Expected Gain</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_gain) }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Realized Gain</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_gain) : "-" }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Expected Loss</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_loss) }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Realized Loss</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_loss) : "-" }}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div class="row" v-cloak id="graph-section-wrapper">
         <div class="col-12 mb-3">
@@ -653,6 +740,42 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="gwModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose GW</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="form-control" v-model="seasongwdate" @change="$('#gwModal').modal('hide');">
+                        <option :value="i.trim()" v-for="i in listdates">{{ i.split('/')[1] }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="updateModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Loading app values...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Loading app. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     let league_list = JSON.parse( "[\n    { \"id\": 2221044, \"twitter\": \"sertalpbilal\" },\n    { \"id\": 367, \"twitter\": \"FplSimpson\" },\n    { \"id\": 17973, \"twitter\": \"FplStatsdan\" },\n    { \"id\": 44142, \"twitter\": \"FF_Trout\" },\n    { \"id\": 2227, \"twitter\": \"dilksybab\" },\n    { \"id\": 36828, \"twitter\": \"theFPLkiwi\" },\n    { \"id\": 4473, \"twitter\": \"jameso_12\" },\n    { \"id\": 159049, \"twitter\": \"api_kakayou\" },\n    { \"id\": 2134733, \"twitter\": \"usafpl\" },\n    { \"id\": 11891, \"twitter\": \"CazzaFPL\" },\n    { \"id\": 115, \"twitter\": \"PlanetosFPL\" },\n    { \"id\": 59177, \"twitter\": \"analytic_fpl\" },\n    { \"id\": 262, \"twitter\": \"rogue_wee\" },\n    { \"id\": 15673, \"twitter\": \"mtthwmn\" },\n    { \"id\": 1339675, \"twitter\": \"cmusson32\" },\n    { \"id\": 106304, \"twitter\": \"FPLstudent2\" },\n    { \"id\": 10350, \"twitter\": \"peterhandleson\" },\n    { \"id\": 293113, \"twitter\": \"chrishp\" },\n    { \"id\": 2243390, \"twitter\": \"plfantasy\" },\n    { \"id\": 741, \"twitter\": \"FPLmeta\" },\n    { \"id\": 23491, \"twitter\": \"FplAuto\" },\n    { \"id\": 227516, \"twitter\": \"NourEldin_z3r0\" },\n    { \"id\": 23337, \"twitter\": \"UkendtPerson45\" },\n    { \"id\": 3561, \"twitter\": \"MikkelTokvam\" },\n    { \"id\": 210810, \"twitter\": \"Klaudioz\" },\n    { \"id\": 204827, \"twitter\": \"FantasianPL\" },\n    { \"id\": 10187, \"twitter\": \"rama96ab\" },\n    { \"id\": 634300, \"twitter\": \"FPL_LFE\" },\n    { \"id\": 17157, \"twitter\": \"_jtreble\" },\n    { \"id\": 1341730, \"twitter\": \"DanielSaetre\" },\n    { \"id\": 2168580, \"twitter\": \"Sriniva43849177\" },\n    { \"id\": 274376, \"twitter\": \"FBinary01\" },\n    { \"id\": 3861, \"twitter\": \"FPL_Data\" },\n    { \"id\": 2978, \"twitter\": \"FPL_ElStatto\" },\n    { \"id\": 795, \"twitter\": \"FplSigurd\" },\n    { \"id\": 726810, \"twitter\": \"JoeBopara\" },\n    { \"id\": 4033, \"twitter\": \"dLincolnlawyer\" },\n    { \"id\": 1188, \"twitter\": \"FPL_Statoholic\" },\n    { \"id\": 184956, \"twitter\": \"FplAmateur\" },\n    { \"id\": 4084, \"twitter\": \"wolacola\" },\n    { \"id\": 16804, \"twitter\": \"Hashtag_MEGA\" },\n    { \"id\": 2409, \"twitter\": \"dav_fifa\" },\n    { \"id\": 393944, \"twitter\": \"MaulanaRiandi\" },\n    { \"id\": 392517, \"twitter\": \"Rak464\" },\n    { \"id\": 1310, \"twitter\": \"ArneBarsnes\" },\n    { \"id\": 416185, \"twitter\": \"FPL_PapaSmurf\" },\n    { \"id\": 33480, \"twitter\": \"gezza96\" },\n    { \"id\": 7193, \"twitter\": \"Raghy78d\" },\n    { \"id\": 26787, \"twitter\": \"pdhFPL\" },\n    { \"id\": 5390907, \"twitter\": \"NeilRankinZA\" },\n    { \"id\": 50155, \"twitter\": \"EuanThompson\" },\n    { \"id\": 501, \"twitter\": \"FPLrookie1\" },\n    { \"id\": 1280279, \"twitter\": \"FplBudget\" }\n]" );
@@ -687,7 +810,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-22T16:29:42.659401+00:00";
+    let lastupdate = "2021-01-22T21:34:45.387357+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-22 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -716,6 +839,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-22T16:29:42.659401+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-22T21:34:45.387357+00:00</div>
 
 </html> 
