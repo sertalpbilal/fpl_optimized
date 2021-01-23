@@ -236,7 +236,7 @@
                         <h5 class="card-header border-complement text-center scenario_title">Game Table</h5>
                         <div class="card-body text-small">
                             <div class="scrollable-x">
-                                <table class="table table-sm table-striped text-white text-nowrap">
+                                <table class="table table-sm table-striped text-white text-nowrap w-100" id="game_table_gw">
                                     <thead>
                                         <tr>
                                             <th>Game No</th>
@@ -279,6 +279,22 @@
                                             <td v-for="game in gameweek_games_with_metadata">{{ game.started ? game.rp_sum : "-" }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
+                                            <td>Players (Owned)</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.players_owned }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Players (Non-owned)</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.players_nonowned }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>EO (Owned)</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.players_owned_eo * 100).toFixed(1) }}%</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>EO (Non-owned)</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.players_nonowned_eo * 100).toFixed(1) }}%</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
                                             <td>Expected Gain</td>
                                             <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_gain) }}</td>
                                         </tr>
@@ -294,7 +310,14 @@
                                             <td>Realized Loss</td>
                                             <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_loss) : "-" }}</td>
                                         </tr>
-
+                                        <tr v-if="is_ready">
+                                            <td>Expected Net</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_net) }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Realized Net</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_net) : "-" }}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -655,7 +678,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.home" v-if="i.rp > 0 || i.xp > 0.5">
-                                    <td>{{ i.web_name }}</td>
+                                    <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
                                     <td>{{ (i.xp).toFixed(1) }}</td>
                                     <td v-if="selected_game_info.started">{{ i.rp }}</td>
                                 </tr>
@@ -673,7 +696,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.away" v-if="i.rp > 0 || i.xp > 0.5">
-                                    <td>{{ i.web_name }}</td>
+                                    <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
                                     <td>{{ (i.xp).toFixed(1) }}</td>
                                     <td v-if="selected_game_info.started">{{ i.rp }}</td>
                                 </tr>

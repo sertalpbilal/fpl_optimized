@@ -22,7 +22,8 @@ var app = new Vue({
         available_sources: ["Official FPL API"],
         sample_data: undefined,
         // selected_game: undefined
-        modal_selected_game: undefined
+        modal_selected_game: undefined,
+        game_table: undefined
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -45,7 +46,7 @@ var app = new Vue({
         },
         gw_fixture: function(old_value, new_value) {
             refresh_all_graphs();
-        },
+        }
     },
     computed: {
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
@@ -72,6 +73,7 @@ var app = new Vue({
         },
         ownership_by_id() {
             const ownership = this.ownership_data;
+            if (ownership == undefined) { return {}; }
             return Object.fromEntries(ownership.map(i => [i.id, i]))
         },
         el_by_id() {
@@ -111,19 +113,25 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
+            if (!this.is_rp_ready || !this.is_fixture_ready) { return []; }
+
             const xp_data = this.grouped_xp_data;
-            const rp_data = this.rp_data;
+            debugger;
+            const xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
+            const rp_by_id = this.rp_by_id;
+            let el_by_id = this.el_by_id;
             const team_data = this.team_data;
 
             const fixture_data = this.gw_fixture;
             const ownership_vals = this.ownership_by_id;
 
-            let picks = team_data.picks;
-            if (!this.is_ready) { picks = []; }
+            let picks;
+            if (this.is_ready) {
+                picks = team_data.picks;
+            } else {
+                picks = [];
+            }
             let picks_by_id = Object.fromEntries(picks.map(i => [i.element, i]));
-
-            let xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
-            let rp_by_id = Object.fromEntries(rp_data.map(i => [i.id, i]));
             let cloned_fixture = _.cloneDeep(fixture_data);
 
             // TODO: Assign expected totals and realized totals to every game
@@ -136,6 +144,9 @@ var app = new Vue({
                 ]));
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
+                    if (player_xp.event_list == undefined) {
+                        debugger;
+                    }
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
 
                     if (this.is_rp_ready) {
@@ -157,8 +168,8 @@ var app = new Vue({
                     e.multiplier = player_match ? player_match.multiplier : 0;
                     e.xp_net = (e.multiplier - e.ownership) * e.xp;
                     e.rp_net = (e.multiplier - e.ownership) * e.rp;
-
-
+                    e.eo_owned = e.multiplier - e.ownership;
+                    e.eo_nonowned = e.ownership;
                 })
                 game.player_details = player_with_data;
                 game.xp_sum = getSum(game.player_details.map(i => i.xp));
@@ -167,8 +178,28 @@ var app = new Vue({
                 game.xp_team_loss = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.xp_net));
                 game.rp_team_gain = getSum(game.player_details.filter(i => i.multiplier > 0).map(i => i.rp_net));
                 game.rp_team_loss = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.rp_net));
-
+                game.players_owned = getSum(game.player_details.map(i => i.multiplier));
+                game.players_nonowned = game.player_details.filter(i => i.multiplier == 0).length;
+                game.players_owned_eo = getSum(game.player_details.filter(i => i.multiplier > 0).map(i => i.eo_owned));
+                game.players_nonowned_eo = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.eo_nonowned));
+                game.xp_team_net = game.xp_team_gain + game.xp_team_loss;
+                game.rp_team_net = game.rp_team_gain + game.rp_team_loss;
             })
+
+            cloned_fixture.forEach((game_info) => {
+                game_info.data = {};
+                for (let i of game_info.stats) {
+                    let j = game_info.data[i.identifier] = {};
+                    j["home"] = i.h.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
+                    j["away"] = i.a.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
+                    j["total"] = j["home"].length + j["away"].length;
+                }
+                game_info.player_details.forEach((p) => { p.web_name = xp_by_id[p.id].web_name });
+                game_info.player_details.sort((a, b) => { return b.rp - a.rp || b.xp - a.xp });
+                game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
+            })
+
+
             return cloned_fixture;
         },
         get_graph_checkpoints() {
@@ -248,22 +279,7 @@ var app = new Vue({
         },
         selected_game_info() {
             if (this.modal_selected_game == undefined) { return undefined; };
-            let xp_by_id = this.xp_by_id;
-            let el_by_id = this.el_by_id;
-            let game_info = _.cloneDeep(this.gameweek_games_with_metadata[this.modal_selected_game]);
-            if (game_info == undefined) { return undefined; }
-            game_info.data = {};
-            for (let i of game_info.stats) {
-                let j = game_info.data[i.identifier] = {};
-                j["home"] = i.h.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
-                j["away"] = i.a.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
-                j["total"] = j["home"].length + j["away"].length;
-            }
-            game_info.player_details.forEach((p) => { p.web_name = xp_by_id[p.id].web_name });
-            game_info.player_details.sort((a, b) => { return b.rp - a.rp || b.xp - a.xp });
-            game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
-            // debugger;
-            return game_info;
+            return this.gameweek_games_with_metadata[this.modal_selected_game];
         },
         team_data_with_metadata() {
             if (!this.is_ready) { return []; }
@@ -1150,6 +1166,4 @@ async function app_initialize(refresh_team = false) {
 
 $(document).ready(function() {
     app_initialize();
-    // app.modal_selected_game = 0;
-    // $("#matchReportModal").modal('show');
 });

@@ -700,3 +700,45 @@ button.btn.btn-sm.zoomButton {
 .gray-bg {
     background-color: #474747;
 }
+
+#game_table_gw_wrapper div.dataTables_scrollBody {
+    background: transparent !important;
+}
+
+#game_table_gw_wrapper .table-striped tbody tr:nth-of-type(even) {
+    background-color: #474747 !important;
+}
+
+#game_table_gw_wrapper .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #5a5a5a !important;
+}
+
+#game_table_gw_wrapper table.DTFC_Cloned tr {
+    background-color: #474747 !important;
+}
+
+#game_table_gw_wrapper div.dataTables_processing {
+    color: black;
+}
+
+#game_table_gw_wrapper a,
+#game_table_gw_wrapper a {
+    color: #c6e5ff;
+}
+
+#game_table_gw tr td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #434343;
+}
+
+#game_table_gw tr th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #434343;
+}
+
+.owned-player {
+    font-weight: bold;
+    color: #65a9ca;
+}
