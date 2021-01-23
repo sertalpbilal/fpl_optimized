@@ -113,7 +113,7 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
-            if (!this.is_rp_ready || !this.is_fixture_ready) { return []; }
+            if (!this.is_fixture_ready) { return []; }
 
             const xp_data = this.grouped_xp_data;
             const xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
