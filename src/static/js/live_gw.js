@@ -264,6 +264,35 @@ var app = new Vue({
             game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
             // debugger;
             return game_info;
+        },
+        team_data_with_metadata() {
+            if (!this.is_ready) { return []; }
+            const xp_by_id = this.xp_by_id;
+            let info_by_id = this.ownership_by_id;
+            let picks = _.cloneDeep(this.team_data.picks);
+            let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
+            picks.forEach((e) => {
+                let e_data = xp_by_id[e.element];
+                let e_info = info_by_id[e.element];
+                e.web_name = e_data.web_name;
+                e.xp = parseFloat(e_data.points_md).toFixed(2);
+                e.team = teams_ordered[e_data.team];
+                e.element_type = e_info.element_type;
+                e.now_cost_str = (parseFloat(e_info.now_cost) / 10).toFixed(1);
+            })
+            picks.forEach((i) => {
+                let cnt = picks.filter(j => j.element_type == i.element_type).filter(j => j.multiplier > 0).length;
+                if (i.multiplier > 0) {
+                    i.x = 122 / (cnt + 1) * pos_ctr[parseInt(i.element_type)] - 17;
+                    i.y = (parseInt(i.element_type) - 1) * 35 + 3;
+                    pos_ctr[parseInt(i.element_type)] += 1;
+                } else {
+                    i.x = 122 / 5 * pos_ctr['B'] - 17;
+                    pos_ctr['B'] += 1;
+                    i.y = 138.5;
+                }
+            })
+            return picks;
         }
     },
     methods: {

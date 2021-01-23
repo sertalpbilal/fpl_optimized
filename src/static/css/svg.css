@@ -1,0 +1,150 @@
+.field-common {
+    opacity: 1;
+    fill: none;
+    fill-opacity: 1;
+    stroke: #ababab;
+    stroke-width: 1.85208333;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+}
+
+.field-last-path {
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+}
+
+.jersey-regular {
+    fill: none;
+    stroke: #000000;
+    stroke-width: 0.26458332px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-opacity: 1;
+}
+
+.jersey-team-text {
+    fill: #B81636;
+}
+
+.jersey-regular-text {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 10.58333302px;
+    line-height: 1.25;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    letter-spacing: 0px;
+    word-spacing: 0px;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    fill: #000000;
+    fill-opacity: 1;
+    stroke: none;
+    stroke-width: 0.26458332;
+}
+
+.jersey-xp-text {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 10.58333302px;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    stroke-width: 0.26458332;
+}
+
+.jersey-captain-star {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 6px;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    stroke-width: 0.26458332;
+}
+
+.jersey-name-bg {
+    opacity: 0.22000002;
+    fill: #000000;
+    fill-opacity: 0.52657004;
+    stroke: #ababab;
+    stroke-width: 0;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+}
+
+.jersey-team-bg {
+    opacity: 0.22000002;
+    fill: #8a8a8a;
+    fill-opacity: 0.52657004;
+    stroke: #ababab;
+    stroke-width: 0;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+}
+
+.jersey-player-name {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 2.46944451px;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    stroke-width: 0.26458332;
+}
+
+.jersey-team-name {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 2.11666656px;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    stroke-width: 0.26458332;
+}
+
+.jersey-cost-text {
+    font-size: 3px;
+    stroke: none;
+    stroke-width: 0;
+    fill: rgb(59, 117, 98);
+    text-align: center;
+    text-anchor: middle;
+}
