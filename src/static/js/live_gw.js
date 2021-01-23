@@ -276,7 +276,7 @@ var app = new Vue({
                 let e_info = info_by_id[e.element];
                 e.web_name = e_data.web_name;
                 e.xp = parseFloat(e_data.points_md).toFixed(2);
-                e.team = teams_ordered[e_data.team];
+                e.team = teams_ordered[e_data.team - 1];
                 e.element_type = e_info.element_type;
                 e.now_cost_str = (parseFloat(e_info.now_cost) / 10).toFixed(1);
             })

@@ -49,7 +49,8 @@
                                                 Options
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')">Edit Team</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')" disabled>Edit Team</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showTeamModal').modal('show')">Show Team</button>
                                             </div>
                                         </div>
                                     </div>
@@ -732,7 +733,26 @@
                 </button>
             </div>
             <div class="modal-body gray-bg">
-                <div class="row">Buttons here</div>
+                <div v-if="is_ready">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal" tabindex="-1" role="dialog" id="showTeamModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Current Team</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body gray-bg">
                 <div class="lineup" v-if="is_ready">
                     <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709">
                         <svg class="field">
