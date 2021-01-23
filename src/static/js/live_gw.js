@@ -186,8 +186,8 @@ var app = new Vue({
                 game_info.data = {};
                 for (let i of game_info.stats) {
                     let j = game_info.data[i.identifier] = {};
-                    j["home"] = i.h.filter(w => xp_by_id[w] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
-                    j["away"] = i.a.filter(w => xp_by_id[w] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
+                    j["home"] = i.h.filter(w => xp_by_id[w.element] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
+                    j["away"] = i.a.filter(w => xp_by_id[w.element] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
                     j["total"] = j["home"].length + j["away"].length;
                 }
                 game_info.player_details.forEach((p) => { p.web_name = xp_by_id[p.id].web_name });
