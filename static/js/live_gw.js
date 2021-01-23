@@ -113,10 +113,9 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
-            if (!this.is_rp_ready || !this.is_fixture_ready) { return []; }
+            if (!this.is_fixture_ready) { return []; }
 
             const xp_data = this.grouped_xp_data;
-            debugger;
             const xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
             const rp_by_id = this.rp_by_id;
             let el_by_id = this.el_by_id;
@@ -144,9 +143,6 @@ var app = new Vue({
                 ]));
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
-                    if (player_xp.event_list == undefined) {
-                        debugger;
-                    }
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
 
                     if (this.is_rp_ready) {
@@ -190,8 +186,8 @@ var app = new Vue({
                 game_info.data = {};
                 for (let i of game_info.stats) {
                     let j = game_info.data[i.identifier] = {};
-                    j["home"] = i.h.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
-                    j["away"] = i.a.map(i => xp_by_id[i.element].web_name + (i.value > 1 ? ` (${i.value})` : ""));
+                    j["home"] = i.h.filter(w => xp_by_id[w] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
+                    j["away"] = i.a.filter(w => xp_by_id[w] !== undefined).map(w => xp_by_id[w.element].web_name + (w.value > 1 ? ` (${w.value})` : ""));
                     j["total"] = j["home"].length + j["away"].length;
                 }
                 game_info.player_details.forEach((p) => { p.web_name = xp_by_id[p.id].web_name });
@@ -421,38 +417,36 @@ var app = new Vue({
             const team_ids = picks.map(i => i.element);
 
             let finished_players = finished_events.map(i => i.game.player_details).flat();
-            let split_players = _.groupBy(finished_players, (e) => { return team_ids.includes(e.id) })
+            let finished_players_final = finished_players.map(i => {
+                let player_in_squad = picks.find(j => j.element == i.id);
+                let multiplier = 0;
+                if (player_in_squad !== undefined) { multiplier = player_in_squad.multiplier; }
+                let ow = ownership_by_id[i.id];
+                let eo = ow.effective_ownership / 100;
+                if (!this.is_using_sample) { eo = ow.selected_by_percent / 100; }
+                return { id: i.id, player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo }
+            });
+
+            let split_players = _.groupBy(finished_players_final, (e) => { return team_ids.includes(e.id) })
 
             // Part 1 - In my team
             let team_finished = split_players[true] || [];
-            let team_finished_final = team_finished.map(i => {
-                let multiplier = picks.find(j => j.element == i.id).multiplier;
-                let ow = ownership_by_id[i.id];
-                let eo = ow.effective_ownership / 100;
-                if (!this.is_using_sample) { eo = ow.selected_by_percent / 100; }
-                return { player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo };
-            })
-            let xp_total = getSum(team_finished_final.map(i => i.xp * i.multiplier));
-            let rp_total = getSum(team_finished_final.map(i => i.rp * i.multiplier));
-            let xp_gain = getSum(team_finished_final.map(i => i.xp * (i.multiplier - i.eo)));
-            let rp_gain = getSum(team_finished_final.map(i => i.rp * (i.multiplier - i.eo)));
+            let xp_total = getSum(team_finished.map(i => i.xp * i.multiplier));
+            let rp_total = getSum(team_finished.map(i => i.rp * i.multiplier));
+            let xp_gain = getSum(team_finished.map(i => i.xp * (i.multiplier - i.eo)));
+            let rp_gain = getSum(team_finished.map(i => i.rp * (i.multiplier - i.eo)));
 
             // Part 2 - Not in my team
             let rest_finished = split_players[false] || [];
-            let rest_finished_final = rest_finished.map(i => {
-                let ow = ownership_by_id[i.id];
-                let eo = ow.effective_ownership / 100;
-                if (!this.is_using_sample) { eo = ow.selected_by_percent / 100; }
-                return { player: i, multiplier: 0, xp: i.xp, rp: i.rp, eo: eo };
-            })
-            let xp_loss = getSum(rest_finished_final.map(i => i.xp * i.eo));
+            let xp_loss = getSum(rest_finished.map(i => i.xp * i.eo));
             let xp_diff = xp_gain - xp_loss;
-            let rp_loss = getSum(rest_finished_final.map(i => i.rp * i.eo));
+            let rp_loss = getSum(rest_finished.map(i => i.rp * i.eo));
             let rp_diff = rp_gain - rp_loss;
 
-            let average_expected = getSum(team_finished_final.map(i => i.xp * i.eo)) + xp_loss;
-            let average_realized = getSum(team_finished_final.map(i => i.rp * i.eo)) + rp_loss;
+            let average_expected = getSum(team_finished.map(i => i.xp * i.eo)) + xp_loss;
+            let average_realized = getSum(team_finished.map(i => i.rp * i.eo)) + rp_loss;
 
+            // Now event update
             if (event_type == "now") {
                 let copy_active_events = _.cloneDeep(active_events)
 
@@ -464,23 +458,35 @@ var app = new Vue({
                 })
 
                 let active_players = copy_active_events.map(i => i.game.player_details).flat();
-                let team_active = active_players.filter(i => picks.map(j => j.element).includes(i.id));
-                let team_active_final = team_active.map(i => {
-                    let multiplier = picks.find(j => j.element == i.id).multiplier;
+                let active_players_final = active_players.map(i => {
+                    let player_in_squad = picks.find(j => j.element == i.id);
+                    let multiplier = 0;
+                    if (player_in_squad !== undefined) { multiplier = player_in_squad.multiplier; }
                     let ow = ownership_by_id[i.id];
                     let eo = ow.effective_ownership / 100;
                     if (!this.is_using_sample) { eo = ow.selected_by_percent / 100; }
-                    return { player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo };
-                })
-                let xp_total_active = getSum(team_active_final.map(i => i.xp * i.multiplier));
-                let rp_total_active = getSum(team_active_final.map(i => i.rp * i.multiplier));
-                let xp_gain_active = getSum(team_active_final.map(i => i.xp * (i.multiplier - i.eo)));
-                let rp_gain_active = getSum(team_active_final.map(i => i.rp * (i.multiplier - i.eo)));
+                    return { id: i.id, player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo }
+                });
+
+                let split_active_players = _.groupBy(active_players_final, (e) => { return team_ids.includes(e.id) })
+                let team_active = split_active_players[true] || [];
+                let xp_total_active = getSum(team_active.map(i => i.xp * i.multiplier));
+                let rp_total_active = getSum(team_active.map(i => i.rp * i.multiplier));
+                let xp_gain_active = getSum(team_active.map(i => i.xp * (i.multiplier - i.eo)));
+                let rp_gain_active = getSum(team_active.map(i => i.rp * (i.multiplier - i.eo)));
+
+                let rest_active = split_active_players[false] || [];
+                let xp_loss_active = getSum(rest_active.map(i => i.xp * i.eo));
+                let rp_loss_active = getSum(rest_active.map(i => i.rp * i.eo));
 
                 xp_total += xp_total_active; // TODO: this should come from active events
                 rp_total += rp_total_active;
                 xp_gain += xp_gain_active;
                 rp_gain += rp_gain_active;
+                xp_loss += xp_loss_active;
+                rp_loss += rp_loss_active;
+                xp_diff = xp_gain - xp_loss;
+                rp_diff = rp_gain - rp_loss;
             }
 
             return { xp_total: xp_total, rp_total: rp_total, xp_gain: xp_gain, rp_gain: rp_gain, xp_loss: xp_loss, rp_loss: rp_loss, xp_diff: xp_diff, rp_diff: rp_diff, avg_expected: average_expected, avg_realized: average_realized }
@@ -508,7 +514,6 @@ async function load_team_data() {
         app.using_last_gw_team = response.is_last_gw;
     }).catch(error => {
         console.error(error);
-        debugger;
     });
 
     return get_team_info(app.team_id)
