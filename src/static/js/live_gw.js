@@ -445,8 +445,8 @@ var app = new Vue({
             let rp_loss = getSum(rest_finished.map(i => i.rp * i.eo));
             let rp_diff = rp_gain - rp_loss;
 
-            let average_expected = getSum(team_finished.map(i => i.xp * i.eo)) + xp_loss;
-            let average_realized = getSum(team_finished.map(i => i.rp * i.eo)) + rp_loss;
+            let average_expected = getSum(finished_players_final.map(i => i.xp * i.eo));
+            let average_realized = getSum(finished_players_final.map(i => i.rp * i.eo));
 
             // Now event update
             if (event_type == "now") {
@@ -489,6 +489,10 @@ var app = new Vue({
                 rp_loss += rp_loss_active;
                 xp_diff = xp_gain - xp_loss;
                 rp_diff = rp_gain - rp_loss;
+
+                average_expected += getSum(active_players_final.map(i => i.xp * i.eo));
+                average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
+
             }
 
             return { xp_total: xp_total, rp_total: rp_total, xp_gain: xp_gain, rp_gain: rp_gain, xp_loss: xp_loss, rp_loss: rp_loss, xp_diff: xp_diff, rp_diff: rp_diff, avg_expected: average_expected, avg_realized: average_realized }
