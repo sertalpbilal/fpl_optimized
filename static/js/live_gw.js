@@ -350,7 +350,9 @@ var app = new Vue({
                 sorted_fixture.slice(0, index).forEach((game2) => {
                     if ((game.start_dt >= game2.start_dt && game.start_dt <= game2.end_dt) ||
                         (game.end_dt >= game2.start_dt && game.end_dt <= game2.end_dt)) {
-                        order += 1;
+                        if (game2.order == order) {
+                            order += 1;
+                        }
                     }
                 })
                 game.order = order;
