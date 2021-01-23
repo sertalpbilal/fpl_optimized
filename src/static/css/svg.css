@@ -86,27 +86,28 @@
 
 .jersey-name-bg {
     opacity: 0.22000002;
-    fill: #000000;
-    fill-opacity: 0.52657004;
     stroke: #ababab;
     stroke-width: 0;
     stroke-miterlimit: 4;
     stroke-dasharray: none;
     stroke-opacity: 1;
+    fill: aquamarine !important;
+    fill-opacity: 1 !important;
 }
 
 .jersey-team-bg {
-    opacity: 0.22000002;
-    fill: #8a8a8a;
-    fill-opacity: 0.52657004;
     stroke: #ababab;
     stroke-width: 0;
     stroke-miterlimit: 4;
     stroke-dasharray: none;
     stroke-opacity: 1;
+    fill: white !important;
+    fill-opacity: 1 !important;
+    opacity: 0.9 !important;
 }
 
 .jersey-player-name {
+    fill: white;
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
@@ -123,7 +124,12 @@
     stroke-width: 0.26458332;
 }
 
+.jersey-player-name>tspan {
+    font-size: 2.8px !important;
+}
+
 .jersey-team-name {
+    fill: #a10a28 !important;
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
@@ -147,4 +153,41 @@
     fill: rgb(59, 117, 98);
     text-align: center;
     text-anchor: middle;
+}
+
+.jersey-subs-button {
+    fill-opacity: 1;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+    stroke-opacity: 1;
+    stroke-width: 0.1;
+    cursor: pointer;
+}
+
+.jersey-subs-text {
+    font-size: 3.6px;
+    fill: #4e00fb !important;
+    stroke: #000000 !important;
+    stroke-width: 0.1px;
+    text-anchor: middle;
+    alignment-baseline: middle;
+    pointer-events: none;
+}
+
+.jersey-transfer-button {
+    fill-opacity: 1;
+    fill: #d6d6d6 !important;
+    stroke: #ffffff !important;
+    stroke-opacity: 1;
+    stroke-width: 0.1;
+    cursor: pointer;
+}
+
+.jersey-transfer-text {
+    font-size: 3px;
+    fill: #901f1f !important;
+    stroke: none !important;
+    text-anchor: middle;
+    alignment-baseline: middle;
+    pointer-events: none;
 }

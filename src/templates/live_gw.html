@@ -736,7 +736,7 @@
                 <div class="lineup" v-if="is_ready">
                     <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709">
                         <svg class="field">
-                            <g id="field_group" class="g_field">
+                            <g class="g_field">
                                 <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
                                 <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
                                 <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
@@ -753,50 +753,56 @@
                                 <rect class="field-common" id="bench_box" width="104.4753" height="24.503908" x="4.0935702" y="140.51396" />
                             </g>
                         </svg>
-                    <svg v-for="player in team_data_with_metadata" :x="player.x" :y="player.y" v-cloak>
-                        <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}" id="jersey_group" style="transform:translate(-20px,-35px)">
-                            <path  id="jersey_bg" d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular"
-                            />
-                            <g id="g900">
-                                <path class="jersey-regular" d="m 24.461842,40.986418 1.07576,2.642627" id="path872"  />
-                                <path class="jersey-regular" d="m 25.186811,40.518696 0.748355,1.91766" id="path874"  />
-                            </g>
-                            <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)" id="g896">
-                                <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627" id="path872-6"  />
-                                <path class="jersey-regular" d="m 35.16062,41.067378 0.748355,1.91766" id="path874-7"  />
-                            </g>
-                            <path  id="path902" d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712" class="jersey-regular" />
-                            <g id="jersey_dynamic" clip-path="url(#clipPath867)" transform="translate(22.73135,-236.63834)">
-                                <g  id="g863"><text id="player_xP" y="285.37598" x="9.281539" class="jersey-regular-text">
-                                        <tspan
-                                            class="jersey-xp-text"
-                                            y="285.37598" x="9.281539" id="tspan829" ><tspan style="font-size:6px" id="pts_main">{{ (player.xp).split(".")[0] }}</tspan><tspan id="pts_period" style="font-size:2.5px">.</tspan><tspan style="font-size:3px" id="pts_minor">{{ (player.xp).split(".")[1] }}</tspan>
-                                        </tspan>
-                                    </text><text id="captain_star" y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text"
-                                        >
-                                        <tspan v-if="player.is_captain"
-                                            class="jersey-captain-star"
-                                            y="281.28659" x="11.3432751" id="captain_start_t" >★</tspan>
-                                    </text>
-                                    <rect y="291.74704" x="0.028824098" height="3.1975782" width="18.470304" id="player_name_bg" class="jersey-name-bg" />
-                                    <rect y="294.94461" x="0.028824052" height="2.0213056" width="18.470306" id="player_team_bg" class="jersey-team-bg" />
-                                    <text id="player_name" y="294.1311" x="9.3312988" class="jersey-regular-text"
-                                        xml:space="preserve">
-                                        <tspan
-                                            class="jersey-player-name"
-                                            y="294.1311" x="9.3312988" id="tspan829-4" >{{ player.web_name }}</tspan>
-                                    </text><text id="player_team" y="296.74948" x="9.2921124" class="jersey-regular-text"
-                                        xml:space="preserve">
-                                        <tspan
-                                            class="jersey-team-name"
-                                            y="296.74948" x="9.2921124" id="tspan829-4-3" >{{ player.team.name }}</tspan>
-                                    </text><text id="player_cost" class="jersey-cost-text" xml:space="preserve">
-                                        <tspan style="text-align:center" y="289.74948" x="9.2921124" id="pcost" >£{{
-                                            player.now_cost_str }}</tspan>
-                                    </text>
+                    <svg v-for="player in team_data_with_metadata" :x="player.x" :y="player.y">
+                            <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}" style="transform:translate(-20px,-35px)">
+                                <path  d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular"/>
+                                <g >
+                                    <path class="jersey-regular" d="m 24.461842,40.986418 1.07576,2.642627"   />
+                                    <path class="jersey-regular" d="m 25.186811,40.518696 0.748355,1.91766"  />
+                                </g>
+                                <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)" >
+                                    <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627"   />
+                                    <path class="jersey-regular" d="m 35.16062,41.067378 0.748355,1.91766"   />
+                                </g>
+                                <path d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712" class="jersey-regular" />
+                                <g clip-path="url(#clipPath867)" transform="translate(22.73135,-236.63834)">
+                                    <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
+                                            <tspan
+                                                class="jersey-xp-text"
+                                                y="285.37598" x="9.281539"  ><tspan style="font-size:6px" >{{ (player.xp).split(".")[0] }}</tspan><tspan  style="font-size:2.5px">.</tspan><tspan style="font-size:3px" >{{ (player.xp).split(".")[1] }}</tspan>
+                                            </tspan>
+                                        </text><text  y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text">
+                                            <tspan v-if="player.is_captain"
+                                                class="jersey-captain-star"
+                                                y="281.28659" x="11.3432751"  >★</tspan>
+                                        </text>
+                                        <rect y="291.74704" x="0.028824098" height="3.1975782" width="18.470304" class="jersey-name-bg" />
+                                        <rect y="294.94461" x="0.028824052" height="2.0213056" width="18.470306" class="jersey-team-bg" />
+                                        <text  y="294.1311" x="9.3312988" class="jersey-regular-text"
+                                            xml:space="preserve">
+                                            <tspan
+                                                class="jersey-player-name"
+                                                y="294.1311" x="9.3312988" >{{ player.web_name }}</tspan>
+                                        </text><text y="296.74948" x="9.2921124" class="jersey-regular-text"
+                                            xml:space="preserve">
+                                            <tspan
+                                                class="jersey-team-name"
+                                                y="296.74948" x="9.2921124" >{{ player.team.name }}</tspan>
+                                        </text><text class="jersey-cost-text" xml:space="preserve">
+                                            <tspan style="text-align:center" y="289.74948" x="9.2921124"  >£{{
+                                                player.now_cost_str }}</tspan>
+                                        </text>
+                                    </g>
+                                </g>
+                                <g transform="translate(24,36)">
+                                    <rect cx="0" cy="0" width="3" height="3" class="jersey-subs-button"></rect>
+                                    <text cx="" cy="" class="jersey-subs-text" dx="1.5" dy="1.8">⥯</text>
+                                </g>
+                                <g transform="translate(37,36)">
+                                    <rect cx="0" cy="0" width="3" height="3" class="jersey-transfer-button"></rect>
+                                    <text cx="" cy="" class="jersey-transfer-text" dx="1.5" dy="1.6">🗙</text>
                                 </g>
                             </g>
-                        </g>
                         </svg>
                     </svg>
                 </div>
