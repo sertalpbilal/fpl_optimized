@@ -44,7 +44,8 @@ body {
     border-color: #394709;
 }
 
-#captain_star {
+#captain_star,
+.jersey-captain-star {
     fill: rgb(91, 182, 152) !important;
     /* stroke-width: 0px !important; */
     stroke: rgb(0, 114, 108) !important;
@@ -694,4 +695,8 @@ button.btn.btn-sm.zoomButton {
 .nav-tabs.main-blocks .nav-link.active {
     background-color: #fff;
     color: black;
+}
+
+.gray-bg {
+    background-color: #474747;
 }
