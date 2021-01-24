@@ -56,6 +56,7 @@ var app = new Vue({
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_rp_ready() { return this.rp_data && this.rp_data.length != 0 },
+        is_xp_ready() { return this.xp_data && this.xp_data.length != 0 },
         is_fixture_ready() { return this.gw_fixture && this.gw_fixture.length != 0 },
         is_el_ready() { return this.el_data && this.el_data.length != 0 },
         seasongwdate: {
@@ -119,6 +120,7 @@ var app = new Vue({
         gameweek_games_with_metadata() {
 
             if (!this.is_fixture_ready) { return []; }
+            if (!this.is_xp_ready) { return []; }
 
             const xp_data = this.grouped_xp_data;
             const xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
