@@ -122,7 +122,7 @@
                                                 Options
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')" disabled>Edit Team</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')">Edit Team</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showTeamModal').modal('show')">Show Team</button>
                                             </div>
                                         </div>
@@ -830,7 +830,95 @@
             </div>
             <div class="modal-body">
                 <div v-if="is_ready">
+                    <div class="row no-gutters">
+                        <div class="col-6 col-md-3" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0 modal-metric-title">xP Sum</div>
+                                <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center">
+                                    {{ getSum(team_data_with_metadata.map(i => i.xp)).toFixed(2) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0 modal-metric-title">xP Net</div>
+                                <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
+                                    {{ getSum(element_data_list.map(i=>i.meta_data.xp_net)).toFixed(2) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0 modal-metric-title">xP Gain</div>
+                                <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
+                                    {{ getWithSign(getSum(element_data_list.filter(i => i.meta_data.multiplier > 0).map(i => i.meta_data.xp_gain))) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0 modal-metric-title">xP Loss</div>
+                                <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
+                                    {{ getWithSign(-getSum(element_data_list.filter(i => i.meta_data.multiplier == 0).map(i => i.meta_data.xp_loss))) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ITB / Formation? -->
+                    </div>
+                </div>
+                <div v-if="is_ready">
+                    <!-- <th class="text-muted">ID</th> -->
+                    <!-- <td class="text-muted">{{ i.element }}</td> -->
+                    <!-- <th class="text-center">Mult</th> -->
+                    <!-- <td class="text-center">{{i.multiplier}}</td> -->
+                    <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1">
+                        <thead>
+                            <tr>
 
+                                <th></th>
+                                <th>Name</th>
+                                <th>Pos</th>
+
+                                <th class="text-right">xP</th>
+                                <th class="text-right">Own%</th>
+                                <th class="text-right">xP Gain</th>
+                                <th class="text-right">xP Loss</th>
+                                <th class="text-center">B</th>
+                                <th class="text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody v-cloak>
+                            <tr v-for="i in team_data_with_metadata" :class="{'owned-row': i.multiplier > 0, 'bench-row': i.multiplier==0}">
+                                <td :class="{'captain_color': i.is_captain }">{{ i.is_captain ? (i.multiplier == 3 ? "TC" : "C") : (i.multiplier > 0 ? "L" : "B") }}</td>
+                                <td>{{ i.name }}</td>
+                                <td>{{element_type[i.element_type].short}}</td>
+
+                                <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
+                                <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
+                                <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_gain,1)}}</td>
+                                <td class="text-right" :class="{'text-muted': i.multiplier > 0}">{{getWithSign(-i.xp_loss,1)}}</td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm">
+                                        <i class="fas fa-caret-down to_bench" v-if="i.multiplier > 0"></i>
+                                        <i class="fas fa-caret-up to_lineup" v-if="i.multiplier == 0"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm"><i class="fas fa-exchange-alt"></i></button>
+                                </td>
+                                <!-- <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
+                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
+                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
+                                <td class="text-right">{{ rounded(i[1].points_md) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>
+                                <template>
+                                    <td class="text-right" style="color: orange" v-if="is_using_captain && i[1].captain">{{ getWithSign(i[1].xp_owned_captain ) }}</td>
+                                    <td class="text-right" style="color: #acc3c5" v-else>{{ getWithSign(i[1].xp_owned) }}</td>
+                                </template>
+                                <td class="text-right text-muted">{{ getWithSign(i[1].xp_non_owned) }}</td>
+                                <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -885,7 +973,7 @@
                                     <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
                                             <tspan
                                                 class="jersey-xp-text"
-                                                y="285.37598" x="9.281539"  ><tspan style="font-size:6px" >{{ (player.xp).split(".")[0] }}</tspan><tspan  style="font-size:2.5px">.</tspan><tspan style="font-size:3px" >{{ (player.xp).split(".")[1] }}</tspan>
+                                                y="285.37598" x="9.281539"  ><tspan style="font-size:6px" >{{ (player.xp).toFixed(2).split(".")[0] }}</tspan><tspan  style="font-size:2.5px">.</tspan><tspan style="font-size:3px" >{{ (player.xp).toFixed(2).split(".")[1] }}</tspan>
                                             </tspan>
                                         </text><text  y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text">
                                             <tspan v-if="player.is_captain"
@@ -898,7 +986,7 @@
                                             xml:space="preserve">
                                             <tspan
                                                 class="jersey-player-name"
-                                                y="294.1311" x="9.3312988" >{{ player.web_name }}</tspan>
+                                                y="294.1311" x="9.3312988" >{{ player.name }}</tspan>
                                         </text><text y="296.74948" x="9.2921124" class="jersey-regular-text"
                                             xml:space="preserve">
                                             <tspan
@@ -954,7 +1042,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-23T22:19:58.274095+00:00";
+    let lastupdate = "2021-01-24T02:56:53.964454+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-23 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -983,6 +1071,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-23T22:19:58.274095+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T02:56:53.964454+00:00</div>
 
 </html> 
