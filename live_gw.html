@@ -835,7 +835,7 @@
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0 modal-metric-title">xP Sum</div>
                                 <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center">
-                                    {{ getSum(team_data_with_metadata.map(i => i.xp)).toFixed(2) }}
+                                    {{ getSum(team_data_with_metadata.map(i => i.xp * i.multiplier)).toFixed(2) }}
                                 </div>
                             </div>
                         </div>
@@ -874,15 +874,14 @@
                     <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1">
                         <thead>
                             <tr>
-
                                 <th></th>
                                 <th>Name</th>
                                 <th>Pos</th>
-
                                 <th class="text-right">xP</th>
                                 <th class="text-right">Own%</th>
                                 <th class="text-right">xP Gain</th>
                                 <th class="text-right">xP Loss</th>
+                                <th class="text-center">C</th>
                                 <th class="text-center">B</th>
                                 <th class="text-center">TO</th>
                             </tr>
@@ -898,13 +897,20 @@
                                 <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_gain,1)}}</td>
                                 <td class="text-right" :class="{'text-muted': i.multiplier > 0}">{{getWithSign(-i.xp_loss,1)}}</td>
                                 <td class="text-center">
-                                    <button class="button btn-sm btn-xsm">
-                                        <i class="fas fa-caret-down to_bench" v-if="i.multiplier > 0"></i>
-                                        <i class="fas fa-caret-up to_lineup" v-if="i.multiplier == 0"></i>
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="selectCaptain" v-if="i.multiplier > 0">
+                                        <i class="fas fa-copyright" aria-hidden="true"></i>
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <button class="button btn-sm btn-xsm"><i class="fas fa-exchange-alt"></i></button>
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="toggleBench">
+                                        <i class="fas fa-caret-down to_bench" v-if="i.multiplier > 0" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-up to_lineup" v-if="i.multiplier == 0" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="transferOut">
+                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                                    </button>
                                 </td>
                                 <!-- <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
                                 <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
@@ -1042,7 +1048,7 @@
     let gw = "GW19";
     let next_gw = "GW20";
     let date = "2021-01-16";
-    let lastupdate = "2021-01-24T02:56:53.964454+00:00";
+    let lastupdate = "2021-01-24T03:33:04.612659+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-23 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1071,6 +1077,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T02:56:53.964454+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T03:33:04.612659+00:00</div>
 
 </html> 

@@ -29,8 +29,11 @@ var app = new Vue({
         this.initEmptyData();
     },
     watch: {
-        team_data: function(old_value, new_value) {
-            refresh_all_graphs();
+        team_data: {
+            handler() {
+                refresh_all_graphs();
+            },
+            deep: true
         },
         ownership_source: function(old_value, new_value) {
             refresh_all_graphs();
@@ -201,8 +204,6 @@ var app = new Vue({
         },
         get_graph_checkpoints() {
 
-            debugger;
-
             const gw_info = this.gameweek_info;
             if (_.isEmpty(gw_info)) { return [] }
 
@@ -364,26 +365,21 @@ var app = new Vue({
                     pos_ctr['B'] += 1;
                     player.y = 138.5;
                 }
-            })
+            });
+
+            debugger;
 
             picks.sort((a, b) => {
-                b.data.meta_data.is_lineup - a.data.meta_data.is_lineup || a.element_type - b.element_type || a.element - b.element;
+                if (a.is_lineup !== b.is_lineup) {
+                    return b.is_lineup - a.is_lineup;
+                } else if (a.element_type !== b.element_type) {
+                    return parseInt(a.element_type) - parseInt(b.element_type);
+                } else {
+                    return parseInt(a.element) - parseInt(b.element);
+                }
             })
 
             return picks;
-        },
-        team_info_summary() {
-            let team = this.team_data_with_metadata;
-            let team_info = {};
-            // let xp_data = grouped_xp_data;
-
-            // team_info.xp_gain = getSum(team.map(i => parseFloat(i.xp_gain)));
-            // team_info.xp_loss = 0;
-
-
-
-
-            return team_info
         }
     },
     methods: {
@@ -495,7 +491,7 @@ var app = new Vue({
             let xp = 0;
             let picks = this.team_data.picks;
             if (!this.is_ready) { picks = []; }
-            const team_ids = picks.map(i => i.element);
+            const team_ids = picks.filter(i => i.multiplier > 0).map(i => i.element);
 
             let finished_players = finished_events.map(i => i.game.player_details).flat();
             let finished_players_final = finished_players.map(i => {
@@ -582,6 +578,37 @@ var app = new Vue({
             this.$nextTick(() => {
                 $("#matchReportModal").modal('show');
             })
+        },
+        selectCaptain(e) {
+            let id = e.currentTarget.dataset.id;
+            let current_captain = this.team_data.picks.find(i => i.multiplier > 1);
+            let this_player = this.team_data.picks.find(i => i.element == id);
+            if (current_captain !== undefined) {
+                if (current_captain.element == this_player.element) {
+                    this_player.multiplier = 5 - this_player.multiplier;
+                } else {
+                    this_player.multiplier = current_captain.multiplier + 0;
+                    this_player.is_captain = true;
+                    current_captain.is_captain = false;
+                    current_captain.multiplier = 1;
+                }
+            } else {
+                this_player.multiplier = 2;
+                this_player.is_captain = true;
+            }
+        },
+        toggleBench(e) {
+            let id = e.currentTarget.dataset.id;
+            let this_player = this.team_data.picks.find(i => i.element == id);
+            if (this_player.multiplier > 0) {
+                this_player.multiplier = 0;
+                this_player.is_captain = false;
+            } else {
+                this_player.multiplier = 1;
+            }
+        },
+        transferOut(e) {
+            debugger;
         }
     },
 })
@@ -922,6 +949,13 @@ function draw_user_graph(options = {}) {
 
     let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat]))) + 5;
     let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+
+    if (options.stat == "points") {
+        let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized))) + 5;
+        let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
+        y_high = Math.max(y_high, y_avg_high);
+        y_low = Math.min(y_low, y_avg_low);
+    }
 
     let x_ticks = [];
     let start_midnight = new Date(app.gameweek_info.start_dt.getTime());
