@@ -124,6 +124,8 @@
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')">Edit Team</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showTeamModal').modal('show')">Show Team</button>
+                                                <div class="dropdown-divider"></div>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="restartTeamData">Reset Team</button>
                                             </div>
                                         </div>
                                     </div>
@@ -676,11 +678,11 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Fetching team values...</h5>
+                <h5 class="modal-title">Fetching data...</h5>
             </div>
             <div class="modal-body">
                 <div class="p-2 wait-modal">
-                    Fetching team picks from FPL website. Please wait... <br/>
+                    Fetching data and updating visuals. Please wait... <br/>
                     <img class="mx-auto d-block" src="static/images/loading.svg">
                 </div>
             </div>
@@ -1048,7 +1050,7 @@
     let gw = "GW20";
     let next_gw = "GW20";
     let date = "2021-01-24";
-    let lastupdate = "2021-01-24T13:20:00.552974+00:00";
+    let lastupdate = "2021-01-24T15:07:03.017100+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-24 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1077,6 +1079,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T13:20:00.552974+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T15:07:03.017100+00:00</div>
 
 </html> 

@@ -15,6 +15,7 @@ var app = new Vue({
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
+        original_team_data: undefined,
         el_data: undefined,
         xp_data: undefined,
         rp_data: undefined,
@@ -23,7 +24,8 @@ var app = new Vue({
         sample_data: undefined,
         // selected_game: undefined
         modal_selected_game: undefined,
-        game_table: undefined
+        game_table: undefined,
+        target_element_type: undefined
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -32,8 +34,7 @@ var app = new Vue({
         team_data: {
             handler() {
                 refresh_all_graphs();
-            },
-            deep: true
+            }
         },
         ownership_source: function(old_value, new_value) {
             refresh_all_graphs();
@@ -345,9 +346,6 @@ var app = new Vue({
             let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
             picks.forEach((e) => {
                 e.data = el_data_combined[e.element];
-                if (e.data == undefined) {
-                    debugger;
-                }
                 let el_info = e.data.el_data;
                 Object.assign(e, e.data.meta_data);
                 e.team = team_codes[el_info.team_code];
@@ -366,8 +364,6 @@ var app = new Vue({
                     player.y = 138.5;
                 }
             });
-
-            debugger;
 
             picks.sort((a, b) => {
                 if (a.is_lineup !== b.is_lineup) {
@@ -395,7 +391,11 @@ var app = new Vue({
             this.modal_selected_game = undefined;
         },
         saveTeamData(data) {
+            this.original_team_data = _.cloneDeep(data);
             this.team_data = data;
+        },
+        restartTeamData() {
+            this.team_data = _.cloneDeep(this.original_team_data);
         },
         saveTeamInfo(data) {
             this.team_info = data;
@@ -608,6 +608,8 @@ var app = new Vue({
             }
         },
         transferOut(e) {
+            let id = e.currentTarget.dataset.id;
+            let el_type = this.el_by_id[id].element_type;
             debugger;
         }
     },
@@ -1291,4 +1293,7 @@ async function app_initialize(refresh_team = false) {
 
 $(document).ready(function() {
     app_initialize();
+    $("#editTeamModal").on('hide.bs.modal', (e) => {
+        refresh_all_graphs();
+    })
 });
