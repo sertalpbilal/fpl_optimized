@@ -119,6 +119,9 @@ svg.field>g>* {
     .metric {
         font-size: 9pt;
     }
+    .text-xs-mini {
+        font-size: x-small;
+    }
 }
 
 .metric.highlighted {
@@ -741,4 +744,29 @@ button.btn.btn-sm.zoomButton {
 .owned-player {
     font-weight: bold;
     color: #65a9ca;
+}
+
+.to_bench {
+    color: mediumpurple;
+}
+
+.to_lineup {
+    color: deepskyblue;
+}
+
+.modal-metric {
+    background-color: rgb(243 243 243);
+    min-height: 21.18px;
+    color: black;
+}
+
+.modal-metric-title {
+    color: black;
+    background-color: #ffe1e1;
+}
+
+.btn-xsm {
+    padding: .15rem 0.4rem;
+    font-size: .6rem;
+    border: 1px solid darkgray;
 }

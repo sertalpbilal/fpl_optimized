@@ -53,6 +53,7 @@ var app = new Vue({
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_rp_ready() { return this.rp_data && this.rp_data.length != 0 },
         is_fixture_ready() { return this.gw_fixture && this.gw_fixture.length != 0 },
+        is_el_ready() { return this.el_data && this.el_data.length != 0 },
         seasongwdate: {
             get: function() {
                 return this.season + " / " + this.gw + " / " + this.date;
@@ -200,6 +201,8 @@ var app = new Vue({
         },
         get_graph_checkpoints() {
 
+            debugger;
+
             const gw_info = this.gameweek_info;
             if (_.isEmpty(gw_info)) { return [] }
 
@@ -256,11 +259,12 @@ var app = new Vue({
                 target_event.average.expected = values.avg_expected;
                 target_event.average.realized = values.avg_realized;
 
-                let existing_entry = team_checkpoints.find(i => i.time == current_time)
-                if (!existing_entry) {
-                    team_checkpoints.push(_.cloneDeep(target_event))
+                // let existing_entry = team_checkpoints.find(i => i.time == current_time)
+                let existing_id = team_checkpoints.findIndex(i => i.time == current_time);
+                if (existing_id == -1) {
+                    team_checkpoints.push(_.cloneDeep(target_event));
                 } else {
-                    existing_entry = _.cloneDeep(target_event)
+                    team_checkpoints[existing_id] = _.cloneDeep(target_event);
                 }
 
             });
@@ -277,34 +281,109 @@ var app = new Vue({
             if (this.modal_selected_game == undefined) { return undefined; };
             return this.gameweek_games_with_metadata[this.modal_selected_game];
         },
+        element_data_combined() {
+
+            let all_ids = this.xp_data.map(i => parseInt(i.player_id));
+            let new_element_data = {};
+
+            const xp_by_id = Object.fromEntries(this.grouped_xp_data.map(i => [i.player_id, i]));
+            const el_by_id = this.el_by_id;
+            const rp_by_id = this.rp_by_id;
+            const own_by_id = this.ownership_by_id;
+            const team_data = this.team_data;
+            let picks = [];
+            if (this.is_ready) {
+                picks = team_data.picks;
+            }
+            let team_ids = picks.map(i => i.element);
+
+            all_ids.forEach((e) => {
+                try {
+                    let n = {};
+                    n.xp_data = xp_by_id[e];
+                    n.el_data = el_by_id[e];
+                    n.rp_data = rp_by_id[e];
+                    n.own_data = own_by_id[e];
+                    n.meta_data = {};
+                    n.meta_data.name = n.el_data.web_name;
+                    let points_md = n.meta_data.xp = parseFloat(n.xp_data.points_md);
+                    let is_squad = n.meta_data.is_squad = team_ids.includes(e);
+                    let multiplier = n.meta_data.multiplier = is_squad ? picks.find(i => i.element == e).multiplier : 0;
+                    n.meta_data.is_lineup = multiplier > 0;
+                    let ownership = n.meta_data.ownership = this.is_using_sample ? n.own_data.effective_ownership : parseFloat(n.own_data.selected_by_percent);
+                    n.meta_data.xp_gain = points_md * (Math.max(multiplier, 1) - ownership / 100);
+                    n.meta_data.xp_loss = points_md * ownership / 100;
+                    n.meta_data.xp_net = points_md * (multiplier - ownership / 100);
+                    n.meta_data.element_type = n.el_data.element_type;
+                    n.id = e;
+                    new_element_data[e] = n;
+                } catch {
+                    return;
+                }
+            })
+
+            return new_element_data;
+        },
+        element_data_list() {
+            if (!this.is_ready) { return []; }
+            if (!this.is_el_ready) { return []; }
+            return Object.values(this.element_data_combined);
+        },
+        other_elements() {
+            if (!this.is_ready) { return {}; }
+            if (!this.is_el_ready) { return {}; }
+            return new_element_data.filter(i => i.meta_data.is_squad == false);
+        },
         team_data_with_metadata() {
             if (!this.is_ready) { return []; }
-            const xp_by_id = this.xp_by_id;
-            let info_by_id = this.ownership_by_id;
+            if (!this.is_el_ready) { return []; }
+
+            const el_data_combined = this.element_data_combined;
+            if (_.isEmpty(el_data_combined)) { return []; }
             let picks = _.cloneDeep(this.team_data.picks);
             let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
             picks.forEach((e) => {
-                let e_data = xp_by_id[e.element];
-                let e_info = info_by_id[e.element];
-                e.web_name = e_data.web_name;
-                e.xp = parseFloat(e_data.points_md).toFixed(2);
-                e.team = teams_ordered[e_data.team - 1];
-                e.element_type = e_info.element_type;
-                e.now_cost_str = (parseFloat(e_info.now_cost) / 10).toFixed(1);
+                e.data = el_data_combined[e.element];
+                if (e.data == undefined) {
+                    debugger;
+                }
+                let el_info = e.data.el_data;
+                Object.assign(e, e.data.meta_data);
+                e.team = team_codes[el_info.team_code];
+                e.now_cost_str = (parseFloat(el_info.now_cost) / 10).toFixed(1);
             })
-            picks.forEach((i) => {
-                let cnt = picks.filter(j => j.element_type == i.element_type).filter(j => j.multiplier > 0).length;
-                if (i.multiplier > 0) {
-                    i.x = 122 / (cnt + 1) * pos_ctr[parseInt(i.element_type)] - 17;
-                    i.y = (parseInt(i.element_type) - 1) * 35 + 3;
-                    pos_ctr[parseInt(i.element_type)] += 1;
+            picks.forEach((player) => {
+                let data = player.data.meta_data;
+                let cnt = picks.filter(j => j.element_type == player.element_type).filter(j => j.multiplier > 0).length;
+                if (data.multiplier > 0) {
+                    player.x = 122 / (cnt + 1) * pos_ctr[parseInt(player.element_type)] - 17;
+                    player.y = (parseInt(player.element_type) - 1) * 35 + 3;
+                    pos_ctr[parseInt(player.element_type)] += 1;
                 } else {
-                    i.x = 122 / 5 * pos_ctr['B'] - 17;
+                    player.x = 122 / 5 * pos_ctr['B'] - 17;
                     pos_ctr['B'] += 1;
-                    i.y = 138.5;
+                    player.y = 138.5;
                 }
             })
+
+            picks.sort((a, b) => {
+                b.data.meta_data.is_lineup - a.data.meta_data.is_lineup || a.element_type - b.element_type || a.element - b.element;
+            })
+
             return picks;
+        },
+        team_info_summary() {
+            let team = this.team_data_with_metadata;
+            let team_info = {};
+            // let xp_data = grouped_xp_data;
+
+            // team_info.xp_gain = getSum(team.map(i => parseFloat(i.xp_gain)));
+            // team_info.xp_loss = 0;
+
+
+
+
+            return team_info
         }
     },
     methods: {
@@ -449,7 +528,7 @@ var app = new Vue({
             let average_realized = getSum(finished_players_final.map(i => i.rp * i.eo));
 
             // Now event update
-            if (event_type == "now") {
+            if (true) {
                 let copy_active_events = _.cloneDeep(active_events)
 
                 copy_active_events.forEach((g) => {
@@ -481,18 +560,19 @@ var app = new Vue({
                 let xp_loss_active = getSum(rest_active.map(i => i.xp * i.eo));
                 let rp_loss_active = getSum(rest_active.map(i => i.rp * i.eo));
 
-                xp_total += xp_total_active; // TODO: this should come from active events
-                rp_total += rp_total_active;
+                xp_total += xp_total_active;
                 xp_gain += xp_gain_active;
-                rp_gain += rp_gain_active;
                 xp_loss += xp_loss_active;
-                rp_loss += rp_loss_active;
                 xp_diff = xp_gain - xp_loss;
-                rp_diff = rp_gain - rp_loss;
-
                 average_expected += getSum(active_players_final.map(i => i.xp * i.eo));
-                average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
 
+                if (event_type == "now") {
+                    rp_total += rp_total_active;
+                    rp_gain += rp_gain_active;
+                    rp_loss += rp_loss_active;
+                    rp_diff = rp_gain - rp_loss;
+                    average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
+                }
             }
 
             return { xp_total: xp_total, rp_total: rp_total, xp_gain: xp_gain, rp_gain: rp_gain, xp_loss: xp_loss, rp_loss: rp_loss, xp_diff: xp_diff, rp_diff: rp_diff, avg_expected: average_expected, avg_realized: average_realized }
