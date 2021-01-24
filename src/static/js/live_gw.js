@@ -59,6 +59,7 @@ var app = new Vue({
         is_xp_ready() { return this.xp_data && this.xp_data.length != 0 },
         is_fixture_ready() { return this.gw_fixture && this.gw_fixture.length != 0 },
         is_el_ready() { return this.el_data && this.el_data.length != 0 },
+        is_ownership_ready() { return this.ownership_data && this.ownership_data.length != 0 },
         seasongwdate: {
             get: function() {
                 return this.season + " / " + this.gw + " / " + this.date;
@@ -107,6 +108,7 @@ var app = new Vue({
             if (this.gw_fixture.length == 0) { return {} }
             let fixture = this.gw_fixture;
             let gw_info = {};
+            debugger;
             gw_info.start_dt = fixture[0].start_dt;
             gw_info.end_dt = fixture[fixture.length - 1].end_dt;
             gw_info.channels = Math.max(...fixture.map(i => i.order));
@@ -121,6 +123,7 @@ var app = new Vue({
 
             if (!this.is_fixture_ready) { return []; }
             if (!this.is_xp_ready) { return []; }
+            if (!this.is_ownership_ready) { return []; }
 
             const xp_data = this.grouped_xp_data;
             const xp_by_id = Object.fromEntries(xp_data.map(i => [i.player_id, i]));
@@ -167,6 +170,11 @@ var app = new Vue({
                     }
 
                     let player_match = picks_by_id[e.id];
+
+                    if (ownership_vals[e.id] == undefined) {
+                        debugger;
+                    }
+
                     e.ownership = this.is_using_sample ? ownership_vals[e.id].effective_ownership / 100 : ownership_vals[e.id].selected_by_percent / 100;
                     e.multiplier = player_match ? player_match.multiplier : 0;
                     e.xp_net = (e.multiplier - e.ownership) * e.xp;
@@ -421,18 +429,25 @@ var app = new Vue({
         },
         saveFixtureData(data) {
 
-            let sorted_fixture = data.sort((a, b) => { return a.kickoff_time - b.kickoff_time });
 
-            sorted_fixture.forEach((game, index) => {
+            debugger;
+
+            data.forEach((game, index) => {
                 game.start_dt = new Date(game.kickoff_time);
                 game.end_dt = new Date(game.start_dt.getTime() + (105 * 60 * 1000));
+                game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
+            })
+
+            data.sort((a, b) => { return a.node_info.start - b.node_info.start });
+
+            data.forEach((game, index) => {
                 game.duration = 105 * 60 * 1000;
                 game.team_h_name = teams_ordered[game.team_h - 1].name;
                 game.team_a_name = teams_ordered[game.team_a - 1].name;
                 game.label = teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
-                game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
+                // game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
                 let order = 0;
-                sorted_fixture.slice(0, index).forEach((game2) => {
+                data.slice(0, index).forEach((game2) => {
                     if ((game.start_dt >= game2.start_dt && game.start_dt <= game2.end_dt) ||
                         (game.end_dt >= game2.start_dt && game.end_dt <= game2.end_dt)) {
                         if (game2.order == order) {
@@ -442,10 +457,10 @@ var app = new Vue({
                 })
                 game.order = order;
             })
-            this.gw_fixture = sorted_fixture;
+            this.gw_fixture = data;
 
-            let start_dt = sorted_fixture[0].start_dt;
-            let end_dt = sorted_fixture[sorted_fixture.length - 1].end_dt;
+            let start_dt = data[0].start_dt;
+            let end_dt = data[data.length - 1].end_dt;
 
             if (new Date(this.now_dt) > end_dt) {
                 this.now_dt = modify_time(end_dt.getTime(), 2);
