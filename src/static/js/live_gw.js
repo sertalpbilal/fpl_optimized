@@ -108,7 +108,6 @@ var app = new Vue({
             if (this.gw_fixture.length == 0) { return {} }
             let fixture = this.gw_fixture;
             let gw_info = {};
-            debugger;
             gw_info.start_dt = fixture[0].start_dt;
             gw_info.end_dt = fixture[fixture.length - 1].end_dt;
             gw_info.channels = Math.max(...fixture.map(i => i.order));
@@ -170,11 +169,6 @@ var app = new Vue({
                     }
 
                     let player_match = picks_by_id[e.id];
-
-                    if (ownership_vals[e.id] == undefined) {
-                        debugger;
-                    }
-
                     e.ownership = this.is_using_sample ? ownership_vals[e.id].effective_ownership / 100 : ownership_vals[e.id].selected_by_percent / 100;
                     e.multiplier = player_match ? player_match.multiplier : 0;
                     e.xp_net = (e.multiplier - e.ownership) * e.xp;
@@ -428,9 +422,6 @@ var app = new Vue({
             this.rp_data = values;
         },
         saveFixtureData(data) {
-
-
-            debugger;
 
             data.forEach((game, index) => {
                 game.start_dt = new Date(game.kickoff_time);
