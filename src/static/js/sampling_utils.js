@@ -1,8 +1,23 @@
 let compactFormatter = Intl.NumberFormat('en', { notation: 'compact' });
 
 function sample_compact_number(value) {
-    let new_value = compactFormatter.format(value);
-    return new_value !== "NaN" ? ("Top " + new_value) : value;
+    switch (value) {
+        case "Overall":
+            return "Overall";
+        case "100":
+            return "Top 100";
+        case "1000":
+            return "Top 1K";
+        case "10000":
+            return "Top 10K";
+        case "100000":
+            return "Top 100K";
+        case "1000000":
+            return "Top 1M";
+        default:
+            let new_value = compactFormatter.format(value);
+            return new_value !== "NaN" ? ("Top " + new_value) : value;
+    }
 }
 
 function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
