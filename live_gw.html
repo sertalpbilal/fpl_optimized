@@ -822,7 +822,7 @@
 
 
 <div class="modal" tabindex="-1" role="dialog" id="editTeamModal">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Team</h5>
@@ -845,7 +845,7 @@
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0 modal-metric-title">xP Net</div>
                                 <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
-                                    {{ getSum(element_data_list.map(i=>i.meta_data.xp_net)).toFixed(2) }}
+                                    {{ getSum(element_data_list.map(i=>i.xp_net)).toFixed(2) }}
                                 </div>
                             </div>
                         </div>
@@ -853,7 +853,7 @@
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0 modal-metric-title">xP Gain</div>
                                 <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
-                                    {{ getWithSign(getSum(element_data_list.filter(i => i.meta_data.multiplier > 0).map(i => i.meta_data.xp_gain))) }}
+                                    {{ getWithSign(getSum(element_data_list.filter(i => i.multiplier > 0).map(i => i.xp_gain))) }}
                                 </div>
                             </div>
                         </div>
@@ -861,7 +861,7 @@
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0 modal-metric-title">xP Loss</div>
                                 <div class="modal-metric text-center p-0 d-flex flex-row justify-content-center text-small">
-                                    {{ getWithSign(-getSum(element_data_list.filter(i => i.meta_data.multiplier == 0).map(i => i.meta_data.xp_loss))) }}
+                                    {{ getWithSign(-getSum(element_data_list.filter(i => i.multiplier == 0).map(i => i.xp_loss))) }}
                                 </div>
                             </div>
                         </div>
@@ -869,16 +869,13 @@
                     </div>
                 </div>
                 <div v-if="is_ready">
-                    <!-- <th class="text-muted">ID</th> -->
-                    <!-- <td class="text-muted">{{ i.element }}</td> -->
-                    <!-- <th class="text-center">Mult</th> -->
-                    <!-- <td class="text-center">{{i.multiplier}}</td> -->
                     <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th>Name</th>
                                 <th>Pos</th>
+                                <th class="text-right">BV</th>
                                 <th class="text-right">xP</th>
                                 <th class="text-right">Own%</th>
                                 <th class="text-right">xP Gain</th>
@@ -893,7 +890,7 @@
                                 <td :class="{'captain_color': i.is_captain }">{{ i.is_captain ? (i.multiplier == 3 ? "TC" : "C") : (i.multiplier > 0 ? "L" : "B") }}</td>
                                 <td>{{ i.name }}</td>
                                 <td>{{element_type[i.element_type].short}}</td>
-
+                                <td class="text-right">{{ i.now_cost_str }}</td>
                                 <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
                                 <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
                                 <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_gain,1)}}</td>
@@ -910,23 +907,50 @@
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="transferOut">
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="tagForTransfer">
                                         <i class="fas fa-exchange-alt" aria-hidden="true"></i>
                                     </button>
                                 </td>
-                                <!-- <td :class="{'captain_color': is_using_captain && i[1].captain }">{{ is_using_captain ? (i[1].captain? (i[1].multiplier == 3 ? "TC" : "C") : "L") : "L" }}</td>
-                                <td><span class="clickable_username" @click="openPlayerDetails" :data-id="i[1].player_id">{{ i[1].web_name }}</span></td>
-                                <td>{{ element_type[i[1].element_type]['short'] }}</td>
-                                <td class="text-right">{{ rounded(i[1].points_md) }}{{ is_using_captain && i[1].multiplier > 1 ? " (x" + i[1].multiplier + ")": "" }}</td>
-                                <template>
-                                    <td class="text-right" style="color: orange" v-if="is_using_captain && i[1].captain">{{ getWithSign(i[1].xp_owned_captain ) }}</td>
-                                    <td class="text-right" style="color: #acc3c5" v-else>{{ getWithSign(i[1].xp_owned) }}</td>
-                                </template>
-                                <td class="text-right text-muted">{{ getWithSign(i[1].xp_non_owned) }}</td>
-                                <td class="text-right">{{ parseFloat(i[1].ownership).toFixed(1) }}</td> -->
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div v-if="is_ready && target_player !== undefined" class="mt-3">
+                    <div class="text-small text-black">
+                        Choose a player below to swap with {{ target_player.name }}
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped table-hover text-small" id="all_players_table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Pos</th>
+                                    <th class="text-right">BV</th>
+                                    <th class="text-right">xP</th>
+                                    <th class="text-right">Own%</th>
+                                    <th class="text-right">xP Gain</th>
+                                    <th class="text-right">xP Loss</th>
+                                    <th class="text-center">TI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="i in potential_targets" v-if="!i.is_squad">
+                                    <td>{{ i.name }}</td>
+                                    <td>{{element_type[i.element_type].short}}</td>
+                                    <td class="text-right">{{ i.now_cost_str }}</td>
+                                    <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
+                                    <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
+                                    <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_gain,1)}}</td>
+                                    <td class="text-right" :class="{'text-muted': i.multiplier > 0}">{{getWithSign(-i.xp_loss,1)}}</td>
+                                    <td class="text-center">
+                                        <button class="button btn-sm btn-xsm" :data-id="i.id" @click="performSwap">
+                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                                    </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1050,7 +1074,7 @@
     let gw = "GW20";
     let next_gw = "GW20";
     let date = "2021-01-24";
-    let lastupdate = "2021-01-24T15:07:03.017100+00:00";
+    let lastupdate = "2021-01-24T15:59:20.774261+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-24 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1079,6 +1103,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T15:07:03.017100+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-24T15:59:20.774261+00:00</div>
 
 </html> 
