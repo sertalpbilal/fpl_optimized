@@ -25,7 +25,7 @@ var app = new Vue({
         // selected_game: undefined
         modal_selected_game: undefined,
         game_table: undefined,
-        target_element_type: undefined
+        target_player: undefined
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -306,17 +306,18 @@ var app = new Vue({
                     n.el_data = el_by_id[e];
                     n.rp_data = rp_by_id[e];
                     n.own_data = own_by_id[e];
-                    n.meta_data = {};
-                    n.meta_data.name = n.el_data.web_name;
-                    let points_md = n.meta_data.xp = parseFloat(n.xp_data.points_md);
-                    let is_squad = n.meta_data.is_squad = team_ids.includes(e);
-                    let multiplier = n.meta_data.multiplier = is_squad ? picks.find(i => i.element == e).multiplier : 0;
-                    n.meta_data.is_lineup = multiplier > 0;
-                    let ownership = n.meta_data.ownership = this.is_using_sample ? n.own_data.effective_ownership : parseFloat(n.own_data.selected_by_percent);
-                    n.meta_data.xp_gain = points_md * (Math.max(multiplier, 1) - ownership / 100);
-                    n.meta_data.xp_loss = points_md * ownership / 100;
-                    n.meta_data.xp_net = points_md * (multiplier - ownership / 100);
-                    n.meta_data.element_type = n.el_data.element_type;
+                    n.name = n.el_data.web_name;
+                    let points_md = n.xp = parseFloat(n.xp_data.points_md);
+                    let is_squad = n.is_squad = team_ids.includes(e);
+                    let multiplier = n.multiplier = is_squad ? picks.find(i => i.element == e).multiplier : 0;
+                    n.is_lineup = multiplier > 0;
+                    let ownership = n.ownership = this.is_using_sample ? n.own_data.effective_ownership : parseFloat(n.own_data.selected_by_percent);
+                    n.xp_gain = points_md * (Math.max(multiplier, 1) - ownership / 100);
+                    n.xp_loss = points_md * ownership / 100;
+                    n.xp_net = points_md * (multiplier - ownership / 100);
+                    n.element_type = parseInt(n.el_data.element_type);
+                    n.team = team_codes[parseInt(n.el_data.team_code)];
+                    n.now_cost_str = (parseFloat(n.el_data.now_cost) / 10).toFixed(1);
                     n.id = e;
                     new_element_data[e] = n;
                 } catch {
@@ -334,7 +335,7 @@ var app = new Vue({
         other_elements() {
             if (!this.is_ready) { return {}; }
             if (!this.is_el_ready) { return {}; }
-            return new_element_data.filter(i => i.meta_data.is_squad == false);
+            return new_element_data.filter(i => i.is_squad == false);
         },
         team_data_with_metadata() {
             if (!this.is_ready) { return []; }
@@ -347,13 +348,12 @@ var app = new Vue({
             picks.forEach((e) => {
                 e.data = el_data_combined[e.element];
                 let el_info = e.data.el_data;
-                Object.assign(e, e.data.meta_data);
-                e.team = team_codes[el_info.team_code];
-                e.now_cost_str = (parseFloat(el_info.now_cost) / 10).toFixed(1);
+                Object.assign(e, e.data);
             })
             picks.forEach((player) => {
-                let data = player.data.meta_data;
-                let cnt = picks.filter(j => j.element_type == player.element_type).filter(j => j.multiplier > 0).length;
+                debugger;
+                let data = player.data;
+                let cnt = picks.filter(j => j.element_type == data.element_type).filter(j => j.multiplier > 0).length;
                 if (data.multiplier > 0) {
                     player.x = 122 / (cnt + 1) * pos_ctr[parseInt(player.element_type)] - 17;
                     player.y = (parseInt(player.element_type) - 1) * 35 + 3;
@@ -376,6 +376,15 @@ var app = new Vue({
             })
 
             return picks;
+        },
+        potential_targets() {
+            if (this.target_player == undefined) { return []; }
+            let els = _.cloneDeep(this.element_data_list);
+            els = els.filter(i => i.element_type == this.target_player.element_type);
+            els.sort((a, b) => {
+                return b.xp - a.xp;
+            })
+            return els;
         }
     },
     methods: {
@@ -607,10 +616,39 @@ var app = new Vue({
                 this_player.multiplier = 1;
             }
         },
-        transferOut(e) {
+        tagForTransfer(e) {
             let id = e.currentTarget.dataset.id;
-            let el_type = this.el_by_id[id].element_type;
-            debugger;
+            $("#all_players_table").DataTable().destroy();
+            if (this.target_player !== undefined) {
+                let current_selected = this.target_player.id;
+                if (current_selected == id) {
+                    this.target_player = undefined;
+                }
+            } else {
+                this.target_player = this.element_data_combined[parseInt(id)];
+
+                this.$nextTick(() => {
+                    $("#all_players_table").DataTable({
+                        "order": [],
+                        "lengthChange": false,
+                        "pageLength": window.screen.width <= 768 ? 5 : 15,
+                        columnDefs: [
+                            { orderable: false, targets: 1 }
+                        ],
+                    });
+                });
+            }
+        },
+        performSwap(e) {
+            let id = e.currentTarget.dataset.id;
+            $("#all_players_table").DataTable().destroy();
+            this.$nextTick(() => {
+                this.target_player = undefined;
+            })
+            let current_player = this.team_data.picks.find(i => i.element == this.target_player.id);
+            if (current_player !== undefined) {
+                current_player.element = parseInt(id);
+            }
         }
     },
 })
