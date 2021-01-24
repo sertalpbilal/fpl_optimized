@@ -351,7 +351,6 @@ var app = new Vue({
                 Object.assign(e, e.data);
             })
             picks.forEach((player) => {
-                debugger;
                 let data = player.data;
                 let cnt = picks.filter(j => j.element_type == data.element_type).filter(j => j.multiplier > 0).length;
                 if (data.multiplier > 0) {
