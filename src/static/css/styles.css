@@ -774,3 +774,11 @@ button.btn.btn-sm.zoomButton {
 #all_players_table_wrapper label {
     color: black;
 }
+
+#editModalTable .selected-transfer {
+    background-color: #ffe193;
+}
+
+#editModalTable .selected-transfer-button {
+    background-color: #e2ffa3;
+}
