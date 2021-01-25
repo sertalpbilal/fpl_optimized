@@ -153,6 +153,7 @@ var app = new Vue({
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
+                    e.data = this.element_data_combined[e.id];
 
                     if (this.is_rp_ready) {
                         let find = rp_by_id[e.id].explain.find(i => i.fixture == game.id);
@@ -626,14 +627,15 @@ var app = new Vue({
         tagForTransfer(e) {
             let id = e.currentTarget.dataset.id;
             $("#all_players_table").DataTable().destroy();
-            if (this.target_player !== undefined) {
-                let current_selected = this.target_player.id;
-                if (current_selected == id) {
-                    this.target_player = undefined;
+            this.$nextTick(() => {
+                if (this.target_player !== undefined) {
+                    let current_selected = this.target_player.id;
+                    if (current_selected == id) {
+                        this.target_player = undefined;
+                        return;
+                    }
                 }
-            } else {
                 this.target_player = this.element_data_combined[parseInt(id)];
-
                 this.$nextTick(() => {
                     $("#all_players_table").DataTable({
                         "order": [],
@@ -644,7 +646,9 @@ var app = new Vue({
                         ],
                     });
                 });
-            }
+
+            });
+
         },
         performSwap(e) {
             let id = e.currentTarget.dataset.id;
@@ -1351,5 +1355,20 @@ $(document).ready(function() {
     app_initialize();
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
-    })
+    });
+    $("#matchReportModal").on('hide.bs.modal', (e) => {
+        $("#match_report_all").DataTable().destroy();
+        app.modal_selected_game = undefined;
+    });
+    $("#matchReportModal").on('shown.bs.modal', (e) => {
+        app.$nextTick(() => {
+            $("#match_report_all").DataTable({
+                "order": [
+                    [5, 'desc']
+                ],
+                "lengthChange": false,
+                "pageLength": window.screen.width <= 768 ? 5 : 15
+            });
+        });
+    });
 });
