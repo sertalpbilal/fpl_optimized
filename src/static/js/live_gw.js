@@ -638,7 +638,9 @@ var app = new Vue({
                 this.target_player = this.element_data_combined[parseInt(id)];
                 this.$nextTick(() => {
                     $("#all_players_table").DataTable({
-                        "order": [],
+                        "order": [
+                            [3, 'desc']
+                        ],
                         "lengthChange": false,
                         "pageLength": window.screen.width <= 768 ? 5 : 15,
                         columnDefs: [
