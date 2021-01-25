@@ -756,7 +756,7 @@ function init_timeline() {
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
         .attr('class', 'pull-center active-graph')
         .style('display', 'block')
-        .style('min-width', '700px')
+        .style('min-width', '300px')
         .style('padding-bottom', '10px');
 
     let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -1057,6 +1057,17 @@ function draw_user_graph(options = {}) {
         .text("Date/Time");
 
     svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
+
+
+    svg.append('g')
+        .append('line')
+        .attr('x1', x(x_low))
+        .attr('y1', y(0))
+        .attr('x2', x(x_high))
+        .attr('y2', y(0))
+        .style('stroke', '#4c0000')
+        .style("stroke-opacity", 0.4)
+        .style("stroke-width", 1);
 
     let right_now = new Date(app.now_dt);
     let now_time = right_now.getTime();
