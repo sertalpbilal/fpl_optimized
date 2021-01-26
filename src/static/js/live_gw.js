@@ -54,6 +54,7 @@ var app = new Vue({
     },
     computed: {
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
+        is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_rp_ready() { return this.rp_data && this.rp_data.length != 0 },
         is_xp_ready() { return this.xp_data && this.xp_data.length != 0 },
@@ -69,7 +70,9 @@ var app = new Vue({
                 this.season = v[0];
                 this.gw = v[1];
                 this.date = v[2];
-                app_initialize();
+                this.$nextTick(() => {
+                    app_initialize();
+                })
             }
         },
         is_using_sample() {
@@ -120,6 +123,7 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
+
             if (!this.is_fixture_ready) { return []; }
             if (!this.is_xp_ready) { return []; }
             if (!this.is_ownership_ready) { return []; }
@@ -129,6 +133,8 @@ var app = new Vue({
             const rp_by_id = this.rp_by_id;
             let el_by_id = this.el_by_id;
             const team_data = this.team_data;
+            const el_complete = this.element_data_combined;
+            const rp_ready = this.is_rp_ready;
 
             const fixture_data = this.gw_fixture;
             const ownership_vals = this.ownership_by_id;
@@ -142,6 +148,7 @@ var app = new Vue({
             let picks_by_id = Object.fromEntries(picks.map(i => [i.element, i]));
             let cloned_fixture = _.cloneDeep(fixture_data);
 
+
             // TODO: Assign expected totals and realized totals to every game
             cloned_fixture.forEach((game) => {
                 game.game_string = this.game_label(game);
@@ -153,9 +160,9 @@ var app = new Vue({
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
-                    e.data = this.element_data_combined[e.id];
+                    e.data = el_complete[e.id];
 
-                    if (this.is_rp_ready) {
+                    if (rp_ready) {
                         let find = rp_by_id[e.id].explain.find(i => i.fixture == game.id);
                         if (find == undefined) {
                             e.rp_detail = [];
@@ -178,19 +185,28 @@ var app = new Vue({
                     e.eo_nonowned = e.ownership;
                 })
                 game.player_details = player_with_data;
+                let split_players = _.groupBy(game.player_details, (e) => e.multiplier > 0);
+                let owned_players = split_players[true] || [];
+                let nonowned_players = split_players[false] || [];
+
                 game.xp_sum = getSum(game.player_details.map(i => i.xp));
                 game.rp_sum = getSum(game.player_details.map(i => i.rp));
-                game.xp_team_gain = getSum(game.player_details.filter(i => i.multiplier > 0).map(i => i.xp_net));
-                game.xp_team_loss = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.xp_net));
-                game.rp_team_gain = getSum(game.player_details.filter(i => i.multiplier > 0).map(i => i.rp_net));
-                game.rp_team_loss = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.rp_net));
+
+                game.xp_team_gain = getSum(owned_players.map(i => i.xp_net));
+                game.xp_team_loss = getSum(nonowned_players.map(i => i.xp_net));
+                game.rp_team_gain = getSum(owned_players.map(i => i.rp_net));
+                game.rp_team_loss = getSum(nonowned_players.map(i => i.rp_net));
+
                 game.players_owned = getSum(game.player_details.map(i => i.multiplier));
-                game.players_nonowned = game.player_details.filter(i => i.multiplier == 0).length;
-                game.players_owned_eo = getSum(game.player_details.filter(i => i.multiplier > 0).map(i => i.eo_owned));
-                game.players_nonowned_eo = getSum(game.player_details.filter(i => i.multiplier == 0).map(i => i.eo_nonowned));
+                game.players_nonowned = nonowned_players.length;
+                game.players_owned_eo = getSum(owned_players.map(i => i.eo_owned));
+                game.players_nonowned_eo = getSum(nonowned_players.map(i => i.eo_nonowned));
+
                 game.xp_team_net = game.xp_team_gain + game.xp_team_loss;
                 game.rp_team_net = game.rp_team_gain + game.rp_team_loss;
+
             })
+
 
             cloned_fixture.forEach((game_info) => {
                 game_info.data = {};
@@ -204,6 +220,7 @@ var app = new Vue({
                 game_info.player_details.sort((a, b) => { return b.rp - a.rp || b.xp - a.xp });
                 game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
             })
+
 
 
             return cloned_fixture;
@@ -476,19 +493,31 @@ var app = new Vue({
             }
         },
         selectLeagueTeam() {
+            $("#teamModal").modal('hide');
+            $("#waitModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
             this.team_id = $("#fpl_analytics_league_select").val();
             if (this.team_id == "") { return; }
             this.$nextTick(() => {
-                $("#teamModal").modal('hide');
-                load_team_data();
+                load_team_data().then(() => {
+                    $("#waitModal").modal('hide');
+                });
             })
         },
         saveTeamId() {
+            $("#teamModal").modal('hide');
+            $("#waitModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
                 $("#fpl_analytics_league_select").val("");
-                $("#teamModal").modal('hide');
-                load_team_data();
+                load_team_data().then(() => {
+                    $("#waitModal").modal('hide');
+                });
             })
         },
         game_label(game) {
@@ -669,11 +698,6 @@ var app = new Vue({
 async function load_team_data() {
 
     if (app.team_id == -1) { return; }
-
-    $("#waitModal").modal({
-        backdrop: 'static',
-        keyboard: false
-    }).modal('show');
 
     await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
@@ -970,207 +994,213 @@ function init_timeline() {
 
 }
 
-function draw_user_graph(options = {}) {
-    // graph-wrapper-points
+async function draw_user_graph(options = {}) {
 
-    if (!app.is_ready) { return; }
+    return new Promise((resolve, reject) => {
 
-    let graph_id = "graph-" + options.stat;
-    target_stat[graph_id] = options.stat;
+        // graph-wrapper-points
 
-    var margin = { top: 25, right: 5, bottom: 20, left: 15 },
-        width = 250 - margin.left - margin.right,
-        height = 180 - margin.top - margin.bottom;
+        if (!app.is_ready) { resolve("Not ready"); }
 
-    let cnv = d3.select(options.target)
-        .append("svg")
-        .attr("id", graph_id)
-        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
-        .attr('class', 'pull-center active-graph')
-        .style('display', 'block')
-        .style('padding-bottom', '10px');
+        let graph_id = "graph-" + options.stat;
+        target_stat[graph_id] = options.stat;
 
-    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
+        var margin = { top: 25, right: 5, bottom: 20, left: 15 },
+            width = 250 - margin.left - margin.right,
+            height = 180 - margin.top - margin.bottom;
 
-    // Min max values
-    let data = app.get_graph_checkpoints;
-    if (data.length == 0) { return; }
+        let cnv = d3.select(options.target)
+            .append("svg")
+            .attr("id", graph_id)
+            .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+            .attr('class', 'pull-center active-graph')
+            .style('display', 'block')
+            .style('padding-bottom', '10px');
 
-    let x_high = data[data.length - 1].time;
-    let x_low = data[0].time;
+        let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
-    let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat]))) + 5;
-    let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+        // Min max values
+        let data = app.get_graph_checkpoints;
+        if (data.length == 0) { resolve("No data"); }
 
-    if (options.stat == "points") {
-        let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized))) + 5;
-        let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
-        y_high = Math.max(y_high, y_avg_high);
-        y_low = Math.min(y_low, y_avg_low);
-    }
+        let x_high = data[data.length - 1].time;
+        let x_low = data[0].time;
 
-    let x_ticks = [];
-    let start_midnight = new Date(app.gameweek_info.start_dt.getTime());
-    start_midnight.setHours(24, 0, 0, 0);
-    for (let i = start_midnight.getTime(); i <= x_high; i += 24 * 60 * 60 * 1000) {
-        x_ticks.push(i)
-    }
+        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat]))) + 5;
+        let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
 
+        if (options.stat == "points") {
+            let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized))) + 5;
+            let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
+            y_high = Math.max(y_high, y_avg_high);
+            y_low = Math.min(y_low, y_avg_low);
+        }
 
-    // Axis-x
-    var x = d3.scaleLinear().domain([x_low, x_high]).range([0, width]);
-    svg.append('g')
-        // .attr('transform', 'translate(0,' + height + ')')
-        .call(
-            d3.axisBottom(x).tickValues(x_ticks)
-            .tickFormat(function(d, i) {
-                return new Date(d).toLocaleDateString();
-            })
-            .tickSize(height)
-        );
-
-    axis_functions[graph_id] = {};
-    axis_functions[graph_id].x = x;
-
-    // Axis -y
-    // var y = d3.scaleBand().domain(vals.map(i => i.order)).range([height, 0]).paddingInner(0.1).paddingOuter(0.05);
-    // svg.append('g').call(d3.axisLeft(y).tickSize(0).tickValues([]));
-
-    var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
-    svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisLeft(y).tickSize(width));
-
-    axis_functions[graph_id].y = y;
-
-    svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
-        .call(g => g.selectAll(".tick line")
-            .attr("stroke-dasharray", "4,2")
-            .attr("stroke", "#f1f1f1")
-            .attr("stroke-width", 0.5)
-            .attr("opacity", 0.1)
-            .style('pointer-events', 'none'))
-        .call(g => g.selectAll(".domain")
-            .attr("opacity", 0));
-
-    // Title - x
-    svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("x", width / 2)
-        .attr("y", height + 17)
-        .attr("font-size", "4pt")
-        .attr("fill", "white")
-        .text("Date/Time");
-
-    svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
+        let x_ticks = [];
+        let start_midnight = new Date(app.gameweek_info.start_dt.getTime());
+        start_midnight.setHours(24, 0, 0, 0);
+        for (let i = start_midnight.getTime(); i <= x_high; i += 24 * 60 * 60 * 1000) {
+            x_ticks.push(i)
+        }
 
 
-    svg.append('g')
-        .append('line')
-        .attr('x1', x(x_low))
-        .attr('y1', y(0))
-        .attr('x2', x(x_high))
-        .attr('y2', y(0))
-        .style('stroke', '#4c0000')
-        .style("stroke-opacity", 0.4)
-        .style("stroke-width", 1);
+        // Axis-x
+        var x = d3.scaleLinear().domain([x_low, x_high]).range([0, width]);
+        svg.append('g')
+            // .attr('transform', 'translate(0,' + height + ')')
+            .call(
+                d3.axisBottom(x).tickValues(x_ticks)
+                .tickFormat(function(d, i) {
+                    return new Date(d).toLocaleDateString();
+                })
+                .tickSize(height)
+            );
 
-    let right_now = new Date(app.now_dt);
-    let now_time = right_now.getTime();
+        axis_functions[graph_id] = {};
+        axis_functions[graph_id].x = x;
 
-    // Now line
-    let now_group = svg.append('g');
-    now_group
-        .append('line')
-        .attr('id', 'now')
-        .attr("pointer-events", "none")
-        .attr('x1', x(now_time))
-        .attr('y1', y(y_low))
-        .attr('x2', x(now_time))
-        .attr('y2', y(y_high))
-        .style('stroke', '#60ffc9')
-        .style("stroke-dasharray", "2,0.5")
-        .style("opacity", 0.3)
-        .style("stroke-width", 1)
-        .style("stroke-opacity", 0.7);
+        // Axis -y
+        // var y = d3.scaleBand().domain(vals.map(i => i.order)).range([height, 0]).paddingInner(0.1).paddingOuter(0.05);
+        // svg.append('g').call(d3.axisLeft(y).tickSize(0).tickValues([]));
 
-    now_group.append('text')
-        .attr("text-anchor", "middle")
-        .attr("x", x(now_time))
-        .attr("y", -6)
-        .attr("font-size", "3pt")
-        .attr("fill", "white")
-        .text("Now");
+        var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
+        svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisLeft(y).tickSize(width));
 
-    svg.append('text')
-        .attr("text-anchor", "middle")
-        .attr("x", width / 2)
-        .attr("y", -15)
-        .attr("font-size", "5pt")
-        .attr("fill", "white")
-        .text(options.title);
+        axis_functions[graph_id].y = y;
 
-    svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
-    svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
-    svg.on('mouseleave.foo', (e) => { synced_leave() });
+        svg.call(g => g.selectAll(".tick text")
+                .attr("fill", "white"))
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke-dasharray", "4,2")
+                .attr("stroke", "#f1f1f1")
+                .attr("stroke-width", 0.5)
+                .attr("opacity", 0.1)
+                .style('pointer-events', 'none'))
+            .call(g => g.selectAll(".domain")
+                .attr("opacity", 0));
 
-    // expected values line
+        // Title - x
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height + 17)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text("Date/Time");
 
-    svg.append('path')
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "#dbf7b4")
-        .attr("stroke-opacity", 0.8)
-        .style("stroke-dasharray", "2,0.5")
-        .attr("stroke-width", 1)
-        .attr("d", d3.line()
-            .x((d) => x(d.time))
-            .y((d) => y(d.expected[options.stat]))
-        );
+        svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
 
-    let realized_data = _.cloneDeep(data)
-    const now_index = realized_data.findIndex(i => i.reason == "now")
-    realized_data = realized_data.slice(0, now_index + 1);
 
-    // realized values line
+        svg.append('g')
+            .append('line')
+            .attr('x1', x(x_low))
+            .attr('y1', y(0))
+            .attr('x2', x(x_high))
+            .attr('y2', y(0))
+            .style('stroke', '#4c0000')
+            .style("stroke-opacity", 0.4)
+            .style("stroke-width", 1);
 
-    svg.append('path')
-        .datum(realized_data)
-        .attr("fill", "none")
-        .attr("stroke", "#6fcfd6")
-        .attr("stroke-opacity", 0.8)
-        .attr("stroke-width", 1)
-        .attr("d", d3.line()
-            .x((d) => x(d.time))
-            .y((d) => y(d.realized[options.stat]))
-        );
+        let right_now = new Date(app.now_dt);
+        let now_time = right_now.getTime();
 
-    if (options.stat == "points") {
+        // Now line
+        let now_group = svg.append('g');
+        now_group
+            .append('line')
+            .attr('id', 'now')
+            .attr("pointer-events", "none")
+            .attr('x1', x(now_time))
+            .attr('y1', y(y_low))
+            .attr('x2', x(now_time))
+            .attr('y2', y(y_high))
+            .style('stroke', '#60ffc9')
+            .style("stroke-dasharray", "2,0.5")
+            .style("opacity", 0.3)
+            .style("stroke-width", 1)
+            .style("stroke-opacity", 0.7);
+
+        now_group.append('text')
+            .attr("text-anchor", "middle")
+            .attr("x", x(now_time))
+            .attr("y", -6)
+            .attr("font-size", "3pt")
+            .attr("fill", "white")
+            .text("Now");
+
+        svg.append('text')
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", -15)
+            .attr("font-size", "5pt")
+            .attr("fill", "white")
+            .text(options.title);
+
+        svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
+        svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
+        svg.on('mouseleave.foo', (e) => { synced_leave() });
+
+        // expected values line
 
         svg.append('path')
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", "#ffc356")
+            .attr("stroke", "#dbf7b4")
             .attr("stroke-opacity", 0.8)
             .style("stroke-dasharray", "2,0.5")
             .attr("stroke-width", 1)
             .attr("d", d3.line()
                 .x((d) => x(d.time))
-                .y((d) => y(d.average.expected))
+                .y((d) => y(d.expected[options.stat]))
             );
+
+        let realized_data = _.cloneDeep(data)
+        const now_index = realized_data.findIndex(i => i.reason == "now")
+        realized_data = realized_data.slice(0, now_index + 1);
+
+        // realized values line
 
         svg.append('path')
             .datum(realized_data)
             .attr("fill", "none")
-            .attr("stroke", "#de6363")
+            .attr("stroke", "#6fcfd6")
             .attr("stroke-opacity", 0.8)
             .attr("stroke-width", 1)
             .attr("d", d3.line()
                 .x((d) => x(d.time))
-                .y((d) => y(d.average.realized))
+                .y((d) => y(d.realized[options.stat]))
             );
-    }
-    reset_graph_values();
+
+        if (options.stat == "points") {
+
+            svg.append('path')
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "#ffc356")
+                .attr("stroke-opacity", 0.8)
+                .style("stroke-dasharray", "2,0.5")
+                .attr("stroke-width", 1)
+                .attr("d", d3.line()
+                    .x((d) => x(d.time))
+                    .y((d) => y(d.average.expected))
+                );
+
+            svg.append('path')
+                .datum(realized_data)
+                .attr("fill", "none")
+                .attr("stroke", "#de6363")
+                .attr("stroke-opacity", 0.8)
+                .attr("stroke-width", 1)
+                .attr("d", d3.line()
+                    .x((d) => x(d.time))
+                    .y((d) => y(d.average.realized))
+                );
+        }
+        reset_graph_values();
+
+        resolve("Done");
+    })
 }
 
 function reset_graph_values() {
@@ -1311,6 +1341,9 @@ function refreshFixtureData() {
 }
 
 function refresh_all_graphs() {
+
+    if (!app.is_all_ready) { return; }
+
     $("#waitModal").modal({
         backdrop: 'static',
         keyboard: false
@@ -1318,11 +1351,15 @@ function refresh_all_graphs() {
     $(".svg-wrapper").empty();
     app.$nextTick(() => {
         init_timeline();
-        draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" });
-        draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" });
-        draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" });
-        draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" });
-        $("#waitModal").modal('hide');
+        Promise.all([
+            draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" }),
+            draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" }),
+            draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" }),
+            draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" })
+        ]).then((values) => {
+            $("#waitModal").modal('hide');
+        });
+
     });
 }
 
@@ -1335,22 +1372,29 @@ async function app_initialize(refresh_team = false) {
 
     app.initEmptyData();
 
-    Promise.all([
-            load_fixture_data(),
-            load_element_data(),
-            load_xp_data(),
-            load_rp_data(),
-            load_sample_data(),
-            load_team_data()
-        ]).then((values) => {
-            $(".svg-wrapper").empty()
-            refresh_all_graphs();
-            $("#updateModal").modal('hide');
-        })
-        .catch((error) => {
-            console.error("An error has occured: " + error);
-            $("#updateModal").modal('hide');
-        })
+    setTimeout(() => {
+        Promise.all([
+                load_fixture_data(),
+                load_element_data(),
+                load_xp_data(),
+                load_rp_data(),
+                load_sample_data(),
+                load_team_data()
+            ]).then((values) => {
+                // $(".svg-wrapper").empty();
+                $("#updateModal").modal('hide');
+                // setTimeout(() => {
+                //     refresh_all_graphs();
+                // }, 50);
+
+            })
+            .catch((error) => {
+                console.error("An error has occured: " + error);
+                $("#updateModal").modal('hide');
+            })
+    }, 50);
+
+
 }
 
 $(document).ready(function() {

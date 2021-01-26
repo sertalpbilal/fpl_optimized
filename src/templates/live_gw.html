@@ -751,7 +751,7 @@
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.home.concat(selected_game_info.players.away)" v-if="i.xp > 0 || i.rp > 0 || i.ownership > 0">
                                     <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
-                                    <td>{{ i.data.team.short }}</td>
+                                    <td>{{ i.team }}</td>
                                     <td>{{ i.data.element_type }}</td>
                                     <td>{{ i.data.now_cost_str }}</td>
                                     <td>{{ (i.data.ownership).toFixed(1) }}</td>
