@@ -824,7 +824,7 @@
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.home.concat(selected_game_info.players.away)" v-if="i.xp > 0 || i.rp > 0 || i.ownership > 0">
                                     <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
-                                    <td>{{ i.data.team.short }}</td>
+                                    <td>{{ i.team }}</td>
                                     <td>{{ i.data.element_type }}</td>
                                     <td>{{ i.data.now_cost_str }}</td>
                                     <td>{{ (i.data.ownership).toFixed(1) }}</td>
@@ -1132,7 +1132,7 @@
     let gw = "GW20";
     let next_gw = "GW20";
     let date = "2021-01-25";
-    let lastupdate = "2021-01-25T22:19:44.956167+00:00";
+    let lastupdate = "2021-01-26T03:51:00.052987+00:00";
     let listdates = [
         "2020-21 / GW20 / 2021-01-25 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
@@ -1161,6 +1161,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-25T22:19:44.956167+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-26T03:51:00.052987+00:00</div>
 
 </html> 
