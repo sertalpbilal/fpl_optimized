@@ -20,6 +20,25 @@ function sample_compact_number(value) {
     }
 }
 
+function reverse_sample_name(value) {
+    switch (value) {
+        case "Sample - Overall":
+            return "Overall";
+        case "Sample - Top 100":
+            return 100;
+        case "Sample - Top 1K":
+            return 1000;
+        case "Sample - Top 10K":
+            return 10000;
+        case "Sample - Top 100K":
+            return 100000;
+        case "Sample - Top 1M":
+            return 1000000;
+        default:
+            return value;
+    }
+}
+
 function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
 
     let teams = [];

@@ -25,7 +25,8 @@ var app = new Vue({
         // selected_game: undefined
         modal_selected_game: undefined,
         game_table: undefined,
-        target_player: undefined
+        target_player: undefined,
+        is_using_hits: false
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -55,6 +56,11 @@ var app = new Vue({
         },
         is_using_sample() {
             return this.ownership_source !== "Official FPL API";
+        },
+        current_sample_data() {
+            if (!this.is_using_sample) { return [] }
+            let key = reverse_sample_name(this.ownership_source);
+            return this.sample_data[key];
         },
         ownership_data() {
             return get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data);
@@ -216,11 +222,21 @@ var app = new Vue({
 
             // Initial event
             let team_checkpoints = [];
+            let initial_team = 0;
+            let initial_avg = 0;
+            if (this.is_using_hits) {
+                initial_team = -(this.team_data.entry_history.event_transfers_cost || 0);
+            }
+            if (this.is_using_hits && this.is_using_sample) {
+                let sample_d = this.current_sample_data;
+                initial_avg = -(getSum(sample_d.map(i => i.data.entry_history.event_transfers_cost)) / sample_d.length);
+            }
+            let setoff = { 'team': initial_team, 'avg': initial_avg }
             let current_status = {
                 time: modify_time(gw_info.start_dt.getTime(), -2),
-                expected: { points: 0, gain: 0, loss: 0, diff: 0 },
-                realized: { points: 0, gain: 0, loss: 0, diff: 0 },
-                average: { expected: 0, realized: 0 },
+                expected: { points: initial_team, gain: initial_team, loss: initial_avg, diff: initial_team - initial_avg },
+                realized: { points: initial_team, gain: initial_team, loss: initial_avg, diff: initial_team - initial_avg },
+                average: { expected: initial_avg, realized: initial_avg },
                 active_events: [],
                 finished_events: [],
                 discrete_order: 0,
@@ -248,7 +264,7 @@ var app = new Vue({
                     target_event.active_events = target_event.active_events.filter(i => i.game.id !== event.game.id);
                     target_event.finished_events.push(event);
                 }
-                let values = this.get_points_for_time(event.type, current_time, target_event.active_events, target_event.finished_events);
+                let values = this.get_points_for_time(event.type, current_time, target_event.active_events, target_event.finished_events, setoff);
                 target_event.expected.points = values.xp_total;
                 target_event.realized.points = values.rp_total;
                 target_event.expected.gain = values.xp_gain;
@@ -526,7 +542,7 @@ var app = new Vue({
                 return teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
             }
         },
-        get_points_for_time(event_type, time, active_events, finished_events) {
+        get_points_for_time(event_type, time, active_events, finished_events, setoff) {
 
             const ownership_by_id = this.ownership_by_id;
 
@@ -613,7 +629,24 @@ var app = new Vue({
                 }
             }
 
-            return { xp_total: xp_total, rp_total: rp_total, xp_gain: xp_gain, rp_gain: rp_gain, xp_loss: xp_loss, rp_loss: rp_loss, xp_diff: xp_diff, rp_diff: rp_diff, avg_expected: average_expected, avg_realized: average_realized }
+            return {
+                xp_total: xp_total + setoff.team,
+                rp_total: rp_total + setoff.team,
+                xp_gain: xp_gain + setoff.team,
+                rp_gain: rp_gain + setoff.team,
+                xp_loss: xp_loss + setoff.avg,
+                rp_loss: rp_loss + setoff.avg,
+                xp_diff: xp_diff + setoff.team - setoff.avg,
+                rp_diff: rp_diff + setoff.team - setoff.avg,
+                avg_expected: average_expected + setoff.avg,
+                avg_realized: average_realized + setoff.avg
+            }
+        },
+        toggleHit() {
+            this.is_using_hits = !this.is_using_hits;
+            this.$nextTick(() => {
+                refresh_all_graphs();
+            })
         },
         openModalFor(id) {
             this.modal_selected_game = id;
@@ -1020,7 +1053,7 @@ async function draw_user_graph(options = {}) {
         svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
         // Min max values
-        let data = app.get_graph_checkpoints;
+        let data = _.cloneDeep(app.get_graph_checkpoints);
         if (data.length == 0) { resolve("No data"); }
 
         let x_high = data[data.length - 1].time;
@@ -1028,6 +1061,7 @@ async function draw_user_graph(options = {}) {
 
         let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat]))) + 5;
         let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+        y_low = Math.min(y_low, 0);
 
         if (options.stat == "points") {
             let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized))) + 5;
