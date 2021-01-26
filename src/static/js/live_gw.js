@@ -30,37 +30,15 @@ var app = new Vue({
     beforeMount: function() {
         this.initEmptyData();
     },
-    watch: {
-        team_data: {
-            handler() {
-                refresh_all_graphs();
-            }
-        },
-        ownership_source: function(old_value, new_value) {
-            refresh_all_graphs();
-        },
-        sample_data: function(old_value, new_value) {
-            refresh_all_graphs();
-        },
-        xp_data: function(old_value, new_value) {
-            refresh_all_graphs();
-        },
-        rp_data: function(old_value, new_value) {
-            refresh_all_graphs();
-        },
-        gw_fixture: function(old_value, new_value) {
-            refresh_all_graphs();
-        }
-    },
     computed: {
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
         is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
-        is_rp_ready() { return this.rp_data && this.rp_data.length != 0 },
-        is_xp_ready() { return this.xp_data && this.xp_data.length != 0 },
-        is_fixture_ready() { return this.gw_fixture && this.gw_fixture.length != 0 },
-        is_el_ready() { return this.el_data && this.el_data.length != 0 },
-        is_ownership_ready() { return this.ownership_data && this.ownership_data.length != 0 },
+        is_rp_ready() { return this.rp_data !== undefined && this.rp_data.length != 0 },
+        is_xp_ready() { return this.xp_data !== undefined && this.xp_data.length != 0 },
+        is_fixture_ready() { return this.gw_fixture !== undefined && this.gw_fixture.length != 0 },
+        is_el_ready() { return this.el_data !== undefined && this.el_data.length != 0 },
+        is_ownership_ready() { return this.ownership_data !== undefined && this.ownership_data.length != 0 },
         seasongwdate: {
             get: function() {
                 return this.season + " / " + this.gw + " / " + this.date;
@@ -226,7 +204,6 @@ var app = new Vue({
             return cloned_fixture;
         },
         get_graph_checkpoints() {
-
             const gw_info = this.gameweek_info;
             if (_.isEmpty(gw_info)) { return [] }
 
@@ -283,14 +260,33 @@ var app = new Vue({
                 target_event.average.expected = values.avg_expected;
                 target_event.average.realized = values.avg_realized;
 
-                // let existing_entry = team_checkpoints.find(i => i.time == current_time)
                 let existing_id = team_checkpoints.findIndex(i => i.time == current_time);
                 if (existing_id == -1) {
-                    team_checkpoints.push(_.cloneDeep(target_event));
-                } else {
-                    team_checkpoints[existing_id] = _.cloneDeep(target_event);
-                }
+                    let entry = {
+                        time: _.clone(target_event.time),
+                        expected: _.clone(target_event.expected),
+                        realized: _.clone(target_event.realized),
+                        average: _.clone(target_event.average),
+                        active_events: _.clone(target_event.active_events),
+                        finished_events: _.clone(target_event.finished_events),
+                        discrete_order: _.clone(target_event.discrete_order),
+                        reason: _.clone(target_event.reason)
+                    }
+                    team_checkpoints.push(entry);
 
+                } else {
+                    let entry = {
+                        time: _.clone(target_event.time),
+                        expected: _.clone(target_event.expected),
+                        realized: _.clone(target_event.realized),
+                        average: _.clone(target_event.average),
+                        active_events: _.clone(target_event.active_events),
+                        finished_events: _.clone(target_event.finished_events),
+                        discrete_order: _.clone(target_event.discrete_order),
+                        reason: _.clone(target_event.reason)
+                    }
+                    team_checkpoints[existing_id] = entry;
+                }
             });
 
             current_status.reason = "final";
@@ -424,8 +420,9 @@ var app = new Vue({
             this.original_team_data = _.cloneDeep(data);
             this.team_data = data;
         },
-        restartTeamData() {
+        resetTeamData() {
             this.team_data = _.cloneDeep(this.original_team_data);
+            refresh_all_graphs();
         },
         saveTeamInfo(data) {
             this.team_info = data;
@@ -454,7 +451,6 @@ var app = new Vue({
                 game.team_h_name = teams_ordered[game.team_h - 1].name;
                 game.team_a_name = teams_ordered[game.team_a - 1].name;
                 game.label = teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
-                // game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
                 let order = 0;
                 data.slice(0, index).forEach((game2) => {
                     if ((game.start_dt >= game2.start_dt && game.start_dt <= game2.end_dt) ||
@@ -501,7 +497,7 @@ var app = new Vue({
             this.team_id = $("#fpl_analytics_league_select").val();
             if (this.team_id == "") { return; }
             this.$nextTick(() => {
-                load_team_data().then(() => {
+                load_team_data(graph_refresh = true).then(() => {
                     $("#waitModal").modal('hide');
                 });
             })
@@ -515,7 +511,7 @@ var app = new Vue({
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
                 $("#fpl_analytics_league_select").val("");
-                load_team_data().then(() => {
+                load_team_data(graph_refresh = true).then(() => {
                     $("#waitModal").modal('hide');
                 });
             })
@@ -695,13 +691,16 @@ var app = new Vue({
     },
 })
 
-async function load_team_data() {
+async function load_team_data(graph_refresh = false) {
 
     if (app.team_id == -1) { return; }
 
     await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
         app.using_last_gw_team = response.is_last_gw;
+        if (graph_refresh) {
+            refresh_all_graphs();
+        }
     }).catch(error => {
         console.error(error);
     });
@@ -1336,6 +1335,7 @@ function refreshFixtureData() {
     app.now_dt = new Date().getTime();
     $(".svg-wrapper").empty()
     load_fixture_data().then(() => {
+        refresh_all_graphs();
         $("#fixtureModal").modal('hide');
     });
 }
@@ -1383,10 +1383,9 @@ async function app_initialize(refresh_team = false) {
             ]).then((values) => {
                 // $(".svg-wrapper").empty();
                 $("#updateModal").modal('hide');
-                // setTimeout(() => {
-                //     refresh_all_graphs();
-                // }, 50);
-
+                setTimeout(() => {
+                    refresh_all_graphs();
+                }, 50);
             })
             .catch((error) => {
                 console.error("An error has occured: " + error);
@@ -1400,6 +1399,9 @@ async function app_initialize(refresh_team = false) {
 $(document).ready(function() {
     app_initialize();
     $("#editTeamModal").on('hide.bs.modal', (e) => {
+        refresh_all_graphs();
+    });
+    $("#sourceModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
     });
     $("#matchReportModal").on('hide.bs.modal', (e) => {
