@@ -782,3 +782,21 @@ button.btn.btn-sm.zoomButton {
 #editModalTable .selected-transfer-button {
     background-color: #e2ffa3;
 }
+
+.nav-tabs.team-tabs .nav-link {
+    background-color: white;
+    border: 1px solid #bbbbbb;
+    color: #c47b89;
+    transition: background-color 0.15s linear;
+}
+
+.nav-tabs.team-tabs .nav-link.active {
+    background-color: #474747;
+    color: white;
+    border: 1px #474747 solid;
+}
+
+.nav-tabs.team-tabs .nav-link:not(.active):hover {
+    background-color: #dedede;
+    color: #5bbbb6;
+}
