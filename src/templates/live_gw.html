@@ -54,7 +54,7 @@
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="resetTeamData">Reset Team</button>
                                                 <div class="dropdown-divider"></div>
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                             </div>
                                         </div>
                                     </div>
