@@ -26,7 +26,9 @@ var app = new Vue({
         modal_selected_game: undefined,
         game_table: undefined,
         target_player: undefined,
-        is_using_hits: false
+        is_using_hits: false,
+        show_team_info: true,
+        fill_width: false
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -439,6 +441,32 @@ var app = new Vue({
         resetTeamData() {
             this.team_data = _.cloneDeep(this.original_team_data);
             refresh_all_graphs();
+        },
+        loadOptimal() {
+            $.ajax({
+                type: "GET",
+                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
+                dataType: "text",
+                success: (data) => {
+                    debugger;
+                    tablevals = data.split('\n').map(i => i.split(','));
+                    keys = tablevals[0];
+                    values = tablevals.slice(1);
+                    values_filtered = values.filter(i => i.length > 1);
+                    let squad = values_filtered.map(i => _.zipObject(keys, i));
+                    this.team_data.picks.forEach(function load(val, index) {
+                        val.element = parseInt(squad[index].player_id);
+                        val.multiplier = index < 11 ? 1 : 0;
+                        val.is_captain = squad[index].is_captain == "True";
+                    })
+                    this.$nextTick(() => {
+                        refresh_all_graphs();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+            });
         },
         saveTeamInfo(data) {
             this.team_info = data;
@@ -1441,6 +1469,9 @@ $(document).ready(function() {
     $("#matchReportModal").on('hide.bs.modal', (e) => {
         $("#match_report_all").DataTable().destroy();
         app.modal_selected_game = undefined;
+    });
+    $("#showTeamModal").on('shown.bs.modal', (e) => {
+        $('#expected-tab').tab('show')
     });
     $("#matchReportModal").on('shown.bs.modal', (e) => {
         app.$nextTick(() => {
