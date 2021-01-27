@@ -614,9 +614,12 @@ var app = new Vue({
                 let copy_active_events = _.cloneDeep(active_events)
 
                 copy_active_events.forEach((g) => {
-                    g.completed = (time - g.game.node_info.start) / (g.game.node_info.end - g.game.node_info.start);
+                    g.completed = (time - g.game.node_info.start) / Math.max((g.game.node_info.end - g.game.node_info.start), 1);
                     g.game.player_details.forEach((el) => {
                         el.xp = g.completed * el.xp;
+                        if (event_type !== 'now') {
+                            el.rp = g.completed * el.rp;
+                        }
                     })
                 })
 
@@ -630,6 +633,10 @@ var app = new Vue({
                     if (!this.is_using_sample) { eo = ow.selected_by_percent / 100; }
                     return { id: i.id, player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo }
                 });
+
+                if (event_type == "now") {
+                    debugger;
+                }
 
                 let split_active_players = _.groupBy(active_players_final, (e) => { return team_ids.includes(e.id) })
                 let team_active = split_active_players[true] || [];
@@ -648,13 +655,13 @@ var app = new Vue({
                 xp_diff = xp_gain - xp_loss;
                 average_expected += getSum(active_players_final.map(i => i.xp * i.eo));
 
-                if (event_type == "now") {
-                    rp_total += rp_total_active;
-                    rp_gain += rp_gain_active;
-                    rp_loss += rp_loss_active;
-                    rp_diff = rp_gain - rp_loss;
-                    average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
-                }
+                // if (event_type == "now") {
+                rp_total += rp_total_active;
+                rp_gain += rp_gain_active;
+                rp_loss += rp_loss_active;
+                rp_diff = rp_gain - rp_loss;
+                average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
+                // }
             }
 
             return {
