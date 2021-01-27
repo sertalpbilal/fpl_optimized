@@ -448,7 +448,6 @@ var app = new Vue({
                 url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
                 dataType: "text",
                 success: (data) => {
-                    debugger;
                     tablevals = data.split('\n').map(i => i.split(','));
                     keys = tablevals[0];
                     values = tablevals.slice(1);
@@ -634,10 +633,6 @@ var app = new Vue({
                     return { id: i.id, player: i, multiplier: multiplier, xp: i.xp, rp: i.rp, eo: eo }
                 });
 
-                if (event_type == "now") {
-                    debugger;
-                }
-
                 let split_active_players = _.groupBy(active_players_final, (e) => { return team_ids.includes(e.id) })
                 let team_active = split_active_players[true] || [];
                 let xp_total_active = getSum(team_active.map(i => i.xp * i.multiplier));
@@ -655,13 +650,11 @@ var app = new Vue({
                 xp_diff = xp_gain - xp_loss;
                 average_expected += getSum(active_players_final.map(i => i.xp * i.eo));
 
-                // if (event_type == "now") {
                 rp_total += rp_total_active;
                 rp_gain += rp_gain_active;
                 rp_loss += rp_loss_active;
                 rp_diff = rp_gain - rp_loss;
                 average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
-                // }
             }
 
             return {
@@ -1396,17 +1389,24 @@ function zoomOutSvg() {
     }
 }
 
-function refreshFixtureData() {
+function refreshFixtureAndRP() {
     $("#fixtureModal").modal({
         backdrop: 'static',
         keyboard: false
     }).modal('show');
     app.now_dt = new Date().getTime();
-    $(".svg-wrapper").empty()
-    load_fixture_data().then(() => {
-        refresh_all_graphs();
-        $("#fixtureModal").modal('hide');
-    });
+
+    Promise.all([
+            load_fixture_data(),
+            load_rp_data()
+        ]).then((values) => {
+            refresh_all_graphs();
+            $("#fixtureModal").modal('hide');
+        })
+        .catch((error) => {
+            console.error("An error has occured: " + error);
+            $("#fixtureModal").modal('hide');
+        })
 }
 
 function refresh_all_graphs() {
