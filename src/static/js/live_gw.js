@@ -455,7 +455,7 @@ var app = new Vue({
                     let squad = values_filtered.map(i => _.zipObject(keys, i));
                     this.team_data.picks.forEach(function load(val, index) {
                         val.element = parseInt(squad[index].player_id);
-                        val.multiplier = index < 11 ? 1 : 0;
+                        val.multiplier = index < 11 ? (squad[index].is_captain == "True" ? 2 : 1) : 0;
                         val.is_captain = squad[index].is_captain == "True";
                     })
                     this.$nextTick(() => {
