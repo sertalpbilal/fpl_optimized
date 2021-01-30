@@ -143,6 +143,23 @@ var app = new Vue({
                 let player_with_data = players_in_this_game.map(i => Object.fromEntries([
                     ['id', parseInt(i)]
                 ]));
+
+                let bps_provisional = {};
+
+                if (game.started && !game.finished) {
+                    try {
+                        let bps_stats = game.stats.find(i => i.identifier == "bps")
+                        let all_players = bps_stats.h.concat(bps_stats.a)
+                        let sorted_groups = Object.entries(_.groupBy(all_players, i => i.value)).sort((a, b) => b[0] - a[0]).slice(0, 3)
+                        sorted_groups.forEach((cat, i) => {
+                            let bonus = 3 - i;
+                            cat[1].forEach((p) => {
+                                bps_provisional[p.element] = bonus;
+                            });
+                        })
+                    } catch (err) {}
+                }
+
                 player_with_data.forEach((e) => {
                     let player_xp = xp_by_id[e.id];
                     e.xp = player_xp.points_md / Math.max(player_xp.event_list.length, 1);
@@ -156,6 +173,11 @@ var app = new Vue({
                         } else {
                             e.rp_detail = rp_by_id[e.id].explain.find(i => i.fixture == game.id).stats.map(i => [i.identifier, i.points, i.value]);
                             e.rp = getSum(e.rp_detail.map(i => i[1]));
+                            if (e.id in bps_provisional) {
+                                let bonus = bps_provisional[e.id]
+                                e.rp += bonus;
+                                e.rp_detail.push(["bps_provisional", bonus, 1]);
+                            }
                         }
                     } else {
                         e.rp_detail = [];
@@ -420,6 +442,32 @@ var app = new Vue({
                 return b.xp - a.xp;
             })
             return els;
+        },
+        provisional_bonus() {
+            if (!this.is_rp_ready || !this.is_fixture_ready) { return {}; }
+
+            let bonus_players = {};
+
+            let games = this.gameweek_games_with_metadata;
+            games.forEach((game) => {
+                let bps_provisional = {};
+
+                if (game.started && !game.finished) {
+                    try {
+                        let bps_stats = game.stats.find(i => i.identifier == "bps")
+                        let all_players = bps_stats.h.concat(bps_stats.a)
+                        let sorted_groups = Object.entries(_.groupBy(all_players, i => i.value)).sort((a, b) => b[0] - a[0]).slice(0, 3)
+                        sorted_groups.forEach((cat, i) => {
+                            let bonus = 3 - i;
+                            cat[1].forEach((p) => {
+                                bonus_players[p.element] = bonus;
+                            });
+                        })
+                    } catch (err) {}
+                }
+            })
+
+            return bonus_players;
         }
     },
     methods: {
