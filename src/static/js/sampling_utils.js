@@ -39,7 +39,52 @@ function reverse_sample_name(value) {
     }
 }
 
-function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
+function autosubbed_team(team_picks, autosub_dict) {
+
+    let split_team = _.groupBy(team_picks, (i) => i.multiplier > 0)
+    console.log("Initial team size", team_picks.filter(i => i.multiplier > 0).length)
+    let lineup = split_team[true]
+    let bench = split_team[false] || []
+    for (let i of lineup) {
+        let id = i.element;
+        let info = autosub_dict[id];
+        if (info.autosub) {
+            i.multiplier = 0;
+            if (i.is_captain) {
+                i.is_captain = false;
+                let vc = lineup.find(i => i.is_vice_captain);
+                if (vc && vc.multiplier > 0) {
+                    vc.is_captain = true;
+                    vc.is_vice_captain = false;
+                }
+            }
+            let target_pos = info.element_type;
+            let current_cnt = team_picks.filter(j => j.multiplier > 0 && autosub_dict[j.element].element_type == target_pos).length;
+            if (element_type[target_pos].min > current_cnt || target_pos == "1") {
+                // only this type
+                let player_to_enter = bench.find(j => autosub_dict[j.element].element_type == target_pos && autosub_dict[j.element].autosub == false)
+                if (player_to_enter) {
+                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
+                    player_to_enter.multiplier = 1;
+                    bench = bench.filter(i => i.element != player_to_enter.element)
+                }
+            } else {
+                // anyone on bench
+                let player_to_enter = bench.find(j => autosub_dict[j.element].element_type != "1" && autosub_dict[j.element].autosub == false)
+                if (player_to_enter) {
+                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
+                    player_to_enter.multiplier = 1;
+                    bench = bench.filter(i => i.element != player_to_enter.element)
+                }
+            }
+        }
+    }
+
+    console.log("Final team size", team_picks.filter(i => i.multiplier > 0).length)
+    return team_picks;
+}
+
+function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs) {
 
     let teams = [];
     if (sample_data == undefined) {
@@ -76,8 +121,15 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data) {
             break;
     }
 
-
     let el_copy = _.cloneDeep(fpl_data);
+
+    if (!_.isEmpty(autosubs)) {
+        teams = _.cloneDeep(teams);
+        teams.forEach((team) => {
+            team.picks = autosubbed_team(team.data.picks, autosubs);
+        })
+    }
+
     let all_players = teams.map(i => i.data.picks).flat();
     let grouped_players = _.groupBy(all_players, (i) => i.element);
 

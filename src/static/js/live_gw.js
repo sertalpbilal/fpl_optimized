@@ -66,17 +66,27 @@ var app = new Vue({
             return this.sample_data[key];
         },
         ownership_data() {
-            return get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data);
+            if (!this.is_using_autosub || !this.is_using_sample) {
+                let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
+                return own_data;
+            } else {
+                let el_data = _.cloneDeep(this.el_data);
+                let autosubs = [];
+                let rp_by_id = this.rp_by_id;
+                el_data.forEach((e) => {
+
+                        autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                    })
+                    // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
+                let autosub_dict = Object.fromEntries(autosubs);
+                let own_data = get_ownership_by_type(this.ownership_source, el_data, this.sample_data, autosub_dict);
+                return own_data;
+            }
         },
         ownership_by_id() {
             const ownership = this.ownership_data;
             if (ownership == undefined) { return {}; }
             let own_object = Object.fromEntries(ownership.map(i => [i.id, i]))
-
-            if (this.is_using_autosub) {
-                debugger;
-            }
-
             return own_object
         },
         el_by_id() {
@@ -852,39 +862,27 @@ var app = new Vue({
                 current_player.element = parseInt(id);
             }
         },
-        applyAutosub() {
-            // let raw_team_data = this.team_data;
-            // let team_md = [...this.team_data_with_metadata];
-            // team_md.sort((a, b) => a.position - b.position);
-            // let is_lineup = _.groupBy(team_md, (i) => i.multiplier > 0);
-            // let subs = is_lineup[false] || [];
-            // (is_lineup[true] || []).forEach((p) => {
-            //     let be_subbed = p.rp_data.autosub || false;
-            //     if (be_subbed) {
-            //         raw_team_data;
-            //         subs;
-            //         console.log("Autosubbing " + p.name);
-            //         debugger;
-            //     }
-            // })
-            debugger;
+        applyAutosubtoTeam() {
+            if (!this.is_ready) { return; }
+            let el_data = _.cloneDeep(this.el_data);
+            let autosubs = [];
+            let rp_by_id = this.rp_by_id;
+            el_data.forEach((e) => {
+                    autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                })
+                // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
+            let autosub_dict = Object.fromEntries(autosubs);
+            this.team_data.picks = autosubbed_team(this.team_data.picks, autosub_dict)
         },
         toggleAutoSub() {
 
             this.is_using_autosub = !this.is_using_autosub;
-            debugger;
-
             if (this.is_using_autosub) {
-                if (this.is_using_sample) {
-
-                }
-
-                if (this.is_ready) {
-
-                }
-            } else {
-
+                this.applyAutosubtoTeam()
             }
+            this.$nextTick(() => {
+                refresh_all_graphs();
+            })
 
         }
     },
