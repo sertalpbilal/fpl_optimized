@@ -27,6 +27,7 @@ var app = new Vue({
         game_table: undefined,
         target_player: undefined,
         is_using_hits: false,
+        is_using_autosub: false,
         show_team_info: true,
         fill_width: false
     },
@@ -34,7 +35,7 @@ var app = new Vue({
         this.initEmptyData();
     },
     computed: {
-        valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
+        valid_team_id() { return this.team_id == -1 ? "Click to enter" : (this.show_team_info ? this.team_id : "Hidden") },
         is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_rp_ready() { return this.rp_data !== undefined && this.rp_data.length != 0 },
@@ -65,12 +66,28 @@ var app = new Vue({
             return this.sample_data[key];
         },
         ownership_data() {
-            return get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data);
+            if (!this.is_using_autosub || !this.is_using_sample) {
+                let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
+                return own_data;
+            } else {
+                let el_data = _.cloneDeep(this.el_data);
+                let autosubs = [];
+                let rp_by_id = this.rp_by_id;
+                el_data.forEach((e) => {
+
+                        autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                    })
+                    // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
+                let autosub_dict = Object.fromEntries(autosubs);
+                let own_data = get_ownership_by_type(this.ownership_source, el_data, this.sample_data, autosub_dict);
+                return own_data;
+            }
         },
         ownership_by_id() {
             const ownership = this.ownership_data;
             if (ownership == undefined) { return {}; }
-            return Object.fromEntries(ownership.map(i => [i.id, i]))
+            let own_object = Object.fromEntries(ownership.map(i => [i.id, i]))
+            return own_object
         },
         el_by_id() {
             if (this.el_data == undefined) { return undefined; }
@@ -845,22 +862,28 @@ var app = new Vue({
                 current_player.element = parseInt(id);
             }
         },
-        applyAutosub() {
-            // let raw_team_data = this.team_data;
-            // let team_md = [...this.team_data_with_metadata];
-            // team_md.sort((a, b) => a.position - b.position);
-            // let is_lineup = _.groupBy(team_md, (i) => i.multiplier > 0);
-            // let subs = is_lineup[false] || [];
-            // (is_lineup[true] || []).forEach((p) => {
-            //     let be_subbed = p.rp_data.autosub || false;
-            //     if (be_subbed) {
-            //         raw_team_data;
-            //         subs;
-            //         console.log("Autosubbing " + p.name);
-            //         debugger;
-            //     }
-            // })
-            debugger;
+        applyAutosubtoTeam() {
+            if (!this.is_ready) { return; }
+            let el_data = _.cloneDeep(this.el_data);
+            let autosubs = [];
+            let rp_by_id = this.rp_by_id;
+            el_data.forEach((e) => {
+                    autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                })
+                // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
+            let autosub_dict = Object.fromEntries(autosubs);
+            this.team_data.picks = autosubbed_team(this.team_data.picks, autosub_dict)
+        },
+        toggleAutoSub() {
+
+            this.is_using_autosub = !this.is_using_autosub;
+            if (this.is_using_autosub) {
+                this.applyAutosubtoTeam()
+            }
+            this.$nextTick(() => {
+                refresh_all_graphs();
+            })
+
         }
     },
 })
