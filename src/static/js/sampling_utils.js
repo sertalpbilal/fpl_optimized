@@ -49,6 +49,7 @@ function autosubbed_team(team_picks, autosub_dict) {
         let id = i.element;
         let info = autosub_dict[id];
         if (info.autosub) {
+            let original_mult = i.multiplier;
             i.multiplier = 0;
             if (i.is_captain) {
                 i.is_captain = false;
@@ -56,6 +57,7 @@ function autosubbed_team(team_picks, autosub_dict) {
                 if (vc && vc.multiplier > 0) {
                     vc.is_captain = true;
                     vc.is_vice_captain = false;
+                    vc.multiplier = original_mult;
                 }
             }
             let target_pos = info.element_type;
