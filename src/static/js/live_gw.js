@@ -82,7 +82,14 @@ var app = new Vue({
         },
         rp_by_id() {
             if (this.rp_data == undefined) { return undefined; }
-            return Object.fromEntries(this.rp_data.map(i => [i.id, i]));
+            let rp_obj = Object.fromEntries(_.cloneDeep(this.rp_data.map(i => [i.id, i])));
+            if (!_.isEmpty(this.provisional_bonus) && !_.isEmpty(rp_obj)) {
+                Object.entries(this.provisional_bonus).forEach(entry => {
+                    const [key, value] = entry;
+                    rp_obj[key].stats.total_points += value;
+                })
+            }
+            return rp_obj;
         },
         current_team_id: {
             get() {
@@ -148,15 +155,27 @@ var app = new Vue({
 
                 if (game.started && !game.finished) {
                     try {
-                        let bps_stats = game.stats.find(i => i.identifier == "bps")
-                        let all_players = bps_stats.h.concat(bps_stats.a)
+                        let bps_stats = _.cloneDeep(game.stats.find(i => i.identifier == "bps"))
+                        let home_players = bps_stats.h.map((i) => { i['home'] = true; return i });
+                        let away_players = bps_stats.a.map((i) => { i['home'] = false; return i });
+                        let all_players = home_players.concat(away_players)
                         let sorted_groups = Object.entries(_.groupBy(all_players, i => i.value)).sort((a, b) => b[0] - a[0]).slice(0, 3)
+                        let count = 3;
+                        let bonus = 3;
                         sorted_groups.forEach((cat, i) => {
-                            let bonus = 3 - i;
+                            if (count <= 0) { cat.push(false); return; }
                             cat[1].forEach((p) => {
+                                p.raw = p.value;
+                                p.value = bonus;
                                 bps_provisional[p.element] = bonus;
                             });
+                            count -= cat[1].length;
+                            bonus -= cat[1].length;
+                            cat.push(true);
                         })
+                        let final_list = sorted_groups.filter(i => i[2]).map(i => i[1]).flat();
+                        let prov_bps_stats = { 'identifier': 'bps_provisional', a: final_list.filter(i => !i.home), h: final_list.filter(i => i.home) }
+                        game.stats.push(prov_bps_stats);
                     } catch (err) {}
                 }
 
@@ -444,11 +463,11 @@ var app = new Vue({
             return els;
         },
         provisional_bonus() {
-            if (!this.is_rp_ready || !this.is_fixture_ready) { return {}; }
+            if (!this.is_fixture_ready) { return {}; }
 
             let bonus_players = {};
 
-            let games = this.gameweek_games_with_metadata;
+            const games = this.gw_fixture;
             games.forEach((game) => {
                 let bps_provisional = {};
 
