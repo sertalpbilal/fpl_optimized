@@ -27,6 +27,7 @@ var app = new Vue({
         game_table: undefined,
         target_player: undefined,
         is_using_hits: false,
+        is_using_autosub: false,
         show_team_info: true,
         fill_width: false
     },
@@ -34,7 +35,7 @@ var app = new Vue({
         this.initEmptyData();
     },
     computed: {
-        valid_team_id() { return this.team_id == -1 ? "Click to enter" : this.team_id },
+        valid_team_id() { return this.team_id == -1 ? "Click to enter" : (this.show_team_info ? this.team_id : "Hidden") },
         is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_rp_ready() { return this.rp_data !== undefined && this.rp_data.length != 0 },
@@ -70,7 +71,13 @@ var app = new Vue({
         ownership_by_id() {
             const ownership = this.ownership_data;
             if (ownership == undefined) { return {}; }
-            return Object.fromEntries(ownership.map(i => [i.id, i]))
+            let own_object = Object.fromEntries(ownership.map(i => [i.id, i]))
+
+            if (this.is_using_autosub) {
+                debugger;
+            }
+
+            return own_object
         },
         el_by_id() {
             if (this.el_data == undefined) { return undefined; }
@@ -861,6 +868,24 @@ var app = new Vue({
             //     }
             // })
             debugger;
+        },
+        toggleAutoSub() {
+
+            this.is_using_autosub = !this.is_using_autosub;
+            debugger;
+
+            if (this.is_using_autosub) {
+                if (this.is_using_sample) {
+
+                }
+
+                if (this.is_ready) {
+
+                }
+            } else {
+
+            }
+
         }
     },
 })
