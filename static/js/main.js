@@ -85,7 +85,8 @@ let stat_types = {
     penalties_saved: { name: "Penalties Saved", icon: "fas fa-chess-rook" },
     saves: { name: "Saves", icon: "far fa-hand-paper" },
     red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
-    yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" }
+    yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" },
+    bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" }
 }
 
 function rounded(val, digits = 2) {

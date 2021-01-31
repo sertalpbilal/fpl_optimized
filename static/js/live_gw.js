@@ -82,7 +82,29 @@ var app = new Vue({
         },
         rp_by_id() {
             if (this.rp_data == undefined) { return undefined; }
-            return Object.fromEntries(this.rp_data.map(i => [i.id, i]));
+            let rp_original = _.cloneDeep(this.rp_data);
+            const fixture = this.gw_fixture;
+            // Autosub
+            rp_original.forEach((p) => {
+                try {
+                    p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
+                    if (p.games_finished && p.stats.minutes == 0) {
+                        p.autosub = true;
+                    } else {
+                        p.autosub = false;
+                    }
+                } catch (e) {
+                    console.log("Player game_finished error", e)
+                }
+            })
+            let rp_obj = Object.fromEntries(_.cloneDeep(rp_original.map(i => [i.id, i])));
+            if (!_.isEmpty(this.provisional_bonus) && !_.isEmpty(rp_obj)) {
+                Object.entries(this.provisional_bonus).forEach(entry => {
+                    const [key, value] = entry;
+                    rp_obj[key].stats.total_points += value;
+                })
+            }
+            return rp_obj;
         },
         current_team_id: {
             get() {
@@ -148,15 +170,27 @@ var app = new Vue({
 
                 if (game.started && !game.finished) {
                     try {
-                        let bps_stats = game.stats.find(i => i.identifier == "bps")
-                        let all_players = bps_stats.h.concat(bps_stats.a)
+                        let bps_stats = _.cloneDeep(game.stats.find(i => i.identifier == "bps"))
+                        let home_players = bps_stats.h.map((i) => { i['home'] = true; return i });
+                        let away_players = bps_stats.a.map((i) => { i['home'] = false; return i });
+                        let all_players = home_players.concat(away_players)
                         let sorted_groups = Object.entries(_.groupBy(all_players, i => i.value)).sort((a, b) => b[0] - a[0]).slice(0, 3)
+                        let count = 3;
+                        let bonus = 3;
                         sorted_groups.forEach((cat, i) => {
-                            let bonus = 3 - i;
+                            if (count <= 0) { cat.push(false); return; }
                             cat[1].forEach((p) => {
+                                p.raw = p.value;
+                                p.value = bonus;
                                 bps_provisional[p.element] = bonus;
                             });
+                            count -= cat[1].length;
+                            bonus -= cat[1].length;
+                            cat.push(true);
                         })
+                        let final_list = sorted_groups.filter(i => i[2]).map(i => i[1]).flat();
+                        let prov_bps_stats = { 'identifier': 'bps_provisional', a: final_list.filter(i => !i.home), h: final_list.filter(i => i.home) }
+                        game.stats.push(prov_bps_stats);
                     } catch (err) {}
                 }
 
@@ -363,6 +397,8 @@ var app = new Vue({
                     n.xp_data = xp_by_id[e];
                     n.el_data = el_by_id[e];
                     n.rp_data = rp_by_id[e];
+                    n.autosub = false;
+                    if (n.rp_data !== undefined && n.rp_data.autosub) { n.autosub = true; }
                     n.own_data = own_by_id[e];
                     n.name = n.el_data.web_name;
                     let points_md = n.xp = parseFloat(n.xp_data.points_md);
@@ -444,11 +480,11 @@ var app = new Vue({
             return els;
         },
         provisional_bonus() {
-            if (!this.is_rp_ready || !this.is_fixture_ready) { return {}; }
+            if (!this.is_fixture_ready) { return {}; }
 
             let bonus_players = {};
 
-            let games = this.gameweek_games_with_metadata;
+            const games = this.gw_fixture;
             games.forEach((game) => {
                 let bps_provisional = {};
 
@@ -468,6 +504,18 @@ var app = new Vue({
             })
 
             return bonus_players;
+        },
+        currentTeamFormation() {
+            if (!this.is_ready) { return {}; }
+            let picks = this.team_data_with_metadata.filter(i => i.multiplier > 0).map(i => i.element_type);
+            const gk_count = picks.filter(i => i == 1).length;
+            const df_count = picks.filter(i => i == 2).length;
+            const md_count = picks.filter(i => i == 3).length;
+            const fw_count = picks.filter(i => i == 4).length;
+            let is_valid = true;
+            if (gk_count !== 1 || df_count < 3 || md_count < 2 || picks.length !== 11) { is_valid = false; }
+            const form_str = `(${gk_count}) ${df_count}-${md_count}-${fw_count}`;
+            return { 1: gk_count, 2: df_count, 3: md_count, 4: fw_count, is_valid: is_valid, form_str: form_str }
         }
     },
     methods: {
@@ -796,6 +844,23 @@ var app = new Vue({
             if (current_player !== undefined) {
                 current_player.element = parseInt(id);
             }
+        },
+        applyAutosub() {
+            // let raw_team_data = this.team_data;
+            // let team_md = [...this.team_data_with_metadata];
+            // team_md.sort((a, b) => a.position - b.position);
+            // let is_lineup = _.groupBy(team_md, (i) => i.multiplier > 0);
+            // let subs = is_lineup[false] || [];
+            // (is_lineup[true] || []).forEach((p) => {
+            //     let be_subbed = p.rp_data.autosub || false;
+            //     if (be_subbed) {
+            //         raw_team_data;
+            //         subs;
+            //         console.log("Autosubbing " + p.name);
+            //         debugger;
+            //     }
+            // })
+            debugger;
         }
     },
 })

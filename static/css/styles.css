@@ -571,8 +571,11 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
 .settings-button {
     line-height: unset;
     font-size: unset;
-    color: #caa7ad;
     border: 0px;
+}
+
+.settings-button.pink {
+    color: #caa7ad;
 }
 
 .settings-button:hover {
@@ -799,4 +802,8 @@ button.btn.btn-sm.zoomButton {
 .nav-tabs.team-tabs .nav-link:not(.active):hover {
     background-color: #dedede;
     color: #5bbbb6;
+}
+
+.autosub {
+    color: #d61e1e;
 }
