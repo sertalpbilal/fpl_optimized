@@ -82,7 +82,22 @@ var app = new Vue({
         },
         rp_by_id() {
             if (this.rp_data == undefined) { return undefined; }
-            let rp_obj = Object.fromEntries(_.cloneDeep(this.rp_data.map(i => [i.id, i])));
+            let rp_original = _.cloneDeep(this.rp_data);
+            const fixture = this.gw_fixture;
+            // Autosub
+            rp_original.forEach((p) => {
+                try {
+                    p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
+                    if (p.games_finished && p.stats.minutes == 0) {
+                        p.autosub = true;
+                    } else {
+                        p.autosub = false;
+                    }
+                } catch (e) {
+                    console.log("Player game_finished error", e)
+                }
+            })
+            let rp_obj = Object.fromEntries(_.cloneDeep(rp_original.map(i => [i.id, i])));
             if (!_.isEmpty(this.provisional_bonus) && !_.isEmpty(rp_obj)) {
                 Object.entries(this.provisional_bonus).forEach(entry => {
                     const [key, value] = entry;
@@ -382,6 +397,8 @@ var app = new Vue({
                     n.xp_data = xp_by_id[e];
                     n.el_data = el_by_id[e];
                     n.rp_data = rp_by_id[e];
+                    n.autosub = false;
+                    if (n.rp_data !== undefined && n.rp_data.autosub) { n.autosub = true; }
                     n.own_data = own_by_id[e];
                     n.name = n.el_data.web_name;
                     let points_md = n.xp = parseFloat(n.xp_data.points_md);
@@ -487,6 +504,18 @@ var app = new Vue({
             })
 
             return bonus_players;
+        },
+        currentTeamFormation() {
+            if (!this.is_ready) { return {}; }
+            let picks = this.team_data_with_metadata.filter(i => i.multiplier > 0).map(i => i.element_type);
+            const gk_count = picks.filter(i => i == 1).length;
+            const df_count = picks.filter(i => i == 2).length;
+            const md_count = picks.filter(i => i == 3).length;
+            const fw_count = picks.filter(i => i == 4).length;
+            let is_valid = true;
+            if (gk_count !== 1 || df_count < 3 || md_count < 2 || picks.length !== 11) { is_valid = false; }
+            const form_str = `(${gk_count}) ${df_count}-${md_count}-${fw_count}`;
+            return { 1: gk_count, 2: df_count, 3: md_count, 4: fw_count, is_valid: is_valid, form_str: form_str }
         }
     },
     methods: {
@@ -815,6 +844,23 @@ var app = new Vue({
             if (current_player !== undefined) {
                 current_player.element = parseInt(id);
             }
+        },
+        applyAutosub() {
+            // let raw_team_data = this.team_data;
+            // let team_md = [...this.team_data_with_metadata];
+            // team_md.sort((a, b) => a.position - b.position);
+            // let is_lineup = _.groupBy(team_md, (i) => i.multiplier > 0);
+            // let subs = is_lineup[false] || [];
+            // (is_lineup[true] || []).forEach((p) => {
+            //     let be_subbed = p.rp_data.autosub || false;
+            //     if (be_subbed) {
+            //         raw_team_data;
+            //         subs;
+            //         console.log("Autosubbing " + p.name);
+            //         debugger;
+            //     }
+            // })
+            debugger;
         }
     },
 })
