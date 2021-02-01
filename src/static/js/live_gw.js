@@ -29,7 +29,8 @@ var app = new Vue({
         is_using_hits: false,
         is_using_autosub: false,
         show_team_info: true,
-        fill_width: false
+        fill_width: false,
+        autosub_stats: {}
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -68,7 +69,9 @@ var app = new Vue({
         ownership_data() {
             if (!this.is_using_autosub || !this.is_using_sample) {
                 let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
-                return own_data;
+                this.autosub_stats['sub'] = [];
+                this.autosub_stats['cap'] = [];
+                return own_data.data;
             } else {
                 let el_data = _.cloneDeep(this.el_data);
                 let autosubs = [];
@@ -80,7 +83,9 @@ var app = new Vue({
                     // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
                 let autosub_dict = Object.fromEntries(autosubs);
                 let own_data = get_ownership_by_type(this.ownership_source, el_data, this.sample_data, autosub_dict);
-                return own_data;
+                this.autosub_stats['sub'] = own_data.sub_replacement;
+                this.autosub_stats['cap'] = own_data.cap_replacement;
+                return own_data.data;
             }
         },
         ownership_by_id() {
@@ -533,6 +538,40 @@ var app = new Vue({
             if (gk_count !== 1 || df_count < 3 || md_count < 2 || picks.length !== 11) { is_valid = false; }
             const form_str = `(${gk_count}) ${df_count}-${md_count}-${fw_count}`;
             return { 1: gk_count, 2: df_count, 3: md_count, 4: fw_count, is_valid: is_valid, form_str: form_str }
+        },
+        autosub_subs() {
+            if (!this.is_using_autosub || !this.is_using_sample) { return [] }
+            let el = this.element_data_combined;
+            let rp = this.rp_by_id;
+            let count = this.current_sample_data.length;
+            let stats = this.autosub_stats.sub;
+            let top_ones = Object.entries(_.countBy(stats)).sort((a, b) => b[1] - a[1]).slice(0, 15);
+            const top_pairs = top_ones.map((s) => {
+                let players = s[0].split(',')
+                let change = 0;
+                try {
+                    change = rp[players[1]].stats.total_points
+                } catch (e) {}
+                return { 'occurence': s[1], 'ratio': s[1] / count, 'from': el[players[0]], 'to': el[players[1]], 'change': change, 'effect': getWithSign(-s[1] / count * change) }
+            })
+            return top_pairs;
+        },
+        autosub_caps() {
+            if (!this.is_using_autosub || !this.is_using_sample) { return [] }
+            let el = this.element_data_combined;
+            let rp = this.rp_by_id;
+            let count = this.current_sample_data.length;
+            let stats = this.autosub_stats.cap;
+            let top_ones = Object.entries(_.countBy(stats)).sort((a, b) => b[1] - a[1]).slice(0, 15);
+            const top_pairs = top_ones.map((s) => {
+                let players = s[0].split(',')
+                let change = 0;
+                try {
+                    change = rp[players[1]].stats.total_points
+                } catch (e) {}
+                return { 'occurence': s[1], 'ratio': s[1] / count, 'from': el[players[0]], 'to': el[players[1]], 'change': change, 'effect': getWithSign(-s[1] / count * change) }
+            })
+            return top_pairs;
         }
     },
     methods: {
@@ -550,6 +589,9 @@ var app = new Vue({
         saveTeamData(data) {
             this.original_team_data = _.cloneDeep(data);
             this.team_data = data;
+            if (this.is_using_autosub) {
+                this.applyAutosubtoTeam()
+            }
         },
         resetTeamData() {
             this.team_data = _.cloneDeep(this.original_team_data);
@@ -872,7 +914,7 @@ var app = new Vue({
                 })
                 // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
             let autosub_dict = Object.fromEntries(autosubs);
-            this.team_data.picks = autosubbed_team(this.team_data.picks, autosub_dict)
+            this.team_data.picks = autosubbed_team(this.team_data.picks, autosub_dict).team;
         },
         toggleAutoSub() {
 
@@ -1155,6 +1197,34 @@ function init_timeline() {
         .on("mouseleave", mouseleave)
         .on("mousemove", mousemove)
         .on("click", mouseclick);
+
+    svg.append("g")
+        .selectAll()
+        .data(vals)
+        .enter()
+        .append('text')
+        .attr("text-anchor", "middle")
+        .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
+        .attr("y", d => y(d.order) + y.bandwidth() / 3)
+        .attr("font-size", "3pt")
+        .attr("fill", "white")
+        .style('pointer-events', 'none')
+        .text((d, i) => "ID: " + (i + 1));
+
+    if (app.is_ready) {
+        svg.append("g")
+            .selectAll()
+            .data(vals)
+            .enter()
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
+            .attr("y", d => y(d.order) + y.bandwidth() * 0.8)
+            .attr("font-size", "5pt")
+            .attr("fill", "white")
+            .style('pointer-events', 'none')
+            .text((d) => d.players_owned);
+    }
 
     let right_now = new Date(app.now_dt);
     let now_time = right_now.getTime();

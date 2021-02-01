@@ -59,6 +59,8 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
+                                                <div class="dropdown-divider"></div>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                             </div>
                                         </div>
                                     </div>
@@ -1122,6 +1124,75 @@
 
 
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="autosubModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Autosub Stats</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black">
+                <div class="">
+                    <div>
+                        <h6>Bench Substitutions</h6>
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped text-small text-xs-mini" v-if="is_using_sample && is_using_autosub">
+                            <thead>
+                                <tr>
+                                    <th>Ratio</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Points Gain</th>
+                                    <th>Effect</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="sub in autosub_subs">
+                                    <td>{{ rounded(parseFloat(sub.ratio)*100,2) }}%</td>
+                                    <td>{{ sub.from.name }}</td>
+                                    <td>{{ sub.to.name }}</td>
+                                    <td>{{ sub.change }}</td>
+                                    <td>{{ sub.effect }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h6>Vice Captain Substitutions</h6>
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped text-small text-xs-mini" v-if="is_using_sample && is_using_autosub">
+                            <thead>
+                                <tr>
+                                    <th>Ratio</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Points Gain</th>
+                                    <th>Effect</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="sub in autosub_caps">
+                                    <td>{{ rounded(parseFloat(sub.ratio)*100,2) }}%</td>
+                                    <td>{{ sub.from.name }}</td>
+                                    <td>{{ sub.to.name }}</td>
+                                    <td>{{ sub.change }}</td>
+                                    <td>{{ sub.effect }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
