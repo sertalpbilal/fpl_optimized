@@ -42,7 +42,6 @@ function reverse_sample_name(value) {
 function autosubbed_team(team_picks, autosub_dict) {
 
     let split_team = _.groupBy(team_picks, (i) => i.multiplier > 0)
-    console.log("Initial team size", team_picks.filter(i => i.multiplier > 0).length)
     let lineup = split_team[true]
     let bench = split_team[false] || []
     for (let i of lineup) {
@@ -66,7 +65,6 @@ function autosubbed_team(team_picks, autosub_dict) {
                 // only this type
                 let player_to_enter = bench.find(j => autosub_dict[j.element].element_type == target_pos && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
-                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
                 }
@@ -74,15 +72,12 @@ function autosubbed_team(team_picks, autosub_dict) {
                 // anyone on bench
                 let player_to_enter = bench.find(j => autosub_dict[j.element].element_type != "1" && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
-                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
                 }
             }
         }
     }
-
-    console.log("Final team size", team_picks.filter(i => i.multiplier > 0).length)
     return team_picks;
 }
 
