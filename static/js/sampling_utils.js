@@ -41,8 +41,9 @@ function reverse_sample_name(value) {
 
 function autosubbed_team(team_picks, autosub_dict) {
 
+    let sub_replacements = []
+    let cap_replacements = []
     let split_team = _.groupBy(team_picks, (i) => i.multiplier > 0)
-    console.log("Initial team size", team_picks.filter(i => i.multiplier > 0).length)
     let lineup = split_team[true]
     let bench = split_team[false] || []
     for (let i of lineup) {
@@ -53,11 +54,12 @@ function autosubbed_team(team_picks, autosub_dict) {
             i.multiplier = 0;
             if (i.is_captain) {
                 i.is_captain = false;
-                let vc = lineup.find(i => i.is_vice_captain);
+                let vc = lineup.find(j => j.is_vice_captain && autosub_dict[j.element].autosub == false);
                 if (vc && vc.multiplier > 0) {
                     vc.is_captain = true;
                     vc.is_vice_captain = false;
                     vc.multiplier = original_mult;
+                    cap_replacements.push([id, vc.element])
                 }
             }
             let target_pos = info.element_type;
@@ -66,24 +68,22 @@ function autosubbed_team(team_picks, autosub_dict) {
                 // only this type
                 let player_to_enter = bench.find(j => autosub_dict[j.element].element_type == target_pos && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
-                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
+                    sub_replacements.push([id, player_to_enter.element])
                 }
             } else {
                 // anyone on bench
                 let player_to_enter = bench.find(j => autosub_dict[j.element].element_type != "1" && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
-                    console.log(`Replacing ${id} with ${player_to_enter.element}`)
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
+                    sub_replacements.push([id, player_to_enter.element])
                 }
             }
         }
     }
-
-    console.log("Final team size", team_picks.filter(i => i.multiplier > 0).length)
-    return team_picks;
+    return { 'team': team_picks, 'sub_replacement': sub_replacements, 'cap_replacement': cap_replacements };
 }
 
 function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs) {
@@ -97,7 +97,7 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
 
     switch (ownership_source) {
         case "Official FPL API":
-            return fpl_data;
+            return { data: fpl_data };
         case "Sample - Overall":
             teams = sample_data["Overall"].filter(i => i.team != undefined)
             break;
@@ -124,11 +124,16 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
     }
 
     let el_copy = _.cloneDeep(fpl_data);
+    let sub_replacements = [];
+    let cap_replacements = [];
 
     if (!_.isEmpty(autosubs)) {
         teams = _.cloneDeep(teams);
         teams.forEach((team) => {
-            team.picks = autosubbed_team(team.data.picks, autosubs);
+            let edits = autosubbed_team(team.data.picks, autosubs);
+            team.data.picks = edits.team;
+            sub_replacements = sub_replacements.concat(edits.sub_replacement)
+            cap_replacements = cap_replacements.concat(edits.cap_replacement)
         })
     }
 
@@ -149,5 +154,5 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
         }
 
     });
-    return el_copy;
+    return { data: el_copy, sub_replacement: sub_replacements, cap_replacement: cap_replacements };
 }

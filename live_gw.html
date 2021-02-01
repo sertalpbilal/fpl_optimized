@@ -144,6 +144,8 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
+                                                <div class="dropdown-divider"></div>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                             </div>
                                         </div>
                                     </div>
@@ -1212,9 +1214,78 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="autosubModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Autosub Stats</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black">
+                <div class="">
+                    <div>
+                        <h6>Bench Substitutions</h6>
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped text-small text-xs-mini" v-if="is_using_sample && is_using_autosub">
+                            <thead>
+                                <tr>
+                                    <th>Ratio</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Points Gain</th>
+                                    <th>Effect</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="sub in autosub_subs">
+                                    <td>{{ rounded(parseFloat(sub.ratio)*100,2) }}%</td>
+                                    <td>{{ sub.from.name }}</td>
+                                    <td>{{ sub.to.name }}</td>
+                                    <td>{{ sub.change }}</td>
+                                    <td>{{ sub.effect }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h6>Vice Captain Substitutions</h6>
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped text-small text-xs-mini" v-if="is_using_sample && is_using_autosub">
+                            <thead>
+                                <tr>
+                                    <th>Ratio</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Points Gain</th>
+                                    <th>Effect</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="sub in autosub_caps">
+                                    <td>{{ rounded(parseFloat(sub.ratio)*100,2) }}%</td>
+                                    <td>{{ sub.from.name }}</td>
+                                    <td>{{ sub.to.name }}</td>
+                                    <td>{{ sub.change }}</td>
+                                    <td>{{ sub.effect }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
-    let league_list = JSON.parse( "[\n    { \"id\": 2221044, \"twitter\": \"sertalpbilal\" },\n    { \"id\": 367, \"twitter\": \"FplSimpson\" },\n    { \"id\": 17973, \"twitter\": \"FplStatsdan\" },\n    { \"id\": 44142, \"twitter\": \"FF_Trout\" },\n    { \"id\": 2227, \"twitter\": \"dilksybab\" },\n    { \"id\": 36828, \"twitter\": \"theFPLkiwi\" },\n    { \"id\": 4473, \"twitter\": \"jameso_12\" },\n    { \"id\": 159049, \"twitter\": \"api_kakayou\" },\n    { \"id\": 2134733, \"twitter\": \"usafpl\" },\n    { \"id\": 11891, \"twitter\": \"CazzaFPL\" },\n    { \"id\": 115, \"twitter\": \"PlanetosFPL\" },\n    { \"id\": 59177, \"twitter\": \"analytic_fpl\" },\n    { \"id\": 262, \"twitter\": \"rogue_wee\" },\n    { \"id\": 15673, \"twitter\": \"mtthwmn\" },\n    { \"id\": 1339675, \"twitter\": \"cmusson32\" },\n    { \"id\": 106304, \"twitter\": \"FPLstudent2\" },\n    { \"id\": 10350, \"twitter\": \"peterhandleson\" },\n    { \"id\": 293113, \"twitter\": \"chrishp\" },\n    { \"id\": 2243390, \"twitter\": \"plfantasy\" },\n    { \"id\": 741, \"twitter\": \"FPLmeta\" },\n    { \"id\": 23491, \"twitter\": \"FplAuto\" },\n    { \"id\": 227516, \"twitter\": \"NourEldin_z3r0\" },\n    { \"id\": 23337, \"twitter\": \"UkendtPerson45\" },\n    { \"id\": 3561, \"twitter\": \"MikkelTokvam\" },\n    { \"id\": 210810, \"twitter\": \"Klaudioz\" },\n    { \"id\": 204827, \"twitter\": \"FantasianPL\" },\n    { \"id\": 10187, \"twitter\": \"rama96ab\" },\n    { \"id\": 634300, \"twitter\": \"FPL_LFE\" },\n    { \"id\": 17157, \"twitter\": \"_jtreble\" },\n    { \"id\": 1341730, \"twitter\": \"DanielSaetre\" },\n    { \"id\": 274376, \"twitter\": \"FBinary01\" },\n    { \"id\": 3861, \"twitter\": \"FPL_Data\" },\n    { \"id\": 2978, \"twitter\": \"FPL_ElStatto\" },\n    { \"id\": 795, \"twitter\": \"FplSigurd\" },\n    { \"id\": 726810, \"twitter\": \"JoeBopara\" },\n    { \"id\": 4033, \"twitter\": \"dLincolnlawyer\" },\n    { \"id\": 1188, \"twitter\": \"FPL_Statoholic\" },\n    { \"id\": 184956, \"twitter\": \"FplAmateur\" },\n    { \"id\": 4084, \"twitter\": \"wolacola\" },\n    { \"id\": 16804, \"twitter\": \"Hashtag_MEGA\" },\n    { \"id\": 2409, \"twitter\": \"dav_fifa\" },\n    { \"id\": 393944, \"twitter\": \"MaulanaRiandi\" },\n    { \"id\": 392517, \"twitter\": \"Rak464\" },\n    { \"id\": 1310, \"twitter\": \"ArneBarsnes\" },\n    { \"id\": 416185, \"twitter\": \"FPL_PapaSmurf\" },\n    { \"id\": 33480, \"twitter\": \"gezza96\" },\n    { \"id\": 7193, \"twitter\": \"Raghy78d\" },\n    { \"id\": 26787, \"twitter\": \"pdhFPL\" },\n    { \"id\": 5390907, \"twitter\": \"NeilRankinZA\" },\n    { \"id\": 50155, \"twitter\": \"EuanThompson\" },\n    { \"id\": 501, \"twitter\": \"FPLrookie1\" },\n    { \"id\": 1280279, \"twitter\": \"FplBudget\" },\n    { \"id\": 150618, \"twitter\": \"FF_Vader\" }\n]" );
+    let league_list = JSON.parse( "[\n    { \"id\": 2221044, \"twitter\": \"sertalpbilal\" },\n    { \"id\": 367, \"twitter\": \"FplSimpson\" },\n    { \"id\": 17973, \"twitter\": \"FplStatsdan\" },\n    { \"id\": 44142, \"twitter\": \"FF_Trout\" },\n    { \"id\": 2227, \"twitter\": \"dilksybab\" },\n    { \"id\": 36828, \"twitter\": \"theFPLkiwi\" },\n    { \"id\": 4473, \"twitter\": \"jameso_12\" },\n    { \"id\": 159049, \"twitter\": \"api_kakayou\" },\n    { \"id\": 2134733, \"twitter\": \"usafpl\" },\n    { \"id\": 11891, \"twitter\": \"CazzaFPL\" },\n    { \"id\": 115, \"twitter\": \"PlanetosFPL\" },\n    { \"id\": 59177, \"twitter\": \"analytic_fpl\" },\n    { \"id\": 262, \"twitter\": \"rogue_wee\" },\n    { \"id\": 15673, \"twitter\": \"mtthwmn\" },\n    { \"id\": 1339675, \"twitter\": \"cmusson32\" },\n    { \"id\": 106304, \"twitter\": \"FPLstudent2\" },\n    { \"id\": 10350, \"twitter\": \"peterhandleson\" },\n    { \"id\": 293113, \"twitter\": \"chrishp\" },\n    { \"id\": 2243390, \"twitter\": \"plfantasy\" },\n    { \"id\": 741, \"twitter\": \"FPLmeta\" },\n    { \"id\": 23491, \"twitter\": \"FplAuto\" },\n    { \"id\": 227516, \"twitter\": \"NourEldin_z3r0\" },\n    { \"id\": 23337, \"twitter\": \"UkendtPerson45\" },\n    { \"id\": 3561, \"twitter\": \"MikkelTokvam\" },\n    { \"id\": 210810, \"twitter\": \"Klaudioz\" },\n    { \"id\": 204827, \"twitter\": \"FantasianPL\" },\n    { \"id\": 10187, \"twitter\": \"rama96ab\" },\n    { \"id\": 634300, \"twitter\": \"FPL_LFE\" },\n    { \"id\": 17157, \"twitter\": \"_jtreble\" },\n    { \"id\": 1341730, \"twitter\": \"DanielSaetre\" },\n    { \"id\": 274376, \"twitter\": \"FBinary01\" },\n    { \"id\": 3861, \"twitter\": \"FPL_Data\" },\n    { \"id\": 2978, \"twitter\": \"FPL_ElStatto\" },\n    { \"id\": 795, \"twitter\": \"FplSigurd\" },\n    { \"id\": 726810, \"twitter\": \"JoeBopara\" },\n    { \"id\": 4033, \"twitter\": \"dLincolnlawyer\" },\n    { \"id\": 1188, \"twitter\": \"FPL_Statoholic\" },\n    { \"id\": 184956, \"twitter\": \"FplAmateur\" },\n    { \"id\": 4084, \"twitter\": \"wolacola\" },\n    { \"id\": 16804, \"twitter\": \"Hashtag_MEGA\" },\n    { \"id\": 2409, \"twitter\": \"dav_fifa\" },\n    { \"id\": 393944, \"twitter\": \"MaulanaRiandi\" },\n    { \"id\": 392517, \"twitter\": \"Rak464\" },\n    { \"id\": 1310, \"twitter\": \"ArneBarsnes\" },\n    { \"id\": 416185, \"twitter\": \"FPL_PapaSmurf\" },\n    { \"id\": 33480, \"twitter\": \"gezza96\" },\n    { \"id\": 7193, \"twitter\": \"Raghy78d\" },\n    { \"id\": 26787, \"twitter\": \"pdhFPL\" },\n    { \"id\": 5390907, \"twitter\": \"NeilRankinZA\" },\n    { \"id\": 50155, \"twitter\": \"EuanThompson\" },\n    { \"id\": 501, \"twitter\": \"FPLrookie1\" },\n    { \"id\": 1280279, \"twitter\": \"FplBudget\" },\n    { \"id\": 150618, \"twitter\": \"FF_Vader\" },\n    { \"id\": 2977, \"twitter\": \"alasdairtweets\" },\n    { \"id\": 53926, \"twitter\": \"fpl_analytic\" }\n]" );
 </script>
 
  </div>
@@ -1246,7 +1317,7 @@
     let gw = "GW21";
     let next_gw = "GW22";
     let date = "2021-01-30";
-    let lastupdate = "2021-01-31T22:30:14.737522+00:00";
+    let lastupdate = "2021-02-01T03:09:30.857306+00:00";
     let listdates = [
         "2020-21 / GW22 / 2021-01-31 ", 
         "2020-21 / GW21 / 2021-01-30 ", 
@@ -1277,6 +1348,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-01-31T22:30:14.737522+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-01T03:09:30.857306+00:00</div>
 
 </html> 
