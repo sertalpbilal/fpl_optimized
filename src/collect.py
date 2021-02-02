@@ -327,8 +327,11 @@ def get_fpl_analytics_league(target_folder, debug=False):
     with open(base_folder / 'static/json/fpl_analytics.json') as f:
         data = json.load(f)
 
-    with ProcessPoolExecutor(max_workers=8) as executor:
-        review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
+    if debug:
+        review_values = [get_team_season_review(data[0], True)]
+    else:
+        with ProcessPoolExecutor(max_workers=8) as executor:
+            review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
     
     df = pd.DataFrame(review_values)
     print(df)
@@ -427,5 +430,8 @@ if __name__ == "__main__":
 
     # r = get_fpl_info('live', GW=17)
     # print(r)
+
+    input_folder, output_folder = create_folders()
+    get_fpl_analytics_league(input_folder, True)
 
     pass
