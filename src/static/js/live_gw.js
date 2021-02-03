@@ -1502,6 +1502,33 @@ async function draw_user_graph(options = {}) {
         }
         reset_graph_values();
 
+        let text_info = svg.append('g');
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 5)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Data: " + app.ownership_source);
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 10)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 15)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
+
+
         resolve("Done");
     })
 }
