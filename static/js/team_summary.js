@@ -76,11 +76,18 @@ var app = new Vue({
             this.solutions = _.cloneDeep(values);
         },
         saveTeamId(e) {
-            let self = this;
             this.team_id = $("#teamIdEnter").val();
             this.$nextTick(() => {
                 $("#fpl_analytics_league_select").val("");
-                self.close_teammodal();
+                this.close_teammodal();
+                load_team();
+            })
+        },
+        autoTeamID(value) {
+            this.team_id = value;
+            this.$nextTick(() => {
+                $("#fpl_analytics_league_select").val("");
+                this.close_teammodal();
                 load_team();
             })
         },
@@ -1890,4 +1897,8 @@ $("#customInputModal").on('hidden.bs.modal', function(e) {
 
 $(document).ready(function() {
     load_gw();
+    let t = Vue.$cookies.get('team');
+    if (t !== null) {
+        app.autoTeamID(t)
+    }
 });

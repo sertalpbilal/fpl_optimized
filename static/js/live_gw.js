@@ -12,6 +12,7 @@ var app = new Vue({
         active_gw: active_gw,
         gw_fixture: undefined,
         team_id: "-1",
+        remember_team: false,
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -44,6 +45,9 @@ var app = new Vue({
         is_fixture_ready() { return this.gw_fixture !== undefined && this.gw_fixture.length != 0 },
         is_el_ready() { return this.el_data !== undefined && this.el_data.length != 0 },
         is_ownership_ready() { return this.ownership_data !== undefined && this.ownership_data.length != 0 },
+        do_remember_id() {
+            return this.remember_team;
+        },
         seasongwdate: {
             get: function() {
                 return this.season + " / " + this.gw + " / " + this.date;
@@ -713,6 +717,35 @@ var app = new Vue({
                     $("#waitModal").modal('hide');
                 });
             })
+        },
+        autoTeamID(value) {
+            $("#waitModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
+            this.team_id = value;
+            this.remember_team = true;
+            this.$nextTick(() => {
+                $("#fpl_analytics_league_select").val("");
+                load_team_data(graph_refresh = true).then(() => {
+                    $("#waitModal").modal('hide');
+                });
+            })
+        },
+        toggleRemember() {
+            if (this.remember_team) {
+                this.forgetTeam();
+            } else {
+                this.saveTeam();
+            }
+        },
+        saveTeam() {
+            Vue.$cookies.set('team', this.team_id);
+            this.remember_team = true;
+        },
+        forgetTeam() {
+            Vue.$cookies.remove('team');
+            this.remember_team = false;
         },
         game_label(game) {
             if (game == undefined) { return "." }
@@ -1697,4 +1730,12 @@ $(document).ready(function() {
             });
         });
     });
+    setTimeout(() => {
+        let cached_team = Vue.$cookies.get('team');
+        if (cached_team == null) {
+            $("#teamModal").modal('show');
+        } else {
+            app.autoTeamID(cached_team);
+        }
+    }, 500);
 });
