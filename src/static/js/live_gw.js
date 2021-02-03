@@ -13,7 +13,7 @@ var app = new Vue({
         gw_fixture: undefined,
         team_id: "-1",
         remember_settings: false,
-        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosub'],
+        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -61,7 +61,7 @@ var app = new Vue({
             }
         },
         is_using_sample() {
-            return this.ownership_source !== "Official FPL API";
+            return (this.ownership_source !== "Official FPL API" && !_.isEmpty(this.sample_data));
         },
         current_sample_data() {
             if (!this.is_using_sample) { return [] }
