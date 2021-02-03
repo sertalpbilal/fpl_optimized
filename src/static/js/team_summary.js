@@ -1897,7 +1897,7 @@ $("#customInputModal").on('hidden.bs.modal', function(e) {
 
 $(document).ready(function() {
     load_gw();
-    let t = Vue.$cookies.get('team');
+    let t = Vue.$cookies.get('team_id');
     if (t !== null) {
         app.autoTeamID(t)
     }

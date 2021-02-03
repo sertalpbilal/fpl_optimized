@@ -12,7 +12,8 @@ var app = new Vue({
         active_gw: active_gw,
         gw_fixture: undefined,
         team_id: "-1",
-        remember_team: false,
+        remember_settings: false,
+        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosubs'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -45,9 +46,6 @@ var app = new Vue({
         is_fixture_ready() { return this.gw_fixture !== undefined && this.gw_fixture.length != 0 },
         is_el_ready() { return this.el_data !== undefined && this.el_data.length != 0 },
         is_ownership_ready() { return this.ownership_data !== undefined && this.ownership_data.length != 0 },
-        do_remember_id() {
-            return this.remember_team;
-        },
         seasongwdate: {
             get: function() {
                 return this.season + " / " + this.gw + " / " + this.date;
@@ -718,34 +716,39 @@ var app = new Vue({
                 });
             })
         },
-        autoTeamID(value) {
+        loadAutoSettings() {
             $("#waitModal").modal({
                 backdrop: 'static',
                 keyboard: false
             }).modal('show');
-            this.team_id = value;
-            this.remember_team = true;
+            this.remember_settings = true;
+            let settings = this.allowed_settings;
+            for (let st of settings) {
+                let val = Vue.$cookies.get(st)
+                if (val !== null) {
+                    this[st] = val;
+                }
+            }
             this.$nextTick(() => {
-                $("#fpl_analytics_league_select").val("");
                 load_team_data(graph_refresh = true).then(() => {
                     $("#waitModal").modal('hide');
                 });
             })
         },
         toggleRemember() {
-            if (this.remember_team) {
-                this.forgetTeam();
+            if (this.remember_settings) {
+                this.remember_settings = false;
+                let settings = this.allowed_settings;
+                for (let st of settings) {
+                    Vue.$cookies.remove(st);
+                }
             } else {
-                this.saveTeam();
+                this.remember_settings = true;
+                let settings = this.allowed_settings;
+                for (let st of settings) {
+                    Vue.$cookies.set(st, this[st]);
+                }
             }
-        },
-        saveTeam() {
-            Vue.$cookies.set('team', this.team_id);
-            this.remember_team = true;
-        },
-        forgetTeam() {
-            Vue.$cookies.remove('team');
-            this.remember_team = false;
         },
         game_label(game) {
             if (game == undefined) { return "." }
@@ -1680,7 +1683,7 @@ async function app_initialize(refresh_team = false) {
 
     app.initEmptyData();
 
-    setTimeout(() => {
+    return setTimeout(() => {
         Promise.all([
                 load_fixture_data(),
                 load_element_data(),
@@ -1701,11 +1704,17 @@ async function app_initialize(refresh_team = false) {
             })
     }, 50);
 
-
 }
 
 $(document).ready(function() {
-    app_initialize();
+    app_initialize().then(() => {
+        let cached_team = Vue.$cookies.get('team_id');
+        if (cached_team !== null) {
+            app.loadAutoSettings();
+        } else {
+            $("#teamModal").modal('show');
+        }
+    });
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
     });
@@ -1730,12 +1739,4 @@ $(document).ready(function() {
             });
         });
     });
-    setTimeout(() => {
-        let cached_team = Vue.$cookies.get('team');
-        if (cached_team == null) {
-            $("#teamModal").modal('show');
-        } else {
-            app.autoTeamID(cached_team);
-        }
-    }, 500);
 });
