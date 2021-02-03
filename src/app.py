@@ -48,9 +48,9 @@ def home_page():
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('index.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
+        return render_template('index.html', repo_name="..", page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
     else:
-        return render_template('index.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
+        return render_template('index.html', repo_name="fpl_optimized", page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
 
 @app.route('/week.html')
 def best_gw_squads():
@@ -61,9 +61,9 @@ def best_gw_squads():
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('week.html', repo_name="..", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
+        return render_template('week.html', repo_name="..", page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('week.html', repo_name="fpl_optimized", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
+        return render_template('week.html', repo_name="fpl_optimized", page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
 
 # @app.route('/top_squads.html')
 # def top_squads():
@@ -85,9 +85,9 @@ def team_summary():
         league_list = f.read()
 
     if app.config['DEBUG']:
-        return render_template('team_summary.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+        return render_template('team_summary.html', repo_name="..", page_name="GW Summary", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template('team_summary.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+        return render_template('team_summary.html', repo_name="fpl_optimized", page_name="GW Summary", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
 @app.route('/ownership_trend.html')
@@ -98,9 +98,9 @@ def ownership_trend():
     target = list_dates[0]
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('ownership_trend.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('ownership_trend.html', repo_name="..", page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('ownership_trend.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('ownership_trend.html', repo_name="fpl_optimized", page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
 
 @app.route('/fpl_analytics_league.html')
@@ -111,9 +111,9 @@ def fpl_analytics():
     target = list_dates[0]
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('fpl_analytics_league.html', repo_name="..", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('fpl_analytics_league.html', repo_name="..", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('fpl_analytics_league.html', repo_name="fpl_optimized", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('fpl_analytics_league.html', repo_name="fpl_optimized", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
 @app.route('/live_gw.html')
 def live_gw_page():
@@ -125,10 +125,10 @@ def live_gw_page():
         league_list = f.read()
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="..", 
+        return render_template(page_name, repo_name="..", page_name="Live GW", 
             season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template(page_name, repo_name="fpl_optimized", 
+        return render_template(page_name, repo_name="fpl_optimized", page_name="Live GW", 
             season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
