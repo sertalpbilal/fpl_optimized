@@ -334,6 +334,7 @@ def get_fpl_analytics_league(target_folder, debug=False):
         with ProcessPoolExecutor(max_workers=8) as executor:
             review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
 
+    review_values = [i for i in review_values if i is not None]
     df = pd.DataFrame(review_values)
     print(df)
     df.to_csv(target_folder / 'fpl_analytics_league.csv')
@@ -343,13 +344,15 @@ def retry(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         cnt = 0
-        while cnt < 3:
+        while cnt < 4:
             try:
                 return f(*args, **kwargs)
             except:
                 cnt += 1
                 pass
-        raise RuntimeError("Function failed at least 3 times")
+        print("Function failed for 4 times")
+        print(kwargs)
+        return None
     return wrapped
 
 
