@@ -1732,7 +1732,7 @@ $(document).ready(function() {
     });
     setTimeout(() => {
         let cached_team = Vue.$cookies.get('team');
-        if (cached_team == undefined) {
+        if (cached_team == null) {
             $("#teamModal").modal('show');
         } else {
             app.autoTeamID(cached_team);
