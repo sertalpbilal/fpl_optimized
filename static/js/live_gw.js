@@ -1710,26 +1710,24 @@ async function app_initialize(refresh_team = false) {
 
     app.initEmptyData();
 
-    return setTimeout(() => {
-        Promise.all([
-                load_fixture_data(),
-                load_element_data(),
-                load_xp_data(),
-                load_rp_data(),
-                load_sample_data(),
-                load_team_data()
-            ]).then((values) => {
-                // $(".svg-wrapper").empty();
-                $("#updateModal").modal('hide');
-                setTimeout(() => {
-                    refresh_all_graphs();
-                }, 50);
-            })
-            .catch((error) => {
-                console.error("An error has occured: " + error);
-                $("#updateModal").modal('hide');
-            })
-    }, 50);
+    return Promise.all([
+            load_fixture_data(),
+            load_element_data(),
+            load_xp_data(),
+            load_rp_data(),
+            load_sample_data(),
+            load_team_data()
+        ]).then((values) => {
+            // $(".svg-wrapper").empty();
+            $("#updateModal").modal('hide');
+            setTimeout(() => {
+                refresh_all_graphs();
+            }, 50);
+        })
+        .catch((error) => {
+            console.error("An error has occured: " + error);
+            $("#updateModal").modal('hide');
+        })
 
 }
 
