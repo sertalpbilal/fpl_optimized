@@ -116,8 +116,8 @@ def get_data_fplreview(target_folder, page="massive-data-planner", debug=False):
         chrome=webdriver.Chrome()
         
     print(".", end="", flush=True)
-    wait = WebDriverWait(chrome, 30)
-    chrome.implicitly_wait(30)
+    wait = WebDriverWait(chrome, 60)
+    chrome.implicitly_wait(60)
     chrome.maximize_window()
     chrome.get(r"https://fplreview.com/" + page + "/")
     wait.until(EC.presence_of_element_located((By.NAME, "TeamID")))
