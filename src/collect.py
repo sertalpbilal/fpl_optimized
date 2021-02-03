@@ -12,6 +12,7 @@ import shutil
 import time
 from urllib.request import urlopen
 
+from functools import wraps
 import itertools
 import numpy as np
 import pandas as pd
@@ -332,12 +333,27 @@ def get_fpl_analytics_league(target_folder, debug=False):
     else:
         with ProcessPoolExecutor(max_workers=8) as executor:
             review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
-    
+
     df = pd.DataFrame(review_values)
     print(df)
     df.to_csv(target_folder / 'fpl_analytics_league.csv')
     
 
+def retry(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        cnt = 0
+        while cnt < 3:
+            try:
+                return f(*args, **kwargs)
+            except:
+                cnt += 1
+                pass
+        raise RuntimeError("Function failed at least 3 times")
+    return wrapped
+
+
+@retry
 def get_team_season_review(team, debug=False):
 
     env = read_static()
