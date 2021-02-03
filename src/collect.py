@@ -364,8 +364,8 @@ def get_team_season_review(team, debug=False):
         chrome = webdriver.Chrome(executable_path=env['unix_driver'], options=options, desired_capabilities=capa)
     
     print(".", end="", flush=True)
-    wait = WebDriverWait(chrome, 40)
-    chrome.implicitly_wait(40)
+    wait = WebDriverWait(chrome, 90)
+    chrome.implicitly_wait(90)
     chrome.maximize_window()
     chrome.get(r"https://fplreview.com/season-review")
 
