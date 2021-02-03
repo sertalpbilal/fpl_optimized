@@ -326,3 +326,13 @@ function getScreenCoords(x, y, ctm) {
     var yn = ctm.f + x * ctm.b + y * ctm.d;
     return { x: xn, y: yn };
 }
+
+function convertToJS(value) {
+    if (value == "true") {
+        return true;
+    } else if (value == "false") {
+        return false;
+    } else {
+        return value;
+    }
+}
