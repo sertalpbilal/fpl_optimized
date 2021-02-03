@@ -1697,4 +1697,7 @@ $(document).ready(function() {
             });
         });
     });
+    setTimeout(() => {
+        $("#teamModal").modal('show');
+    }, 500);
 });
