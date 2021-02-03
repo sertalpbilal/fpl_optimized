@@ -13,7 +13,7 @@ var app = new Vue({
         gw_fixture: undefined,
         team_id: "-1",
         remember_settings: false,
-        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosub'],
+        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -61,7 +61,7 @@ var app = new Vue({
             }
         },
         is_using_sample() {
-            return this.ownership_source !== "Official FPL API";
+            return (this.ownership_source !== "Official FPL API" && !_.isEmpty(this.sample_data));
         },
         current_sample_data() {
             if (!this.is_using_sample) { return [] }
@@ -1501,6 +1501,33 @@ async function draw_user_graph(options = {}) {
                 );
         }
         reset_graph_values();
+
+        let text_info = svg.append('g');
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 5)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Data: " + app.ownership_source);
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 10)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
+        text_info.append('text')
+            .attr("text-anchor", "start")
+            .attr("x", x(x_low) + 1)
+            .attr("y", y(y_high) + 15)
+            .attr("font-size", "3pt")
+            .attr("fill", "#ffffff45")
+            .style('pointer-events', 'none')
+            .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
+
 
         resolve("Done");
     })
