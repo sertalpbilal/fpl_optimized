@@ -249,10 +249,12 @@ span.twitter-link {
 .index-option {
     transition: border linear 0.4s;
     border: 1px solid rgb(131, 131, 131) !important;
+    transition: background-color linear 0.4s;
 }
 
 .index-option:hover {
     border: 1px solid aquamarine !important;
+    background-color: black;
 }
 
 .squad-btn {}
@@ -806,4 +808,22 @@ button.btn.btn-sm.zoomButton {
 
 .autosub {
     color: #d61e1e;
+}
+
+.index-card {
+    background-color: #343436;
+    font-size: 0.8rem;
+}
+
+.index-card h5 {
+    font-size: 0.9rem;
+}
+
+.index-card .card-title {
+    margin-bottom: 0.3rem;
+}
+
+.link-img {
+    font-size: xx-large;
+    pointer-events: inherit;
 }
