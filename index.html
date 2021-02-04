@@ -60,6 +60,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="week.html">Optimal Squads</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="live_gw.html">Live GW</a>
+                            </li>
                             <!-- <li class="nav-item">
                             <a class="nav-link" href="top_squads.html">Top 50 Squads</a>
                         </li> -->
@@ -67,13 +70,10 @@
                                 <a class="nav-link" href="team_summary.html">GW Summary</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="live_gw.html">Live GW</a>
+                                <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="ownership_trend.html">Ownership Trends</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
                             </li>
                             <li class="nav-item no-sep">
                                 <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
@@ -89,84 +89,196 @@
 
 <main class="container pt-3">
 
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-dark bg-squad-card text-white">
-                <div class="card-body text-center p-3">
-                    <span>FPL Optimized brings you optimal squads for the upcoming gameweeks with daily predictions. Expected points (xP) are provided by <a href="https://fplreview.com/">FPL Review</a>.</span>
+    <div class="row">
+
+
+        <div class="col-12 col-md-4 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white" id="tools-column">
+                <div class="card-header border-complement text-center scenario_title">Tools</div>
+                <div class="card-body p-2">
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <i class="link-img fas fa-puzzle-piece"></i>
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Optimal Squads</h5>
+                                    <p class="card-text">6 different optimal squads with daily forecasts.</p>
+                                    <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
+                                </div>
+                            </div>
+                            <a href="week.html" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <i class="link-img fas fa-chart-line"></i>
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Live GW</h5>
+                                    <p class="card-text">Expected and actual points with live tracking.</p>
+                                </div>
+                            </div>
+                            <a href="live_gw.html" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <i class="link-img fas fa-project-diagram"></i>
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Gameweek Summary</h5>
+                                    <p class="card-text">Expected and actual point comparison with a focus on players.</p>
+                                </div>
+                            </div>
+                            <a href="team_summary.html" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <i class="link-img fas fa-medal"></i>
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">FPL Analytics League</h5>
+                                    <p class="card-text">Comparison of data and analytics focused FPL managers.</p>
+                                </div>
+                            </div>
+                            <a href="fpl_analytics_league.html" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <i class="link-img fas fa-chart-bar"></i>
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Ownership Trends</h5>
+                                    <p class="card-text">Ownership data between last GW and last update.</p>
+                                </div>
+                            </div>
+                            <a href="ownership_trend.html" class="stretched-link"></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="col-12 col-md-4 mb-3">
+
+            <div class="card card-field border-dark bg-squad-card text-white" id="blog-column">
+                <div class="card-header border-complement text-center scenario_title">Blog Posts</div>
+                <div class="card-body p-2">
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <img class="card-img link-img w-100" src="/static/images/blog1.jpg" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Effective Ownership and Multiobjective Optimization</h5>
+                                    <p class="card-text">Why do we optimize for points? Does so-called "EO" matter at all?</p>
+                                </div>
+                            </div>
+                            <a href="https://alpscode.com/blog/optimal-in-fpl/" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <img class="card-img link-img w-100" src="/static/images/blog2.jpg" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">O-Ring Optimization</h5>
+                                    <p class="card-text">How to use optimization for having a balanced team</p>
+                                </div>
+                            </div>
+                            <a href="https://alpscode.com/blog/o-ring-optimization/" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <img class="card-img link-img w-100" src="/static/images/blog3.jpg" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">On Ownership Ratios</h5>
+                                    <p class="card-text">Role of ownership ratios in FPL data and how to exploit it. Can algorithms learn from FPL managers?</p>
+                                </div>
+                            </div>
+                            <a href="https://alpscode.com/blog/fpl-ownership-weight/" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="col-12 col-md-4 mb-3">
+
+            <div class="card card-field border-dark bg-squad-card text-white" id="resource-column">
+                <div class="card-header border-complement text-center scenario_title">Resources</div>
+                <div class="card-body p-2">
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <img class="card-img link-img w-100" src="/static/images/repo.jpg" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">GitHub Repository</h5>
+                                    <p class="card-text">Optimization codes for FPL using Python and sasoptpy using open-source solvers.</p>
+                                </div>
+                            </div>
+                            <a href="https://github.com/sertalpbilal/fpl_optimized" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" style="max-width: 540px;">
+                        <div class="row no-gutters index-card index-option">
+                            <div class="col-4 text-center my-auto">
+                                <img class="card-img link-img w-100" src="/static/images/youtube_1.jpg" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body p-2">
+                                    <h5 class="card-title">Optimization for FPL with OpenSolver</h5>
+                                    <p class="card-text">An introductory tutorial to using OpenSolver on MS Excel to optimize your FPL decisions</p>
+                                </div>
+                            </div>
+                            <a href="https://www.youtube.com/watch?v=4oWH3aOsjNI" class="stretched-link"></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
     </div>
 
-    <div class="row">
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Optimal Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>6 different objectives is optimized with daily expected points for the upcoming GW.</span>
-                    </div>
-                    <a href="week.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <!-- <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Top 50 Squads</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center p-4 text-center">
-                        <span>An interactive list of 50 optimal squads obtained using iterative optimization to analyze and compare.</span>
-                    </div>
-                    <a href="top_squads.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div> -->
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">GW Summary <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>A comparison of expected and realized points before and after GW for given team ID.</span>
-                    </div>
-                    <a href="team_summary.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Live GW Forecast <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Live GW expected and realized points based on game results and updated forecasts.</span>
-                    </div>
-                    <a href="live_gw.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership Trends <sup>Beta</sup></h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Ownership data between last GW and last update. Refreshed every 6 hours.</span>
-                    </div>
-                    <a href="ownership_trend.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-12 mb-0-lg mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white index-option">
-                <h5 class="card-header border-complement text-center scenario_title">FPL Analytics League</h5>
-                <div class="card-body field-body">
-                    <div class="d-flex mx-auto justify-content-center pl-3 pr-3 pt-1 pb-1 text-center">
-                        <span>Expected points league of FPL Analytics team. Send DM on Twitter to add your team ID.</span>
-                    </div>
-                    <a href="fpl_analytics_league.html" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
 
 
@@ -202,7 +314,7 @@
     let gw = "GW23";
     let next_gw = "GW23";
     let date = "2021-02-03";
-    let lastupdate = "2021-02-04T02:28:05.623067+00:00";
+    let lastupdate = "2021-02-04T03:42:29.616461+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -211,6 +323,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-04T02:28:05.623067+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-04T03:42:29.616461+00:00</div>
 
 </html>
