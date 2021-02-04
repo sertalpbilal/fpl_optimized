@@ -44,6 +44,8 @@ def folder_order(fname):
 def home_page():
     all_dates = glob.glob('build/data/*/*/*')
     all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
     target = all_dates[0].split('/')
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
@@ -57,6 +59,8 @@ def best_gw_squads():
     all_dates = glob.glob('build/data/*/*/*/output/no_limit_best_11.csv')
     # print(all_dates)
     all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
     target = all_dates[0].split('/')
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
@@ -94,6 +98,8 @@ def team_summary():
 def ownership_trend():
     all_dates = glob.glob('build/data/*/*/*/input/element.csv')
     all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     target = list_dates[0]
     list_dates = [' / '.join(i) for i in list_dates]
@@ -107,6 +113,8 @@ def ownership_trend():
 def fpl_analytics():
     all_dates = glob.glob('build/data/*/*/*/input/fpl_analytics_league.csv')
     all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     target = list_dates[0]
     list_dates = [' / '.join(i) for i in list_dates]
@@ -148,6 +156,8 @@ def list_one_per_gw():
 
     all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
     all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
     list_dates = ([i.split('/')[2:5] for i in all_dates])
     filtered_dates = []
     exist = set()
