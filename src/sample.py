@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-# from collect import sample_fpl_teams
-from collect import create_folders
+from collect import sample_fpl_teams
+# from collect import create_folders
 import os
 
 if __name__ == "__main__":
