@@ -140,6 +140,25 @@ def live_gw_page():
             season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
+@app.route('/fpl_fixture.html')
+def fpl_fixture_page():
+    page_name = 'fpl_fixture.html'
+
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+
+    with open('static/json/fpl_analytics.json') as f:
+        league_list = f.read()
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="FPL Fixture", 
+            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+    else:
+        return render_template(page_name, repo_name="", page_name="FPL Fixture", 
+            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+
+
+
+
 def list_all_snapshots():
     pass
 
