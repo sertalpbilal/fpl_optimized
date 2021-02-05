@@ -2,7 +2,7 @@
 <html lang="en_US">
 
 <head>
-    <title>FPL Optimized  - Ownership Trends</title>
+    <title>FPL Optimized  - FPL Fixture</title>
     <meta charset="UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -86,59 +86,31 @@
             </div>
         </header>
 
+<main class="pt-3 container">
 
-<main class="container pt-3">
-
-    <div class="row">
+    <div class="row" v-cloak id="fixture-main">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership Trends</h5>
-                <!-- <div class="scenario_detail">Status of the selection using the data available before the deadline.</div> -->
-                <div class="card-body">
-
-                    <div id="ownership_graph" class="mb-3 mx-auto">
-
-                    </div>
-
-                    <table id="trend_table" class="table table-striped table-borderless table-sm text-white text-small w-100" v-if="is_fully_ready" v-cloak>
-                        <thead>
-                            <tr>
-                                <th colspan=2></th>
-                                <th colspan=3 class="text-center bottom-gap-bordered">FPL API</th>
-                                <th colspan=2 class="text-center bottom-gap-bordered">Sample - Top 1K</th>
-                                <th colspan=3></th>
-                            </tr>
-                            <tr class="midrule">
-                                <th>Name</th>
-                                <th>Team</th>
-                                <th class="text-right">Now</th>
-                                <th class="text-right">Last GW</th>
-                                <th class="text-right">Trend</th>
-                                <th class="text-right">Last GW</th>
-                                <th class="text-right">Estimated</th>
-                                <th class="text-center">Pos</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-right">ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="i in element_now.values">
-                                <td>{{ i.web_name }}</td>
-                                <td>{{ team_codes[i.team_code].short }}</td>
-                                <td class="text-right">{{ i.selected_by_percent }}</td>
-                                <td class="text-right">{{ last_gw_data[i.id] }}</td>
-                                <td class="text-right">{{ getWithSign(parseFloat(i.selected_by_percent) - parseFloat(last_gw_data[i.id])) }}</td>
-                                <td class="text-right">{{ parseFloat(sample_last_gw[i.id]).toFixed(2) }}</td>
-                                <td class="text-right">{{ (sample_estimated[i.id]).toFixed(2) }}</td>
-                                <td class="text-center">{{ element_type[i.element_type].short }}</td>
-                                <td class="text-right">{{ parseInt(i.now_cost)/10 }}</td>
-                                <td class="text-right">{{ i.id }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="text-center d-block mx-auto" id="loading_box">
-                        Loading data... Please wait...
-                        <img class="mx-auto d-block" src="static/images/loading.svg">
+                <h5 class="card-header border-complement text-center scenario_title">FPL Fixture</h5>
+                <div class="scenario_detail">
+                    A detailed table of all FPL Gameweeks
+                </div>
+                <div class="card-body pl-0 pr-0">
+                    <div>
+                        <table class="table table-striped table-sm text-small text-white table-responsive" id="main_fixture" v-if="is_fixture_ready && is_main_ready">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th v-for="gw in gameweeks" :id="gw.this_gw ? 'active_gw' : 'col_gw' + gw.no" :class="{'active_gw_col': gw.this_gw}">{{ gw.text }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(t,id) in teams">
+                                    <td :data-order="id">{{ t.name }}</td>
+                                    <td v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw}" :data-order="getSum(rivals[id+1][gw.no].map(j=>j.fdr))" :style="{'background-color': get_color(rivals[id+1][gw.no]) }">{{ rivals[id+1][gw.no].map(j => j.rival).join(' + ') }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -146,7 +118,38 @@
     </div>
 
 
+    <!-- <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-body text-left">
+                    <h5>Q/A</h5>
+                    <b>Q?</b>
+                    <p class="answer">A</p>
+                </div>
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div> -->
+
 </main>
+
+<div class="modal" tabindex="-1" role="dialog" id="waitModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fetching data...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Fetching data and updating visuals. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
  </div>
 
@@ -174,133 +177,38 @@
 <script>
     let repo_name = ""
     let season = "2020-21";
-    let gw = "GW23";
+    let gw = "GW22";
     let next_gw = "GW23";
-    let date = "2021-02-04";
+    let date = "2021-02-02";
     let lastupdate = "2021-02-05T03:35:11.787617+00:00";
     let listdates = [
         "2020-21 / GW23 / 2021-02-04 ", 
-        "2020-21 / GW23 / 2021-02-03 ", 
-        "2020-21 / GW23 / 2021-02-02 ", 
         "2020-21 / GW22 / 2021-02-02 ", 
-        "2020-21 / GW22 / 2021-02-01 ", 
-        "2020-21 / GW22 / 2021-01-31 ", 
-        "2020-21 / GW22 / 2021-01-30 ", 
         "2020-21 / GW21 / 2021-01-30 ", 
-        "2020-21 / GW21 / 2021-01-29 ", 
-        "2020-21 / GW21 / 2021-01-28 ", 
-        "2020-21 / GW21 / 2021-01-27 ", 
-        "2020-21 / GW21 / 2021-01-26 ", 
         "2020-21 / GW20 / 2021-01-26 ", 
-        "2020-21 / GW20 / 2021-01-25 ", 
-        "2020-21 / GW20 / 2021-01-24 ", 
-        "2020-21 / GW20 / 2021-01-23 ", 
-        "2020-21 / GW20 / 2021-01-22 ", 
-        "2020-21 / GW20 / 2021-01-21 ", 
-        "2020-21 / GW20 / 2021-01-20 ", 
-        "2020-21 / GW20 / 2021-01-19 ", 
-        "2020-21 / GW20 / 2021-01-18 ", 
-        "2020-21 / GW20 / 2021-01-17 ", 
-        "2020-21 / GW20 / 2021-01-16 ", 
         "2020-21 / GW19 / 2021-01-16 ", 
-        "2020-21 / GW19 / 2021-01-15 ", 
-        "2020-21 / GW19 / 2021-01-14 ", 
-        "2020-21 / GW19 / 2021-01-13 ", 
-        "2020-21 / GW19 / 2021-01-12 ", 
         "2020-21 / GW18 / 2021-01-12 ", 
-        "2020-21 / GW18 / 2021-01-11 ", 
-        "2020-21 / GW18 / 2021-01-10 ", 
-        "2020-21 / GW18 / 2021-01-09 ", 
-        "2020-21 / GW18 / 2021-01-08 ", 
-        "2020-21 / GW18 / 2021-01-07 ", 
-        "2020-21 / GW18 / 2021-01-06 ", 
-        "2020-21 / GW18 / 2021-01-05 ", 
-        "2020-21 / GW18 / 2021-01-04 ", 
-        "2020-21 / GW18 / 2021-01-03 ", 
-        "2020-21 / GW18 / 2021-01-02 ", 
-        "2020-21 / GW18 / 2021-01-01 ", 
         "2020-21 / GW17 / 2021-01-01 ", 
-        "2020-21 / GW17 / 2020-12-31 ", 
-        "2020-21 / GW17 / 2020-12-30 ", 
-        "2020-21 / GW17 / 2020-12-29 ", 
-        "2020-21 / GW17 / 2020-12-28 ", 
         "2020-21 / GW16 / 2020-12-28 ", 
-        "2020-21 / GW16 / 2020-12-27 ", 
-        "2020-21 / GW16 / 2020-12-26 ", 
         "2020-21 / GW15 / 2020-12-26 ", 
-        "2020-21 / GW15 / 2020-12-25 ", 
-        "2020-21 / GW15 / 2020-12-24 ", 
-        "2020-21 / GW15 / 2020-12-23 ", 
-        "2020-21 / GW15 / 2020-12-22 ", 
-        "2020-21 / GW15 / 2020-12-21 ", 
-        "2020-21 / GW15 / 2020-12-20 ", 
-        "2020-21 / GW15 / 2020-12-19 ", 
         "2020-21 / GW14 / 2020-12-19 ", 
-        "2020-21 / GW14 / 2020-12-18 ", 
-        "2020-21 / GW14 / 2020-12-17 ", 
-        "2020-21 / GW14 / 2020-12-16 ", 
-        "2020-21 / GW14 / 2020-12-15 ", 
         "2020-21 / GW13 / 2020-12-15 ", 
-        "2020-21 / GW13 / 2020-12-14 ", 
-        "2020-21 / GW13 / 2020-12-13 ", 
-        "2020-21 / GW13 / 2020-12-12 ", 
         "2020-21 / GW12 / 2020-12-11 ", 
-        "2020-21 / GW12 / 2020-12-10 ", 
-        "2020-21 / GW12 / 2020-12-09 ", 
-        "2020-21 / GW12 / 2020-12-08 ", 
-        "2020-21 / GW12 / 2020-12-07 ", 
-        "2020-21 / GW12 / 2020-12-06 ", 
-        "2020-21 / GW12 / 2020-12-05 ", 
         "2020-21 / GW11 / 2020-12-05 ", 
-        "2020-21 / GW11 / 2020-12-04 ", 
-        "2020-21 / GW11 / 2020-12-03 ", 
-        "2020-21 / GW11 / 2020-12-02 ", 
-        "2020-21 / GW11 / 2020-12-01 ", 
-        "2020-21 / GW11 / 2020-11-30 ", 
-        "2020-21 / GW11 / 2020-11-29 ", 
-        "2020-21 / GW11 / 2020-11-28 ", 
         "2020-21 / GW10 / 2020-11-27 ", 
-        "2020-21 / GW10 / 2020-11-26 ", 
-        "2020-21 / GW10 / 2020-11-25 ", 
-        "2020-21 / GW10 / 2020-11-24 ", 
-        "2020-21 / GW10 / 2020-11-23 ", 
-        "2020-21 / GW10 / 2020-11-22 ", 
-        "2020-21 / GW10 / 2020-11-21 ", 
         "2020-21 / GW9 / 2020-11-21 ", 
-        "2020-21 / GW9 / 2020-11-20 ", 
-        "2020-21 / GW9 / 2020-11-19 ", 
-        "2020-21 / GW9 / 2020-11-18 ", 
-        "2020-21 / GW9 / 2020-11-17 ", 
-        "2020-21 / GW9 / 2020-11-16 ", 
-        "2020-21 / GW9 / 2020-11-15 ", 
-        "2020-21 / GW9 / 2020-11-14 ", 
-        "2020-21 / GW9 / 2020-11-13 ", 
-        "2020-21 / GW9 / 2020-11-12 ", 
-        "2020-21 / GW9 / 2020-11-11 ", 
-        "2020-21 / GW9 / 2020-11-10 ", 
-        "2020-21 / GW9 / 2020-11-09 ", 
-        "2020-21 / GW9 / 2020-11-08 ", 
-        "2020-21 / GW9 / 2020-11-07 ", 
-        "2020-21 / GW9 / 2020-11-06 ", 
         "2020-21 / GW8 / 2020-11-06 ", 
-        "2020-21 / GW8 / 2020-11-05 ", 
-        "2020-21 / GW8 / 2020-11-04 ", 
-        "2020-21 / GW8 / 2020-11-03 ", 
-        "2020-21 / GW8 / 2020-11-02 ", 
-        "2020-21 / GW8 / 2020-11-01 ", 
-        "2020-21 / GW8 / 2020-10-31 ", 
-        "2020-21 / GW8 / 2020-10-30 ", 
         "2020-21 / GW7 / 2020-10-30 ", 
-        "2020-21 / GW7 / 2020-10-29 ", 
-        "2020-21 / GW7 / 2020-10-28 ", 
     ];
-    let is_active = false ;
-    let active_gw = -1 ;
+    let is_active = true ;
+    let active_gw = 22 ;
 </script>
 
 <script src="/static/js/main.js"></script>
 
-<script src="/static/js/ownership_trend.js"></script>
+<script src="/static/js/sampling_utils.js"></script>
+
+<script src="/static/js/fpl_fixture.js"></script>
 
 </body>
 

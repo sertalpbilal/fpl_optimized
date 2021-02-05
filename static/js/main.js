@@ -128,6 +128,42 @@ const downloadToFile = (content, filename, contentType) => {
 
 };
 
+function get_fpl_main_data() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/bootstrap-static/`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                console.log("Cannot get FPL main data");
+                reject("No data");
+            }
+        });
+    });
+}
+
+function get_entire_fixture() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                console.log("Cannot get fixture");
+                reject("No data");
+            }
+        });
+    });
+};
+
 function get_fixture(gw) {
     return new Promise((resolve, reject) => {
         $.ajax({

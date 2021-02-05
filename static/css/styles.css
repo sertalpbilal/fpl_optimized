@@ -827,3 +827,29 @@ button.btn.btn-sm.zoomButton {
     font-size: xx-large;
     pointer-events: inherit;
 }
+
+#main_fixture tr td:first-child,
+#main_fixture tr th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #434343;
+    z-index: 2;
+}
+
+#main_fixture {
+    white-space: nowrap;
+}
+
+
+/* 
+#main_fixture th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+} */
+
+.active_gw_col {
+    background-color: #ff9400;
+    border-left: 3px solid #ff9400;
+    border-right: 3px solid #ff9400;
+}
