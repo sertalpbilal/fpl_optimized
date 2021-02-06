@@ -169,7 +169,7 @@
                             <div class="text-center p-0">Home Field Adv.</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
-                                    <input type="number" step="0.01" class="form-control live-select" v-model.lazy="hfa">
+                                    <input type="number" step="0.01" class="form-control live-select" v-model.lazy="hfa" @change="invalidate_cache">
                                 </div>
                             </div>
                         </div>
@@ -269,7 +269,7 @@
     let gw = "GW23";
     let next_gw = "GW23";
     let date = "2021-02-05";
-    let lastupdate = "2021-02-06T03:40:49.179369+00:00";
+    let lastupdate = "2021-02-06T03:50:58.201292+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -284,6 +284,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T03:40:49.179369+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T03:50:58.201292+00:00</div>
 
 </html> 
