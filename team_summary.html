@@ -120,7 +120,7 @@
                                 <div class="text-center p-0">Ownership Data</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#sourceModal">
-                                        {{ ownership_source }}
+                                        {{ warn_old_data && is_using_sample ? "(Last GW)" : "" }} {{ ownership_source }}
                                     </div>
                                 </div>
                             </div>
@@ -513,7 +513,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <select class="form-control" v-model="ownership_source" @change="changeData(); close_source_modal();">
-                        <option  v-for="i in availableDataSources">{{ i }}</option>
+                        <option  v-for="i in availableDataSources" :value="i">{{ warn_old_data && i.includes("Sample") ? "(Last GW)" : ""}} {{ i }}</option>
                     </select>
                 </div>
             </div>
@@ -1027,7 +1027,7 @@
     let gw = "GW23";
     let next_gw = "GW23";
     let date = "2021-02-05";
-    let lastupdate = "2021-02-06T01:58:09.029842+00:00";
+    let lastupdate = "2021-02-06T02:05:30.984097+00:00";
     let listdates = [
         "2020-21 / GW23 / 2021-02-05 ", 
         "2020-21 / GW22 / 2021-02-02 ", 
@@ -1057,6 +1057,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T01:58:09.029842+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T02:05:30.984097+00:00</div>
 
 </html> 

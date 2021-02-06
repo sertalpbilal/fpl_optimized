@@ -35,7 +35,8 @@ var app = new Vue({
         edit_table_cache: undefined,
         edit_table: "",
         edit_table_ready: false,
-        edit_overridden_buffer: undefined
+        edit_overridden_buffer: undefined,
+        warn_old_data: false
     },
     created: function() {
         this.overridden_values = {};
@@ -104,7 +105,7 @@ var app = new Vue({
             if (success) {
                 this.sample_data = data;
                 this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
-                if (this.ownership_source == this.available_sources[0]) {
+                if (this.ownership_source == this.available_sources[0] && !this.warn_old_data) {
                     this.ownership_source = this.available_sources[1];
                 }
             } else {
@@ -1010,26 +1011,28 @@ function load_gw() {
         url: `sample/${target_gw}/fpl_sampled.json`,
         dataType: "json",
         success: function(data) {
+            app.warn_old_data = false;
             app.saveSampleData(true, data);
         },
         error: function() {
             console.log("This gw has no sample data");
-            app.saveSampleData(false, []);
-            // console.log("Cannot get GW sample, trying last week")
-            // if (gw == next_gw) {
-            //     target_gw = parseInt(gw.slice(2)) - 1;
-            // }
-            // $.ajax({
-            //     type: "GET",
-            //     url: `sample/${target_gw}/fpl_sampled.json`,
-            //     dataType: "json",
-            //     success: function(data) {
-            //         app.saveSampleData(true, data);
-            //     },
-            //     error: function() {
-            //         app.saveSampleData(false, [])
-            //     }
-            // });
+            // app.saveSampleData(false, []);
+            console.log("Cannot get GW sample, trying last week")
+            if (gw == next_gw) {
+                target_gw = parseInt(gw.slice(2)) - 1;
+            }
+            $.ajax({
+                type: "GET",
+                url: `sample/${target_gw}/fpl_sampled.json`,
+                dataType: "json",
+                success: function(data) {
+                    app.warn_old_data = true;
+                    app.saveSampleData(true, data);
+                },
+                error: function() {
+                    app.saveSampleData(false, [])
+                }
+            });
         }
     });
 
