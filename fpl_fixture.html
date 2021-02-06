@@ -175,8 +175,8 @@
                         </div>
 
                     </div>
-                    <div>
-                        <table class="table table-striped table-sm text-small text-white table-responsive" id="main_fixture" v-if="is_fixture_ready && is_main_ready">
+                    <div v-if="is_fixture_ready && is_main_ready">
+                        <table class="table table-striped table-sm text-small text-white table-responsive" id="main_fixture">
                             <thead>
                                 <tr>
                                     <th>Team</th>
@@ -192,10 +192,13 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="text-center d-block mx-auto" id="loading_box" v-else>
-                            Loading data... Please wait...
-                            <img class="mx-auto d-block" src="static/images/loading.svg">
+                        <div class="d-flex justify-content-center" id="button-box">
+
                         </div>
+                    </div>
+                    <div class="text-center d-block mx-auto" id="loading_box" v-else>
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
                     </div>
                 </div>
             </div>
@@ -269,7 +272,7 @@
     let gw = "GW23";
     let next_gw = "GW23";
     let date = "2021-02-05";
-    let lastupdate = "2021-02-06T03:50:58.201292+00:00";
+    let lastupdate = "2021-02-06T04:04:50.243915+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -284,6 +287,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T03:50:58.201292+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T04:04:50.243915+00:00</div>
 
 </html> 

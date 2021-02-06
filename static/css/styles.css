@@ -887,6 +887,10 @@ select.live-select option {
     color: black;
 }
 
+#button-box .btn {
+    font-size: calc(0.8em + 0.05vw);
+}
+
 
 /* 
 select.live-select option:active {
