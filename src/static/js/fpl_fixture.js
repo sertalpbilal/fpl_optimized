@@ -8,10 +8,15 @@ var app = new Vue({
         fte_data: undefined,
         choice_data_source: [
             { 'name': "FiveThirtyEight", 'attribute': 'fdr_fte' },
+            { 'name': "FiveThirtyEight (Opp. Offense)", 'attribute': 'fdr_off' },
+            { 'name': "FiveThirtyEight (Opp. Defense)", 'attribute': 'fdr_def' },
             { 'name': "Official FPL", 'attribute': 'fdr' }
         ],
         option_data_source: 0,
-        choice_data_type: ["FDR", "Difference"],
+        choice_data_type: [
+            { name: "FDR", suffix: "" },
+            { name: "Difference", suffix: "_diff" },
+        ],
         option_data_type: 0,
         choice_table_display: ["Teams", "Raw Value"],
         option_table_display: 0,
@@ -47,10 +52,11 @@ var app = new Vue({
             weeks.find(i => i.no == this_gw)['this_gw'] = true;
             return weeks
         },
-        fdr() {
+        fdr_fte() {
             let fdr = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
             teams.forEach((team) => {
+                let f = fdr[team - 1] = {};
                 let team_name = teams_ordered[team - 1].name;
                 let entry = app.fte_data.find(i => i.name == team_name)
                 if (entry == undefined) {
@@ -58,16 +64,14 @@ var app = new Vue({
                     entry = app.fte_data.find(i => i.name == team_long)
                 }
 
-                if (this.option_data_source == 0) { // FTE
-                    fdr[team - 1] = parseFloat(entry.off) - parseFloat(entry.def);
-                } else if (this.option_data_source == 1) { // FPL
-                    fdr[team - 1] = 1;
-                }
+                f['off'] = parseFloat(entry.off);
+                f['def'] = parseFloat(entry.def);
+                f['fdr'] = parseFloat(entry.off) - parseFloat(entry.def);
             })
             return fdr;
         },
         rivals() {
-            let fdr = this.fdr;
+            let fdr = this.fdr_fte;
             let fd = this.fixture_data;
             let rivals = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
@@ -81,9 +85,13 @@ var app = new Vue({
                         return {
                             'rival': teams_ordered[i.team_a - 1].short.toUpperCase(),
                             'fdr': i.team_h_difficulty,
-                            'fdr_fte': fdr[i.team_a - 1],
                             'fdr_diff': i.team_h_difficulty - i.team_a_difficulty,
-                            'fdr_fte_diff': fdr[i.team_a - 1] - fdr[i.team_h - 1] * Math.exp(this.hfa)
+                            'fdr_fte': fdr[i.team_a - 1].fdr,
+                            'fdr_fte_diff': fdr[i.team_a - 1].fdr - fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
+                            'fdr_off': fdr[i.team_a - 1].off,
+                            'fdr_off_diff': fdr[i.team_a - 1].off + fdr[i.team_h - 1].def / Math.exp(this.hfa),
+                            'fdr_def': -fdr[i.team_a - 1].def,
+                            'fdr_def_diff': -(fdr[i.team_a - 1].def + fdr[i.team_h - 1].off * Math.exp(this.hfa)),
                         }
                     })
                     r[gw] = r[gw].concat(data);
@@ -92,9 +100,13 @@ var app = new Vue({
                         return {
                             'rival': teams_ordered[i.team_h - 1].short.toLowerCase(),
                             'fdr': i.team_a_difficulty,
-                            'fdr_fte': fdr[i.team_h - 1] * Math.exp(this.hfa),
                             'fdr_diff': i.team_a_difficulty - i.team_h_difficulty,
-                            'fdr_fte_diff': fdr[i.team_h - 1] * Math.exp(this.hfa) - fdr[i.team_a - 1]
+                            'fdr_fte': fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
+                            'fdr_fte_diff': fdr[i.team_h - 1].fdr * Math.exp(this.hfa) - fdr[i.team_a - 1].fdr,
+                            'fdr_off': fdr[i.team_h - 1].off * Math.exp(this.hfa),
+                            'fdr_off_diff': fdr[i.team_h - 1].off * Math.exp(this.hfa) + fdr[i.team_a - 1].def,
+                            'fdr_def': -(fdr[i.team_h - 1].def / Math.exp(this.hfa)),
+                            'fdr_def_diff': -(fdr[i.team_h - 1].def / Math.exp(this.hfa) + fdr[i.team_a - 1].off),
                         }
                     })
                     r[gw] = r[gw].concat(data);
@@ -110,8 +122,7 @@ var app = new Vue({
             return this.choice_mgw_value[this.option_mgw_value][1]
         },
         fdr_attribute() {
-            let suffix = ""
-            if (this.option_data_type == 1) { suffix = "_diff" }
+            let suffix = this.choice_data_type[this.option_data_type].suffix;
             return (this.choice_data_source[this.option_data_source].attribute) + suffix;
         }
     },

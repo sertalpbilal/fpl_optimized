@@ -27,7 +27,7 @@
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
                                     <select class="form-control live-select" id="data-type-select" v-model="option_data_type" @change="invalidate_cache">
-                                        <option v-for="(i, id) in choice_data_type" :value="id">{{ i }}</option>
+                                        <option v-for="(i, id) in choice_data_type" :value="id">{{ i.name }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -75,6 +75,15 @@
                                         <option :value="true">On</option>
                                         <option :value="false">Off</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-column metric mw-10 ml-1">
+                            <div class="text-center p-0">Home Field Adv.</div>
+                            <div class="setting-value text-center p-0">
+                                <div class="d-flex flex-row setting-line mb-0">
+                                    <input type="number" step="0.01" class="form-control live-select" v-model.lazy="hfa">
                                 </div>
                             </div>
                         </div>
