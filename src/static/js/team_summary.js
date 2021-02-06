@@ -1900,6 +1900,7 @@ $("#customInputModal").on('hidden.bs.modal', function(e) {
 
 $(document).ready(function() {
     load_gw();
+    Vue.$cookies.config('30d')
     let t = Vue.$cookies.get('team_id');
     if (t !== null) {
         app.autoTeamID(t)

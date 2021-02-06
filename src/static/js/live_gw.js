@@ -1732,6 +1732,7 @@ async function app_initialize(refresh_team = false) {
 }
 
 $(document).ready(function() {
+    Vue.$cookies.config('30d')
     app_initialize().then(() => {
         let cached_team = Vue.$cookies.get('team_id');
         if (cached_team !== null) {
