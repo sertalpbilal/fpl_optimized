@@ -2,6 +2,7 @@ var app = new Vue({
     el: '#app',
     data: {
         current_dt: new Date(),
+        fill_width: false,
         fixture_data: undefined,
         main_data: undefined,
         fte_data: undefined,

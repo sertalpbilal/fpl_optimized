@@ -86,7 +86,7 @@
             </div>
         </header>
 
-<main class="pt-3 container">
+<main class="pt-3" :class="{'container-fluid': fill_width, 'container': !fill_width}" v-cloak>
 
     <div class="row" v-cloak id="fixture-main">
         <div class="col-12 mb-3">
@@ -97,7 +97,7 @@
                 </div>
                 <div class="card-body pl-0 pr-0">
                     <div class="d-flex flex-wrap justify-content-center mb-3">
-                        <div class="flex-column metric mw-10">
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">Data Source</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
@@ -108,7 +108,7 @@
                             </div>
                         </div>
 
-                        <div class="flex-column metric mw-10">
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">Values</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
@@ -119,7 +119,7 @@
                             </div>
                         </div>
 
-                        <div class="flex-column metric mw-10">
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">Show</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
@@ -130,7 +130,7 @@
                             </div>
                         </div>
 
-                        <div class="flex-column metric mw-10">
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">DGW Order</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
@@ -141,11 +141,23 @@
                             </div>
                         </div>
 
-                        <div class="flex-column metric mw-10">
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">Highlight DGW</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
                                     <select class="form-control live-select" id="data-type-select" v-model="option_show_double" @change="invalidate_cache">
+                                        <option :value="true">On</option>
+                                        <option :value="false">Off</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-column metric mw-10 ml-1 d-none d-md-block">
+                            <div class="text-center p-0">Fill Width</div>
+                            <div class="setting-value text-center p-0">
+                                <div class="d-flex flex-row setting-line mb-0">
+                                    <select class="form-control live-select" id="data-type-select" v-model="fill_width" @change="invalidate_cache">
                                         <option :value="true">On</option>
                                         <option :value="false">Off</option>
                                     </select>
@@ -248,7 +260,7 @@
     let gw = "GW23";
     let next_gw = "GW23";
     let date = "2021-02-05";
-    let lastupdate = "2021-02-06T01:46:36.055975+00:00";
+    let lastupdate = "2021-02-06T01:58:09.029842+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -263,6 +275,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T01:46:36.055975+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-06T01:58:09.029842+00:00</div>
 
 </html> 
