@@ -144,19 +144,22 @@ def live_gw_page():
 def fpl_fixture_page():
     page_name = 'fpl_fixture.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    # target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    all_dates = glob.glob('build/data/*/*/*/input/fivethirtyeight_spi.csv')
+    all_dates.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_dates = [i.replace('\\', '/') for i in all_dates]
+    list_dates = ([i.split('/')[2:5] for i in all_dates])
+    target = list_dates[0]
 
-    with open('static/json/fpl_analytics.json') as f:
-        league_list = f.read()
+    data_target = '/'.join(all_dates[0].split('/')[1:])
 
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", page_name="FPL Fixture", 
-            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time)
     else:
         return render_template(page_name, repo_name="", page_name="FPL Fixture", 
-            season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
-
-
+            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time)
 
 
 def list_all_snapshots():

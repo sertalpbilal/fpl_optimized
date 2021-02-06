@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body {
     background-color: #343436;
     color: lightgray;
@@ -849,7 +855,52 @@ button.btn.btn-sm.zoomButton {
 } */
 
 .active_gw_col {
-    background-color: #ff9400;
-    border-left: 3px solid #ff9400;
-    border-right: 3px solid #ff9400;
+    background-color: #ff9500;
+    border-left: 3px solid #ff9500;
+    border-right: 3px solid #ff9500;
 }
+
+.multi-gw::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: #ebf975;
+    content: "\f005 ";
+}
+
+#main_fixture tbody tr:last-child td.active_gw_col {
+    border-bottom: 3px solid #ff9500;
+}
+
+.live-select {
+    background: none;
+    color: white;
+    font-size: calc(0.8em + 0.05vw);
+}
+
+.live-select:focus {
+    background: none;
+    color: white;
+}
+
+select.live-select option {
+    background-color: darkgray;
+    color: black;
+}
+
+
+/* 
+select.live-select option:active {
+    border-color: gray;
+    outline: none;
+    background-color: red !important;
+    color: white;
+} */
+
+
+/* option:hover,
+option:focus,
+option:active,
+option:checked {
+    background-color: red;
+    color: black;
+} */

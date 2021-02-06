@@ -48,24 +48,24 @@ let team_codes = {
 let teams_ordered = [
     { name: "Arsenal", short: "ARS" },
     { name: "Aston Villa", short: "AVL" },
-    { name: "Brighton", short: "BHA" },
+    { name: "Brighton", short: "BHA", long: "Brighton and Hove Albion" },
     { name: "Burnley", short: "BUR" },
     { name: "Chelsea", short: "CHE" },
     { name: "Crystal Palace", short: "CRY" },
     { name: "Everton", short: "EVE" },
     { name: "Fulham", short: "FUL" },
-    { name: "Leicester", short: "LEI" },
-    { name: "Leeds", short: "LEE" },
+    { name: "Leicester", short: "LEI", long: "Leicester City" },
+    { name: "Leeds", short: "LEE", long: "Leeds United" },
     { name: "Liverpool", short: "LIV" },
-    { name: "Man City", short: "MCI" },
-    { name: "Man Utd", short: "MUN" },
+    { name: "Man City", short: "MCI", long: "Manchester City" },
+    { name: "Man Utd", short: "MUN", long: "Manchester United" },
     { name: "Newcastle", short: "NEW" },
-    { name: "Sheffield Utd", short: "SHU" },
+    { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
     { name: "Southampton", short: "SOU" },
-    { name: "Spurs", short: "TOT" },
-    { name: "West Brom", short: "WBA" },
-    { name: "West Ham", short: "WHU" },
-    { name: "Wolves", short: "WOL" }
+    { name: "Spurs", short: "TOT", long: "Tottenham Hotspur" },
+    { name: "West Brom", short: "WBA", long: "West Bromwich Albion" },
+    { name: "West Ham", short: "WHU", long: "West Ham United" },
+    { name: "Wolves", short: "WOL", long: "Wolverhampton" }
 ]
 
 let element_type = {
@@ -110,6 +110,18 @@ function getWithSign(val, digits = 2) {
 
 function getSum(arr) {
     return arr.reduce((a, b) => a + b, 0)
+}
+
+function getAvg(arr) {
+    return arr.reduce((a, b) => a + b, 0) / Math.max(arr.length, 1);
+}
+
+function getMin(arr) {
+    return Math.min(...arr)
+}
+
+function getMax(arr) {
+    return Math.max(...arr)
 }
 
 const downloadToFile = (content, filename, contentType) => {
@@ -199,7 +211,6 @@ function get_sample_data(target_gw) {
             }
         });
     });
-
 }
 
 function get_cached_element_data({ season, gw, date }) {
@@ -340,6 +351,22 @@ function getRPData(gw) {
             },
             error: function(xhr, status, error) {
                 reject("Error when getting live RP data");
+            }
+        });
+    });
+}
+
+function read_local_file(url) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: url,
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                reject("No data");
             }
         });
     });

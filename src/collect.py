@@ -42,6 +42,7 @@ def get_all_data():
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder)
     generate_intermediate_layer(input_folder)
+    get_fivethirtyeight_data(input_folder)
     return input_folder, output_folder
 
 
@@ -437,6 +438,14 @@ def get_team_season_review(team, debug=False):
     return team_vals
 
 
+def get_fivethirtyeight_data(target_folder):
+    # https://projects.fivethirtyeight.com/soccer-api/club/spi_global_rankings.csv
+    fte_data = "https://projects.fivethirtyeight.com/soccer-api/club/spi_global_rankings.csv"
+    with urlopen(fte_data) as url, open(target_folder / 'fivethirtyeight_spi.csv', 'w') as f:
+        data = url.read().decode()
+        f.write(data)
+
+
 # TODO: fbref?
 
 if __name__ == "__main__":
@@ -450,7 +459,12 @@ if __name__ == "__main__":
     # r = get_fpl_info('live', GW=17)
     # print(r)
 
+    # input_folder, output_folder = create_folders()
+    # get_fpl_analytics_league(input_folder, True)
+
+    # pass
+
     input_folder, output_folder = create_folders()
-    get_fpl_analytics_league(input_folder, True)
+    get_fivethirtyeight_data(input_folder)
 
     pass
