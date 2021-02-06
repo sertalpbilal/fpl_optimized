@@ -83,7 +83,7 @@
                             <div class="text-center p-0">Home Field Adv.</div>
                             <div class="setting-value text-center p-0">
                                 <div class="d-flex flex-row setting-line mb-0">
-                                    <input type="number" step="0.01" class="form-control live-select" v-model.lazy="hfa">
+                                    <input type="number" step="0.01" class="form-control live-select" v-model.lazy="hfa" @change="invalidate_cache">
                                 </div>
                             </div>
                         </div>
