@@ -34,7 +34,7 @@
                                 <div class="text-center p-0">Ownership Data</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#sourceModal">
-                                        {{ ownership_source }}
+                                        {{ warn_old_data && is_using_sample ? "(Last GW)" : "" }} {{ ownership_source }}
                                     </div>
                                 </div>
                             </div>
@@ -427,7 +427,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <select class="form-control" v-model="ownership_source" @change="changeData(); close_source_modal();">
-                        <option  v-for="i in availableDataSources">{{ i }}</option>
+                        <option  v-for="i in availableDataSources" :value="i">{{ warn_old_data && i.includes("Sample") ? "(Last GW)" : ""}} {{ i }}</option>
                     </select>
                 </div>
             </div>
