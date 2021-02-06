@@ -138,7 +138,12 @@ var app = new Vue({
                     "info": false,
                     "paging": false,
                     "columnDefs": [],
+                    buttons: [
+                        'copy', 'csv'
+                    ]
                 });
+                $("#main_fixture").DataTable().buttons().container()
+                    .appendTo('#button-box');
 
                 let left_offset = document.querySelector("#active_gw").getBoundingClientRect().x - document.querySelector("#col_gw1").getBoundingClientRect().x;
                 $("#main_fixture").scrollLeft(left_offset);
