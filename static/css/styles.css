@@ -908,3 +908,61 @@ option:checked {
     background-color: red;
     color: black;
 } */
+
+
+/* #visualization {
+    width: 600px;
+    height: 400px;
+    border: 1px solid lightgray;
+} */
+
+#visualization {
+    /* min-height: 400px; */
+}
+
+.white-theme .vis-timeline {
+    border: none;
+}
+
+.white-theme .vis-time-axis .vis-text {
+    color: white;
+    text-align: center;
+}
+
+.white-theme .vis-labelset {
+    /* display: flex; */
+}
+
+.white-theme .vis-labelset .vis-label {
+    color: white;
+    vertical-align: middle;
+    display: flex;
+}
+
+.white-theme .vis-labelset .vis-label .vis-inner {
+    margin: auto;
+}
+
+.white-theme .vis-item.vis-point .vis-item-content {
+    color: white;
+}
+
+.vis-time-axis .vis-grid.vis-odd {
+    background: #00000029;
+}
+
+.white-theme .vis-item.vis-background .vis-item-content {
+    color: white;
+}
+
+.vis-item.vis-background.finishedgw {
+    background-color: rgba(153, 153, 153, 0.521);
+}
+
+.vis-item.vis-background.activegw {
+    background-color: rgba(106, 145, 150, 0.521);
+}
+
+.vis-item.vis-background.futuregw {
+    background-color: rgba(145, 102, 102, 0.521);
+}

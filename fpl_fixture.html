@@ -16,6 +16,7 @@
     <script src="https://d3js.org/d3.v6.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+    <link href="//unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
 
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
@@ -206,6 +207,46 @@
     </div>
 
 
+    <div class="row" v-cloak id="calendar-main">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Timeline</h5>
+                <div class="scenario_detail">
+                    FPL Deadline and Games on Timeline
+                </div>
+                <div class="card-body">
+
+                    <div id="timeline-controls" class="d-flex justify-content-center mb-3">
+                        <button class="btn btn-secondary btn-sm" data-action="goToday" @click="timelineInteract">Today</button>
+                        <button class="btn btn-secondary btn-sm ml-2" data-action="zoomOut" @click="timelineInteract">Zoom Out</button>
+                        <button class="btn btn-secondary btn-sm ml-2" data-action="zoomIn" @click="timelineInteract">Zoom In</button>
+                        <button class="btn btn-secondary btn-sm ml-2" data-action="toggleGames" @click="timelineInteract">Toggle Games</button>
+                        <!-- <button class="btn btn-secondary btn-sm ml-2" data-action="reset" @click="timelineInteract">Reset</button> -->
+                        <!-- <button class="btn btn-secondary btn-sm ml-2" data-action="goPrevGW" @click="timelineInteract">Prev GW</button>
+                        <button class="btn btn-secondary btn-sm ml-2" data-action="goNextGW" @click="timelineInteract">Next GW</button> -->
+                    </div>
+
+                    <div id="visualization" class="white-theme mb-3">
+
+                    </div>
+
+                    <!-- <div class="text-center d-block mx-auto" id="loading_box" v-else>
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
+                    </div> -->
+
+                    <div class="mb-3 text-center p-3 bg-light-gray">
+                        Time to next deadline: {{ time_left }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
     <!-- <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white qa">
@@ -252,6 +293,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-cookies@1.7.4/vue-cookies.js" integrity="sha256-pdSyqKvUOsiAZVUhatSOyW3Wom0l7ABtO8w7LjPA3vU=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
 
 <!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
@@ -272,7 +314,7 @@
     let gw = "GW24";
     let next_gw = "GW24";
     let date = "2021-02-06";
-    let lastupdate = "2021-02-07T04:04:08.843782+00:00";
+    let lastupdate = "2021-02-07T05:09:09.684256+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -287,6 +329,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-07T04:04:08.843782+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-07T05:09:09.684256+00:00</div>
 
 </html> 
