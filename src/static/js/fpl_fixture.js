@@ -29,7 +29,10 @@ var app = new Vue({
         ],
         option_mgw_value: 0,
         option_show_double: true,
-        hfa: 0.15
+        hfa: 0.15,
+        timeline: undefined,
+        groups: undefined,
+        time_left: ""
     },
     computed: {
         is_all_ready() { return this.is_fixture_ready && this.is_main_ready },
@@ -124,6 +127,51 @@ var app = new Vue({
         fdr_attribute() {
             let suffix = this.choice_data_type[this.option_data_type].suffix;
             return (this.choice_data_source[this.option_data_source].attribute) + suffix;
+        },
+        gameweek_deadlines() {
+            if (!this.is_main_ready) { return [] }
+            let events = this.main_data.events;
+            let points = events.map(i => { return { 'id': i.id, 'name': 'GW' + i.id, 'start': i.deadline_time, 'group': 0, 'contentX': 'GW' + i.id + ' Deadline' } });
+            return points;
+        },
+        gameweek_range() {
+            let all_games = this.fixture_data.map(i => { return { 'event': i.event, 'start': i.kickoff_time, 'start_dt': new Date(i.kickoff_time) } }).filter(i => i.event !== null);
+            let bounds = _(all_games).groupBy('event').mapValues(a => ({ id: "GW" + a[0].event, content: "GW" + a[0].event, type: "background", start: _.minBy(a, 'start_dt').start_dt, end: new Date(_.maxBy(a, 'start_dt').start_dt.getTime() + (2 * 60 * 60 * 1000)) })).value();
+            let bounds_arr = Object.values(bounds);
+            bounds_arr.forEach((gw) => {
+                if (gw.end.getTime() - gw.start.getTime() <= 24 * 60 * 60 * 1000) {
+                    gw.end = new Date(gw.start.getTime() + 2 * 24 * 60 * 60 * 1000)
+                }
+                let is_finished = (new Date() > gw.end)
+                gw['className'] = (new Date() > gw.end) ? "finishedgw" : ((new Date() > gw.start) ? "activegw" : "futuregw")
+            })
+            return bounds_arr;
+        },
+        games_as_list() {
+            if (!this.is_main_ready) { return [] }
+            let games = app.fixture_data.filter(i => i.kickoff_time !== null)
+            let game_items = games.map(i => {
+                return {
+                    'id': "GAME" + i.id,
+                    'content': teams_ordered[i.team_h - 1].short + ' vs ' + teams_ordered[i.team_a - 1].short,
+                    'start': new Date(i.kickoff_time),
+                    'endX': new Date(new Date(i.kickoff_time).getTime() + 105 * 60 * 1000),
+                    'group': 2
+                }
+            })
+            return game_items
+        },
+        next_deadline() {
+            let d = this.gameweek_deadlines;
+            for (let g of d) {
+                let deadline = (new Date(g.start)).getTime()
+                let timenow = (new Date()).getTime()
+                let diff = deadline - timenow
+                if (diff > 0) {
+                    return deadline;
+                }
+            }
+            return undefined;
         }
     },
     methods: {
@@ -148,6 +196,62 @@ var app = new Vue({
                 let left_offset = document.querySelector("#active_gw").getBoundingClientRect().x - document.querySelector("#col_gw1").getBoundingClientRect().x;
                 $("#main_fixture").scrollLeft(left_offset);
             })
+        },
+        timelineInteract(e) {
+            let timeline = this.timeline;
+            let t = e.target.dataset.action;
+            switch (t) {
+                case "goToday":
+                    timeline.moveTo(timeline.getCurrentTime())
+                    break;
+                case "zoomOut":
+                    timeline.zoomOut(0.2);
+                    break;
+                case "zoomIn":
+                    timeline.zoomIn(0.2);
+                    break;
+                case "reset":
+                    timeline.redraw();
+                    break;
+                case "toggleGames":
+                    // this.groups.get(2).visible = !this.groups.get(2).visible;
+                    let new_val = !this.groups.get(2).visible;
+                    this.groups.update({ id: 2, visible: new_val })
+                    break;
+                case "goPrevGW":
+                    break;
+                case "goNextGW":
+                    break;
+            }
+        },
+        load_calendar() {
+
+            var container = document.getElementById('visualization');
+            var timeline = new vis.Timeline(container);
+
+            var groups = new vis.DataSet([
+                { id: 0, content: 'Deadlines', value: 0 },
+                { id: 2, content: 'Games', value: 2, visible: false, showNested: true }
+            ]);
+            timeline.setGroups(groups);
+            this.groups = groups;
+
+            let deadlines = this.gameweek_deadlines;
+            let ranges = this.gameweek_range;
+            let games = this.games_as_list
+
+            let items = deadlines.concat(ranges)
+            items = items.concat(games)
+            timeline.setItems(items);
+
+            var options = {
+                start: new Date((new Date()).valueOf() - 1000 * 60 * 60 * 24 * 2),
+                end: new Date((new Date()).valueOf() + 1000 * 60 * 60 * 24 * 12),
+            };
+            timeline.setOptions(options);
+
+            this.timeline = timeline;
+
         },
         invalidate_cache() {
             this.$nextTick(() => {
@@ -185,9 +289,14 @@ var app = new Vue({
                 } else {
                     return this.order_function(vals)
                 }
-
             }
         },
+        countDown() {
+            this.time_left = millisecondsToStr(this.next_deadline - (new Date()).getTime())
+        },
+        startTimer() {
+            setInterval(this.countDown, 1000);
+        }
     }
 });
 
@@ -225,6 +334,8 @@ $(document).ready(() => {
         ]).then((values) => {
             app.$nextTick(() => {
                 app.load_table()
+                app.load_calendar()
+                app.startTimer()
             })
         })
         .catch((error) => {

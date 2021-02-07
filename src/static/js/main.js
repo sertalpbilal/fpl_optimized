@@ -399,3 +399,21 @@ function convertToJS(value) {
         return value;
     }
 }
+
+function millisecondsToStr(milliseconds) {
+    let temp = milliseconds / 1000;
+    const
+        days = Math.floor((temp %= 31536000) / 86400),
+        hours = Math.floor((temp %= 86400) / 3600),
+        minutes = Math.floor((temp %= 3600) / 60),
+        seconds = temp % 60;
+
+    if (days || hours || seconds || minutes) {
+        return (days ? days + " days " : "") +
+            (hours ? hours + " hours " : "") +
+            (minutes ? minutes + " minutes " : "") +
+            Number.parseFloat(seconds).toFixed(0) + " seconds";
+    }
+
+    return "< 1 second";
+}
