@@ -32,7 +32,10 @@ var app = new Vue({
         hfa: 0.15,
         timeline: undefined,
         groups: undefined,
-        time_left: ""
+        time_left: "",
+        range_from: 1,
+        range_to: 38,
+        include_postponed: true
     },
     computed: {
         is_all_ready() { return this.is_fixture_ready && this.is_main_ready },
@@ -45,7 +48,7 @@ var app = new Vue({
             return teams_ordered
         },
         gameweeks() {
-            // if (!this.is_all_ready) { return [] }
+            if (!this.is_all_ready) { return [] }
             let this_gw = app.main_data.events.find(i => i.is_next).id;
             let weeks = _.uniq(this.fixture_data.map(i => i.event), true)
             if (weeks[0] == null) {
@@ -117,6 +120,23 @@ var app = new Vue({
             })
             return rivals;
         },
+        team_average() {
+            let start = this.range_from;
+            let end = this.range_to;
+            let with_postponed = this.include_postponed;
+            if (!this.is_main_ready) { return {} }
+            let team_avg = {};
+            let rivals = this.rivals;
+            let rival_list = Object.entries(rivals);
+            rival_list.forEach((team) => {
+                let keys = Object.keys(team[1]).filter(i => ((i >= start && i <= end) || (i == "null" && with_postponed)));
+                let vals = keys.reduce((arr, key) => {
+                    return arr.concat(Object.values(team[1][key].map(i => i[this.fdr_attribute])))
+                }, [])
+                team_avg[team[0]] = getAvg(vals);
+            })
+            return team_avg;
+        },
         color_bounds() {
             let all_vals = Object.values(this.rivals).map(i => Object.values(i).flat()).flat().map(i => i[app.fdr_attribute]);
             return { 'minval': Math.min(...all_vals), 'maxval': Math.max(...all_vals) }
@@ -172,6 +192,20 @@ var app = new Vue({
                 }
             }
             return undefined;
+        },
+        range_from_input: {
+            get: function() { return this.range_from },
+            set: function(e) {
+                this.range_from = e;
+                if (this.range_to < this.range_from) { this.range_to = this.range_from }
+            }
+        },
+        range_to_input: {
+            get: function() { return this.range_to },
+            set: function(e) {
+                this.range_to = e;
+                if (this.range_to < this.range_from) { this.range_from = this.range_to }
+            }
         }
     },
     methods: {
@@ -282,7 +316,7 @@ var app = new Vue({
         order_value(e, r = false) {
             let vals = e.map(j => j[this.fdr_attribute])
             if (vals.length == 0) {
-                return 0;
+                return 999;
             } else {
                 if (r) {
                     return this.order_function(vals).toFixed(2)
@@ -294,7 +328,7 @@ var app = new Vue({
         order_as_list(e, r = false) {
             let vals = e.map(j => j[this.fdr_attribute])
             if (vals.length == 0) {
-                return 0;
+                return "";
             } else {
                 if (r) {
                     if (vals.length == 1) {
@@ -328,6 +362,8 @@ async function fetch_fpl_fixture() {
 async function fetch_fpl_main() {
     return get_fpl_main_data().then((data) => {
         app.main_data = data;
+        let this_gw = data.events.find(i => i.is_next).id;
+        app.range_from = this_gw;
     }).catch((e) => {
         console.log("Error", e)
     })

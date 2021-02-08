@@ -88,21 +88,34 @@
                             </div>
                         </div>
 
+                        <div class="flex-column metric mw-10 ml-1">
+                            <div class="text-center p-0">&nbsp;</div>
+                            <div class="text-center p-0">
+                                <div class="d-flex flex-row mb-0">
+                                    <button class="button btn btn-sm btn-secondary mr-2 setting-line-button" @click='$("#targetRangeModal").modal("show")'>Target Range</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+
                     </div>
                     <div v-if="is_fixture_ready && is_main_ready">
                         <table class="table table-striped table-sm text-small text-white table-responsive" id="main_fixture">
                             <thead>
                                 <tr>
                                     <th>Team</th>
-                                    <th v-for="gw in gameweeks" :id="gw.this_gw ? 'active_gw' : 'col_gw' + gw.no" :class="{'active_gw_col': gw.this_gw}">{{ gw.text }}</th>
+                                    <th class="text-center" v-for="gw in gameweeks" :id="gw.this_gw ? 'active_gw' : 'col_gw' + gw.no" :class="{'active_gw_col': gw.this_gw}">{{ gw.text }}</th>
+                                    <th>Average Difficulty</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(t,id) in teams">
                                     <td :data-order="id">{{ t.name }}</td>
-                                    <td v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
+                                    <td class="text-center" v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
                                         {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_as_list(rivals[id+1][gw.no], true) }}
                                     </td>
+                                    <td :data-order="team_average[id+1]" class="text-center">{{ team_average[id+1].toFixed(2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -185,9 +198,53 @@
             </div>
             <div class="modal-body">
                 <div class="p-2 wait-modal">
-                    Fetching data and updating visuals. Please wait... <br/>
+                    Fetching data and updating visuals. Please wait... <br />
                     <img class="mx-auto d-block" src="static/images/loading.svg">
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="targetRangeModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Target range</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black text-medium range-box">
+                Choose a target range for "Average Difficulty" column
+
+                <div class="input-group mt-2 mb-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">From</label>
+                    </div>
+                    <select class="custom-select" v-model="range_from_input" @change="invalidate_cache">
+                        <option v-for="gw in gameweeks" :value="gw.no" v-if="gw.no !== null">{{ gw.text }}</option>
+                    </select>
+                </div>
+
+                <div class="input-group mt-2 mb-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">To</label>
+                    </div>
+                    <select class="custom-select" v-model="range_to_input" @change="invalidate_cache">
+                        <option v-for="gw in gameweeks" :value="gw.no" v-if="gw.no !== null">{{ gw.text }}</option>
+                    </select>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" v-model="include_postponed" @change="invalidate_cache">
+                    <label class="form-check-label">Include unscheduled / postponed games</label>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
