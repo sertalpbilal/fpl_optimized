@@ -21,7 +21,7 @@ var app = new Vue({
         choice_table_display: ["Teams", "Raw Value"],
         option_table_display: 0,
         choice_mgw_value: [
-            ["Top", (arr) => { return (arr.length > 1 ? 0 - 1 / getSum(arr) : arr[0]) }],
+            ["Top", (arr) => { return (arr.length > 1 ? -100 - 1 / getSum(arr) : arr[0]) }],
             ["Minimum", getMin],
             ["Maximum", getMax],
             ["Average", getAvg],
@@ -286,6 +286,22 @@ var app = new Vue({
             } else {
                 if (r) {
                     return this.order_function(vals).toFixed(2)
+                } else {
+                    return this.order_function(vals)
+                }
+            }
+        },
+        order_as_list(e, r = false) {
+            let vals = e.map(j => j[this.fdr_attribute])
+            if (vals.length == 0) {
+                return 0;
+            } else {
+                if (r) {
+                    if (vals.length == 1) {
+                        return this.order_function([vals[0]]).toFixed(2)
+                    } else {
+                        return vals.map(i => this.order_function([i]).toFixed(2)).join(', ')
+                    }
                 } else {
                     return this.order_function(vals)
                 }
