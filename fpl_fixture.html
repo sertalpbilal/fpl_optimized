@@ -188,7 +188,7 @@
                                 <tr v-for="(t,id) in teams">
                                     <td :data-order="id">{{ t.name }}</td>
                                     <td v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
-                                        {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_value(rivals[id+1][gw.no], true) }}
+                                        {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_as_list(rivals[id+1][gw.no], true) }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -314,7 +314,7 @@
     let gw = "GW24";
     let next_gw = "GW24";
     let date = "2021-02-08";
-    let lastupdate = "2021-02-08T16:06:21.976474+00:00";
+    let lastupdate = "2021-02-08T16:13:54.704546+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -329,6 +329,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-08T16:06:21.976474+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-08T16:13:54.704546+00:00</div>
 
 </html> 
