@@ -311,7 +311,7 @@ var app = new Vue({
             this.time_left = millisecondsToStr(this.next_deadline - (new Date()).getTime())
         },
         startTimer() {
-            setInterval(this.countDown, 1000);
+            // setInterval(this.countDown, 1000);
         }
     }
 });
