@@ -325,6 +325,7 @@ def get_fpl_info(info_type, **kwargs):
 
 
 def get_fpl_analytics_league(target_folder, debug=False):
+    # https://fplrevver.blob.core.windows.net/fpldata/analytics_league.csv
     base_folder = pathlib.Path().resolve()
     with open(base_folder / 'static/json/fpl_analytics.json') as f:
         data = json.load(f)
