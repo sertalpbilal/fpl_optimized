@@ -891,6 +891,11 @@ select.live-select option {
     font-size: calc(0.8em + 0.05vw);
 }
 
+.setting-line-button {
+    font-size: calc(0.8em + 0.05vw);
+    height: calc(1.5em + .75rem + 2px);
+}
+
 
 /* 
 select.live-select option:active {
@@ -965,4 +970,13 @@ option:checked {
 
 .vis-item.vis-background.futuregw {
     background-color: rgba(145, 102, 102, 0.521);
+}
+
+.range-box .input-group-prepend {
+    width: 25%;
+}
+
+.range-box .input-group-prepend label {
+    width: 100%;
+    overflow: hidden;
 }
