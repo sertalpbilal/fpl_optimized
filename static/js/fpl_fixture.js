@@ -7,9 +7,9 @@ var app = new Vue({
         main_data: undefined,
         fte_data: undefined,
         choice_data_source: [
-            { 'name': "FiveThirtyEight", 'attribute': 'fdr_fte' },
-            { 'name': "FiveThirtyEight (Opp. Offense)", 'attribute': 'fdr_off' },
-            { 'name': "FiveThirtyEight (Opp. Defense)", 'attribute': 'fdr_def' },
+            { 'name': "FiveThirtyEight - FDR", 'attribute': 'fdr_fte' },
+            { 'name': "FTE - Defensive", 'attribute': 'fdr_off' }, // attribute is named "_off" because it is opponent's offense that defines difficulty
+            { 'name': "FTE - Offensive", 'attribute': 'fdr_def' }, // attribute is named "_def" because it is opponent's defense that defines difficutly
             { 'name': "Official FPL", 'attribute': 'fdr' }
         ],
         option_data_source: 0,
