@@ -36,7 +36,8 @@ var app = new Vue({
         edit_table: "",
         edit_table_ready: false,
         edit_overridden_buffer: undefined,
-        warn_old_data: false
+        warn_old_data: false,
+        target_player: undefined
     },
     created: function() {
         this.overridden_values = {};
@@ -551,6 +552,76 @@ var app = new Vue({
             let d = this.prior_data.find(i => i[1].player_id == id)[1];
             this.setChosenPlayer(d);
             $("#singlePlayerDetailModal").modal('show');
+        },
+        selectCaptain(e) {
+            let id = e.currentTarget.dataset.id;
+            let current_captain = this.team_data.picks.find(i => i.multiplier > 1);
+            let this_player = this.team_data.picks.find(i => i.element == id);
+            if (current_captain !== undefined) {
+                if (current_captain.element == this_player.element) {
+                    this_player.multiplier = 5 - this_player.multiplier;
+                } else {
+                    this_player.multiplier = current_captain.multiplier + 0;
+                    this_player.is_captain = true;
+                    current_captain.is_captain = false;
+                    current_captain.multiplier = 1;
+                }
+            } else {
+                this_player.multiplier = 2;
+                this_player.is_captain = true;
+            }
+            this.generateList();
+        },
+        toggleBench(e) {
+            let id = e.currentTarget.dataset.id;
+            let this_player = this.team_data.picks.find(i => i.element == id);
+            if (this_player.multiplier > 0) {
+                this_player.multiplier = 0;
+                this_player.is_captain = false;
+            } else {
+                this_player.multiplier = 1;
+            }
+            this.generateList();
+        },
+        tagForTransfer(e) {
+            let id = e.currentTarget.dataset.id;
+            $("#all_players_table").DataTable().destroy();
+            this.$nextTick(() => {
+                if (this.target_player !== undefined) {
+                    let current_selected = this.target_player.id;
+                    if (current_selected == id) {
+                        this.target_player = undefined;
+                        return;
+                    }
+                }
+                this.target_player = this.el_by_id[parseInt(id)];
+                this.$nextTick(() => {
+                    $("#all_players_table").DataTable({
+                        "order": [
+                            [3, 'desc']
+                        ],
+                        "lengthChange": false,
+                        "pageLength": window.screen.width <= 768 ? 5 : 15,
+                        columnDefs: [
+                            { orderable: false, targets: 1 }
+                        ],
+                    });
+                });
+
+            });
+
+        },
+        performSwap(e) {
+            let id = e.currentTarget.dataset.id;
+            $("#all_players_table").DataTable().destroy();
+            this.$nextTick(() => {
+                this.target_player = undefined;
+            })
+            let current_player = this.team_data.picks.find(i => i.element == this.target_player.id);
+            if (current_player !== undefined) {
+                current_player.element = parseInt(id);
+            }
+            this.generateList();
         }
     },
     computed: {
@@ -560,6 +631,11 @@ var app = new Vue({
             }
             if (this.team_data.length == 0) { return false; }
             return true;
+        },
+        is_el_ready() { return this.el_data !== undefined && this.el_data.length != 0 },
+        el_by_id() {
+            if (this.el_data == undefined) { return undefined; }
+            return Object.fromEntries(this.el_data.map(i => [i.id, i]));
         },
         is_using_sample: function() {
             if (this.ownership_source == "Official FPL API") {
@@ -571,7 +647,7 @@ var app = new Vue({
             return this.gw.slice(2) == active_gw;
         },
         is_using_captain: function() {
-            if (!this.is_using_sample) { return false; }
+            // if (!this.is_using_sample) { return false; }
             return this.captaincy_enabled;
         },
         final_xp_data: function() {
@@ -585,6 +661,10 @@ var app = new Vue({
                 t.points_md = w[1].xp;
             })
             return pts_grouped;
+        },
+        xp_by_id: function() {
+            if (this.xp_data == undefined) { return undefined; }
+            return Object.fromEntries(this.final_xp_data.map(i => [i.player_id, i]))
         },
         final_rp_data: function() {
             let x = this.cnt;
@@ -605,6 +685,62 @@ var app = new Vue({
                 t.effective_ownership = w[1].ownership;
             });
             return ownership_data;
+        },
+        ownership_by_id: function() {
+            let ownership_vals = this.final_ownership_data;
+            ownership_vals = Object.fromEntries(ownership_vals.map(x => [x.id, x]));
+            return ownership_vals;
+        },
+        element_data_combined() {
+
+            let all_ids = this.xp_data.map(i => parseInt(i.player_id));
+            let new_element_data = {};
+
+            const xp_by_id = this.xp_by_id; //Object.fromEntries(this.grouped_xp_data.map(i => [i.player_id, i]));
+            const el_by_id = this.el_by_id;
+            const rp_by_id = this.final_rp_data;
+            const own_by_id = this.ownership_by_id;
+            const team_data = this.team_data;
+            let picks = [];
+            if (this.is_ready) {
+                picks = team_data.picks;
+            }
+            let team_ids = picks.map(i => i.element);
+
+            all_ids.forEach((e) => {
+                try {
+                    let n = {};
+                    n.xp_data = xp_by_id[e];
+                    n.el_data = el_by_id[e];
+                    n.rp_data = rp_by_id[e];
+                    n.autosub = false;
+                    if (n.rp_data !== undefined && n.rp_data.autosub) { n.autosub = true; }
+                    n.own_data = own_by_id[e];
+                    n.name = n.el_data.web_name;
+                    let points_md = n.xp = parseFloat(n.xp_data.points_md);
+                    let is_squad = n.is_squad = team_ids.includes(e);
+                    let multiplier = n.multiplier = is_squad ? picks.find(i => i.element == e).multiplier : 0;
+                    n.is_lineup = multiplier > 0;
+                    let ownership = n.ownership = this.is_using_sample ? n.own_data.effective_ownership : parseFloat(n.own_data.selected_by_percent);
+                    n.xp_gain = points_md * (Math.max(multiplier, 1) - ownership / 100);
+                    n.xp_loss = points_md * ownership / 100;
+                    n.xp_net = points_md * (multiplier - ownership / 100);
+                    n.element_type = parseInt(n.el_data.element_type);
+                    n.team = team_codes[parseInt(n.el_data.team_code)];
+                    n.now_cost_str = (parseFloat(n.el_data.now_cost) / 10).toFixed(1);
+                    n.id = e;
+                    new_element_data[e] = n;
+                } catch {
+                    return;
+                }
+            })
+
+            return new_element_data;
+        },
+        element_data_list() {
+            if (!this.is_ready) { return []; }
+            if (!this.is_el_ready) { return []; }
+            return Object.values(this.element_data_combined);
         },
         flatten_sample_data: function() {
             return this.active_sample_data.map(i => i.data.picks).flat();
@@ -890,7 +1026,7 @@ var app = new Vue({
                     let ownership_data = this.final_ownership_data;
                     let player = ownership_data.find(i => i.id == this.chosen_player.player_id)
                     if (player) {
-                        if (this.is_using_captain) {
+                        if (this.is_using_captain && player.effective_ownership) {
                             return rounded(val = player.effective_ownership, digits = 1)
                         } else {
                             return rounded(val = player.selected_by_percent, digits = 1)
@@ -960,6 +1096,62 @@ var app = new Vue({
             } else {
                 return {}
             }
+        },
+        team_data_with_metadata() {
+            if (!this.is_ready) { return []; }
+            if (!this.is_el_ready) { return []; }
+
+            const el_data = this.el_by_id;
+            const xp_data = this.xp_by_id;
+            const ownership_data = this.ownership_by_id;
+
+            // const el_data_combined = this.element_data_combined;
+            // if (_.isEmpty(el_data_combined)) { return []; }
+            let picks = _.cloneDeep(this.team_data.picks);
+            let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
+                // picks.forEach((e) => {
+                //     e.data = el_data_combined[e.element];
+                //     let el_info = e.data.el_data;
+                //     Object.assign(e, e.data);
+                // })
+            picks.forEach((player) => {
+                // let data = player.data;
+                let data = el_data[player.element];
+                player.data = data;
+                player.xp_data = xp_data[player.element];
+                player.ownership_data = ownership_data[player.element];
+                let cnt = picks.filter(j => j.element_type == data.element_type).filter(j => j.multiplier > 0).length;
+                if (data.multiplier > 0) {
+                    player.x = 122 / (cnt + 1) * pos_ctr[parseInt(player.element_type)] - 17;
+                    player.y = (parseInt(player.element_type) - 1) * 35 + 3;
+                    pos_ctr[parseInt(player.element_type)] += 1;
+                } else {
+                    player.x = 122 / 5 * pos_ctr['B'] - 17;
+                    pos_ctr['B'] += 1;
+                    player.y = 138.5;
+                }
+            });
+
+            picks.sort((a, b) => {
+                if ((a.multiplier > 0) !== (b.multiplier > 0)) {
+                    return (b.multiplier > 0) - (a.multiplier > 0);
+                } else if (a.data.element_type !== b.data.element_type) {
+                    return parseInt(a.data.element_type) - parseInt(b.data.element_type);
+                } else {
+                    return parseInt(a.element) - parseInt(b.element);
+                }
+            })
+
+            return picks;
+        },
+        potential_targets() {
+            if (this.target_player == undefined) { return []; }
+            let els = _.cloneDeep(this.element_data_list);
+            els = els.filter(i => i.element_type == this.target_player.element_type);
+            els.sort((a, b) => {
+                return b.xp - a.xp;
+            })
+            return els;
         }
     }
 })
@@ -1905,4 +2097,7 @@ $(document).ready(function() {
     if (t !== null) {
         app.autoTeamID(t)
     }
+    $("#editTeamModal").on('hide.bs.modal', (e) => {
+        app.refresh_plots();
+    });
 });

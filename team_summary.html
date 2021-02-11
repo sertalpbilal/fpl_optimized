@@ -126,7 +126,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_using_sample">
+                        <div class="col-6 col-sm-4 col-md" v-cloak>
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0">Captain/Chips</div>
                                 <div class="setting-value text-center p-0">
@@ -148,14 +148,25 @@
                         </div>
                         <div class="col-6 col-sm-4 col-md" v-cloak v-if="is_ready">
                             <div class="d-flex flex-column metric">
-                                <div class="text-center p-0">Custom Input</div>
+                                <div class="text-center p-0">Menu</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="dropdown">
                                         <button class="btn btn-sm dropdown-toggle bg-none m-0 p-0 settings-button pink" type="button" id="generalOptions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                           Options
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit Values</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')">Edit Team</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="saveSquadToFile">Save Squad to File</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadSquadFromFile">
+                                                <label style="cursor: pointer; margin-bottom: 0px;" for="loadFile">Load Squad from File</label>
+                                            </button>
+                                            <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
+                                            <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit xP/rP Values</button>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
                                         </div>
                                     </div>
@@ -187,31 +198,24 @@
                                 <div class="input-group mb-1 p-4">
                                     <input type="text" class="form-control" id="playerNameFilter" placeholder="Filter player name" v-model="player_filter" @change="refresh_plots">
                                 </div>
-                                <div class="explanation text-small">
+                                <!-- <div class="explanation text-small">
                                     Click on gray or red colored players to swap them into your squad. Use `Lineup` button to set your starting lineup.
-                                </div>
+                                </div> -->
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mx-auto d-flex justify-content-center mb-2">
-                                    <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Lineup</button>
+                                    <!-- <button class="btn btn-secondary btn-sm mr-3" @click='$("#lineupModal").modal("show")'>Lineup</button> -->
                                     <!-- <button class="btn btn-secondary btn-sm mr-1" @click="loadOptimal">Load Optimal</button><sup><a href="#" data-toggle="tooltip" data-placement="top" title="Best lineup under 100M budget">[?]</a></sup> -->
-                                    <button class="btn btn-secondary btn-sm mr-3" @click='openTransfer'>Transfer</button>
+                                    <!-- <button class="btn btn-secondary btn-sm mr-3" @click='openTransfer'>Transfer</button> -->
 
-                                    <div class="dropdown">
+                                    <!-- <div class="dropdown">
                                         <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="lineupOperations" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Operations
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="saveSquadToFile">Save Squad to File</button>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadSquadFromFile">
-                                                <label style="cursor: pointer; margin-bottom: 0px;" for="loadFile">Load Squad from File</label>
-                                            </button>
-                                            <input type="file" id="loadFile" style="display:none;" @change="loadSquadFromFile($event)" />
-                                            <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button">Load Squad from Text</button> -->
-                                            <div class="dropdown-divider"></div>
-                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
+                                            
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div id="xP_prior_table">
                                     <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="prior_table">
@@ -786,6 +790,109 @@
 </div>
 
 
+
+
+<div class="modal" tabindex="-1" role="dialog" id="editTeamModal">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Team</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div v-if="is_ready">
+                    <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1 text-xs-mini" id="editModalTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Pos</th>
+                                <th class="text-right">BV</th>
+                                <th class="text-right">xP</th>
+                                <th class="text-right">Own%</th>
+                                <th class="text-right">xP Gain</th>
+                                <th class="text-right">xP Loss</th>
+                                <th class="text-center">C</th>
+                                <th class="text-center">B</th>
+                                <th class="text-center">TO</th>
+                            </tr>
+                        </thead>
+                        <tbody v-cloak>
+                            <tr v-for="i in team_data_with_metadata" :class="{'owned-row': i.multiplier > 0, 'bench-row': i.multiplier==0, 'selected-transfer': target_player && target_player.id == i.element}">
+                                <td :class="{'captain_color': i.is_captain }">{{ i.is_captain ? (i.multiplier == 3 ? "TC" : "C") : (i.multiplier > 0 ? "L" : "B") }}</td>
+                                <td><span v-if="i.autosub" class="mr-1"><i class="fas fa-exclamation-triangle autosub"></i></span>{{ i.data.web_name }}</td>
+                                <td>{{element_type[i.data.element_type].short}}</td>
+                                <td class="text-right">{{ (parseFloat(i.data.now_cost)/10).toFixed(1) }}</td>
+                                <td class="text-right">{{ parseFloat(i.xp_data.points_md).toFixed(1)}}</td>
+                                <td class="text-right">{{ parseFloat(i.ownership_data.effective_ownership ? i.ownership_data.effective_ownership : i.ownership_data.selected_by_percent).toFixed(1) }}%</td>
+                                <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_data.xp_owned_captain ,1)}}</td>
+                                <td class="text-right" :class="{'text-muted': i.multiplier > 0}">{{getWithSign(i.xp_data.xp_non_owned,1)}}</td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="selectCaptain" v-if="i.multiplier > 0">
+                                        <i class="fas fa-copyright" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="toggleBench">
+                                        <i class="fas fa-caret-down to_bench" v-if="i.multiplier > 0" aria-hidden="true"></i>
+                                        <i class="fas fa-caret-up to_lineup" v-if="i.multiplier == 0" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="button btn-sm btn-xsm" :data-id="i.element" @click="tagForTransfer" :class="{'selected-transfer-button': target_player && target_player.id == i.id}">
+                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-if="is_ready && target_player !== undefined" class="mt-3">
+                    <div class="text-small text-black">
+                        Choose a player below to swap with {{ target_player.name }}
+                    </div>
+                    <div>
+                        <table class="table table-sm table-striped table-hover text-small text-xs-mini" id="all_players_table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Pos</th>
+                                    <th class="text-right">BV</th>
+                                    <th class="text-right">xP</th>
+                                    <th class="text-right">Own%</th>
+                                    <th class="text-right">xP Gain</th>
+                                    <th class="text-right">xP Loss</th>
+                                    <th class="text-center">TI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="i in potential_targets" v-if="!i.is_squad">
+                                    <td>{{ i.name }}</td>
+                                    <td>{{element_type[i.element_type].short}}</td>
+                                    <td class="text-right">{{ i.now_cost_str }}</td>
+                                    <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
+                                    <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
+                                    <td class="text-right" :class="{'text-muted': i.multiplier == 0}">{{getWithSign(i.xp_gain,1)}}</td>
+                                    <td class="text-right" :class="{'text-muted': i.multiplier > 0}">{{getWithSign(-i.xp_loss,1)}}</td>
+                                    <td class="text-center">
+                                        <button class="button btn-sm btn-xsm" :data-id="i.id" @click="performSwap">
+                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                                    </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <div class="modal" tabindex="-1" role="dialog" id="lineupModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -1029,7 +1136,7 @@
     let gw = "GW24";
     let next_gw = "GW24";
     let date = "2021-02-10";
-    let lastupdate = "2021-02-10T22:04:14.735436+00:00";
+    let lastupdate = "2021-02-11T03:05:25.743582+00:00";
     let listdates = [
         "2020-21 / GW24 / 2021-02-10 ", 
         "2020-21 / GW23 / 2021-02-06 ", 
@@ -1060,6 +1167,6 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-10T22:04:14.735436+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-11T03:05:25.743582+00:00</div>
 
 </html> 
