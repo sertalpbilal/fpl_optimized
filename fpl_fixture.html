@@ -41,6 +41,16 @@
 
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="/static/css/svg.css">
+
+    <link rel="manifest" href="/static/asset/manifest.json">
+    <link rel="apple-touch-icon" href="/static/asset/apple_logo_114.png">
+    <link rel="apple-touch-startup-image" href="/static/asset/apple_splash_320.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FPLOptimized">
+
 </head>
 
 <body>
@@ -179,7 +189,30 @@
                             <div class="text-center p-0">&nbsp;</div>
                             <div class="text-center p-0">
                                 <div class="d-flex flex-row mb-0">
-                                    <button class="button btn btn-sm btn-secondary mr-2 setting-line-button" @click='$("#targetRangeModal").modal("show")'>Target Range</button>
+                                    <button class="button btn btn-sm btn-secondary setting-line-button" @click='$("#targetRangeModal").modal("show")'>Target Range</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-column metric mw-10 ml-1">
+                            <div class="text-center p-0">&nbsp;</div>
+                            <div class="text-center p-0">
+                                <div class="d-flex flex-row mb-0">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle setting-line-button" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Menu
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <button class="dropdown-item btn-sm" type="button" @click="$('#editFixtureModal').modal('show')">Edit Fixture</button>
+                                            <button class="dropdown-item btn-sm" type="button" @click="saveFixtureToFile">Save Fixture to File</button>
+                                            <button class="dropdown-item btn-sm" type="button" @click="loadFixtureFromFile">
+                                                <label style="cursor: pointer; margin-bottom: 0px;" for="loadFile">Load Fixture from File</label>
+                                            </button>
+                                            <input type="file" id="loadFile" style="display:none;" @change="loadFixtureFromFile($event)" />
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn-sm" type="button" @click="resetFixture">Reset Fixture Changes</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -293,6 +326,77 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="editFixtureModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Fixture</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black text-medium range-box" v-if="is_fixture_ready">
+
+                <table class="table table-striped table-sm text-small text-nowrap" id="edit_fixture">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Game</th>
+                            <th class="text-center">GW</th>
+                            <th class="text-center">Original</th>
+                            <!-- <th>Raw Info</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(i,id) in fixture_data" v-if="i.event === null || parseInt(i.event) >= this_gw">
+                            <td :data-order="id">{{ teams_ordered[i.team_h -1].name }} vs {{ teams_ordered[i.team_a -1].name }} </td>
+                            <td :data-order="i.event === null ? 99 : i.event" :data-filter="i.event === null ? 'No Date' : 'GW' + i.event">
+                                <select class="custom-select text-small" v-model="i.event" @change="invalidate_cache">
+                                <option v-for="gw in future_gameweeks" :value="gw.no">{{ gw.text }}</option>
+                                </select>
+                            </td>
+                            <td class="text-center">{{ i.event === i.original_event ? "-" : (i.original_event === null ? "No date" : "GW" + i.original_event) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <!-- Choose a target range for "Average Difficulty" column
+
+                <div class="input-group mt-2 mb-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">From</label>
+                    </div>
+                    <select class="custom-select" v-model="range_from_input" @change="invalidate_cache">
+                        <option v-for="gw in gameweeks" :value="gw.no" v-if="gw.no !== null">{{ gw.text }}</option>
+                    </select>
+                </div>
+
+                <div class="input-group mt-2 mb-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">To</label>
+                    </div>
+                    <select class="custom-select" v-model="range_to_input" @change="invalidate_cache">
+                        <option v-for="gw in gameweeks" :value="gw.no" v-if="gw.no !== null">{{ gw.text }}</option>
+                    </select>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" v-model="include_postponed" @change="invalidate_cache">
+                    <label class="form-check-label">Include unscheduled / postponed games</label>
+                </div> -->
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="modal" tabindex="-1" role="dialog" id="targetRangeModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -371,7 +475,7 @@
     let gw = "GW24";
     let next_gw = "GW24";
     let date = "2021-02-11";
-    let lastupdate = "2021-02-11T16:09:25.251488+00:00";
+    let lastupdate = "2021-02-11T16:43:52.697442+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -386,6 +490,7 @@
 
 </body>
 
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-11T16:09:25.251488+00:00</div>
+<div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-11T16:43:52.697442+00:00</div>
 
 </html> 

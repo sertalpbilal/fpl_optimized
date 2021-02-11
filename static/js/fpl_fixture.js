@@ -2,7 +2,9 @@ var app = new Vue({
     el: '#app',
     data: {
         current_dt: new Date(),
+        this_gw: 1,
         fill_width: false,
+        original_fixture_data: undefined,
         fixture_data: undefined,
         main_data: undefined,
         fte_data: undefined,
@@ -56,6 +58,29 @@ var app = new Vue({
             }
             weeks = weeks.map(i => i == null ? { "no": i, "text": "No date", "this_gw": false } : { "no": i, "text": "GW" + i, "this_gw": false })
             weeks.find(i => i.no == this_gw)['this_gw'] = true;
+            weeks.sort((a, b) => {
+                if (a.no === null) { return 1; }
+                if (b.no === null) { return -1; }
+                return a.no - b.no;
+            })
+            return weeks
+        },
+        future_gameweeks() {
+            if (!this.is_all_ready) { return [] }
+            let this_gw = this.this_gw;
+            let weeks = _.uniq(this.fixture_data.map(i => i.event), true)
+            weeks = _.cloneDeep(weeks)
+            if (weeks[0] == null) {
+                weeks = [...weeks.slice(1), weeks[0]]
+            }
+            weeks = weeks.map(i => i == null ? { "no": i, "text": "No date", "this_gw": false } : { "no": i, "text": "GW" + i, "this_gw": false })
+            weeks.find(i => i.no == this_gw)['this_gw'] = true;
+            weeks = weeks.filter(i => (i.no >= this_gw) || (i.no === null));
+            weeks.sort((a, b) => {
+                if (a.no === null) { return 1; }
+                if (b.no === null) { return -1; }
+                return a.no - b.no;
+            })
             return weeks
         },
         fdr_fte() {
@@ -209,6 +234,13 @@ var app = new Vue({
         }
     },
     methods: {
+        saveFixtureData(data) {
+            data.forEach((g) => {
+                g.original_event = g.event;
+            })
+            this.original_fixture_data = _.cloneDeep(data);
+            this.fixture_data = data;
+        },
         load_table() {
             $("#main_fixture").DataTable().destroy();
             this.$nextTick(() => {
@@ -229,6 +261,27 @@ var app = new Vue({
 
                 let left_offset = document.querySelector("#active_gw").getBoundingClientRect().x - document.querySelector("#col_gw1").getBoundingClientRect().x;
                 $("#main_fixture").scrollLeft(left_offset);
+            })
+
+
+            $("#edit_fixture").DataTable().destroy();
+            this.$nextTick(() => {
+                $("#edit_fixture").DataTable({
+                    "order": [
+                        [1, 'asc'],
+                        [0, 'asc']
+                    ],
+                    "lengthChange": false,
+                    // "pageLength": 10,
+                    "searching": true,
+                    "info": false,
+                    // "paging": true,
+                    paging: false,
+                    scrollY: '50vh',
+                    "columnDefs": [
+                        { targets: [2], orderable: false },
+                    ]
+                });
             })
         },
         timelineInteract(e) {
@@ -291,6 +344,8 @@ var app = new Vue({
             this.$nextTick(() => {
                 var table = $("#main_fixture").DataTable();
                 table.cells("td").invalidate().draw();
+                var table = $("#edit_fixture").DataTable();
+                table.cells("td").invalidate().draw();
             })
         },
         get_color(e) {
@@ -347,13 +402,37 @@ var app = new Vue({
         startTimer() {
             this.countDown();
             // setInterval(this.countDown, 1000);
-        }
+        },
+        saveFixtureToFile() {
+            downloadToFile(JSON.stringify(this.fixture_data), 'fixture.json', 'json');
+        },
+        loadFixtureFromFile(event) {
+            let self = this;
+            if (event.target.files == undefined) {
+                return;
+            }
+            let file = event.target.files[0]
+            event.target.value = '';
+            if (file.type == "application/json") {
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                    this.fixture_data = JSON.parse(event.target.result)
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsText(file);
+            }
+            console.log(event.target.files);
+        },
+        resetFixture() {
+            this.fixture_data = _.cloneDeep(this.original_fixture_data);
+            this.invalidate_cache();
+        },
     }
 });
 
 async function fetch_fpl_fixture() {
     return get_entire_fixture().then((data) => {
-        app.fixture_data = data;
+        app.saveFixtureData(data);
     }).catch((e) => {
         console.log("Error", e)
     })
@@ -363,6 +442,7 @@ async function fetch_fpl_main() {
     return get_fpl_main_data().then((data) => {
         app.main_data = data;
         let this_gw = data.events.find(i => i.is_next).id;
+        app.this_gw = this_gw;
         app.range_from = this_gw;
     }).catch((e) => {
         console.log("Error", e)
@@ -394,4 +474,8 @@ $(document).ready(() => {
         .catch((error) => {
             console.error("An error has occured: " + error);
         });
+
+    $('#editFixtureModal').on('shown.bs.modal', function(e) {
+        $("#edit_fixture").DataTable().columns.adjust()
+    })
 })
