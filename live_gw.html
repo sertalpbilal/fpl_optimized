@@ -153,6 +153,7 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="fill_width = !fill_width">Fill Width {{ fill_width ? ": On" : ": Off" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="large_graphs = !large_graphs">Larger Graphs {{ large_graphs ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
@@ -431,7 +432,7 @@
                 </div>
                 <div class="card-body" v-if="is_ready">
                     <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 mb-3" :class="{'col-md-6': !large_graphs}">
                             <div class="svg-wrapper live-graph" id="graph-wrapper-points">
 
                             </div>
@@ -503,7 +504,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 mb-3" :class="{'col-md-6': !large_graphs}">
                             <div class="svg-wrapper live-graph" id="graph-wrapper-diff">
 
                             </div>
@@ -547,7 +548,7 @@
                     </div>
                     <div class="row">
 
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 mb-3" :class="{'col-md-6': !large_graphs}">
                             <div class="svg-wrapper live-graph" id="graph-wrapper-gain">
 
                             </div>
@@ -588,7 +589,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 mb-3" :class="{'col-md-6': !large_graphs}">
                             <div class="svg-wrapper live-graph" id="graph-wrapper-loss">
 
                             </div>
@@ -1325,7 +1326,7 @@
     let gw = "GW24";
     let next_gw = "GW24";
     let date = "2021-02-11";
-    let lastupdate = "2021-02-11T22:04:01.833050+00:00";
+    let lastupdate = "2021-02-12T02:29:58.352572+00:00";
     let listdates = [
         "2020-21 / GW24 / 2021-02-11 ", 
         "2020-21 / GW23 / 2021-02-06 ", 
@@ -1359,6 +1360,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-11T22:04:01.833050+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-12T02:29:58.352572+00:00</div>
 
 </html> 

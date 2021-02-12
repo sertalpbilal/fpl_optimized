@@ -13,7 +13,7 @@ var app = new Vue({
         gw_fixture: undefined,
         team_id: "-1",
         remember_settings: false,
-        allowed_settings: ['team_id', 'fill_width', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
+        allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -32,7 +32,9 @@ var app = new Vue({
         is_using_autosub: false,
         show_team_info: true,
         fill_width: false,
-        autosub_stats: {}
+        large_graphs: false,
+        autosub_stats: {},
+        marked_dt: undefined
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -1064,7 +1066,8 @@ function init_timeline() {
         .style('padding-bottom', '10px');
 
     let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
+    let grayrect = svg.append('g');
+    grayrect.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
     let game_color = (d) => {
         return d3.schemeDark2[d % 8];
@@ -1213,7 +1216,7 @@ function init_timeline() {
 
 
     // Games
-    svg.append("g")
+    grayrect.append("g")
         .selectAll()
         .data(vals)
         .enter()
@@ -1228,6 +1231,7 @@ function init_timeline() {
         .attr("stroke", "#d2d2d2")
         .attr("stroke-width", 0.5)
         .attr("data-index", (d, i) => i)
+        .style("pointer-events", "all")
         .style("cursor", "pointer")
         .on("mouseenter", mouseenter)
         .on("mouseleave", mouseleave)
@@ -1242,7 +1246,7 @@ function init_timeline() {
         .attr("text-anchor", "middle")
         .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
         .attr("y", d => y(d.order) + y.bandwidth() / 3)
-        .attr("font-size", "3pt")
+        .attr("font-size", Math.round(7 * 1e+9 / (x_high - x_low)) / 10 + "pt")
         .attr("fill", "white")
         .style('pointer-events', 'none')
         .text((d, i) => "ID: " + (i + 1));
@@ -1255,8 +1259,8 @@ function init_timeline() {
             .append('text')
             .attr("text-anchor", "middle")
             .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
-            .attr("y", d => y(d.order) + y.bandwidth() * 0.8)
-            .attr("font-size", "5pt")
+            .attr("y", d => y(d.order) + y.bandwidth() * 0.85)
+            .attr("font-size", Math.round(14 * 1e+9 / (x_high - x_low)) / 10 + "pt")
             .attr("fill", "white")
             .style('pointer-events', 'none')
             .text((d) => d.players_owned);
@@ -1287,9 +1291,10 @@ function init_timeline() {
         .attr("fill", "white")
         .text("Now");
 
-    svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
-    svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
-    svg.on('mouseleave.foo', (e) => { synced_leave() });
+    grayrect.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
+    grayrect.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
+    grayrect.on('mouseleave.foo', (e) => { synced_leave() });
+    grayrect.on('click', (e) => { synced_mark(e, graph_id); })
 
     let left_offset = document.querySelector("#now").getBoundingClientRect().x - window.innerWidth / 2;
     $("#d3-timeline").scrollLeft(left_offset);
@@ -1320,7 +1325,8 @@ async function draw_user_graph(options = {}) {
             .style('padding-bottom', '10px');
 
         let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-        svg.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
+        let grayrect = svg.append('g');
+        grayrect.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
         // Min max values
         let data = _.cloneDeep(app.get_graph_checkpoints);
@@ -1403,7 +1409,8 @@ async function draw_user_graph(options = {}) {
             .attr('y2', y(0))
             .style('stroke', '#4c0000')
             .style("stroke-opacity", 0.4)
-            .style("stroke-width", 1);
+            .style("stroke-width", 1)
+            .style('pointer-events', 'none');
 
         let right_now = new Date(app.now_dt);
         let now_time = right_now.getTime();
@@ -1440,9 +1447,10 @@ async function draw_user_graph(options = {}) {
             .attr("fill", "white")
             .text(options.title);
 
-        svg.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
-        svg.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
-        svg.on('mouseleave.foo', (e) => { synced_leave() });
+        grayrect.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
+        grayrect.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
+        grayrect.on('mouseleave.foo', (e) => { synced_leave() });
+        grayrect.on('click', (e) => { synced_mark(e, graph_id); })
 
         // expected values line
 
@@ -1453,6 +1461,7 @@ async function draw_user_graph(options = {}) {
             .attr("stroke-opacity", 0.8)
             .style("stroke-dasharray", "2,0.5")
             .attr("stroke-width", 1)
+            .style('pointer-events', 'none')
             .attr("d", d3.line()
                 .x((d) => x(d.time))
                 .y((d) => y(d.expected[options.stat]))
@@ -1470,6 +1479,7 @@ async function draw_user_graph(options = {}) {
             .attr("stroke", "#6fcfd6")
             .attr("stroke-opacity", 0.8)
             .attr("stroke-width", 1)
+            .style('pointer-events', 'none')
             .attr("d", d3.line()
                 .x((d) => x(d.time))
                 .y((d) => y(d.realized[options.stat]))
@@ -1484,6 +1494,7 @@ async function draw_user_graph(options = {}) {
                 .attr("stroke-opacity", 0.8)
                 .style("stroke-dasharray", "2,0.5")
                 .attr("stroke-width", 1)
+                .style('pointer-events', 'none')
                 .attr("d", d3.line()
                     .x((d) => x(d.time))
                     .y((d) => y(d.average.expected))
@@ -1495,6 +1506,7 @@ async function draw_user_graph(options = {}) {
                 .attr("stroke", "#de6363")
                 .attr("stroke-opacity", 0.8)
                 .attr("stroke-width", 1)
+                .style('pointer-events', 'none')
                 .attr("d", d3.line()
                     .x((d) => x(d.time))
                     .y((d) => y(d.average.realized))
@@ -1536,6 +1548,9 @@ async function draw_user_graph(options = {}) {
 function reset_graph_values() {
     let graph_types = ["graph-points", "graph-diff", "graph-gain", "graph-loss"];
     let x_raw = app.now_dt;
+    if (app.marked_dt !== undefined) {
+        x_raw = app.marked_dt;
+    }
     for (let i of graph_types) {
         update_graph_hover_values(x_raw, i);
     }
@@ -1636,6 +1651,48 @@ function synced_leave() {
     reset_graph_values();
 }
 
+function synced_mark(e, d) {
+    if (app.marked_dt !== undefined) {
+        app.marked_dt = undefined;
+        $("line.mark").remove();
+        $("text.marktext").remove();
+        reset_graph_values();
+        return;
+    }
+    let x_now = d3.pointer(e)[0];
+    let x_raw = axis_functions[d].x.invert(x_now);
+    app.marked_dt = x_raw;
+    $("svg.active-graph").each((i, svg) => {
+        let gid = svg.id;
+        let x = axis_functions[gid].x;
+        let y = axis_functions[gid].y;
+        let target = d3.select($(svg).find(".svg-actual")[0]);
+        target.append('line')
+            .attr('class', 'mark')
+            .attr('x1', x(x_raw))
+            .attr('y1', y.range()[0])
+            .attr('x2', x(x_raw))
+            .attr('y2', y.range()[1])
+            .style('stroke', '#f9aeff91')
+            .style("stroke-dasharray", "3,1")
+            .style("opacity", 0.7)
+            .attr("pointer-events", "none");
+        target.append('text')
+            .attr('class', 'marktext')
+            .attr("text-anchor", "middle")
+            .attr("x", x(x_raw))
+            .attr("y", -2)
+            .attr("font-size", "3pt")
+            .attr("fill", "white")
+            .text(new Date(x_raw).toLocaleString());
+
+        if (gid == "timeline") { return; }
+
+        update_graph_hover_values(x_raw, gid);
+
+    })
+
+}
 
 function zoomInSvg() {
     let svgEl = document.querySelector("svg#timeline");
@@ -1644,7 +1701,7 @@ function zoomInSvg() {
     if (currentMinWidth < currentWidth) {
         svgEl.style.minWidth = (currentWidth + 100) + "px";
     } else {
-        if (currentMinWidth < 2000) {
+        if (currentMinWidth < 3000) {
             svgEl.style.minWidth = (currentMinWidth + 100) + "px";
         }
     }
