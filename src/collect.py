@@ -333,7 +333,7 @@ def get_fpl_analytics_league(target_folder, debug=False):
     if debug:
         review_values = [get_team_season_review(data[0], True)]
     else:
-        with ProcessPoolExecutor(max_workers=8) as executor:
+        with ProcessPoolExecutor(max_workers=16) as executor:
             review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
 
     review_values = [i for i in review_values if i is not None]
