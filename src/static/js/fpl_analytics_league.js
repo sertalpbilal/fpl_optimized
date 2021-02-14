@@ -8,7 +8,9 @@ var app = new Vue({
         date: date,
         listdates: listdates,
         league_data: [],
-        table: ""
+        table: "",
+        ngc_active: false,
+        confetti: undefined
     },
     methods: {
         close_date() {
@@ -28,7 +30,6 @@ var app = new Vue({
                 url: `data/${this.season}/${this.gw}/${this.date}/input/fpl_analytics_league.csv`,
                 dataType: "text",
                 success: function(data) {
-                    debugger;
                     tablevals = data.split('\n').map(i => i.split(','));
                     keys = tablevals[0];
                     keys = keys.map(i => i.trim());
@@ -69,6 +70,25 @@ var app = new Vue({
                 });
                 this.table.buttons().container()
                     .appendTo('.col-md-6:eq(0)');
+
+                $('#fpl_analytics_table').on('order.dt', function(e, settings, array) {
+                    let tcol = array[0].col;
+                    let tdir = array[0].dir;
+                    if ((tcol == 5 || tcol == 10) && tdir == "asc") {
+                        if (!app.ngc_active) {
+                            app.start_confetti();
+                            setTimeout(app.stop_confetti, 15000);
+                        }
+                    } else {
+                        app.ngc_active = false;
+                        app.stop_confetti();
+                    }
+
+                    // // This will show: "Ordering on column 1 (asc)", for example
+                    // var order = this.table.order();
+                    // $('#orderInfo').html('Ordering on column ' + order[0][0] + ' (' + order[0][1] + ')');
+                });
+
                 draw_comparison_plot("md_vs_fpl_graph", x_tag = "MD", y_tag = "FPL", x_title = "MD Points", y_title = "FPL Points", suffix = "", secondary_suffix = "_Rank");
                 draw_comparison_plot("io_vs_fpl_graph", x_tag = "IO", y_tag = "FPL", x_title = "IO Points", y_title = "FPL Points", suffix = "", secondary_suffix = "_Rank");
                 draw_comparison_plot("md_vs_fpl_rank_gr", x_tag = "MD", y_tag = "FPL", x_title = "MD Rank", y_title = "FPL Rank", suffix = "_Rank", secondary_suffix = "", reverse = true);
@@ -82,6 +102,24 @@ var app = new Vue({
             this.clear_all();
             this.get_table();
         },
+        start_confetti() {
+            let confettiSettings = { target: 'confetti', max: 50, clock: 40 };
+            let confetti = new ConfettiGenerator(confettiSettings);
+            if (this.confetti !== undefined) {
+                (this.confetti).clear();
+            }
+            this.confetti = confetti;
+            confetti.render();
+            this.ngc_active = true;
+        },
+        stop_confetti() {
+            if (this.confetti !== undefined) {
+                let c = this.confetti;
+                c.clear();
+                this.confetti = undefined;
+                this.ngc_active = false;
+            }
+        }
     },
     computed: {
         is_fully_ready() {
@@ -116,7 +154,6 @@ function draw_comparison_plot(target_id, x_tag, y_tag, x_title, y_title, suffix 
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    debugger;
     let x_high = Math.max(...app.league_data.map(i => parseFloat(i[x_tag + suffix]))) + 20;
     let x_low = Math.min(...app.league_data.map(i => parseFloat(i[x_tag + suffix]))) - 20;
 

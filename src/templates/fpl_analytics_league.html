@@ -31,6 +31,7 @@
                 <div class="scenario_detail">FPL Analytics League is generated using <a href="https://fplreview.com/season-review/">fplreview.com season review</a> tool. DM on Twitter to add your team ID to the list.</div>
                 <div class="card-body">
 
+                    <div class="d-block mx-auto text-center blinking-text nvc-title mb-3" v-if="ngc_active" v-cloak><span>Negative Variance Club</span></div>
 
                     <table id="fpl_analytics_table" class="table table-striped table-borderless table-sm text-white text-small w-100" v-if="is_ready" v-cloak>
                         <thead>
@@ -107,13 +108,13 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="mx-auto d-block text-center">FPL Rank vs MD Rank</div>
+                            <div class="mx-auto d-block text-center">FPL Rank vs MD Rank (Log)</div>
                             <div id="md_vs_fpl_rank_gr" class="points_graph">
 
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="mx-auto d-block text-center">FPL Rank vs IO Rank</div>
+                            <div class="mx-auto d-block text-center">FPL Rank vs IO Rank (Log)</div>
                             <div id="io_vs_fpl_rank_gr" class="points_graph">
 
                             </div>
@@ -148,5 +149,9 @@
 
 
 </main>
+
+<canvas id="confetti" class="nvc"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js" integrity="sha256-p6aQfSnK5puy5yn9xCIyBjJKv5FFMhVoHvJqT7ZGdZU=" crossorigin="anonymous"></script>
 
 "% with scripts=["main", "fpl_analytics_league"] %" "% include 'footer.html' %" "% endwith %"
