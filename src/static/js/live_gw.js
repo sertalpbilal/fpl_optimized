@@ -322,6 +322,8 @@ var app = new Vue({
             all_discrete_events.sort((a, b) => { return a.dt - b.dt });
             all_discrete_events = _.cloneDeep(all_discrete_events)
 
+            let now_values = {};
+
             // Initial event
             let team_checkpoints = [];
             let initial_team = 0;
@@ -339,6 +341,7 @@ var app = new Vue({
                 expected: { points: initial_team, gain: initial_team, loss: initial_avg, diff: initial_team - initial_avg },
                 realized: { points: initial_team, gain: initial_team, loss: initial_avg, diff: initial_team - initial_avg },
                 average: { expected: initial_avg, realized: initial_avg },
+                projected: { points: initial_team, avg: initial_avg, gain: initial_team, loss: initial_avg, diff: initial_team - initial_avg },
                 active_events: [],
                 finished_events: [],
                 discrete_order: 0,
@@ -366,7 +369,7 @@ var app = new Vue({
                     target_event.active_events = target_event.active_events.filter(i => i.game.id !== event.game.id);
                     target_event.finished_events.push(event);
                 }
-                let values = this.get_points_for_time(event.type, current_time, target_event.active_events, target_event.finished_events, setoff);
+                let values = this.get_points_for_time(event.type, current_time, target_event.active_events, target_event.finished_events, setoff, now_values);
                 target_event.expected.points = values.xp_total;
                 target_event.realized.points = values.rp_total;
                 target_event.expected.gain = values.xp_gain;
@@ -378,6 +381,17 @@ var app = new Vue({
                 target_event.average.expected = values.avg_expected;
                 target_event.average.realized = values.avg_realized;
 
+                target_event.projected.points = values.proj_total;
+                target_event.projected.avg = values.proj_avg;
+                target_event.projected.gain = values.proj_gain;
+                target_event.projected.loss = values.proj_loss;
+                target_event.projected.diff = values.proj_diff;
+
+
+                if (event.type == 'now') {
+                    now_values = _.cloneDeep(values);
+                }
+
                 let existing_id = team_checkpoints.findIndex(i => i.time == current_time);
                 if (existing_id == -1) {
                     let entry = {
@@ -385,6 +399,7 @@ var app = new Vue({
                         expected: _.clone(target_event.expected),
                         realized: _.clone(target_event.realized),
                         average: _.clone(target_event.average),
+                        projected: _.clone(target_event.projected),
                         active_events: _.clone(target_event.active_events),
                         finished_events: _.clone(target_event.finished_events),
                         discrete_order: _.clone(target_event.discrete_order),
@@ -398,6 +413,7 @@ var app = new Vue({
                         expected: _.clone(target_event.expected),
                         realized: _.clone(target_event.realized),
                         average: _.clone(target_event.average),
+                        projected: _.clone(target_event.projected),
                         active_events: _.clone(target_event.active_events),
                         finished_events: _.clone(target_event.finished_events),
                         discrete_order: _.clone(target_event.discrete_order),
@@ -793,7 +809,7 @@ var app = new Vue({
                 return teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
             }
         },
-        get_points_for_time(event_type, time, active_events, finished_events, setoff) {
+        get_points_for_time(event_type, time, active_events, finished_events, setoff, now_values) {
 
             const ownership_by_id = this.ownership_by_id;
 
@@ -881,6 +897,21 @@ var app = new Vue({
                 average_realized += getSum(active_players_final.map(i => i.rp * i.eo));
             }
 
+            let proj_total = 0;
+            if (time <= this.now_dt) {
+                proj_total = rp_total + setoff.team;
+                proj_avg = average_realized + setoff.avg;
+                proj_gain = rp_gain + setoff.team;
+                proj_loss = rp_loss + setoff.avg;
+                proj_diff = rp_diff + setoff.team - setoff.avg;
+            } else { // future date-time
+                proj_total = (rp_total + setoff.team) + (xp_total + setoff.team) - now_values.xp_total;
+                proj_avg = (average_realized + setoff.avg) + (average_expected + setoff.avg) - now_values.avg_expected;
+                proj_gain = (rp_gain + setoff.team) + (xp_gain + setoff.team) - now_values.xp_gain;
+                proj_loss = (rp_loss + setoff.avg) + (xp_loss + setoff.avg) - now_values.xp_loss;
+                proj_diff = (rp_diff + setoff.team - setoff.avg) + (xp_diff + setoff.team - setoff.avg) - now_values.xp_diff;
+            }
+
             return {
                 xp_total: xp_total + setoff.team,
                 rp_total: rp_total + setoff.team,
@@ -891,7 +922,12 @@ var app = new Vue({
                 xp_diff: xp_diff + setoff.team - setoff.avg,
                 rp_diff: rp_diff + setoff.team - setoff.avg,
                 avg_expected: average_expected + setoff.avg,
-                avg_realized: average_realized + setoff.avg
+                avg_realized: average_realized + setoff.avg,
+                proj_total,
+                proj_avg,
+                proj_gain,
+                proj_loss,
+                proj_diff
             }
         },
         toggleHit() {
@@ -1372,15 +1408,15 @@ async function draw_user_graph(options = {}) {
         let x_high = data[data.length - 1].time;
         let x_low = data[0].time;
 
-        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])).concat(data.map(i => i.projected[options.stat])));
         y_high = Math.max(y_high * 1.1, y_high + 5)
-        let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+        let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])).concat(data.map(i => i.projected[options.stat])));
         y_low = Math.min(y_low, 0);
 
         if (options.stat == "points") {
-            let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
+            let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)).concat(data.map(i => i.projected.avg)));
             y_avg_high = Math.max(y_avg_high * 1.1, y_avg_high + 5)
-            let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
+            let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)).concat(data.map(i => i.projected.avg)));
             y_high = Math.max(y_high, y_avg_high);
             y_low = Math.min(y_low, y_avg_low);
         }
@@ -1524,7 +1560,38 @@ async function draw_user_graph(options = {}) {
                 .y((d) => y(d.realized[options.stat]))
             );
 
+        // projected
+
+        let future_data = _.cloneDeep(data)
+        future_data = future_data.slice(now_index);
+
+        svg.append('path')
+            .datum(future_data)
+            .attr("fill", "none")
+            .attr("stroke", "#587ee0b5")
+            .attr("stroke-opacity", 0.8)
+            .attr("stroke-dasharray", "5,1")
+            .attr("stroke-width", 1)
+            .style('pointer-events', 'none')
+            .attr("d", d3.line()
+                .x((d) => x(d.time))
+                .y((d) => y(d.projected[options.stat]))
+            );
+
         if (options.stat == "points") {
+
+            svg.append('path')
+                .datum(future_data)
+                .attr("fill", "none")
+                .attr("stroke", "#e482baa8")
+                .attr("stroke-opacity", 0.8)
+                .attr("stroke-dasharray", "5,1")
+                .attr("stroke-width", 1)
+                .style('pointer-events', 'none')
+                .attr("d", d3.line()
+                    .x((d) => x(d.time))
+                    .y((d) => y(d.projected.avg))
+                );
 
             svg.append('path')
                 .datum(data)
@@ -1605,8 +1672,6 @@ async function draw_user_graph(options = {}) {
 
         }
 
-
-
         resolve("Done");
     })
 }
@@ -1618,11 +1683,11 @@ function reset_graph_values() {
         x_raw = app.marked_dt;
     }
     for (let i of graph_types) {
-        update_graph_hover_values(x_raw, i);
+        update_graph_hover_values(x_raw, i, true);
     }
 }
 
-function update_graph_hover_values(x_raw, gid) {
+function update_graph_hover_values(x_raw, gid, reset = false) {
 
     let raw_data = app.get_graph_checkpoints;
     let x_targets = raw_data.map(i => i.time);
@@ -1647,11 +1712,30 @@ function update_graph_hover_values(x_raw, gid) {
     if (stat == "points") { digits = 0; }
     let realized_y = find_y(x_left.realized[stat], x_right.realized[stat]);
     $("#" + stat + "-realized-you").html(realized_y.toFixed(digits));
+
+    if (!reset) {
+        let projected_y = find_y(x_left.projected[stat], x_right.projected[stat]);
+        $("#" + stat + "-projected-you").html(projected_y.toFixed(2));
+    } else {
+        let xh = raw_data[raw_data.length - 1]["projected"][stat]
+        $("#" + stat + "-projected-you").html(xh.toFixed(2));
+    }
+
     if (stat == "points") {
         let expected_y = find_y(x_left.average.expected, x_right.average.expected);
         $("#" + stat + "-expected-avg").html(expected_y.toFixed(2));
         let realized_y = find_y(x_left.average.realized, x_right.average.realized);
         $("#" + stat + "-realized-avg").html(realized_y.toFixed(2));
+
+        if (!reset) {
+            let projected_avg_y = find_y(x_left.projected["avg"], x_right.projected["avg"]);
+            $("#" + stat + "-projected-avg").html(projected_avg_y.toFixed(2));
+        } else {
+            let projected_avg_y = raw_data[raw_data.length - 1]["projected"]["avg"]
+            $("#" + stat + "-projected-avg").html(projected_avg_y.toFixed(2));
+        }
+
+
     }
 }
 
@@ -1685,7 +1769,7 @@ function synced_enter(e, d) {
 
         if (gid == "timeline") { return; }
 
-        update_graph_hover_values(x_raw, gid);
+        update_graph_hover_values(x_raw, gid, false);
 
     })
 }
@@ -1707,7 +1791,7 @@ function synced_move(e, d) {
             .attr('x', x(x_raw))
             .text(new Date(x_raw).toLocaleString());
 
-        update_graph_hover_values(x_raw, gid);
+        update_graph_hover_values(x_raw, gid, false);
     })
 }
 
@@ -1754,7 +1838,7 @@ function synced_mark(e, d) {
 
         if (gid == "timeline") { return; }
 
-        update_graph_hover_values(x_raw, gid);
+        update_graph_hover_values(x_raw, gid, false);
 
     })
 
