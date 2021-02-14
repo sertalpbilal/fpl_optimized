@@ -24,7 +24,7 @@
                                 <div class="text-center p-0">Ownership Data</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#sourceModal">
-                                        {{ ownership_source }}
+                                        {{ ownership_source }} <i class="fas fa-exclamation-triangle" v-if="problem_with_sample_exist"></i>
                                     </div>
                                 </div>
                             </div>
@@ -57,6 +57,8 @@
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="fill_width = !fill_width">Fill Width {{ fill_width ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="large_graphs = !large_graphs">Larger Graphs {{ large_graphs ? ": On" : ": Off" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm d-block" type="button" @click="toggleShowDetails">Show Details {{ show_details ? ": On" : ": Off" }}</button>
+                                                <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
@@ -64,6 +66,7 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember">{{ remember_settings ? "Forget Settings" : "Remember My Settings" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showSettings').modal('show')" v-if="remember_settings">Show Saved Settings</button>
                                             </div>
                                         </div>
                                     </div>
@@ -76,7 +79,7 @@
         </div>
     </div>
 
-    <div class="row" v-cloak v-if="is_ready && show_team_info">
+    <div class="row" v-cloak v-if="is_team_info_ready && show_team_info">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Team Info</h5>
@@ -265,7 +268,7 @@
                                         </tr>
                                         <tr>
                                             <td>Finished</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished ? "Yes" : "No" }}</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished_provisional ? "Yes" : "No" }}</td>
                                         </tr>
                                         <tr>
                                             <td>xP Sum</td>
@@ -1188,6 +1191,39 @@
                         </table>
                     </div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="showSettings">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Saved Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(value, key) in get_saved_settings">
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" @click="toggleRemember" data-dismiss="modal">Forget Settings</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

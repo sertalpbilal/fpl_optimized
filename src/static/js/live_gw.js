@@ -13,7 +13,7 @@ var app = new Vue({
         gw_fixture: undefined,
         team_id: "-1",
         remember_settings: false,
-        allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
+        allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_details', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -34,7 +34,8 @@ var app = new Vue({
         fill_width: false,
         large_graphs: false,
         autosub_stats: {},
-        marked_dt: undefined
+        marked_dt: undefined,
+        show_details: true
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -43,6 +44,7 @@ var app = new Vue({
         valid_team_id() { return this.team_id == -1 ? "Click to enter" : (this.show_team_info ? this.team_id : "Hidden") },
         is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
+        is_team_info_ready() { return this.team_info !== undefined && !_.isEmpty(this.team_info); },
         is_rp_ready() { return this.rp_data !== undefined && this.rp_data.length != 0 },
         is_xp_ready() { return this.xp_data !== undefined && this.xp_data.length != 0 },
         is_fixture_ready() { return this.gw_fixture !== undefined && this.gw_fixture.length != 0 },
@@ -64,6 +66,11 @@ var app = new Vue({
         },
         is_using_sample() {
             return (this.ownership_source !== "Official FPL API" && !_.isEmpty(this.sample_data));
+        },
+        problem_with_sample_exist() {
+            if (this.ownership_source !== "Official FPL API" && _.isEmpty(this.sample_data)) {
+                this.ownership_source = "Official FPL API";
+            }
         },
         current_sample_data() {
             if (!this.is_using_sample) { return [] }
@@ -292,6 +299,17 @@ var app = new Vue({
 
 
             return cloned_fixture;
+        },
+        player_counts() {
+            if (_.isEmpty(this.gameweek_games_with_metadata)) { return {} }
+
+            let game_details = this.gameweek_games_with_metadata;
+            let your_total = getSum(game_details.map(i => i.player_details.map(i => i.multiplier)).flat())
+            let your_played = getSum(game_details.filter(i => i.started).map(i => i.player_details.map(i => i.multiplier)).flat())
+            let avg_total = getSum(game_details.map(i => i.player_details.map(i => i.ownership)).flat())
+            let avg_played = getSum(game_details.filter(i => i.started).map(i => i.player_details.map(i => i.ownership)).flat())
+
+            return { your_total, your_played, avg_total, avg_played }
         },
         get_graph_checkpoints() {
             const gw_info = this.gameweek_info;
@@ -576,6 +594,18 @@ var app = new Vue({
                 return { 'occurence': s[1], 'ratio': s[1] / count, 'from': el[players[0]], 'to': el[players[1]], 'change': change, 'effect': getWithSign(-s[1] / count * change) }
             })
             return top_pairs;
+        },
+        get_saved_settings() {
+            let do_remember_settings = this.remember_settings;
+            let saved_settings = {};
+            let settings = this.allowed_settings;
+            for (let st of settings) {
+                let val = Vue.$cookies.get(st)
+                if (val !== null) {
+                    saved_settings[st] = convertToJS(val);
+                }
+            }
+            return saved_settings;
         }
     },
     methods: {
@@ -606,6 +636,7 @@ var app = new Vue({
                 type: "GET",
                 url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
                 dataType: "text",
+                async: true,
                 success: (data) => {
                     tablevals = data.split('\n').map(i => i.split(','));
                     keys = tablevals[0];
@@ -868,6 +899,12 @@ var app = new Vue({
             this.$nextTick(() => {
                 refresh_all_graphs();
             })
+        },
+        toggleShowDetails() {
+            this.show_details = !this.show_details;
+            this.$nextTick(() => {
+                refresh_all_graphs();
+            });
         },
         openModalFor(id) {
             this.modal_selected_game = id;
@@ -1335,12 +1372,14 @@ async function draw_user_graph(options = {}) {
         let x_high = data[data.length - 1].time;
         let x_low = data[0].time;
 
-        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat]))) + 5;
+        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
+        y_high = Math.max(y_high * 1.1, y_high + 5)
         let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])));
         y_low = Math.min(y_low, 0);
 
         if (options.stat == "points") {
-            let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized))) + 5;
+            let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
+            y_avg_high = Math.max(y_avg_high * 1.1, y_avg_high + 5)
             let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)));
             y_high = Math.max(y_high, y_avg_high);
             y_low = Math.min(y_low, y_avg_low);
@@ -1514,31 +1553,58 @@ async function draw_user_graph(options = {}) {
         }
         reset_graph_values();
 
-        let text_info = svg.append('g');
-        text_info.append('text')
-            .attr("text-anchor", "start")
-            .attr("x", x(x_low) + 1)
-            .attr("y", y(y_high) + 5)
-            .attr("font-size", "3pt")
-            .attr("fill", "#ffffff45")
-            .style('pointer-events', 'none')
-            .text("Data: " + app.ownership_source);
-        text_info.append('text')
-            .attr("text-anchor", "start")
-            .attr("x", x(x_low) + 1)
-            .attr("y", y(y_high) + 10)
-            .attr("font-size", "3pt")
-            .attr("fill", "#ffffff45")
-            .style('pointer-events', 'none')
-            .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
-        text_info.append('text')
-            .attr("text-anchor", "start")
-            .attr("x", x(x_low) + 1)
-            .attr("y", y(y_high) + 15)
-            .attr("font-size", "3pt")
-            .attr("fill", "#ffffff45")
-            .style('pointer-events', 'none')
-            .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
+        if (app.show_details) {
+
+
+
+            let text_info = svg.append('g');
+            text_info.append('text')
+                .attr("text-anchor", "start")
+                .attr("x", x(x_low) + 1)
+                .attr("y", y(y_high) + 5)
+                .attr("font-size", "3pt")
+                .attr("fill", "#ffffff45")
+                .style('pointer-events', 'none')
+                .text("Data: " + app.ownership_source);
+            text_info.append('text')
+                .attr("text-anchor", "start")
+                .attr("x", x(x_low) + 1)
+                .attr("y", y(y_high) + 10)
+                .attr("font-size", "3pt")
+                .attr("fill", "#ffffff45")
+                .style('pointer-events', 'none')
+                .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
+            text_info.append('text')
+                .attr("text-anchor", "start")
+                .attr("x", x(x_low) + 1)
+                .attr("y", y(y_high) + 15)
+                .attr("font-size", "3pt")
+                .attr("fill", "#ffffff45")
+                .style('pointer-events', 'none')
+                .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
+
+            let pc = app.player_counts;
+            let played_text = pc.your_played + '/' + pc.your_total;
+            let avg_text = rounded(pc.avg_played) + '/' + rounded(pc.avg_total);
+            text_info.append('text')
+                .attr("text-anchor", "end")
+                .attr("x", x(x_high) - 3)
+                .attr("y", y(y_high) + 5)
+                .attr("font-size", "3pt")
+                .attr("fill", "#82f1ffbd")
+                .style('pointer-events', 'none')
+                .text("Played: " + played_text);
+            text_info.append('text')
+                .attr("text-anchor", "end")
+                .attr("x", x(x_high) - 3)
+                .attr("y", y(y_high) + 10)
+                .attr("font-size", "3pt")
+                .attr("fill", "#ff8d9b9e")
+                .style('pointer-events', 'none')
+                .text("Avg Played: " + avg_text);
+
+        }
+
 
 
         resolve("Done");
@@ -1726,8 +1792,10 @@ function refreshFixtureAndRP() {
             load_fixture_data(),
             load_rp_data()
         ]).then((values) => {
-            refresh_all_graphs();
-            $("#fixtureModal").modal('hide');
+            app.$nextTick(() => {
+                $("#fixtureModal").modal('hide');
+                refresh_all_graphs();
+            })
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
@@ -1752,7 +1820,9 @@ function refresh_all_graphs() {
             draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" }),
             draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" })
         ]).then((values) => {
-            $("#waitModal").modal('hide');
+            app.$nextTick(() => {
+                $("#waitModal").modal('hide');
+            });
         });
 
     });
