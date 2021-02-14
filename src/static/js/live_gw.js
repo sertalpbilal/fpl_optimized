@@ -1331,7 +1331,7 @@ function init_timeline() {
     grayrect.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
     grayrect.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
     grayrect.on('mouseleave.foo', (e) => { synced_leave() });
-    grayrect.on('click', (e) => { synced_mark(e, graph_id); })
+    grayrect.on('dblclick', (e) => { synced_mark(e, graph_id); })
 
     let left_offset = document.querySelector("#now").getBoundingClientRect().x - window.innerWidth / 2;
     $("#d3-timeline").scrollLeft(left_offset);
@@ -1489,7 +1489,7 @@ async function draw_user_graph(options = {}) {
         grayrect.on('mouseenter.foo', (e) => { synced_enter(e, graph_id); });
         grayrect.on('mousemove.foo', (e) => { synced_move(e, graph_id); });
         grayrect.on('mouseleave.foo', (e) => { synced_leave() });
-        grayrect.on('click', (e) => { synced_mark(e, graph_id); })
+        grayrect.on('dblclick', (e) => { synced_mark(e, graph_id); })
 
         // expected values line
 
