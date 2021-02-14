@@ -128,6 +128,7 @@
                 <div class="scenario_detail">FPL Analytics League is generated using <a href="https://fplreview.com/season-review/">fplreview.com season review</a> tool. DM on Twitter to add your team ID to the list.</div>
                 <div class="card-body">
 
+                    <div class="d-block mx-auto text-center blinking-text nvc-title mb-3" v-if="ngc_active" v-cloak><span>Negative Variance Club</span></div>
 
                     <table id="fpl_analytics_table" class="table table-striped table-borderless table-sm text-white text-small w-100" v-if="is_ready" v-cloak>
                         <thead>
@@ -204,13 +205,13 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="mx-auto d-block text-center">FPL Rank vs MD Rank</div>
+                            <div class="mx-auto d-block text-center">FPL Rank vs MD Rank (Log)</div>
                             <div id="md_vs_fpl_rank_gr" class="points_graph">
 
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="mx-auto d-block text-center">FPL Rank vs IO Rank</div>
+                            <div class="mx-auto d-block text-center">FPL Rank vs IO Rank (Log)</div>
                             <div id="io_vs_fpl_rank_gr" class="points_graph">
 
                             </div>
@@ -246,6 +247,10 @@
 
 </main>
 
+<canvas id="confetti" class="nvc"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js" integrity="sha256-p6aQfSnK5puy5yn9xCIyBjJKv5FFMhVoHvJqT7ZGdZU=" crossorigin="anonymous"></script>
+
  </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
@@ -276,7 +281,7 @@
     let gw = "GW25";
     let next_gw = "GW25";
     let date = "2021-02-14";
-    let lastupdate = "2021-02-14T15:57:44.445047+00:00";
+    let lastupdate = "2021-02-14T16:43:41.792598+00:00";
     let listdates = [
         "2020-21 / GW25 / 2021-02-14 ", 
         "2020-21 / GW24 / 2021-02-13 ", 
@@ -331,6 +336,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-14T15:57:44.445047+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-14T16:43:41.792598+00:00</div>
 
 </html> 
