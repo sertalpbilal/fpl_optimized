@@ -121,7 +121,7 @@
                                 <div class="text-center p-0">Ownership Data</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#sourceModal">
-                                        {{ ownership_source }}
+                                        {{ ownership_source }} <i class="fas fa-exclamation-triangle" v-if="problem_with_sample_exist"></i>
                                     </div>
                                 </div>
                             </div>
@@ -154,6 +154,8 @@
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="fill_width = !fill_width">Fill Width {{ fill_width ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="large_graphs = !large_graphs">Larger Graphs {{ large_graphs ? ": On" : ": Off" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm d-block" type="button" @click="toggleShowDetails">Show Details {{ show_details ? ": On" : ": Off" }}</button>
+                                                <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
@@ -161,6 +163,7 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember">{{ remember_settings ? "Forget Settings" : "Remember My Settings" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showSettings').modal('show')" v-if="remember_settings">Show Saved Settings</button>
                                             </div>
                                         </div>
                                     </div>
@@ -173,7 +176,7 @@
         </div>
     </div>
 
-    <div class="row" v-cloak v-if="is_ready && show_team_info">
+    <div class="row" v-cloak v-if="is_team_info_ready && show_team_info">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Team Info</h5>
@@ -362,7 +365,7 @@
                                         </tr>
                                         <tr>
                                             <td>Finished</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished ? "Yes" : "No" }}</td>
+                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished_provisional ? "Yes" : "No" }}</td>
                                         </tr>
                                         <tr>
                                             <td>xP Sum</td>
@@ -1291,6 +1294,39 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="showSettings">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Saved Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(value, key) in get_saved_settings">
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" @click="toggleRemember" data-dismiss="modal">Forget Settings</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     let league_list = JSON.parse( "[\n    { \"id\": 2221044, \"twitter\": \"sertalpbilal\" },\n    { \"id\": 367, \"twitter\": \"FplSimpson\" },\n    { \"id\": 17973, \"twitter\": \"FplStatsdan\" },\n    { \"id\": 44142, \"twitter\": \"FF_Trout\" },\n    { \"id\": 2227, \"twitter\": \"dilksybab\" },\n    { \"id\": 36828, \"twitter\": \"theFPLkiwi\" },\n    { \"id\": 4473, \"twitter\": \"jameso_12\" },\n    { \"id\": 159049, \"twitter\": \"api_kakayou\" },\n    { \"id\": 2134733, \"twitter\": \"usafpl\" },\n    { \"id\": 11891, \"twitter\": \"CazzaFPL\" },\n    { \"id\": 115, \"twitter\": \"PlanetosFPL\" },\n    { \"id\": 59177, \"twitter\": \"analytic_fpl\" },\n    { \"id\": 262, \"twitter\": \"rogue_wee\" },\n    { \"id\": 15673, \"twitter\": \"mtthwmn\" },\n    { \"id\": 1339675, \"twitter\": \"cmusson32\" },\n    { \"id\": 106304, \"twitter\": \"FPLstudent2\" },\n    { \"id\": 10350, \"twitter\": \"peterhandleson\" },\n    { \"id\": 293113, \"twitter\": \"chrishp\" },\n    { \"id\": 2243390, \"twitter\": \"plfantasy\" },\n    { \"id\": 741, \"twitter\": \"FPLmeta\" },\n    { \"id\": 23491, \"twitter\": \"FplAuto\" },\n    { \"id\": 227516, \"twitter\": \"NourEldin_z3r0\" },\n    { \"id\": 23337, \"twitter\": \"UkendtPerson45\" },\n    { \"id\": 3561, \"twitter\": \"MikkelTokvam\" },\n    { \"id\": 210810, \"twitter\": \"Klaudioz\" },\n    { \"id\": 204827, \"twitter\": \"FantasianPL\" },\n    { \"id\": 10187, \"twitter\": \"rama96ab\" },\n    { \"id\": 634300, \"twitter\": \"FPL_LFE\" },\n    { \"id\": 17157, \"twitter\": \"_jtreble\" },\n    { \"id\": 1341730, \"twitter\": \"DanielSaetre\" },\n    { \"id\": 274376, \"twitter\": \"FBinary01\" },\n    { \"id\": 3861, \"twitter\": \"FPL_Data\" },\n    { \"id\": 2978, \"twitter\": \"FPL_ElStatto\" },\n    { \"id\": 795, \"twitter\": \"FplSigurd\" },\n    { \"id\": 726810, \"twitter\": \"JoeBopara\" },\n    { \"id\": 4033, \"twitter\": \"dLincolnlawyer\" },\n    { \"id\": 1188, \"twitter\": \"FPL_Statoholic\" },\n    { \"id\": 184956, \"twitter\": \"FplAmateur\" },\n    { \"id\": 4084, \"twitter\": \"wolacola\" },\n    { \"id\": 16804, \"twitter\": \"Hashtag_MEGA\" },\n    { \"id\": 2409, \"twitter\": \"dav_fifa\" },\n    { \"id\": 393944, \"twitter\": \"MaulanaRiandi\" },\n    { \"id\": 392517, \"twitter\": \"Rak464\" },\n    { \"id\": 1310, \"twitter\": \"ArneBarsnes\" },\n    { \"id\": 416185, \"twitter\": \"FPL_PapaSmurf\" },\n    { \"id\": 33480, \"twitter\": \"gezza96\" },\n    { \"id\": 7193, \"twitter\": \"Raghy78d\" },\n    { \"id\": 26787, \"twitter\": \"pdhFPL\" },\n    { \"id\": 5390907, \"twitter\": \"NeilRankinZA\" },\n    { \"id\": 50155, \"twitter\": \"EuanThompson\" },\n    { \"id\": 501, \"twitter\": \"FPLrookie1\" },\n    { \"id\": 1280279, \"twitter\": \"FplBudget\" },\n    { \"id\": 150618, \"twitter\": \"FF_Vader\" },\n    { \"id\": 2977, \"twitter\": \"alasdairtweets\" },\n    { \"id\": 53926, \"twitter\": \"fpl_analytic\" },\n    { \"id\": 2072032, \"twitter\": \"stephendeyoung\" },\n    { \"id\": 496, \"twitter\": \"James_Ingram15\" },\n    { \"id\": 896, \"twitter\": \"FPL_Kid\" },\n    { \"id\": 3137, \"twitter\": \"fpl_jan\" },\n    { \"id\": 1480, \"twitter\": \"FPL_Mezzala\" },\n    { \"id\": 69496, \"twitter\": \"morstats\" },\n    { \"id\": 374292, \"twitter\": \"FplOpinion\" },\n    { \"id\": 472, \"twitter\": \"_NeilFPL\" },\n    { \"id\": 121535, \"twitter\": \"UnderstandingF8\" },\n    { \"id\": 92246, \"twitter\": \"EejRoberts\" },\n    { \"id\": 1531, \"twitter\": \"FPL_Gents\" },\n    { \"id\": 4417, \"twitter\": \"FPLHaggis\" },\n    { \"id\": 12322, \"twitter\": \"Jumpthewave\" },\n    { \"id\": 3683, \"twitter\": \"DarraghNoonan\" },\n    { \"id\": 1697, \"twitter\": \"FPL_Chase\" },\n    { \"id\": 300408, \"twitter\": \"jonwalker88\" },\n    { \"id\": 241725, \"twitter\": \"TomDavies_17\" },\n    { \"id\": 32982, \"twitter\": \"FodWeTrust\" }\n]\n" );
@@ -1326,7 +1362,7 @@
     let gw = "GW24";
     let next_gw = "GW25";
     let date = "2021-02-13";
-    let lastupdate = "2021-02-13T22:04:04.025277+00:00";
+    let lastupdate = "2021-02-14T03:37:07.848028+00:00";
     let listdates = [
         "2020-21 / GW25 / 2021-02-13 ", 
         "2020-21 / GW24 / 2021-02-13 ", 
@@ -1361,6 +1397,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-13T22:04:04.025277+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-02-14T03:37:07.848028+00:00</div>
 
 </html> 
