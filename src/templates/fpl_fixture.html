@@ -89,6 +89,17 @@
                         </div>
 
                         <div class="flex-column metric mw-10 ml-1">
+                            <div class="text-center p-0">Color Scheme</div>
+                            <div class="setting-value text-center p-0">
+                                <div class="d-flex flex-row setting-line mb-0">
+                                    <select class="form-control live-select" id="data-type-select" v-model="color_choice" @change="openModalIfCustom(color_choice)">
+                                        <option v-for="(c,id) in color_options" :value="id">{{ c.title }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex-column metric mw-10 ml-1">
                             <div class="text-center p-0">&nbsp;</div>
                             <div class="text-center p-0">
                                 <div class="d-flex flex-row mb-0">
@@ -135,7 +146,7 @@
                             <tbody>
                                 <tr v-for="(t,id) in teams">
                                     <td :data-order="id">{{ t.name }}</td>
-                                    <td class="text-center" v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
+                                    <td class="text-center text-with-shadow" v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
                                         {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_as_list(rivals[id+1][gw.no], true) }}
                                     </td>
                                     <td :data-order="team_average[id+1]" class="text-center">{{ team_average[id+1].toFixed(2) }}</td>
@@ -343,6 +354,43 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="customColorModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Custom Colors</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-black text-medium range-box">
+                Choose three colors for the fixture:
+
+                <div>
+                    <input type="color" v-model.lazy="color_scheme[0]">
+                    <label>Low</label>
+                </div>
+
+                <div>
+                    <input type="color" v-model.lazy="color_scheme[1]">
+                    <label>Mean</label>
+                </div>
+
+                <div>
+                    <input type="color" v-model.lazy="color_scheme[2]">
+                    <label>High</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     let data_target = "** data_target **";
