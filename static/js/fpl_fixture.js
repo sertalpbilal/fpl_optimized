@@ -37,7 +37,9 @@ var app = new Vue({
         time_left: "",
         range_from: 1,
         range_to: 38,
-        include_postponed: true
+        include_postponed: true,
+        color_scheme: ["#6a0606", "#ffffff", "#105c0a"],
+        color_choice: 0
     },
     computed: {
         is_all_ready() { return this.is_fixture_ready && this.is_main_ready },
@@ -231,7 +233,22 @@ var app = new Vue({
                 this.range_to = e;
                 if (this.range_to < this.range_from) { this.range_from = this.range_to }
             }
-        }
+        },
+        color_options() {
+            return [
+                { 'title': 'Default', 'func': d3.interpolateRgb("#66c8cf", "#ad2222") },
+                { 'title': 'Custom', 'func': d3.piecewise(d3.interpolateRgb, this.color_scheme) },
+                { 'title': 'Blue to Red', 'func': (v) => d3.interpolateRdBu(1 - v) },
+                { 'title': 'Blue/Green to Brown', 'func': (v) => d3.interpolateBrBG(1 - v) },
+                { 'title': 'Green to Purple', 'func': (v) => d3.interpolatePRGn(1 - v) },
+                { 'title': 'Green to Pink', 'func': (v) => d3.interpolatePiYG(1 - v) },
+                { 'title': 'Purple to Orange', 'func': d3.interpolatePuOr },
+                { 'title': 'Gray to Red', 'func': (v) => d3.interpolateRdGy(1 - v) },
+                { 'title': 'Blue-Yellow-Red', 'func': (v) => d3.interpolateRdYlBu(1 - v) },
+                { 'title': 'Green-Yellow-Red', 'func': (v) => d3.interpolateRdYlGn(1 - v) },
+                { 'title': 'Spectral', 'func': (v) => d3.interpolateSpectral(1 - v) },
+            ]
+        },
     },
     methods: {
         saveFixtureData(data) {
@@ -354,7 +371,8 @@ var app = new Vue({
             let range = cb.maxval - cb.minval;
             let minval = cb.minval;
             if (len == 0) { return "#00000024" } else {
-                var colors = d3.interpolateRgb("#66c8cf", "#ad2222");
+                // var colors = d3.piecewise(d3.interpolateRgb.gamma(this.gamma), [this.color_scheme[0], "white", this.color_scheme[1]]);
+                var colors = this.color_options[this.color_choice].func;
                 if (len == 1) {
                     let score = e[0][this.fdr_attribute];
                     let color = colors((score - minval) / range);
@@ -427,6 +445,11 @@ var app = new Vue({
             this.fixture_data = _.cloneDeep(this.original_fixture_data);
             this.invalidate_cache();
         },
+        openModalIfCustom(v) {
+            if (v === 1) {
+                $("#customColorModal").modal('show');
+            }
+        }
     }
 });
 
