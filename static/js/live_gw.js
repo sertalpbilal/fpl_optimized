@@ -1127,7 +1127,8 @@ function init_timeline() {
 
     var margin = { top: 9, right: 5, bottom: 20, left: 5 },
         width = 450 - margin.left - margin.right,
-        height = 20 + 20 * (app.gameweek_info.channels + 1) - margin.top - margin.bottom;
+        // height = 20 + 20 * (app.gameweek_info.channels + 1) - margin.top - margin.bottom;
+        height = 2 + 11 * (app.gameweek_info.channels + 1)
 
     let cnv = d3.select("#d3-timeline")
         .append("svg")
@@ -1252,15 +1253,14 @@ function init_timeline() {
         if (app.is_ready) {
             if (d.started) {
                 team_lines = `
-                <tr><td class="text-right">xP Gain</td><td>${getWithSign(d.xp_team_gain)}</td></tr>
-                <tr><td class="text-right">rP Gain</td><td>${getWithSign(d.rp_team_gain)}</td></tr>
-                <tr><td class="text-right">xP Loss</td><td>${getWithSign(d.xp_team_loss)}</td></tr>
-                <tr><td class="text-right">rP Loss</td><td>${getWithSign(d.rp_team_loss)}</td></tr>
+                <tr><td class="text-right">xP Net</td><td>${getWithSign(d.xp_team_net)}</td></tr>
+                <tr><td class="text-right">rP Net</td><td>${getWithSign(d.rp_team_net)}</td></tr>
                 `
             } else {
                 team_lines = `
                 <tr><td class="text-right">xP Gain</td><td>${getWithSign(d.xp_team_gain)}</td></tr>
                 <tr><td class="text-right">xP Loss</td><td>${getWithSign(d.xp_team_loss)}</td></tr>
+                <tr><td class="text-right">xP Net</td><td>${getWithSign(d.xp_team_net)}</td></tr>
                 `
             }
         }
