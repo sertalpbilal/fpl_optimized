@@ -252,6 +252,10 @@ span.twitter-link {
     color: #5bbbb6;
 }
 
+.index-option-plain {
+    border: 1px solid rgb(131, 131, 131) !important;
+}
+
 .index-option {
     transition: border linear 0.4s;
     border: 1px solid rgb(131, 131, 131) !important;
