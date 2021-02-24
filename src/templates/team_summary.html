@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 col-sm-4 col-md" v-cloak>
+                        <!-- <div class="col-6 col-sm-4 col-md" v-cloak>
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0">Captain/Chips</div>
                                 <div class="setting-value text-center p-0">
@@ -48,7 +48,7 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-6 col-sm-4 col-md" v-cloak>
                             <div class="d-flex flex-column metric">
                                 <div class="text-center p-0">Team</div>
@@ -80,6 +80,7 @@
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="loadOptimal">Load Optimal</button>
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="startEditTable">Edit xP/rP Values</button>
+                                            <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#captaincyModal').modal('show')">{{ is_future_gw ? "Edit" : "Show" }} Captaincy Ratios</button>
                                             <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="clearOverridden">Clear User Inputs</button>
                                         </div>
                                     </div>
@@ -311,7 +312,7 @@
                             </div>
                             <div class="col-12 mt-2">
                                 <div class=" bg-dark p-3">
-                                    <table class="table text-white mt-1 mb-1 shrink-table mx-auto text-small table-sm">
+                                    <table class="table text-white mt-1 mb-1 shrink-table mx-auto text-small table-sm" v-if="is_aftermath_ready">
                                         <thead>
                                             <tr>
                                                 <th></th>
@@ -980,7 +981,7 @@
                                 <td>{{ i.web_name }}</td>
                                 <td>
                                     <div class="input-group input-group-sm input-perc">
-                                        <input type="number" class="form-control" v-model="i.ownership" :data-id="i.player_id" @blur="overrideValue($event.target, 'ownership')">
+                                        <input type="number" class="form-control" v-model="i.ownership" :data-id="i.player_id" @blur="overrideValue($event.target, 'ownership')" size=5>
                                         <div class="input-group-append">
                                             <span class="input-group-text">%</span>
                                         </div>
@@ -1015,8 +1016,88 @@
     </div>
 </div>
 
+
+
+
+
+<div class="modal" tabindex="-1" role="dialog" id="captaincyModal">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Captaincy Ratios</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small text-black">
+                <div>
+                    <!-- <p><b>Current Status</b>: {{ captaincy_source }}</p> -->
+                    <p><b>Ownership Source</b>: {{ ownership_source }}</p>
+                    <p v-if="is_future_gw && is_using_sample" class="text-red">Showing last GW captain ratios</p>
+                </div>
+                <div class="mt-1">
+                    <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1 text-xs-mini modal-table" id="captainTable">
+                        <thead>
+                            <tr>
+                                <th class="text-muted">ID</th>
+                                <th>Name</th>
+                                <th>Team</th>
+                                <th class="text-right">xP</th>
+                                <th class="text-right">Own</th>
+                                <th class="text-right">Capt</th>
+                                <th class="text-center">Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="p in captain_list" :key="p.id">
+                                <td class="text-muted">{{ p.id }}</td>
+                                <td>{{ p.name }}</td>
+                                <td>{{ p.team.short }}</td>
+                                <td class="text-right">{{ rounded(p.xp) }}</td>
+                                <td class="text-right">{{ rounded(p.ownership) }}%</td>
+                                <td class="text-right">
+                                    <span v-if="is_using_sample">
+                                        {{ rounded(p.own_data.captain_percentage) }}%
+                                    </span>
+                                    <span v-else>
+                                        N/A
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="input-group input-group-md" v-if="is_future_gw">
+                                        <input type="number" class="form-control ml-1" :data-id="p.id" :value="p.own_data.captain_percentage_edit">
+                                        <div class="input-group-append mr-1">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-muted">
+                                        N/A
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" v-if="is_future_gw" @click="save_captaincy_values">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
 <script>
     let league_list = JSON.parse( ** league_list | tojson ** );
 </script>
 
-"% with scripts=["main", "team_summary"] %" "% include 'footer.html' %" "% endwith %"
+"% with scripts=["main", "sampling_utils", "team_summary"] %" "% include 'footer.html' %" "% endwith %"

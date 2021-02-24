@@ -1,3 +1,7 @@
+Vue.config.devtools = true
+
+
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -37,18 +41,25 @@ var app = new Vue({
         edit_table_ready: false,
         edit_overridden_buffer: undefined,
         warn_old_data: false,
-        target_player: undefined
+        target_player: undefined,
+        custom_captain_ratios: false,
+        capt_table: undefined,
+        overridden_captaincy: undefined
     },
     created: function() {
         this.overridden_values = {};
+        this.overridden_captaincy = {};
     },
     methods: {
         refresh_results() {
             season = this.season;
             gw = this.gw;
             date = this.date;
-            load_gw();
-            load_team();
+            this.team_data = []
+            this.xp_data = undefined
+            this.rp_data = undefined
+            load_gw()
+            load_team()
         },
         refresh_gw() {
             $("#gwModal").modal({
@@ -221,7 +232,7 @@ var app = new Vue({
 
             // Posterior
 
-            if (this.rp_data !== undefined && this.rp_data.length > 0) {
+            if (this.rp_data !== undefined && !_.isEmpty(this.rp_data)) {
                 this.rp_ready = true;
             }
 
@@ -459,6 +470,7 @@ var app = new Vue({
         },
         clearOverridden() {
             app.overridden_values = {};
+            app.overridden_captaincy = {};
             this.changeData()
         },
         initEditTable() {
@@ -622,6 +634,18 @@ var app = new Vue({
                 current_player.element = parseInt(id);
             }
             this.generateList();
+        },
+        save_captaincy_values() {
+            let changed_fields = $("#captainTable input").toArray().filter(i => i.value > 0)
+            changed_fields.forEach((e) => {
+                let id = e.dataset.id;
+                let value = e.value;
+                this.overridden_captaincy[id] = parseInt(value);
+            })
+            this.cnt += 1;
+            this.$nextTick(() => {
+                this.changeData();
+            })
         }
     },
     computed: {
@@ -650,6 +674,12 @@ var app = new Vue({
             // if (!this.is_using_sample) { return false; }
             return this.captaincy_enabled;
         },
+        is_fixture_ready() {
+            return !(this.fixture_data == undefined || _.isEmpty(this.fixture_data))
+        },
+        is_aftermath_ready() {
+            return !_.isEmpty(this.aftermath)
+        },
         final_xp_data: function() {
             let x = this.cnt;
             let pts = _.cloneDeep(this.xp_data);
@@ -661,6 +691,9 @@ var app = new Vue({
                 t.points_md = w[1].xp;
             })
             return pts_grouped;
+        },
+        is_future_gw() {
+            return this.gw >= this.next_gw
         },
         xp_by_id: function() {
             if (this.xp_data == undefined) { return undefined; }
@@ -684,7 +717,23 @@ var app = new Vue({
                 t.selected_by_percent = w[1].ownership;
                 t.effective_ownership = w[1].ownership;
             });
-            return ownership_data;
+            let capt_overrides = this.overridden_captaincy;
+            Object.keys(capt_overrides).forEach((key) => {
+                t = ownership_data.find(e => e.id == key);
+                t["captain_percentage_edit"] = capt_overrides[key];
+            })
+
+            return ownership_data.map(i => {
+                return {
+                    'id': i.id,
+                    'raw_selected_by_percent': i.selected_by_percent,
+                    'raw_effective_ownership': i.effective_ownership ? i.effective_ownership : i.selected_by_percent,
+                    'selected_by_percent': parseFloat(i.selected_by_percent) + (i.captain_percentage_edit || 0),
+                    'effective_ownership': parseFloat(i.effective_ownership && !this.is_future_gw ? i.effective_ownership : i.selected_by_percent) + parseFloat(i.captain_percentage_edit || 0),
+                    'captain_percentage': i.captain_percentage ? i.captain_percentage : 0,
+                    'captain_percentage_edit': (i.captain_percentage_edit || 0)
+                }
+            });
         },
         ownership_by_id: function() {
             let ownership_vals = this.final_ownership_data;
@@ -776,51 +825,8 @@ var app = new Vue({
             return teams;
         },
         ownership_data: function() {
-            if (Object.keys(this.sample_data).length == 0) {
-                return this.el_data;
-            }
-            // "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100", "Sample - Ahead"
-            let teams = [];
-            switch (this.ownership_source) {
-                case "Official FPL API":
-                    return this.el_data;
-                case "Sample - Overall":
-                    teams = this.sample_data["Overall"].filter(i => i.team != undefined)
-                    break;
-                case "Sample - Top 1M":
-                    teams = this.sample_data["1000000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 100K":
-                    teams = this.sample_data["100000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 10K":
-                    teams = this.sample_data["10000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 1K":
-                    teams = this.sample_data["1000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 100":
-                    teams = this.sample_data["100"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Ahead":
-                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
-                    break;
-                default:
-                    break;
-            }
-
-            let el_copy = _.cloneDeep(this.el_data);
-            let all_players = teams.map(i => i.data.picks).flat(); //.filter(i => i.multiplier > 0).map(i => i.element);
-            el_copy.forEach((e) => {
-                let this_player_picks = all_players.filter(i => i.element == e.id);
-                let cnt = this_player_picks.length;
-                e.selected_by_percent = cnt / teams.length * 100;
-                //let captain_cnt = captains.filter(i => i.toString() == e.id).length;
-                let sum_of_multiplier = getSum(this_player_picks.map(i => i.multiplier));
-                e.effective_ownership = sum_of_multiplier / teams.length * 100;
-            });
-            return el_copy;
-
+            let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
+            return own_data.data;
         },
         current_team_id: {
             get: function() {
@@ -919,8 +925,14 @@ var app = new Vue({
         },
         aftermath: function() {
             if (!this.is_ready) { return {}; }
+            if (!this.is_fixture_ready) { return {}; }
             // let games = this.fixture_data.filter(i => i.event == this.gw.slice(2));
-            let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
+            try {
+                let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
+            } catch (e) {
+                debugger;
+            }
+
             let this_gw_games = this.fixture_data.filter(i => i.event == this.gw.slice(2))
             let this_gw_games_dict = Object.fromEntries(this_gw_games.map(i => [i.id, i]));
             let exp_gain = exp_loss = real_gain = real_loss = exp_gain_live = exp_loss_live = 0;
@@ -1152,6 +1164,32 @@ var app = new Vue({
                 return b.xp - a.xp;
             })
             return els;
+        },
+        captaincy_source() {
+            if (!this.is_using_sample) {
+                if (this.custom_captain_ratios) {
+                    return "User Input"
+                }
+            } else {
+                if (this.warn_old_data) {
+                    return "Previous GW"
+                } else {
+                    return "Sampling Values"
+                }
+            }
+        },
+        captain_list() {
+            if (!this.is_ready) { return [] }
+
+            let all_xp = this.element_data_list;
+
+            if (this.is_using_sample && !this.is_future_gw) {
+                all_xp = all_xp.sort((a, b) => b.own_data.captain_percentage - a.own_data.captain_percentage)
+                return all_xp.filter(i => i.own_data.captain_percentage > 0)
+            } else {
+                all_xp = all_xp.sort((a, b) => (parseFloat(b.xp) * 10 + b.ownership) - (parseFloat(a.xp) * 10 + a.ownership))
+                return all_xp
+            }
         }
     }
 })
@@ -2100,4 +2138,21 @@ $(document).ready(function() {
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         app.refresh_plots();
     });
+
+    $('#captaincyModal').on('shown.bs.modal', function(e) {
+        app.$nextTick(() => {
+            app.capt_table = $("#captainTable").DataTable({
+                "order": [],
+                "pageLength": 10,
+                "info": false
+            })
+        })
+    })
+    $('#captaincyModal').on('hide.bs.modal', function(e) {
+        app.capt_table.destroy()
+        app.$nextTick(() => {
+            $("#captainTable tr th").removeAttr("rowspan colspan aria-label style aria-controls tabindex")
+        })
+        app.capt_table = undefined
+    })
 });

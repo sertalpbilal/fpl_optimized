@@ -148,9 +148,12 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
             e.selected_by_percent = cnt / teams.length * 100;
             let sum_of_multiplier = getSum(this_player_picks.map(i => i.multiplier));
             e.effective_ownership = sum_of_multiplier / teams.length * 100;
+            let captain_count = this_player_picks.filter(i => i.multiplier > 1.5).length;
+            e.captain_percentage = captain_count / teams.length * 100;
         } else {
             e.selected_by_percent = 0;
             e.effective_ownership = 0;
+            e.captain_percentage = 0;
         }
 
     });
