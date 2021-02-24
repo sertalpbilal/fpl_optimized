@@ -32,6 +32,8 @@ FPL_API = {
     'live': "https://fantasy.premierleague.com/api/event/{GW}/live/",
     'team_info': "https://fantasy.premierleague.com/api/entry/{PID}/",
     'picks': "https://fantasy.premierleague.com/api/entry/{PID}/event/{GW}/picks/",
+    'transfers': "https://fantasy.premierleague.com/api/entry/{PID}/transfers/",
+    'history': "https://fantasy.premierleague.com/api/entry/{PID}/history/",
     'overall': "https://fantasy.premierleague.com/api/leagues-classic/{LID}/standings/?page_standings={P}"
 }
 
