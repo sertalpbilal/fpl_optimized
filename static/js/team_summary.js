@@ -640,7 +640,7 @@ var app = new Vue({
             changed_fields.forEach((e) => {
                 let id = e.dataset.id;
                 let value = e.value;
-                this.overridden_captaincy[id] = parseInt(value);
+                this.overridden_captaincy[id] = parseFloat(value);
             })
             this.cnt += 1;
             this.$nextTick(() => {
