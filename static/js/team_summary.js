@@ -693,7 +693,7 @@ var app = new Vue({
             return pts_grouped;
         },
         is_future_gw() {
-            return this.gw >= this.next_gw
+            return (this.gw >= this.next_gw) && (this.gw.slice(2) != active_gw)
         },
         xp_by_id: function() {
             if (this.xp_data == undefined) { return undefined; }
