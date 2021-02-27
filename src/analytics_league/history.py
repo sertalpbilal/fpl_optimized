@@ -1,10 +1,14 @@
 #!/usr/bin/python3
 
 import itertools
+import json
+import time
+import random
 
 from analytics_league.utils import read_league_teams, get_current_gw, save_to_json
-from collect import get_fpl_info
+from collect import get_fpl_info, FPL_API
 from concurrent.futures import ProcessPoolExecutor
+from urllib.request import urlopen
 
 
 def get_team_picks(team, gw):
@@ -36,6 +40,45 @@ def get_analytics_league_history():
     
     return teams
 
+
+
+def get_only_team_history(team):
+    history = get_fpl_info('history', PID=team)
+    return {'id': team, 'history': history}
+
+
+def get_rank_n_player(rank):
+    page = ((rank-1)//50)+1
+    order = (rank-1) % 50
+    print(f"Fetching rank {rank}")
+    try:
+        with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
+            page_data = json.loads(url.read().decode())
+        tid = page_data['standings']['results'][order]['entry']
+        print(f"Done {rank}")
+        return get_only_team_history(tid)
+    except:
+        print("Encountered page access error, waiting 5 seconds")
+        time.sleep(5)
+        print(f"Error {rank}")
+        return None
+
+
+def sample_within_range():
+
+    target = 1000000
+    nsample = 5000
+
+    player_targets = random.sample(range(1, target+1), nsample)
+    with ProcessPoolExecutor(max_workers=16) as executor:
+        results = list(executor.map(get_rank_n_player, player_targets))
+    fetched_history = [i for i in results if i is not None]
+    return fetched_history
+
+
 if __name__ == '__main__':
-    h = get_analytics_league_history()
+    # h = get_analytics_league_history()
+    # save_to_json('history.json', h)
+
+    h = sample_within_range()
     save_to_json('history.json', h)
