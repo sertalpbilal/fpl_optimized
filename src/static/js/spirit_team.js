@@ -95,6 +95,9 @@ var app = new Vue({
             let clubs = this.clubs
             let stats = clubs.map((club, index) => {
                 let team_rank = app.team_positions[club].map(i => i.position).slice(1)
+                if (team_rank.length > user_rank.length) {
+                    team_rank.pop()
+                }
                 let input = _.zip(team_rank, user_rank)
                 r = regression.linear(input)
                 if (r.equation[0] < 0) {
