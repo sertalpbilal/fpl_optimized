@@ -40,6 +40,15 @@ def folder_order(fname):
     item3 = f[4]
     return (item1, item2, item3)
 
+def gw_order(fname):
+    if sys.platform == 'win32':
+        f = [j for i in fname.split('\\') for j in i.split('/')]
+    else:
+        f = fname.split('/')
+    item1 = int(f[2].split('-')[0])
+    item2 = int(f[3].split('GW')[1])
+    return (item1, item2)
+
 @app.route('/')
 def home_page():
     all_dates = glob.glob('build/data/*/*/*')
@@ -160,6 +169,47 @@ def fpl_fixture_page():
     else:
         return render_template(page_name, repo_name="", page_name="FPL Fixture", 
             season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time)
+
+
+# @app.route('/player_stats.html')
+# def player_stats_page():
+#     page_name = 'player_stats.html'
+
+#     all_seasons = glob.glob('build/data/*')
+#     if sys.platform == 'win32':
+#         all_seasons = [i.replace('\\', '/') for i in all_seasons]
+#     season = all_seasons[0].split('/')[2]
+#     print(season)
+
+#     if app.config['DEBUG']:
+#         return render_template(page_name, repo_name="/..", page_name="Player Stats", 
+#             season=season, last_update=current_time)
+#     else:
+#         return render_template(page_name, repo_name="", page_name="Player Stats", 
+#             season=season, last_update=current_time)
+
+
+@app.route('/spirit_team.html')
+def spirit_team_page():
+    page_name = 'spirit_team.html'
+
+    all_weeks = glob.glob('build/data/*/*')
+    if sys.platform == 'win32':
+        all_weeks = [i.replace('\\', '/') for i in all_weeks]
+    all_weeks.sort(key=gw_order, reverse=True)
+    s = all_weeks[0].split('/')
+    print(s)
+    season = s[2]
+    gw = s[3]
+    
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="Spirit Team", 
+            season=season, gw=gw, last_update=current_time)
+    else:
+        return render_template(page_name, repo_name="", page_name="Spriti Team", 
+            season=season, gw=gw, last_update=current_time)
+
 
 
 def list_all_snapshots():

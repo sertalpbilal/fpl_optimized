@@ -1,0 +1,94 @@
+"% include 'header.html' %"
+
+
+
+<main class="pt-3 container">
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Spirit Team</h5>
+                <div class="scenario_detail">
+                    Playing FPL and wondering which team resembles you the most? Give it a try.
+                </div>
+                <div class="card-body" v-cloak>
+
+                    <div class="row">
+                        <div class="input-group mb-3 col-md-4 offset-md-4 col-12">
+                            <input class="form-control" placeholder="Team ID" aria-label="Team ID" id="teamID_input" type="number">
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary" type="button" @click="enterTeam">Enter</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 offset-md-4 col-12 spirit-team-display" v-if="fpl_id != -1 && spirit_team != undefined">
+                            <div>
+                                <div class="text-center">Your Spirit Team: {{ spirit_team[0].club }}</div>
+                                <div class="club-logo text-center"><img :src="'/static/images/clubs/' + spirit_team[0].short + '.png'" /></div>
+                                <div class="text-center">Match Ratio (R-Squared): {{ (spirit_team[0].r.final_r2*100).toFixed(0) }}%</div>
+                                <div class="text-center text-small text-muted">{{ spirit_team[0].r.string }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 offset-md-3 col-12 text-center mx-auto" id="canvas">
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="row col-md-6 offset-md-3 col-12 text-center mx-auto" v-if="fpl_id != -1 && spirit_team != undefined">
+                            <div class="col-6" v-cloak>
+                                <div class="d-flex flex-column metric">
+                                    <div class="text-center p-0">
+                                        <div class="legend-box text-center">
+                                            <svg width="20" height="10"><g>
+                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,0.4" fill="none"></line>
+                                        </g></svg> User Rank
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6" v-cloak>
+                                <div class="d-flex flex-column metric">
+                                    <div class="text-center p-0">
+                                        <div class="legend-box text-center">
+                                            <svg width="20" height="10"><g>
+                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#e482ba" stroke-dasharray="4,0.4"  fill="none"></line>
+                                        </g></svg> Team Position
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 offset-md-4 col-12" v-if="fpl_id != -1 && spirit_team != undefined">
+                            <b>All Matches</b>
+                            <table class="table table-sm text-white table-striped text-small">
+                                <tr>
+                                    <th>Team</th>
+                                    <th class="text-center">Match (R2)</th>
+                                </tr>
+                                <tr v-for="s in spirit_team">
+                                    <td>{{ s.club }}</td>
+                                    <td class="text-center">{{ (s.r.final_r2*100).toFixed(0) }}%</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous"></script>
+
+"% with scripts=["main", "spirit_team"] %" "% include 'footer.html' %" "% endwith %"
