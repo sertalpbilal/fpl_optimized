@@ -1030,3 +1030,9 @@ option:checked {
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
+.pstats-table {
+    max-height: 20em;
+    overflow-x: auto;
+    white-space: nowrap;
+}

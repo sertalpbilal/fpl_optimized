@@ -259,6 +259,31 @@ function get_team_info(team_id) {
     });
 }
 
+
+function get_team_history(team_id) {
+    return new Promise((resolve, reject) => {
+        if (team_id == "-1") { reject("Invalid team ID"); }
+        $.ajax({
+            type: "GET",
+            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/history/`,
+            dataType: 'json',
+            async: true,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(xhr, status, error) {
+                reject("Cannot get team info")
+            }
+        });
+    });
+}
+
+
 function get_team_picks({ gw, team_id, force_last_gw }) {
     return new Promise((resolve, reject) => {
         if (team_id == "-1") { reject("Team ID not valid"); }
