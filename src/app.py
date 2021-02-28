@@ -207,7 +207,7 @@ def spirit_team_page():
         return render_template(page_name, repo_name="/..", page_name="Spirit Team", 
             season=season, gw=gw, last_update=current_time)
     else:
-        return render_template(page_name, repo_name="", page_name="Spriti Team", 
+        return render_template(page_name, repo_name="", page_name="Spirit Team", 
             season=season, gw=gw, last_update=current_time)
 
 
