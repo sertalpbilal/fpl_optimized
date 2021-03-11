@@ -174,7 +174,8 @@ async function fetch_last_gw_data() {
 }
 
 async function load_sample_data() {
-    return get_sample_data(gw.slice(2))
+    let v = listdates[0].split(' / ')
+    return get_sample_data(v[1].slice(2))
         .then((data) => {
             app.saveSampleData(true, data);
         })
