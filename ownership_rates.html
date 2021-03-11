@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+    <title>FPL Optimized  - Ownership Rates</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Optimized squads for Fantasy Premier League -- everyday!" />
+    <meta name="keywords" content="fantasy, football, soccer, premier league, mathematics, optimization, analytics, sports" />
+    <meta name="author" content="Sertalp B. Cay (sertalpbilal@gmail.com)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+    <link href="//unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css"> -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L07T8LS957"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-L07T8LS957');
+    </script>
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/svg.css">
+
+    <link rel="manifest" href="/static/asset/manifest.json">
+    <link rel="apple-touch-icon" href="/static/asset/apple_logo_114.png">
+    <link rel="apple-touch-startup-image" href="/static/asset/apple_splash_320.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FPLOptimized">
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <header class="bg-dark-gray">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg navbar-dark  container-fluid pl-0 pr-0">
+                    <!-- <div class="container flex-column flex-md-row"> -->
+                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3" href="/" aria-label="Bootstrap">FPL Optimized</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse text-secondary flex-row-reverse" id="menuToggler">
+                        <!-- ml-0 ml-md-3 mr-0 mr-md-3 -->
+                        <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="week.html">Optimal Squads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="live_gw.html">Live GW</a>
+                            </li>
+                            <!-- <li class="nav-item">
+                            <a class="nav-link" href="top_squads.html">Top 50 Squads</a>
+                        </li> -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="team_summary.html">GW Summary</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
+                            </li>
+                            <!-- <li class="nav-item">
+                                <a class="nav-link" href="ownership_trend.html">Ownership Trends</a>
+                            </li> -->
+                            <li class="nav-item no-sep">
+                                <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- </div> -->
+                </nav>
+            </div>
+        </header>
+
+
+
+<main class="pt-3 container">
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Ownership Rates</h5>
+                <div class="scenario_detail">
+                    Ownership rates of every player with FPL trends
+                </div>
+                <div class="card-body text-small">
+
+                    <div class="row">
+                        <div class="col-12 col-md-6  mb-3">
+
+                            <div class="d-flex flex-wrap justify-content-center mb-3">
+                                <div class="flex-column metric mw-10 ml-1">
+                                    <div class="text-center p-0">Data Source</div>
+                                    <div class="setting-value text-center p-0">
+                                        <div class="d-flex flex-row setting-line mb-0">
+                                            <select class="form-control live-select" id="data-source-select" v-model="data_choice" @change="invalidate_cache">
+                                                <option v-for="(i, id) in data_options" :value="id">{{ i.name }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-column metric mw-10 ml-1">
+                                    <div class="text-center p-0">&nbsp;</div>
+                                    <div class="text-center p-0">
+                                        <div class="d-flex flex-row mb-0">
+                                            <button class="button btn btn-sm btn-secondary setting-line-button" @click='$("#captaincyModal").modal("show")'>Enter Captain Rates</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <b><span v-if="is_using_sample">Predicted</span> Ownership Rates</b>
+                            <table class="table table-sm table-striped text-white mx-auto table-responsive-md" id="ownership_rates_table" :class="{'d-none': first_shown}">
+                                <thead>
+                                    <tr>
+                                        <th class="text-muted text-right pr-2">ID</th>
+                                        <th class="pl-2">Name</th>
+                                        <th class="pl-2">Team</th>
+                                        <th class="text-center">Last GW Own%</th>
+                                        <th class="text-center">Current Own%</th>
+                                        <th class="text-center">Trend</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="e in combined_elements">
+                                        <td class="text-muted text-right pr-2">{{ e.id }}</td>
+                                        <td class="pl-2">{{ e.web_name }}</td>
+                                        <td class="pl-2">{{ teams_ordered[e.team-1].short }}</td>
+                                        <td class="text-right pr-2">{{ rounded(e.last_gw_final) }}</td>
+                                        <td class="text-right pr-2">{{ rounded(e.future_gw_final) }}</td>
+                                        <td class="text-right pr-2">{{ getWithSign(e.trend) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-center" id="button-box">
+
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <div>
+                                <b>Most Transferred In</b>
+                                <table class="table table-sm table-striped text-white text-small mx-auto" id="ownership_rates_table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted text-right pr-2">ID</th>
+                                            <th class="pl-2">Name</th>
+                                            <th class="pl-2">Team</th>
+                                            <th class="text-center">Transferred In</th>
+                                            <th class="text-center">EP Next<a href="#ep_info">*</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="e in most_transferred_in">
+                                            <td class="text-muted text-right pr-2">{{ e.id }}</td>
+                                            <td class="pl-2">{{ e.web_name }}</td>
+                                            <td class="pl-2">{{ teams_ordered[e.team-1].short }}</td>
+                                            <td class="text-right pr-2">{{ e.transfers_in_event }}</td>
+                                            <td class="text-right pr-2">{{ rounded(e.ep_next) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <b>Most Transferred Out</b>
+                                <table class="table table-sm table-striped text-white text-small mx-auto" id="ownership_rates_table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted text-right pr-2">ID</th>
+                                            <th class="pl-2">Name</th>
+                                            <th class="pl-2">Team</th>
+                                            <th class="text-center">Transferred Out</th>
+                                            <th class="text-center">EP Next<a href="#ep_info">*</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="e in most_transferred_out">
+                                            <td class="text-muted text-right pr-2">{{ e.id }}</td>
+                                            <td class="pl-2">{{ e.web_name }}</td>
+                                            <td class="pl-2">{{ teams_ordered[e.team-1].short }}</td>
+                                            <td class="text-right pr-2">{{ e.transfers_out_event }}</td>
+                                            <td class="text-right pr-2">{{ rounded(e.ep_next) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-body text-left">
+                    <h5>Q/A</h5>
+                    <b id="ep_info">What are EP values?</b>
+                    <p class="answer">These values are 'expected points' reported by Official FPL API. It is simply a Moving Average stat of last few game points, shown here to give an idea on ownership trends.</p>
+                </div>
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="captaincyModal">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Captain Rates</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small text-black">
+                <div class="mt-1">
+                    <table class="table table-sm table-striped text-small m-data-table mt-1 mb-1 text-xs-mini modal-table" id="captainTable">
+                        <thead>
+                            <tr>
+                                <th class="text-muted">ID</th>
+                                <th>Name</th>
+                                <th>Team</th>
+                                <th class="text-right">EP<a href="#ep_info">*</a></th>
+                                <th class="text-right">Own</th>
+                                <th class="text-center">Captain% (Edit)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="p in captaincy_ordered_list" :key="p.id">
+                                <td class="text-muted">{{ p.id }}</td>
+                                <td>{{ p.web_name }}</td>
+                                <td>{{ teams_ordered[p.team-1].short }}</td>
+                                <td class="text-right">{{ p.ep_next }}</td>
+                                <td class="text-right">{{ rounded(p.selected_by_percent) }}%</td>
+                                <td class="text-center">
+                                    <div class="input-group input-group-md">
+                                        <input type="number" class="form-control ml-1" :data-id="p.id" :value="custom_captaincy[p.id] || 0" step="0.01" @change="editCaptaincy">
+                                        <div class="input-group-append mr-1">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" @click="resetCaptaincy">Reset</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="updateValues">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous"></script>
+
+ </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.js" integrity="sha512-M17tsaj3tHw5m/gI+8XjDLTuPZ0cpTofhFLJUT9niFa/DK8WAhsSLW764iSaaXoAoivXEFUP6VxvpiahJPQ4fg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js" integrity="sha512-WNLxfP/8cVYL9sj8Jnp6et0BkubLP31jhTG9vhL/F5uEZmg5wEzKoXp1kJslzPQWwPT1eyMiSxlKCgzHLOTOTQ==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-cookies@1.7.4/vue-cookies.js" integrity="sha256-pdSyqKvUOsiAZVUhatSOyW3Wom0l7ABtO8w7LjPA3vU=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+
+<!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
+
+
+<script>
+    let repo_name = ""
+    let season = "2020-21";
+    let gw = "GW27";
+    let next_gw = "GW28";
+    let date = "";
+    let lastupdate = "2021-03-11T03:22:33.153967+00:00";
+    let listdates = [
+        "2020-21 / GW27 / 2021-03-06 ", 
+    ];
+    let is_active = false ;
+    let active_gw = -1 ;
+</script>
+
+<script src="/static/js/main.js"></script>
+
+<script src="/static/js/sampling_utils.js"></script>
+
+<script src="/static/js/ownership_rates.js"></script>
+
+</body>
+
+<div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-03-11T03:22:33.153967+00:00</div>
+
+</html> 
