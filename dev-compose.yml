@@ -11,4 +11,5 @@ services:
     ports:
       - "8001:5000"
     volumes:
-      - /fpl_aa:/app
+      # - /fpl_aa:/app
+      - ./src:/app

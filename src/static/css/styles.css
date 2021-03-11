@@ -1036,3 +1036,21 @@ option:checked {
     overflow-x: auto;
     white-space: nowrap;
 }
+
+
+/* Styles for ownership rates */
+
+div.dataTables_wrapper div.dataTables_filter#ownership_rates_table_filter input {
+    width: 7rem;
+    background-color: gray;
+    color: white;
+}
+
+#ownership_rates_table_info {
+    display: none;
+}
+
+#ownership_rates_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
