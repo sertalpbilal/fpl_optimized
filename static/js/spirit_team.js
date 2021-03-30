@@ -85,7 +85,9 @@ var app = new Vue({
         fpl_all_week_ranks() {
             if (this.fpl_history == undefined) { return []}
             let user_rank = this.fpl_history.current.map(i => i.overall_rank)
-            user_rank.pop()
+            if (is_active){
+                user_rank.pop()
+            }
             return user_rank
         },
         spirit_team() {
@@ -244,7 +246,7 @@ async function redraw_graph(match) {
         .attr("x", -height / 2)
         .attr("y", -30)
         .attr("font-size", "4pt")
-        .attr("fill", "white")
+        .attr("fill", "#3BB9E2")
         .text("User Rank");
     
     // Title - y2
@@ -254,7 +256,7 @@ async function redraw_graph(match) {
         .attr("x", height / 2)
         .attr("y", -width - 20)
         .attr("font-size", "4pt")
-        .attr("fill", "white")
+        .attr("fill", "#A6CE51")
         .text("Team Position");
 
     svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
