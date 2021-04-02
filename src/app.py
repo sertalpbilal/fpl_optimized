@@ -211,6 +211,29 @@ def spirit_team_page():
             season=season, gw=gw, last_update=current_time)
 
 
+@app.route('/manager_form.html')
+def manager_form():
+    page_name = 'manager_form.html'
+
+    all_weeks = glob.glob('build/data/*/*')
+    if sys.platform == 'win32':
+        all_weeks = [i.replace('\\', '/') for i in all_weeks]
+    all_weeks.sort(key=gw_order, reverse=True)
+    s = all_weeks[0].split('/')
+    print(s)
+    season = s[2]
+    gw = s[3]
+    
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="Manager Form", 
+            season=season, gw=gw, last_update=current_time)
+    else:
+        return render_template(page_name, repo_name="", page_name="Manager Form", 
+            season=season, gw=gw, last_update=current_time)
+
+
+
 @app.route('/ownership_rates.html')
 def ownership_rates():
     page_name = 'ownership_rates.html'

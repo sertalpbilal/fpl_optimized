@@ -30,6 +30,10 @@ body {
     font-size: smaller;
 }
 
+.text-xxl {
+    font-size: xx-large;
+}
+
 .bg-dark-gray {
     background-color: #272729;
 }
@@ -648,16 +652,9 @@ div.dataTables_wrapper div.dataTables_filter#all_players_table_filter input {
     font-size: smaller;
 }
 
-.navbar-nav li:not(:first-child):not(.no-sep) a::before {
-    /* display: inline-block; */
-    padding-right: .5rem;
-    color: #6c757d;
-    content: "/";
-}
-
-@media screen and (max-width: 768px) {
-    .navbar-nav li:not(:first-child):not(.no-sep) a::before {
-        display: none;
+@media screen and (min-width: 768px) {
+    .navbar-nav li a {
+        margin-left: 1rem !important;
     }
 }
 
@@ -1069,4 +1066,27 @@ div.dataTables_wrapper div.dataTables_filter#ownership_rates_table_filter input 
 
 .text-red {
     color: salmon;
+}
+
+/* .banner-link {
+    font-size: 8pt;
+    max-width: 50px;
+    margin: 2px;
+}*/
+
+.banner-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: small;
+    transition: background-color linear 0.2s;
+}
+
+.banner-link:hover {
+    background-color: rgb(83, 83, 83);
+}
+
+.banner-link img {
+    width: 60px;
+    margin: 5px 20px 5px 5px;
 }
