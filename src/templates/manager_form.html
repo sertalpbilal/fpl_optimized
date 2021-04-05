@@ -19,23 +19,57 @@
                                     <button class="btn btn-info" type="button" @click="enterTeam">Submit</button>
                                 </div>
                             </div>
-                            <div class="mt-1 d-flex justify-content-center">
-                                <button class="btn btn-secondary btn-xsm" @click="openParamModal">Edit Parameters</button>
-                            </div>
                         </div>
                     </div>
                     <!-- {{ manager_ratings }} -->
 
                     <div class="row" v-if="is_ready">
-                        <div class="col-12 col-md-6">
-                            <div id="canvas">
-
+                        <div class="col-12 col-md-6 mb-2">
+                            <div class="d-flex flex-column align-items-center h-100 justify-content-center">
+                                <div style="font-size: 12pt">Your Manager Form</div>
+                                <div style="font-size: 40pt">{{ rounded(manager_ratings.forecast * 100, 0) + '%' }}</div>
+                                <div style="font-size: 10pt">Tier: {{ tier_text }}</div>
+                                <img :src="'static/images/manager_form/' + gifstyle + final_tier + '.gif'" style="max-width: 100%" />
+                                <div class="form-group d-block text-xs mt-2">
+                                    <label for="gifstyle">GIF Style</label>
+                                    <select class="form-control bg-dark text-white" id="gifstyle" v-model="gifstyle">
+                                        <option value="spongebob">SpongeBob</option>
+                                        <option value="avatar">Avatar</option>
+                                        <option value="deathnote">Death Note</option>
+                                        <option value="aot">Attack on Titan</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="d-flex flex-column align-items-center h-100 justify-content-center">
-                                <div style="font-size: 28pt">Your Form Rating</div>
-                                <div style="font-size: 72pt">{{ rounded(manager_ratings.forecast * 100, 0) + '%' }}</div>
+                            <div id="canvas" class="">
+
+                            </div>
+                            <div id="raw_values">
+                                <table class="table table-sm table-striped text-white text-xs">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">GW</th>
+                                            <th class="text-center">Points</th>
+                                            <th class="text-center">Average</th>
+                                            <th class="text-center">Rating</th>
+                                            <th class="text-center">Weight</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(w, i) in manager_ratings.keys">
+                                            <td class="text-center">{{ w }}</td>
+                                            <td class="text-center">{{ manager_ratings.manager_values[w] }}</td>
+                                            <td class="text-center">{{ manager_ratings.average_values[w] }}</td>
+                                            <td class="text-center">{{ rounded(manager_ratings.ratios[i] * 100, 1) }}%</td>
+                                            <td class="text-center">{{ rounded(manager_ratings.mults[i] * 100, 1) }}%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="mt-1 d-flex justify-content-center">
+                                    <button class="btn btn-secondary btn-xsm" @click="openParamModal">Edit Parameters</button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -67,8 +101,8 @@
                     <p class="answer">Just a metric for fun, it does not really mean anything.</p>
                     <b>How do you calculate it?</b>
                     <p class="answer">I get your FPL points of recent weeks and compare it to the overall FPL average in a range of 0% and 100%. Then, I apply Exponential Moving Average on top of it to show your final form. Full calculation is as follows:</p>
-                    <p class="answer">$$\text{form} = \frac{\displaystyle \sum_{g=0}^{n} p_{g} \cdot e^{g}}{ \displaystyle \sum_{g=0}^{n} e^{g}}$$</p>
-                    <p class="answer">Both $e$ and $n$ values can be changed.</p>
+                    <p class="answer">$$\text{form} = \frac{\displaystyle \sum_{g=0}^{n} p_{g} \cdot b^{g}}{ \displaystyle \sum_{g=0}^{n} b^{g}}$$</p>
+                    <p class="answer">Both $b$ and $n$ values can be changed. Base parameter controls how relative impact of previous GWs. A higher value means higher weight for old GWs. Week parameter $n$ shows how many GW is taken into consideration.</p>
                 </div>
                 <div class="card-footer text-white disclaimer">
                     The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
@@ -90,9 +124,9 @@
             </div>
             <div class="modal-body text-small text-black">
                 <div class="form-group row align-items-center">
-                    <label for="exponentInput" class="col-sm-4 col-form-label">Exponent: {{ exponent }}</label>
+                    <label for="baseInput" class="col-sm-4 col-form-label">Base: {{ base }}</label>
                     <div class="col-sm-8">
-                        <input type="range" class="form-range w-100" id="exponentInput" min="0" max="1" step="0.01" v-model="exponent" @change="refresh_graph">
+                        <input type="range" class="form-range w-100" id="baseInput" min="0" max="1" step="0.01" v-model="base" @change="refresh_graph">
                     </div>
                 </div>
                 <div class="form-group row align-items-center">

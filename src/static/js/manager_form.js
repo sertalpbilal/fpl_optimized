@@ -7,7 +7,8 @@ var app = new Vue({
         fpl_history: undefined,
         fpl_average: undefined,
         range: 3,
-        exponent: 0.45
+        base: 0.45,
+        gifstyle: "spongebob"
     },
     computed: {
         is_ready() {
@@ -20,18 +21,33 @@ var app = new Vue({
             const manager_values = Object.fromEntries(this.fpl_history.current.map(i => [i.event, i.points]))
             const average_values = this.fpl_average
             const ratios = []
+            const mults = []
             const last_gw = Math.max(...keys)
             let score = 0;
             let divider = 0;
             keys.forEach(week => {
-                let multiplier = Math.pow(this.exponent, last_gw - week)
+                let multiplier = Math.pow(this.base, last_gw - week)
                 let manager_ratio = Math.min(1, manager_values[week] / (2*average_values[week]))
                 score = score + multiplier * manager_ratio
                 divider = divider + multiplier
+                mults.push(multiplier)
                 ratios.push(manager_ratio)
             })
             const forecast = score/divider;
-            return {ratios, forecast, keys, manager_values, average_values};
+            return {ratios, forecast, keys, manager_values, average_values, mults};
+        },
+        final_tier() {
+            return Math.floor(this.manager_ratings.forecast * 5) + 1
+        },
+        tier_text() {
+            let text = {
+                1: "Terrible Form",
+                2: "Unlucky Form",
+                3: "Casual Form",
+                4: "Good Form",
+                5: "Great Form - Ready to attack GW!"
+            }
+            return text[this.final_tier]
         }
     },
     methods: {
@@ -95,7 +111,7 @@ async function draw_ratings() {
         .style('display', 'block')
         .style('padding-bottom', '10px');
 
-    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(43,4)');
     let grayrect = svg.append('g');
     grayrect.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height);
 
@@ -198,6 +214,31 @@ async function draw_ratings() {
        .attr('cy', (d) => y(d))
        .attr('fill', '#A6CE51')
        .attr('opacity', 1)
+
+
+    // svg.selectAll()
+    //    .data(data.ratios)
+    //    .enter()
+    //    .append('rect')
+    //    .attr('width', 20)
+    //    .attr('height', 10)
+    //    .attr('x', (d,i) => x(data.keys[i])-10)
+    //    .attr('y', (d) => y(d) + 5)
+    //    .attr('fill', 'black')
+    //    .attr('opacity', 0.3)
+
+    // svg.selectAll()
+    //    .data(data.ratios)
+    //    .enter()
+    //    .append('text')
+    //    .attr("text-anchor", "middle")
+    //    .attr("alignment-baseline", "middle")
+    //    .attr('x', (d,i) => x(data.keys[i]))
+    //    .attr('y', (d) => y(d) + 10)
+    //    .attr("font-size", "4pt")
+    //    .attr("fill", "white")
+    //    .text((d, i) => d);
+
 
 }
 
