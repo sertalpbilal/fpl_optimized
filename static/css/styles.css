@@ -1090,3 +1090,11 @@ div.dataTables_wrapper div.dataTables_filter#ownership_rates_table_filter input 
     width: 60px;
     margin: 5px 20px 5px 5px;
 }
+
+.text-xs {
+    font-size: x-small;
+}
+
+.text-xs select {
+    font-size: x-small;
+}
