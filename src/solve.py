@@ -425,6 +425,7 @@ def solve_best_set_and_forget(input_folder, output_folder):
     # next_week_df = df[df['event'] == next_week].copy()
     df = df.groupby(['player_id', 'event'], as_index=False).first()
     next_week_df = df.groupby(['player_id', 'web_name', 'team'])['points_md'].sum()
+    number_of_games = df.groupby(['player_id', 'web_name', 'team'])['points_md'].count().max()
     next_week_df = next_week_df.reset_index()
 
     df = pd.read_csv(input_folder / 'element.csv')
@@ -494,7 +495,7 @@ def solve_best_set_and_forget(input_folder, output_folder):
     results = pd.DataFrame(selected_players, columns=['player_id', 'multiplier', 'is_captain', 'starting_lineup'])
     result_df = pd.merge(next_week_df, results, on='player_id', how='inner')
     result_df = result_df[['player_id', 'web_name', 'team_code', 'element_type', 'now_cost', 'points_md', 'is_captain', 'multiplier', 'starting_lineup', 'selected_by_percent']].copy()
-    result_df['points_md'] = result_df['points_md'] / 8
+    result_df['points_md'] = result_df['points_md'] / number_of_games
     result_df['gw_points'] = result_df['multiplier'] * result_df['points_md']
     result_df = result_df.sort_values(by=['starting_lineup', 'element_type', 'player_id'], ascending=[False, True, True], ignore_index=True)
     result_df.reset_index(drop=True, inplace=True)
