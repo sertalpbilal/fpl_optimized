@@ -7,6 +7,7 @@ var app = new Vue({
         next_gw: next_gw,
         date: date,
         listdates: listdates,
+        selected_date_pos: 0,
         league_data: [],
         table: "",
         ngc_active: false,
@@ -51,13 +52,15 @@ var app = new Vue({
             this.is_ready = true;
             this.$nextTick(() => {
                 this.table = $("#fpl_analytics_table").DataTable({
-                    "order": [4],
+                    // "order": [4],
                     info: false,
                     scrollX: true,
                     paging: false,
                     scrollY: "400px",
                     scrollCollapse: true,
-                    fixedColumns: true,
+                    fixedColumns: {
+                        leftColumns: 2
+                    },
                     lengthChange: false,
                     "processing": true,
                     searching: false,
@@ -65,7 +68,7 @@ var app = new Vue({
                         'copy', 'csv'
                     ],
                     columnDefs: [
-                        { orderable: false, targets: 0 }
+                        // { orderable: false, targets: 0 }
                     ],
                 });
                 this.table.buttons().container()
@@ -74,7 +77,7 @@ var app = new Vue({
                 $('#fpl_analytics_table').on('order.dt', function(e, settings, array) {
                     let tcol = array[0].col;
                     let tdir = array[0].dir;
-                    if ((tcol == 5 || tcol == 10) && tdir == "asc") {
+                    if ((tcol == 6 || tcol == 11) && tdir == "asc") {
                         if (!app.ngc_active) {
                             app.start_confetti();
                             setTimeout(app.stop_confetti, 15000);
@@ -126,16 +129,36 @@ var app = new Vue({
             return (this.table != "");
         },
         seasongwdate: {
+            // get: function() {
+            //     return this.season + " / " + this.gw + " / " + this.date;
+            // },
+            // set: function(value) {
+            //     debugger;
+            //     this.selected_date_pos;
+            //     let v = value.split(' / ');
+            //     this.season = v[0];
+            //     this.gw = v[1];
+            //     this.date = v[2];
+            //     this.refresh_results();
+            // }
+        },
+        select_date_dd: {
             get: function() {
-                return this.season + " / " + this.gw + " / " + this.date;
+                return this.selected_date_pos;
             },
             set: function(value) {
-                let v = value.split(' / ');
-                this.season = v[0];
-                this.gw = v[1];
-                this.date = v[2];
+                this.selected_date_pos = value;
+                debugger;
+                let cv = this.listdates[value];
+                let v = cv.split(' / ');
+                this.season = v[0].trim();
+                this.gw = v[1].trim();
+                this.date = v[2].trim();
                 this.refresh_results();
             }
+        },
+        league_data_ordered() {
+            return this.league_data.sort((a,b) => parseFloat(b['MD']) - parseFloat(a['MD']))
         }
     }
 })
