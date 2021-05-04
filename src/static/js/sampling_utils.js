@@ -58,7 +58,9 @@ function autosubbed_team(team_picks, autosub_dict) {
                 if (vc && vc.multiplier > 0) {
                     vc.is_captain = true;
                     vc.is_vice_captain = false;
-                    vc.multiplier = original_mult;
+                    if (vc.multiplier <= 1) {
+                        vc.multiplier = original_mult;
+                    }
                     cap_replacements.push([id, vc.element])
                 }
             }
