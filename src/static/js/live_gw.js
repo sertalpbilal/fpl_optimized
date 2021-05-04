@@ -1930,10 +1930,13 @@ async function app_initialize(refresh_team = false) {
             load_team_data()
         ]).then((values) => {
             // $(".svg-wrapper").empty();
-            $("#updateModal").modal('hide');
-            setTimeout(() => {
-                refresh_all_graphs();
-            }, 50);
+            load_team_data().then(() => {
+                $("#updateModal").modal('hide');
+                setTimeout(() => {
+                    refresh_all_graphs();
+                }, 50);
+            })
+            
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
