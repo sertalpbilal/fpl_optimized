@@ -834,7 +834,7 @@
                                     <td>{{ i.data.element_type }}</td>
                                     <td>{{ i.data.now_cost_str }}</td>
                                     <td>{{ (i.data.ownership).toFixed(1) }}</td>
-                                    <td>{{ (i.data.xp).toFixed(2) }}</td>
+                                    <td>{{ (i.xp).toFixed(2) }}</td>
                                     <td>{{ getWithSign(i.xp_net) }}</td>
                                     <td v-if="selected_game_info.started">{{ i.rp }}</td>
                                     <td v-if="selected_game_info.started">{{ getWithSign(i.rp_net) }}</td>
