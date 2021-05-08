@@ -922,7 +922,7 @@
                                     <td>{{ i.data.element_type }}</td>
                                     <td>{{ i.data.now_cost_str }}</td>
                                     <td>{{ (i.data.ownership).toFixed(1) }}</td>
-                                    <td>{{ (i.data.xp).toFixed(2) }}</td>
+                                    <td>{{ (i.xp).toFixed(2) }}</td>
                                     <td>{{ getWithSign(i.xp_net) }}</td>
                                     <td v-if="selected_game_info.started">{{ i.rp }}</td>
                                     <td v-if="selected_game_info.started">{{ getWithSign(i.rp_net) }}</td>
@@ -1447,7 +1447,7 @@
     let gw = "GW35";
     let next_gw = "GW36";
     let date = "2021-05-07";
-    let lastupdate = "2021-05-08T16:07:44.006416+00:00";
+    let lastupdate = "2021-05-08T16:41:15.121564+00:00";
     let listdates = [
         "2020-21 / GW36 / 2021-05-08 ", 
         "2020-21 / GW35 / 2021-05-07 ", 
@@ -1500,6 +1500,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-05-08T16:07:44.006416+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-05-08T16:41:15.121564+00:00</div>
 
 </html> 
