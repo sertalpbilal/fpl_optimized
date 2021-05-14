@@ -1490,6 +1490,17 @@ async function draw_user_graph(options = {}) {
         let right_now = new Date(app.now_dt);
         let now_time = right_now.getTime();
 
+        let game_data = app.gameweek_games_with_metadata.map(i => i.node_info);
+        svg.selectAll()
+            .data(game_data)
+            .enter()
+            .append('rect')
+            .attr("x", d => x(d.start) )
+            .attr("y", d => y(y_high))
+            .attr("width", d => x(d.end) - x(d.start))
+            .attr("height", d => height - y(y_high))
+            .attr("class", "game_bar")
+
         // Now line
         let now_group = svg.append('g');
         now_group
@@ -1630,7 +1641,7 @@ async function draw_user_graph(options = {}) {
                 .attr("x", x(x_low) + 1)
                 .attr("y", y(y_high) + 5)
                 .attr("font-size", "3pt")
-                .attr("fill", "#ffffff45")
+                .attr("fill", "#ffffff65")
                 .style('pointer-events', 'none')
                 .text("Data: " + app.ownership_source);
             text_info.append('text')
@@ -1638,7 +1649,7 @@ async function draw_user_graph(options = {}) {
                 .attr("x", x(x_low) + 1)
                 .attr("y", y(y_high) + 10)
                 .attr("font-size", "3pt")
-                .attr("fill", "#ffffff45")
+                .attr("fill", "#ffffff65")
                 .style('pointer-events', 'none')
                 .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
             text_info.append('text')
@@ -1646,7 +1657,7 @@ async function draw_user_graph(options = {}) {
                 .attr("x", x(x_low) + 1)
                 .attr("y", y(y_high) + 15)
                 .attr("font-size", "3pt")
-                .attr("fill", "#ffffff45")
+                .attr("fill", "#ffffff65")
                 .style('pointer-events', 'none')
                 .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
 
