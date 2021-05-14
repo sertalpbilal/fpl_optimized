@@ -1098,3 +1098,11 @@ div.dataTables_wrapper div.dataTables_filter#ownership_rates_table_filter input 
 .text-xs select {
     font-size: x-small;
 }
+
+.alert a {
+    color: #c47b89;
+}
+
+.alert-dismissible .close.top-close {
+    padding: .4rem 1rem;
+}
