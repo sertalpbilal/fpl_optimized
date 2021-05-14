@@ -191,3 +191,9 @@
     alignment-baseline: middle;
     pointer-events: none;
 }
+
+rect.game_bar {
+    fill: black;
+    opacity: 0.1;
+    pointer-events: none;
+}
