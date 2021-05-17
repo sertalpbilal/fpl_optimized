@@ -464,7 +464,7 @@ def cache_realized_points_data(season_folder):
             gw_data[gw] = [{'id': i['id'], 'e': i['explain']} for i in raw_data['elements'] if i['stats']['minutes']!=0]
     with open(season_folder / "points.json", "w") as file:
         json.dump(gw_data, file)
-
+    print("Cache file generated")
 
 # TODO: fbref?
 
