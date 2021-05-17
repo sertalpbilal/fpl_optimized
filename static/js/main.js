@@ -22,6 +22,17 @@ if (!Array.prototype.flat) {
     });
 }
 
+if (!Promise.allSettled) {
+    function allSettled(promises) {
+        let wrappedPromises = promises.map(p => Promise.resolve(p)
+            .then(
+                val => ({ status: 'fulfilled', value: val }),
+                err => ({ status: 'rejected', reason: err })));
+        return Promise.all(wrappedPromises);
+    }
+    Promise.allSettled = allSettled
+}
+
 let team_codes = {
     3: { name: "Arsenal", short: "ARS" },
     7: { name: "Aston Villa", short: "AVL" },
@@ -69,10 +80,10 @@ let teams_ordered = [
 ]
 
 let element_type = {
-    1: { name: "Goalkeeper", "short": "GK", "id": 1, "min": 1, "max": 1 },
-    2: { name: "Defender", "short": "DF", "id": 2, "min": 3, "max": 5 },
-    3: { name: "Midfielder", "short": "MD", "id": 3, "min": 2, "max": 5 },
-    4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3 }
+    1: { name: "Goalkeeper", "short": "GK", "id": 1, "min": 1, "max": 1, "cnt": 2 },
+    2: { name: "Defender", "short": "DF", "id": 2, "min": 3, "max": 5, "cnt": 5 },
+    3: { name: "Midfielder", "short": "MD", "id": 3, "min": 2, "max": 5, "cnt": 5 },
+    4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3, "cnt": 3 }
 }
 
 let stat_types = {
@@ -87,6 +98,21 @@ let stat_types = {
     red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
     yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" },
     bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" }
+}
+
+let player_stat_types = {
+    "minutes": {'name': "Minutes", 'pp': true},
+    "clean_sheets": {'name': "Clean Sheets", 'pp': false},
+    "goals_scored": {'name': "Goals", 'pp': true},
+    "assists": {'name': "Assists", 'pp': true},
+    "bonus": {'name': "Bonus", 'pp': true},
+    "saves": {'name': "Saves", 'pp': true},
+    "penalties_saved": {'name': "Penalties Saved", 'pp': false},
+    "goals_conceded": {'name': "Goals Conceded", 'pp': true},
+    "own_goals": {'name': "Own Goals", 'pp': false},
+    "yellow_cards": {'name': "Yellow Cards", 'pp': false},
+    "red_cards": {'name': "Red Cards", 'pp': false},
+    "penalties_missed": {'name': "Penalties Missed", 'pp': false}
 }
 
 function rounded(val, digits = 2) {

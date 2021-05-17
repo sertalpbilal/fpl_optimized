@@ -1106,3 +1106,39 @@ div.dataTables_wrapper div.dataTables_filter#ownership_rates_table_filter input 
 .alert-dismissible .close.top-close {
     padding: .4rem 1rem;
 }
+
+@media screen and (max-width: 480px) {
+    .custom-table-responsive {
+        font-size: x-small !important;
+    }
+}
+
+table.dataTable.fixedHeader-floating {
+    background-color: #474747;
+}
+
+.dist-icon {
+    margin-right: 3px;
+}
+
+.gw_detail_number {
+    display: block;
+    text-align: center;
+}
+
+.gw_detail_players {
+    display: block;
+    text-align: center;
+    font-size: 6pt;
+}
+
+@media screen and (max-width: 760px) {
+    .gw_detail_players {
+        font-size: 4pt;
+    }
+}
+
+div.dataTables_scrollBody {
+    background: none !important;
+}
+
