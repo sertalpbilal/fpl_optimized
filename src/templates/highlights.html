@@ -1,0 +1,344 @@
+"% include 'header.html' %"
+
+<main class="container">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Season Highlights</h5>
+                <div class="scenario_detail">
+                    A brief look to your entire season stats per player
+                </div>
+                <div class="card-body text-center p-3">
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-md-3 col-8">
+                            <div class="input-group">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks">Generate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters justify-content-center mt-2" v-if="!ready">
+                        <div class="col-md-3 col-8">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: completed/gw*100 + '%' }" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Team of the Year</h5>
+                <div class="scenario_detail">
+                    Your top scoring players of the season
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row">
+                        <div class="col-12 col-md-6" id="top_players_field">
+
+                            <div class="lineup gray-bg">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709">
+                                    <svg class="field">
+                                        <g class="g_field">
+                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
+                                            <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
+                                            <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
+                                            <path class="field-common" id="right_bottom_corner" d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z" transform="scale(-1)" />
+                                            <path class="field-common" id="left_bottom_corner" d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z" transform="rotate(-90)" />
+                                            <rect class="field-common" id="top_penalty_box" width="46.726002" height="21.884615" x="32.992699" y="3.852963" />
+                                            <rect class="field-common" id="top_inner_box" width="24.50474" height="11.328758" x="44.101284" y="3.828212" />
+                                            <path class="field-common" id="top_arch" d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
+                                            <path class="field-common" id="bottom_arch" d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002" height="21.884615" x="-79.962532" y="-140.46913" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_inner_box" width="24.50474" height="11.328759" x="-68.851799" y="-140.42613" transform="scale(-1)" />
+                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208" r="14.196868" />
+                                            <path class="field-common field-last-path" d="M 4.1010416,71.569791 H 108.51143" id="center_line" inkscape:connector-curvature="0"/>
+                                            <rect class="field-common" id="bench_box" width="104.4753" height="24.503908" x="4.0935702" y="140.51396" />
+                                        </g>
+                                    </svg>
+                                <svg v-for="player in user_toty" :x="player.x" :y="player.y">
+                                        <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}" style="transform:translate(-20px,-35px)">
+                                            <path  d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular"/>
+                                            <g >
+                                                <path class="jersey-regular" d="m 24.461842,40.986418 1.07576,2.642627"   />
+                                                <path class="jersey-regular" d="m 25.186811,40.518696 0.748355,1.91766"  />
+                                            </g>
+                                            <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)" >
+                                                <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627"   />
+                                                <path class="jersey-regular" d="m 35.16062,41.067378 0.748355,1.91766"   />
+                                            </g>
+                                            <path d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712" class="jersey-regular" />
+                                            <g clip-path="url(#clipPath867)" transform="translate(22.73135,-236.63834)">
+                                                <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
+                                                        <tspan
+                                                            class="jersey-xp-text"
+                                                            y="285.37598" x="9.281539"  ><tspan style="font-size:5.5px" >{{ player.points_total }}</tspan>
+                                                        </tspan>
+                                                    </text>
+                                                    <!-- <text  y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text">
+                                                        <tspan v-if="true"
+                                                            class="jersey-captain-star"
+                                                            y="281.28659" x="11.3432751"  >★</tspan>
+                                                    </text> -->
+                                                    <rect y="291.74704" x="0.028824098" height="3.1975782" width="18.470304" class="jersey-name-bg" />
+                                                    <rect y="294.94461" x="0.028824052" height="2.0213056" width="18.470306" class="jersey-team-bg" />
+                                                    <text  y="294.1311" x="9.3312988" class="jersey-regular-text"
+                                                        xml:space="preserve">
+                                                        <tspan
+                                                            class="jersey-player-name"
+                                                            y="294.1311" x="9.3312988" >{{ player.player.name }}</tspan>
+                                                    </text>
+                                                    <text y="296.74948" x="9.2921124" class="jersey-regular-text"
+                                                        xml:space="preserve">
+                                                        <tspan
+                                                            class="jersey-team-name"
+                                                            y="296.74948" x="9.2921124" >{{ teams_ordered[player.player.raw.team-1].name }}</tspan>
+                                                    </text>
+                                                    <text class="jersey-cost-text" xml:space="preserve">
+                                                        <tspan style="text-align:center" y="289.74948" x="9.2921124" style="font-size:2px; fill: black" v-if="player.cap_count > 0"  >Cap: {{
+                                                            player.cap_count }}</tspan>
+                                                    </text>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </svg>
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-md-6" id="top_players_list" v-if="ready">
+                            <div class="row justify-content-center">
+                                <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted">ID</th>
+                                            <th>Name</th>
+                                            <th>Pos</th>
+                                            <th>Lineup</th>
+                                            <th>Bench</th>
+                                            <th>Capt</th>
+                                            <th>Points</th>
+                                            <!-- <th>Eff.Points</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody v-cloak>
+                                        <tr v-for="p in user_player_sum" class="owned-row">
+                                            <td class="text-muted">{{ p.id }}</td>
+                                            <td>{{ p.name }}</td>
+                                            <td>{{ element_type[p.position].short }}</td>
+                                            <td>{{ p.lineup_count }}</td>
+                                            <td>{{ p.squad_count - p.lineup_count }}</td>
+                                            <td>{{ p.cap_count }}</td>
+                                            <td>{{ p.points_total }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-1 d-flex mx-auto justify-content-center" id="csv_buttons">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Point Distribution</h5>
+                <div class="scenario_detail">
+                    Distribution of your points from each type
+                </div>
+                <div class="card-body">
+                    <div class="row" v-if="ready">
+                        <div class="col-12 col-md-6 mb-2">
+                            <span>Point distribution of key events per GW</span>
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="gw_points_table" v-if="ready">
+                                <thead>
+                                    <tr>
+                                        <th>GW</th>
+                                        <th class="text-center">Clean Sheet</th>
+                                        <th class="text-center">Goal</th>
+                                        <th class="text-center">Assist</th>
+                                        <th class="text-center">Bonus</th>
+                                        <th class="text-center">Hits</th>
+                                        <th class="text-center">Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="p in user_stats_per_gw.points" class="owned-row">
+                                        <td class="text-center">{{ p.gw }}</td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'clean_sheets').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'clean_sheets') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'goals_scored').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'goals_scored') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'assists').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'assists') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'bonus').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'bonus') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ p.hit_pts/4 }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ p.net_pts }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span>Point distribution per event type</span>
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="type_points_table" v-if="ready">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Type</th>
+                                        <th class="text-center">Count</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center">Per Player</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="(value, key) in user_stats_per_gw.type_grouped" class="owned-row">
+                                        <td class="text-center">{{ player_stat_types[key].name }}</td>
+                                        <td class="text-center">{{ player_stat_types[key].pp ? value.length : "-" }}</td>
+                                        <td class="text-center">{{ getSum(value.map(i => parseInt(i.value))) }}</td>
+                                        <td class="text-center">
+                                            {{ player_stat_types[key].pp ? rounded(getSum(value.map(i => parseInt(i.value))) / user_stats_per_gw.total_picks,2) : "-" }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ getSum(value.map( i=> parseInt(i.points * i.multiplier))) }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ rounded(getSum(value.map( i=> parseInt(i.points * i.multiplier))) / user_stats_per_gw.overall_total * 100, 1)  }}%
+                                        </td>
+                                        <!-- <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'clean_sheets').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'clean_sheets') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'goals_scored').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'goals_scored') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'assists').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'assists') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'bonus').map(i => i.value)) }}</span>
+                                            <span class="gw_detail_players">{{ get_names(p.gw, 'bonus') }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ p.hit_pts/4 }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="gw_detail_number">{{ p.net_pts }}</span>
+                                        </td> -->
+                                    </tr>
+                                    <tr class="bench-row">
+                                        <td class="text-center"><b>Hits</b></td>
+                                        <td class="text-center">{{ user_stats_per_gw.points.filter(i => i.hit_pts > 0).length }}</td>
+                                        <td class="text-center">{{ getSum(user_stats_per_gw.points.map(i => i.hit_pts))/4 }}</td>
+                                        <td></td>
+                                        <td class="text-center">{{ -getSum(user_stats_per_gw.points.map(i => i.hit_pts)) }}</td>
+                                        <td class="text-center">{{ rounded(-getSum(user_stats_per_gw.points.map(i => i.hit_pts)) / user_stats_per_gw.overall_total * 100, 1)  }}%</td>
+                                    </tr>
+                                    <tr class="nonowned-row">
+                                        <td class="text-center"><b>Total</b></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center">{{ user_stats_per_gw.overall_total }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-1 d-flex mx-auto justify-content-center" id="csv_buttons2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Timings of ownership</h5>
+                <div class="scenario_detail">
+                    Time periods of owning your key players
+                </div>
+                <div class="card-body">
+                    <div class="row" v-if="ready">
+                        <div class="col-12">
+                            <div id="add_chart_button_group" class="justify-content-center row">
+
+                                <div class="col-8 col-md-6 input-group mb-3">
+                                    <select class="custom-select" id="new_player_id">
+                                        <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{ p.id }})</option>
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" type="button" @click="add_player_plot">Plot</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="text-center">
+                                <span class="mr-2"><svg width="20" height="20"><g>
+                                    <rect x="0" y="0" width="20" height="20" fill="#6fcfd6" opacity="0.3"></rect></g>
+                                </svg> Lineup</span>
+                                <span><svg width="20" height="20"><g>
+                                    <rect x="0" y="0" width="20" height="20" fill="#b995d2" opacity="0.3"></rect></g>
+                                </svg> Bench</span>
+                            </div>
+                            <div id="player_charts">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- user_stats_per_gw -->
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-body text-left">
+                    <h5>Q/A</h5>
+                    <b>Some data seems to be missing?</b>
+                    <p>Data on page is refreshed every 6 hours. It is possible that some values/graphs do not function properly while a GW is ongoing.</p>
+                </div>
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+"% with scripts=["main", "sampling_utils", "highlights"] %" "% include 'footer.html' %" "% endwith %"

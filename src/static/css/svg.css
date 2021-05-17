@@ -197,3 +197,27 @@ rect.game_bar {
     opacity: 0.1;
     pointer-events: none;
 }
+
+rect.player_point_bar {
+    fill: #ffffff;
+}
+
+rect.lineup_bar {
+    fill: #6fcfd6;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+rect.bench_bar {
+    fill: #b995d2;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.close_text {
+    pointer-events: none;
+}
+
+.close_box {
+    cursor: pointer;
+}

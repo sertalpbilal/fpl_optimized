@@ -11,6 +11,7 @@ import random
 import shutil
 import time
 from urllib.request import urlopen
+import requests
 
 from functools import wraps
 import itertools
@@ -40,11 +41,12 @@ FPL_API = {
 
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
-    input_folder, output_folder = create_folders()
+    input_folder, output_folder, season_folder = create_folders()
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder)
     generate_intermediate_layer(input_folder)
     get_fivethirtyeight_data(input_folder)
+    cache_realized_points_data(season_folder)
     return input_folder, output_folder
 
 
@@ -56,6 +58,7 @@ def create_folders():
     vals = read_static()
     season = vals['season']
     target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
+    gw_numeric = int(target_gw.split()[1])
     gameweek = "GW" + str(target_gw.split()[1]).strip()
     date = datetime.datetime.now(pytz.timezone('EST')).date().isoformat()
 
@@ -66,7 +69,10 @@ def create_folders():
     output_folder = pathlib.Path(
         base_folder / f"build/data/{season}/{gameweek}/{date}/output/")
     output_folder.mkdir(parents=True, exist_ok=True)
-    return input_folder, output_folder
+
+    season_folder = pathlib.Path(base_folder / f"build/data/{season}/")
+    
+    return input_folder, output_folder, season_folder
 
 
 def get_data_fpl_api(target_folder):
@@ -449,6 +455,17 @@ def get_fivethirtyeight_data(target_folder):
         f.write(data)
 
 
+def cache_realized_points_data(season_folder):
+    gw_data = {}
+    for gw in range(1,39):
+        r = requests.get(FPL_API['live'].format(GW=gw))
+        if r.status_code == 200:
+            raw_data = r.json()
+            gw_data[gw] = [{'id': i['id'], 'e': i['explain']} for i in raw_data['elements'] if i['stats']['minutes']!=0]
+    with open(season_folder / "points.json", "w") as file:
+        json.dump(gw_data, file)
+
+
 # TODO: fbref?
 
 if __name__ == "__main__":
@@ -467,7 +484,9 @@ if __name__ == "__main__":
 
     # pass
 
-    input_folder, output_folder = create_folders()
-    get_fivethirtyeight_data(input_folder)
+    input_folder, output_folder, season_folder = create_folders()
+    cache_realized_points_data(season_folder)
+    # print(gw_no)
+    # get_fivethirtyeight_data(input_folder)
 
     pass
