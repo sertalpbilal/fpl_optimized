@@ -193,7 +193,7 @@ def fpl_fixture_page():
 def spirit_team_page():
     page_name = 'spirit_team.html'
 
-    all_weeks = glob.glob('build/data/*/*')
+    all_weeks = glob.glob('build/data/*/*/')
     if sys.platform == 'win32':
         all_weeks = [i.replace('\\', '/') for i in all_weeks]
     all_weeks.sort(key=gw_order, reverse=True)
@@ -215,7 +215,7 @@ def spirit_team_page():
 # def manager_form():
 #     page_name = 'manager_form.html'
 
-#     all_weeks = glob.glob('build/data/*/*')
+#     all_weeks = glob.glob('build/data/*/*/')
 #     if sys.platform == 'win32':
 #         all_weeks = [i.replace('\\', '/') for i in all_weeks]
 #     all_weeks.sort(key=gw_order, reverse=True)
