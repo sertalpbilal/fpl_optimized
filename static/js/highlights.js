@@ -51,7 +51,7 @@ var app = new Vue({
             let fpl_data = this.fpl_element
             let picks = Object.entries(this.team_data).map(i => i[1].picks.map(j => ({'gw': i[0], ...j}))).flat()
             picks.forEach((p) => {
-                p['points'] = gw_pid_pts[p.gw][p.element]
+                p['points'] = ((gw_pid_pts[p.gw] || {})[p.element] || 0 )
                 p['raw'] = fpl_data[p.element]
             })
             return picks
@@ -422,7 +422,7 @@ function draw_player_bar_chart(div_id, id) {
         .append('line')
         .attr('x1', x(0))
         .attr('y1', y(0))
-        .attr('x2', x(max_x))
+        .attr('x2', width)
         .attr('y2', y(0))
         .style('stroke', 'white')
         .style("stroke-opacity", 0.5)
@@ -466,7 +466,7 @@ function draw_player_bar_chart(div_id, id) {
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "bottom")
         .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
-        .attr("y", (d) => y(d[2]) - 5)
+        .attr("y", (d) => y(d[2] || 0) - 5)
         .attr("font-size", "5pt")
         .attr("fill", "white")
         .text((d) => 'x' + d[1]);
@@ -527,8 +527,6 @@ function draw_player_bar_chart(div_id, id) {
 }
 
 function draw_type_heatmap() {
-
-    debugger
 
     if (!app.ready) { return }
 
