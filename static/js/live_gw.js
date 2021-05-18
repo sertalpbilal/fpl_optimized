@@ -1128,7 +1128,7 @@ function init_timeline() {
     var margin = { top: 9, right: 5, bottom: 20, left: 5 },
         width = 450 - margin.left - margin.right,
         // height = 20 + 20 * (app.gameweek_info.channels + 1) - margin.top - margin.bottom;
-        height = 2 + 11 * (app.gameweek_info.channels + 1)
+        height = 2 + 13 * (app.gameweek_info.channels + 1)
 
     let cnv = d3.select("#d3-timeline")
         .append("svg")
@@ -1316,13 +1316,14 @@ function init_timeline() {
         .data(vals)
         .enter()
         .append('text')
-        .attr("text-anchor", "middle")
-        .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
-        .attr("y", d => y(d.order) + y.bandwidth() / 3)
-        .attr("font-size", Math.round(7 * 1e+9 / (x_high - x_low)) / 10 + "pt")
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "hanging")
+        .attr("x", d => x(d.node_info.end)-1) // (x(d.node_info.end) + x(d.node_info.start)) / 2)
+        .attr("y", d => y(d.order)+1) //y(d.order) + y.bandwidth() / 3)
+        .attr("font-size", Math.round(7 * 1e+9 / (x_high - x_low)) / 16 + "pt")
         .attr("fill", "white")
         .style('pointer-events', 'none')
-        .text((d, i) => "ID: " + (i + 1));
+        .text((d, i) => (i+1)); //"ID: " + (i + 1));
 
     if (app.is_ready) {
         svg.append("g")
@@ -1333,7 +1334,7 @@ function init_timeline() {
             .attr("text-anchor", "middle")
             .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
             .attr("y", d => y(d.order) + y.bandwidth() * 0.85)
-            .attr("font-size", Math.round(14 * 1e+9 / (x_high - x_low)) / 10 + "pt")
+            .attr("font-size", Math.round(14 * 1e+9 / (x_high - x_low)) / 13 + "pt")
             .attr("fill", "white")
             .style('pointer-events', 'none')
             .text((d) => d.players_owned);
