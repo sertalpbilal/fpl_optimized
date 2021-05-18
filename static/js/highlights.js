@@ -198,6 +198,39 @@ var app = new Vue({
             let team = this.team_data
             let all_picks = Object.entries(team).map(i => i[1].picks.map(j => ({'gw': i[0], 'id': j.element, 'multiplier': j.multiplier}))).flat()
             return all_picks
+        },
+        user_points_by_eltype() {
+            let stats = this.user_player_stats;
+            let values = stats.map(i => ({'id': i.element,  'eltype': i.raw.element_type, 'cost': i.raw.now_cost, 'total_points': (i.points || 0) * i.multiplier}))
+            // values = _(values).groupBy('eltype').value()
+            let price_categories = {
+                1: [[50, 'Budget'], [55, 'Mid-Price'], [150, 'Premium']],
+                2: [[50, 'Budget'], [60, 'Mid-Price'], [150, 'Premium']],
+                3: [[75, 'Budget'], [100, 'Mid-Price'], [150, 'Premium']],
+                4: [[75, 'Budget'], [100, 'Mid-Price'], [150, 'Premium']]
+            }
+            let grouped_vals = {
+                1: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
+                2: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
+                3: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
+                4: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0}
+            }
+            values.forEach((v) => {
+                let type = v.eltype
+                let price_cat = ''
+                for (let c of price_categories[type]) {
+                    if (v.cost < c[0]) {
+                        price_cat = c[1];
+                        break;
+                    }
+                }
+                grouped_vals[type][price_cat] += parseInt(v.total_points)
+            })
+
+            let arr_vals = Object.keys(grouped_vals).map((eltype) => Object.keys(grouped_vals[eltype]).map((price_cat) => [element_type[eltype].short, price_cat, grouped_vals[eltype][price_cat]])).flat()
+
+            return arr_vals
+
         }
     },
     methods: {
@@ -231,6 +264,7 @@ var app = new Vue({
                         app.$nextTick(() => {
                             app.refresh_table()
                             app.draw_top_5()
+                            app.draw_pos_heatmap()
                         })
                     })
                 }, 500)
@@ -246,6 +280,9 @@ var app = new Vue({
         add_player_plot() {
             let pid = document.getElementById("new_player_id").value
             draw_player_bar_chart("#player_charts", pid)
+        },
+        draw_pos_heatmap() {
+            draw_type_heatmap()
         },
         refresh_table() {
             
@@ -434,18 +471,6 @@ function draw_player_bar_chart(div_id, id) {
         .attr("fill", "white")
         .text((d) => 'x' + d[1]);
 
-
-    // svg.selectAll()
-    //     .data(pts_data)
-    //     .enter()
-    //     .append("text")
-    //     .attr("text-anchor", "middle")
-    //     .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
-    //     .attr("y", (d) => y(d[1] + 5))
-    //     .attr("font-size", "4pt")
-    //     .attr("fill", "#588D93")
-    //     .text((d) => d[1]);
-
     // Plot title
     svg.append("text")
         .attr("text-anchor", "middle")
@@ -499,10 +524,166 @@ function draw_player_bar_chart(div_id, id) {
         .attr("class", "close_text")
         .text("X")
 
-
-
 }
 
+function draw_type_heatmap() {
+
+    debugger
+
+    if (!app.ready) { return }
+
+    const raw_width = 500;
+    const raw_height = 400;
+
+    const margin = { top: 20, right: 10, bottom: 5, left: 50 },
+    width = raw_width - margin.left - margin.right,
+    height = raw_height - margin.top - margin.bottom;
+
+    let data = app.user_points_by_eltype
+    let xvals = ["GK", "DF", "MD", "FW", "Total"]
+    let yvals = ['Budget', 'Mid-Price', 'Premium', 'Total']
+    let valmax = Math.max(...data.map(i => i[2]))
+    let total = getSum(data.map(i => i[2]))
+
+    const svg = d3.select("#type_heatmap")
+        // .append("svg")
+        .insert("svg",":first-child")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+        .append('g')
+        .attr("transform",
+             "translate(" + margin.left + "," + margin.top + ")");
+
+    let x = d3.scaleBand()
+        .range([ 0, width ])
+        .domain(xvals)
+        .padding(0.05);
+    svg.append('g').call(d3.axisTop(x).tickSize(0)).select(".domain").remove();
+
+    let y = d3.scaleBand()
+        .range([ 0, height ])
+        .domain(yvals)
+        .padding(0.05);
+    svg.append('g').call(d3.axisLeft(y).tickSize(0)).select(".domain").remove();
+
+    svg.call(s => s.selectAll(".tick").attr("font-size", "8pt"))
+
+    // var myColor = d3.scaleSequential()
+    //     .interpolator(d3.interpolateBlues)
+    //     .domain([0, valmax*1.3])
+
+    var myColor = (d) => {
+        let p = d3.interpolateRgb("#ffffff", "#6fcfd6")
+        return p(d/valmax)
+    }
+
+    svg.selectAll()
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { return x(d[0]) })
+        .attr("y", function(d) { return y(d[1]) })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth() )
+        .attr("height", y.bandwidth() )
+        .style("fill", function(d) { return myColor(d[2])} )
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 1)
+
+    let text = svg.selectAll()
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("y", (d) => y(d[1]) + y.bandwidth()/2)
+        .attr("dy", 0)
+        .attr("font-size", "12pt");
+
+    text.append("tspan")
+        .text((d) => d[2])
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr('dy', 0);
+    text.append("tspan")
+        // .attr('x', 0)
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr('dy', 12)
+        .text((d) => (100*d[2]/total).toFixed(0) + "%")
+        .attr("font-size", "6pt");
+
+    // Plot title
+    // svg.append("text")
+    //     .attr("text-anchor", "middle")
+    //     .attr("x", width / 2)
+    //     .attr("y", height + 5)
+    //     .attr("font-size", "6pt")
+    //     .text("Total points per price category and position");
+
+    let pos_totals = _(data).groupBy(0).map((i,v) => [v, _.sumBy(i, 2)]).value();
+
+    // Position sum
+    let text2 = svg.selectAll()
+        .data(pos_totals)
+        .enter()
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("y", (d) => y("Total") + y.bandwidth()/2)
+        .attr("dy", 0)
+        .attr("fill", "white")
+        .attr("font-size", "12pt");
+    text2.append("tspan")
+        .text((d) => d[1])
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr('dy', 0);
+    text2.append("tspan")
+        // .attr('x', 0)
+        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr('dy', 12)
+        .text((d) => (100*d[1]/total).toFixed(1) + "%")
+        .attr("font-size", "6pt");
+
+    // Price cat sum
+    let bud_totals = _(data).groupBy(1).map((i,v) => [v, _.sumBy(i, 2)]).value();
+
+    let text3 = svg.selectAll()
+        .data(bud_totals)
+        .enter()
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr("y", (d) => y(d[0]) + y.bandwidth()/2)
+        .attr("dy", 0)
+        .attr("fill", "white")
+        .attr("font-size", "12pt");
+    text3.append("tspan")
+        .text((d) => d[1])
+        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr('dy', 0);
+    text3.append("tspan")
+        // .attr('x', 0)
+        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr('dy', 12)
+        .text((d) => (100*d[1]/total).toFixed(1) + "%")
+        .attr("font-size", "7pt");
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr("y", (d) => y("Total") + y.bandwidth()/2)
+        .attr("dy", 0)
+        .attr("fill", "white")
+        .attr("font-size", "12pt")
+        .text(total);
+
+}
 
 
 
