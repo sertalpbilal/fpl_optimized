@@ -294,7 +294,7 @@
 
                                 <div class="col-8 col-md-6 input-group mb-3">
                                     <select class="custom-select" id="new_player_id">
-                                        <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{ p.id }})</option>
+                                        <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{ p.points_total }})</option>
                                     </select>
                                     <div class="input-group-append">
                                         <button class="btn btn-secondary" type="button" @click="add_player_plot">Plot</button>
