@@ -364,10 +364,10 @@ function draw_player_bar_chart(div_id, id) {
     width = raw_width - margin.left - margin.right,
     height = raw_height - margin.top - margin.bottom;
 
-    let raw_data = app.pid_gw_pts[id]
+    let raw_data = app.pid_gw_pts[id] || []
     let pts_data = Object.entries(raw_data); // app.pid_gw_pts[player_id]
     let min_y = Math.min(0, Math.min(...pts_data.map(i => i[1])))
-    let max_y = Math.max(...pts_data.map(i => i[1])) + 4
+    let max_y = Math.max( Math.max(...pts_data.map(i => i[1])) + 4, 6)
     let max_x = Math.max( Math.max(...pts_data.map(i => i[0])), parseInt(gw) )
 
     let team_pick_gws = app.user_player_gws
