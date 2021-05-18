@@ -12,6 +12,7 @@ var app = new Vue({
         active_gw: active_gw,
         gw_fixture: undefined,
         team_id: "-1",
+        current_team_id: "",
         remember_settings: false,
         allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_details', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
         team_info: undefined,
@@ -35,7 +36,9 @@ var app = new Vue({
         large_graphs: false,
         autosub_stats: {},
         marked_dt: undefined,
-        show_details: true
+        show_details: true,
+        show_league: false,
+        remember_me_button: false
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -138,15 +141,6 @@ var app = new Vue({
                 })
             }
             return rp_obj;
-        },
-        current_team_id: {
-            get() {
-                if (this.team_id == "-1") {
-                    return "";
-                }
-                return this.team_id;
-            },
-            set(v) {}
         },
         gameweek_info() {
             if (this.gw_fixture.length == 0) { return {} }
@@ -738,32 +732,39 @@ var app = new Vue({
             }
         },
         selectLeagueTeam() {
-            $("#teamModal").modal('hide');
-            $("#waitModal").modal({
-                backdrop: 'static',
-                keyboard: false
-            }).modal('show');
-            this.team_id = $("#fpl_analytics_league_select").val();
-            if (this.team_id == "") { return; }
-            this.$nextTick(() => {
-                load_team_data(graph_refresh = true).then(() => {
-                    $("#waitModal").modal('hide');
-                });
-            })
+            this.current_team_id = $("#fpl_analytics_league_select").val();
         },
+        // selectLeagueTeam() {
+        //     $("#teamModal").modal('hide');
+        //     $("#waitModal").modal({
+        //         backdrop: 'static',
+        //         keyboard: false
+        //     }).modal('show');
+        //     this.team_id = $("#fpl_analytics_league_select").val();
+        //     if (this.team_id == "") { return; }
+        //     this.$nextTick(() => {
+        //         load_team_data(graph_refresh = true).then(() => {
+        //             $("#waitModal").modal('hide');
+        //         });
+        //     })
+        // },
         saveTeamId() {
             $("#teamModal").modal('hide');
             $("#waitModal").modal({
                 backdrop: 'static',
                 keyboard: false
             }).modal('show');
-            this.team_id = $("#teamIdEnter").val();
+            this.team_id = this.current_team_id; //$("#teamIdEnter").val();
             this.$nextTick(() => {
                 $("#fpl_analytics_league_select").val("");
                 load_team_data(graph_refresh = true).then(() => {
                     $("#waitModal").modal('hide');
                 });
             })
+            if (this.remember_me_button) {
+                this.toggleRemember(true)
+                this.remember_me_button = false
+            }
         },
         loadAutoSettings() {
             $("#waitModal").modal({
@@ -784,7 +785,10 @@ var app = new Vue({
                 });
             })
         },
-        toggleRemember() {
+        toggleRemember(force=null) {
+            if (typeof force === "boolean") {
+                this.remember_settings = !force
+            }
             if (this.remember_settings) {
                 this.remember_settings = false;
                 let settings = this.allowed_settings;
@@ -1958,7 +1962,7 @@ async function app_initialize(refresh_team = false) {
 }
 
 $(document).ready(function() {
-    Vue.$cookies.config('30d')
+    Vue.$cookies.config('120d')
     app_initialize().then(() => {
         let cached_team = Vue.$cookies.get('team_id');
         if (cached_team !== null) {
