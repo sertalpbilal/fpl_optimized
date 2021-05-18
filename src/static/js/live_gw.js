@@ -31,7 +31,7 @@ var app = new Vue({
         target_player: undefined,
         is_using_hits: true,
         is_using_autosub: true,
-        show_team_info: true,
+        show_team_info: false,
         fill_width: false,
         large_graphs: false,
         autosub_stats: {},
