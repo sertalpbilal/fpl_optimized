@@ -175,19 +175,19 @@
                                 <tbody v-cloak>
                                     <tr v-for="p in user_stats_per_gw.points" class="owned-row">
                                         <td class="text-center">{{ p.gw }}</td>
-                                        <td>
+                                        <td :data-order="getSum(get_stat(p.gw, 'clean_sheets').map(i => i.value))">
                                             <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'clean_sheets').map(i => i.value)) }}</span>
                                             <span class="gw_detail_players">{{ get_names(p.gw, 'clean_sheets') }}</span>
                                         </td>
-                                        <td>
+                                        <td :data-order="getSum(get_stat(p.gw, 'goals_scored').map(i => i.value))">
                                             <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'goals_scored').map(i => i.value)) }}</span>
                                             <span class="gw_detail_players">{{ get_names(p.gw, 'goals_scored') }}</span>
                                         </td>
-                                        <td>
+                                        <td :data-order="getSum(get_stat(p.gw, 'assists').map(i => i.value))">
                                             <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'assists').map(i => i.value)) }}</span>
                                             <span class="gw_detail_players">{{ get_names(p.gw, 'assists') }}</span>
                                         </td>
-                                        <td>
+                                        <td :data-order="getSum(get_stat(p.gw, 'bonus').map(i => i.value))">
                                             <span class="gw_detail_number">{{ getSum(get_stat(p.gw, 'bonus').map(i => i.value)) }}</span>
                                             <span class="gw_detail_players">{{ get_names(p.gw, 'bonus') }}</span>
                                         </td>
