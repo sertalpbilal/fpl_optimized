@@ -135,6 +135,61 @@ var app = new Vue({
             });
             return selected_players
         },
+        stats_per_gw_detailed() {
+            let stats = this.stats_2d
+            let all_data = stats.map(i => i[2].map(j => j.stats.map(k => ({'gw': i[0], 'id': i[1], 'fixture': j.fixture, ...k})))).flat().flat()
+            return all_data
+        },
+        user_picks_detailed() {
+            let team_data = this.team_data
+            let fpl_data = this.fpl_element
+            let stat_detailed = this.stats_per_gw_detailed
+            let all_team_picks = Object.keys(team_data).map(i => team_data[i].picks.map(j => ({'gw': i, ...j}))).flat()
+            let pick_mult_map = all_team_picks.map(i => [i.gw + ',' + i.element, i.multiplier])
+            let pick_mult = Object.fromEntries(pick_mult_map)
+            let picked_stats = stat_detailed.filter(i => (i.gw + "," + i.id) in pick_mult)
+            picked_stats.forEach((p) => {
+                p.multiplier = pick_mult[p.gw + "," + p.id]
+                p.total_points = p.points * p.multiplier
+                p.eltype = fpl_data[p.id].element_type
+                p.name = fpl_data[p.id].web_name
+            })
+            return picked_stats
+        },
+        user_picks_custom_stats() {
+            let picked_stats = app.user_picks_detailed
+            let clean_sheets = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'clean_sheets').length
+            let defense_picks = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'minutes').length
+
+            let cs_stat = {'count': clean_sheets, 'total': defense_picks, 'values': undefined, 'info': 'Rate of CS gains out of all GK and DF'}
+
+            let goal_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored').length
+            let attack_picks = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes').length
+            let all_goal_points = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored').map(i => i.points)
+            let goal_stat = {'count': goal_count, 'total': attack_picks, 'values': all_goal_points, 'info': 'Rate of goal returns out of all MD and FW'}
+
+            let assists_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists').length
+            let all_assist_points = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists').map(i => i.points)
+            let assist_stat = {'count': assists_count, 'total': attack_picks, all_assist_points, 'info': 'Rate of assist returns out of all MD and FW'}
+
+            let bonus_count = picked_stats.filter(i => i.identifier == 'bonus').length
+            let all_count = picked_stats.filter(i => i.identifier == 'minutes').length
+            let all_bonus_points = picked_stats.filter(i => i.identifier == 'bonus').map(i => i.points)
+            let bonus_stat = {'count': bonus_count, 'total': all_count, 'values': all_bonus_points, 'info': 'Rate of bonus returns out of all players'}
+
+            let captain_pts = picked_stats.filter(i => i.multiplier>1)
+            let captain_game_pts = {}
+            captain_pts.forEach((c) => {
+                if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0}
+                captain_game_pts[c.fixture] += c.total_points
+            })
+            let non_blank_captain = Object.values(captain_game_pts).filter(i => i>7).length
+            let captain_count = picked_stats.filter(i => i.multiplier>1 && i.identifier=='minutes').length
+            let all_cap_points = Object.values(captain_game_pts)
+            let captain_stat = {'count': non_blank_captain, 'total': captain_count, 'values': all_cap_points, 'info': 'Rate of non-blanking (7+ pts) captain returns'}
+
+            return {'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat}
+        },
         stats_per_gw() {
             let stats = this.stats_2d
             let gw_data = []

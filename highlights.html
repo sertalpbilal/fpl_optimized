@@ -378,6 +378,43 @@
         </div>
     </div>
 
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Target Event Ratios</h5>
+                <div class="scenario_detail">
+                    Success ratio on defense/attack picks
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="key_events_ratio_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Target</th>
+                                        <th class="text-center">Success</th>
+                                        <th class="text-center">Picks</th>
+                                        <th class="text-center highlighted-col">Success Ratio</th>
+                                        <th class="text-center">Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="(v, key) in user_picks_custom_stats" class="owned-row">
+                                        <td class="text-center">{{ key }}</td>
+                                        <td class="text-center">{{ v.count }}</td>
+                                        <td class="text-center">{{ v.total }}</td>
+                                        <td class="text-center highlighted-col">{{ rounded(v.count / v.total * 100, 2) }}%</td>
+                                        <td class="text-center">{{ v.info }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
@@ -441,6 +478,11 @@
             </div>
         </div>
     </div>
+
+    
+
+
+    
 
 
     <!-- user_stats_per_gw -->
