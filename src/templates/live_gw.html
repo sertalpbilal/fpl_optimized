@@ -838,31 +838,31 @@
                         <h5 class="text-black">All Players</h5>
                     </div>
                     <div>
-                        <table class="table table-sm table-striped" id="match_report_all">
+                        <table class="table table-sm table-striped table-responsive" id="match_report_all">
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Team</th>
-                                    <th>Pos</th>
-                                    <th>BV</th>
-                                    <th>Own%</th>
-                                    <th>xP</th>
-                                    <th>xP Net</th>
-                                    <th v-if="selected_game_info.started">rP</th>
-                                    <th v-if="selected_game_info.started">rP Net</th>
+                                    <th class="text-center">Team</th>
+                                    <th class="text-center">Pos</th>
+                                    <th class="text-center">BV</th>
+                                    <th class="text-center">xP</th>
+                                    <th class="text-center">xP Net</th>
+                                    <th class="text-center" v-if="selected_game_info.started" class="highlighted-col">rP</th>
+                                    <th class="text-center" v-if="selected_game_info.started">rP Net</th>
+                                    <th class="text-center">Own%</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.home.concat(selected_game_info.players.away)" v-if="i.xp > 0 || i.rp > 0 || i.ownership > 0">
                                     <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
-                                    <td>{{ i.team }}</td>
-                                    <td>{{ i.data.element_type }}</td>
-                                    <td>{{ i.data.now_cost_str }}</td>
-                                    <td>{{ (i.data.ownership).toFixed(1) }}</td>
-                                    <td>{{ (i.xp).toFixed(2) }}</td>
-                                    <td>{{ getWithSign(i.xp_net) }}</td>
-                                    <td v-if="selected_game_info.started">{{ i.rp }}</td>
-                                    <td v-if="selected_game_info.started">{{ getWithSign(i.rp_net) }}</td>
+                                    <td class="text-center">{{ i.data.team.short }}</td>
+                                    <td class="text-center">{{ element_type[i.data.element_type].short }}</td>
+                                    <td class="text-center">{{ i.data.now_cost_str }}</td>
+                                    <td class="text-center">{{ (i.xp).toFixed(2) }}</td>
+                                    <td class="text-center">{{ getWithSign(i.xp_net) }}</td>
+                                    <td v-if="selected_game_info.started" class="text-center">{{ i.rp }}</td>
+                                    <td v-if="selected_game_info.started" class="text-center">{{ getWithSign(i.rp_net) }}</td>
+                                    <td class="text-center">{{ (i.data.ownership).toFixed(1) }}</td>
                                 </tr>
                             </tbody>
                         </table>

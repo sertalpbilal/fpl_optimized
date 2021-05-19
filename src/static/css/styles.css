@@ -1161,3 +1161,15 @@ tbody tr:last-child td.highlighted-col {
     border: 0px solid black;
 }
 
+#match_report_all tr td:first-child, #match_report_all tr th:first-child {
+    position: sticky;
+    left: 0;
+    /* background-color: #434343; */
+    background-color: white;
+    padding: 0px;
+    z-index: 2;
+}
+
+#match_report_all tr td {
+    padding: 0.2em 0.1em;
+}
