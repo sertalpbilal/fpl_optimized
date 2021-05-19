@@ -290,7 +290,7 @@
 
                     <div class="row justify-content-center">
                         <div class="col-12 col-md-8">
-                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="key_events_ratio_table">
+                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-2 custom-table-responsive" id="key_events_ratio_table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Target</th>
@@ -310,6 +310,36 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="all_picks_per_stat">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center text-muted">Fixture</th>
+                                        <th class="text-center">Player</th>
+                                        <th class="text-center">Position</th>
+                                        <th class="text-center">Stat</th>
+                                        <th class="text-center">Return</th>
+                                        <th class="text-center">Success</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <template v-for="(v, key) in user_picks_custom_stats" v-if="v.hasOwnProperty('values')">
+                                        <tr class="owned-row" v-for="p in v.values">
+                                            <td class="text-center">{{ p.gw }}</td>
+                                            <td class="text-center text-muted">{{ p.fixture }}</td>
+                                            <td class="text-center">{{ p.name }}</td>
+                                            <td class="text-center">{{ element_type[p.eltype].short }}</td>
+                                            <td class="text-center">{{ key }}</td>
+                                            <td class="text-center">{{ p.returns }}</td>
+                                            <td class="text-center">{{ p.success ? "True" : "False"}}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row col-8 col-md-6 justify-content-center" id="csv_buttons3">
                         </div>
                     </div>
                 </div>
