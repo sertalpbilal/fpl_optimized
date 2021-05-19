@@ -1991,7 +1991,8 @@ $(document).ready(function() {
                     [5, 'desc']
                 ],
                 "lengthChange": false,
-                "pageLength": window.screen.width <= 768 ? 5 : 15
+                fixedColumn: true,
+                "pageLength": window.screen.width <= 768 ? 10 : 15
             });
         });
     });
