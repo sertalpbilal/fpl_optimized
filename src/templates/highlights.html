@@ -21,6 +21,7 @@
                     </div>
                     <div class="row no-gutters justify-content-center mt-2" v-if="!ready">
                         <div class="col-md-3 col-8">
+                            <span class="text-muted text-xs">Loading the data can take a few seconds.</span>
                             <div class="progress">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: completed/gw*100 + '%' }" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
