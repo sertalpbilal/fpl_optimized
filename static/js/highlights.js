@@ -8,7 +8,8 @@ var app = new Vue({
         el_data: [],
         ready: false,
         top_players_table: undefined,
-        gw_table: undefined
+        gw_table: undefined,
+        all_picks_table: undefined
     },
     computed: {
         is_ready() {
@@ -158,24 +159,41 @@ var app = new Vue({
         },
         user_picks_custom_stats() {
             let picked_stats = app.user_picks_detailed
-            let clean_sheets = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'clean_sheets').length
-            let defense_picks = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'minutes').length
+            let clean_sheets = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
+            let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype<=2 && i.identifier == 'minutes' && i.multiplier > 0))
+            for (let p of defense_picks) {
+                let match = clean_sheets.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
+                else {p.success = false; p.returns = 0}
+            }
+            let cs_stat = {'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF'}
 
-            let cs_stat = {'count': clean_sheets, 'total': defense_picks, 'values': undefined, 'info': 'Rate of CS gains out of all GK and DF'}
+            let goal_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored' && i.multiplier > 0)
+            let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes' && i.multiplier > 0))
+            for (let p of attack_picks) {
+                let match = goal_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
+                else {p.success = false; p.returns = 0}
+            }
+            let goal_stat = {'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW'}
 
-            let goal_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored').length
-            let attack_picks = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes').length
-            let all_goal_points = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored').map(i => i.points)
-            let goal_stat = {'count': goal_count, 'total': attack_picks, 'values': all_goal_points, 'info': 'Rate of goal returns out of all MD and FW'}
+            let assists_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists' && i.multiplier > 0)
+            let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes' && i.multiplier > 0))
+            for (let p of assist_attack_picks) {
+                let match = assists_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
+                else {p.success = false; p.returns = 0}
+            }
+            let assist_stat = {'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW'}
 
-            let assists_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists').length
-            let all_assist_points = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists').map(i => i.points)
-            let assist_stat = {'count': assists_count, 'total': attack_picks, all_assist_points, 'info': 'Rate of assist returns out of all MD and FW'}
-
-            let bonus_count = picked_stats.filter(i => i.identifier == 'bonus').length
-            let all_count = picked_stats.filter(i => i.identifier == 'minutes').length
-            let all_bonus_points = picked_stats.filter(i => i.identifier == 'bonus').map(i => i.points)
-            let bonus_stat = {'count': bonus_count, 'total': all_count, 'values': all_bonus_points, 'info': 'Rate of bonus returns out of all players'}
+            let bonus_count = picked_stats.filter(i => i.identifier == 'bonus' && i.multiplier > 0)
+            let all_count = _.cloneDeep(picked_stats.filter(i => i.identifier == 'minutes' && i.multiplier > 0))
+            for (let p of all_count) {
+                let match = bonus_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
+                else {p.success = false; p.returns = 0}
+            }
+            let bonus_stat = {'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players'}
 
             let captain_pts = picked_stats.filter(i => i.multiplier>1)
             let captain_game_pts = {}
@@ -183,10 +201,14 @@ var app = new Vue({
                 if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0}
                 captain_game_pts[c.fixture] += c.total_points
             })
-            let non_blank_captain = Object.values(captain_game_pts).filter(i => i>7).length
-            let captain_count = picked_stats.filter(i => i.multiplier>1 && i.identifier=='minutes').length
-            let all_cap_points = Object.values(captain_game_pts)
-            let captain_stat = {'count': non_blank_captain, 'total': captain_count, 'values': all_cap_points, 'info': 'Rate of non-blanking (7+ pts) captain returns'}
+            let non_blank_captain = Object.values(captain_game_pts).filter(i => i>7)
+            let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier>1 && i.identifier=='minutes'))
+            for (let p of captain_count) {
+                let match = ( captain_game_pts[p.fixture] || 0)
+                if (match >= 7) { p.success = true;}
+                p.returns = match
+            }
+            let captain_stat = {'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns'}
 
             return {'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat}
         },
@@ -295,6 +317,8 @@ var app = new Vue({
             this.top_players_table = undefined
             $("#gw_points_table").DataTable().destroy()
             this.gw_table = undefined
+            $("#all_picks_per_stat").DataTable().destroy()
+            this.all_picks_table = undefined
 
             this.team_data = {}
             let cache = {};
@@ -369,8 +393,23 @@ var app = new Vue({
                 //     'copy', 'csv'
                 // ]
             })
-            // this.gw_table.buttons().container()
-            //     .appendTo('#csv_buttons2');
+
+            this.all_picks_table = $("#all_picks_per_stat").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                // scrollY: '450px',
+                // sScrollX: "100%",
+                buttons: [
+                    'copy', 'csv'
+                ]
+            })
+            this.all_picks_table.buttons().container()
+                .appendTo('#csv_buttons3');
+
         }
     }
 })
