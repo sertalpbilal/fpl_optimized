@@ -1988,7 +1988,7 @@ $(document).ready(function() {
         app.$nextTick(() => {
             $("#match_report_all").DataTable({
                 "order": [
-                    [5, 'desc']
+                    [4, 'desc']
                 ],
                 "lengthChange": false,
                 fixedColumn: true,
