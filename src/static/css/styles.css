@@ -1155,3 +1155,9 @@ th.highlighted-col {
 tbody tr:last-child td.highlighted-col {
     border-bottom: 3px solid #ff9500;
 }
+
+#all_picks_per_stat_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
+

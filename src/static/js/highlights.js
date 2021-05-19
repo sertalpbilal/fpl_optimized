@@ -397,13 +397,12 @@ var app = new Vue({
             this.all_picks_table = $("#all_picks_per_stat").DataTable({
                 "lengthChange": false,
                 "order": [],
-                // "pageLength": 38,
                 "info": true,
-                "paging": false,
+                "paging": true,
+                "pageLength": 15,
                 "searching": true,
-                // fixedHeader: true,
-                scrollY: '450px',
-                // fixedColumns: true,
+                // scrollY: '450px',
+                // sScrollX: "100%",
                 buttons: [
                     'copy', 'csv'
                 ]
