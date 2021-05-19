@@ -785,11 +785,20 @@ $(document).ready(() => {
         get_points(),
         fetch_main_data()
     ]).then((values) => {
+        Vue.$cookies.config('120d')
         app.$nextTick(() => {
             console.log('READY!')
+            let cached_team = Vue.$cookies.get('team_id')
+            if (cached_team !== null) {
+                app.team_id = cached_team;
+                app.$nextTick(() => {
+                    app.fetch_team_picks()
+                })
+            }
         })
     })
     .catch((error) => {
         console.error("An error has occured: " + error);
     });
 })
+
