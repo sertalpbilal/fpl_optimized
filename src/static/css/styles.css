@@ -1142,3 +1142,16 @@ div.dataTables_scrollBody {
     background: none !important;
 }
 
+.highlighted-col {
+    border-left: 3px solid #ff9500;
+    border-right: 3px solid #ff9500;
+}
+
+th.highlighted-col {
+    border-top: 3px solid #ff9500;
+}
+
+
+tbody tr:last-child td.highlighted-col {
+    border-bottom: 3px solid #ff9500;
+}
