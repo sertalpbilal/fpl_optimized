@@ -423,10 +423,11 @@ var app = new Vue({
                                     .search( val ? '^'+val+'$' : '', true, false )
                                     .draw();
                             } );
-         
-                        column.data().unique().sort().each( function ( d, j ) {
+
+                        column.data().unique().sort((a,b) => parseInt(a) ? parseInt(a)-parseInt(b) : (a>b ? 1 : -1)).each( function ( d, j ) {
                             select.append( '<option value="'+d+'">'+d+'</option>' )
                         } );
+
                     } );
                 }
             })
