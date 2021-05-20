@@ -7,13 +7,14 @@ var app = new Vue({
         team_data: {},
         el_data: [],
         ready: false,
+        loading: false,
         top_players_table: undefined,
         gw_table: undefined,
         all_picks_table: undefined
     },
     computed: {
         is_ready() {
-            return (! _.isEmpty(this.team_data)) && (! _.isEmpty(this.points_data))
+            return this.ready && (! _.isEmpty(this.team_data)) && (! _.isEmpty(this.points_data))
         },
         completed() {
             return _.size(this.team_data)
@@ -47,7 +48,7 @@ var app = new Vue({
             return Object.fromEntries(this.el_data.map(i => [i.id, i]))
         },
         user_player_stats() {
-            if (!this.ready) { return []}
+            if (!this.is_ready) { return []}
             let gw_pid_pts = this.gw_pid_pts
             let fpl_data = this.fpl_element
             let picks = Object.entries(this.team_data).map(i => i[1].picks.map(j => ({'gw': i[0], ...j}))).flat()
@@ -58,7 +59,7 @@ var app = new Vue({
             return picks
         },
         user_player_sum() {
-            if (!this.ready) { return []}
+            if (!this.is_ready) { return []}
             let picks = this.user_player_stats
             let grouped_pick_data = _(picks).groupBy('element').value()
             let grouped_all_stats = {}
@@ -77,7 +78,7 @@ var app = new Vue({
             return sorted_data
         },
         user_toty() {
-            if (!this.ready) { return []}
+            if (!this.is_ready) { return []}
             let player_sum_data = this.user_player_sum
             let selected_players = []
             let lineup_count = {1: 0, 2: 0, 3: 0, 4: 0}
@@ -235,7 +236,7 @@ var app = new Vue({
             return gw_data
         },
         user_stats_per_gw() {
-            if (!this.ready) { return [] }
+            if (!this.is_ready) { return [] }
             let stats = this.stats_per_gw
             // let picks = this.team_data.map(i => i.picks)
             let user_picks = this.user_player_stats
@@ -312,6 +313,7 @@ var app = new Vue({
     },
     methods: {
         fetch_team_picks() {
+            this.loading = true
             this.ready = false
             $("#top_players_table").DataTable().destroy()
             this.top_players_table = undefined
@@ -340,6 +342,7 @@ var app = new Vue({
                 setTimeout(() => {
                     app.$nextTick(() => {
                         app.ready = true
+                        app.loading = false
                         app.$nextTick(() => {
                             app.refresh_table()
                             app.draw_top_5()
@@ -405,7 +408,27 @@ var app = new Vue({
                 // sScrollX: "100%",
                 buttons: [
                     'copy', 'csv'
-                ]
+                ],
+                initComplete: function () {
+                    this.api().columns().every( function () {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo( $(column.footer()).empty() )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+         
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+         
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );
+                }
             })
             this.all_picks_table.buttons().container()
                 .appendTo('#csv_buttons3');
@@ -449,7 +472,7 @@ function get_names(gw, key) {
 
 function draw_player_bar_chart(div_id, id) {
 
-    if (!app.ready) { return }
+    if (!app.is_ready) { return }
 
     const raw_width = 500;
     const raw_height = 120;
@@ -622,7 +645,7 @@ function draw_player_bar_chart(div_id, id) {
 
 function draw_type_heatmap() {
 
-    if (!app.ready) { return }
+    if (!app.is_ready) { return }
 
     const raw_width = 500;
     const raw_height = 400;
