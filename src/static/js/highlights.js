@@ -14,7 +14,7 @@ var app = new Vue({
     },
     computed: {
         is_ready() {
-            return this.ready && (! _.isEmpty(this.team_data)) && (! _.isEmpty(this.points_data))
+            return this.ready && (!_.isEmpty(this.team_data)) && (!_.isEmpty(this.points_data))
         },
         completed() {
             return _.size(this.team_data)
@@ -27,39 +27,39 @@ var app = new Vue({
             let st_data = this.stats_2d
             let pt_data = st_data.map((e) => {
                 let pts = e[2].map(f => f.stats.map(s => s.points)).flat()
-                let tot_pts = pts.reduce((a,b) => a+b, 0)
-                return {'gw': e[0], 'id': e[1], 'pts': tot_pts}
+                let tot_pts = pts.reduce((a, b) => a + b, 0)
+                return { 'gw': e[0], 'id': e[1], 'pts': tot_pts }
             })
             return pt_data
         },
         gw_pid_pts() {
             let pts_data = this.points_2d
             let gw_grouped = _.groupBy(pts_data, 'gw')
-            Object.keys(gw_grouped).map((key, index) => { gw_grouped[key] = Object.fromEntries( gw_grouped[key].map(i => [i.id, i.pts] ))})
+            Object.keys(gw_grouped).map((key, index) => { gw_grouped[key] = Object.fromEntries(gw_grouped[key].map(i => [i.id, i.pts])) })
             return gw_grouped
         },
         pid_gw_pts() {
             let pts_data = this.points_2d
             let id_grouped = _.groupBy(pts_data, 'id')
-            Object.keys(id_grouped).map((key, index) => { id_grouped[key] = Object.fromEntries( id_grouped[key].map(i => [i.gw, i.pts] ))})
+            Object.keys(id_grouped).map((key, index) => { id_grouped[key] = Object.fromEntries(id_grouped[key].map(i => [i.gw, i.pts])) })
             return id_grouped
         },
         fpl_element() {
             return Object.fromEntries(this.el_data.map(i => [i.id, i]))
         },
         user_player_stats() {
-            if (!this.is_ready) { return []}
+            if (!this.is_ready) { return [] }
             let gw_pid_pts = this.gw_pid_pts
             let fpl_data = this.fpl_element
-            let picks = Object.entries(this.team_data).map(i => i[1].picks.map(j => ({'gw': i[0], ...j}))).flat()
+            let picks = Object.entries(this.team_data).map(i => i[1].picks.map(j => ({ 'gw': i[0], ...j }))).flat()
             picks.forEach((p) => {
-                p['points'] = ((gw_pid_pts[p.gw] || {})[p.element] || 0 )
+                p['points'] = ((gw_pid_pts[p.gw] || {})[p.element] || 0)
                 p['raw'] = fpl_data[p.element]
             })
             return picks
         },
         user_player_sum() {
-            if (!this.is_ready) { return []}
+            if (!this.is_ready) { return [] }
             let picks = this.user_player_stats
             let grouped_pick_data = _(picks).groupBy('element').value()
             let grouped_all_stats = {}
@@ -68,7 +68,7 @@ var app = new Vue({
                 e['id'] = key
                 e['squad_count'] = grouped_pick_data[key].length
                 e['lineup_count'] = grouped_pick_data[key].filter(i => i.multiplier > 0).length
-                e['points_total'] = grouped_pick_data[key].map(i => (i.points || 0)*i.multiplier).reduce((a,b) => a+b,0)
+                e['points_total'] = grouped_pick_data[key].map(i => (i.points || 0) * i.multiplier).reduce((a, b) => a + b, 0)
                 e['cap_count'] = grouped_pick_data[key].filter(i => i.multiplier > 1).length
                 e['position'] = grouped_pick_data[key][0].raw.element_type
                 e['name'] = grouped_pick_data[key][0].raw.web_name
@@ -78,21 +78,21 @@ var app = new Vue({
             return sorted_data
         },
         user_toty() {
-            if (!this.is_ready) { return []}
+            if (!this.is_ready) { return [] }
             let player_sum_data = this.user_player_sum
             let selected_players = []
-            let lineup_count = {1: 0, 2: 0, 3: 0, 4: 0}
-            let squad_count = {1: 0, 2: 0, 3: 0, 4: 0}
+            let lineup_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
+            let squad_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
             let selected_index = {}
 
             // Initial append for minimum valid formation
-            for (let pos=1; pos<5; pos++) {
+            for (let pos = 1; pos < 5; pos++) {
                 let min_target = element_type[pos].min
-                while(lineup_count[pos] < min_target) {
-                    for (let i=0; i<player_sum_data.length; i++) {
+                while (lineup_count[pos] < min_target) {
+                    for (let i = 0; i < player_sum_data.length; i++) {
                         let p = player_sum_data[i]
                         if (p.position != pos) { continue }
-                        selected_players.push({'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count']})
+                        selected_players.push({ 'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'] })
                         lineup_count[pos] += 1
                         squad_count[pos] += 1
                         selected_index[p.id] = true
@@ -102,17 +102,16 @@ var app = new Vue({
                 }
             }
 
-            for (let i=0; i<player_sum_data.length; i++) {
+            for (let i = 0; i < player_sum_data.length; i++) {
                 let p = player_sum_data[i]
                 let pos = p['position']
                 if (selected_index[p.id]) { continue }
                 if (lineup_count[pos] < element_type[pos].max && getSum(Object.values(lineup_count)) < 11) {
-                    selected_players.push({'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos==1})
+                    selected_players.push({ 'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos == 1 })
                     lineup_count[pos] += 1
                     squad_count[pos] += 1
-                }
-                else if (squad_count[pos] < element_type[pos].cnt) {
-                    selected_players.push({'player': p, 'lineup': false, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos==1})
+                } else if (squad_count[pos] < element_type[pos].cnt) {
+                    selected_players.push({ 'player': p, 'lineup': false, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos == 1 })
                     squad_count[pos] += 1
                 }
                 if (getSum(Object.values(squad_count)) == 15) {
@@ -139,14 +138,14 @@ var app = new Vue({
         },
         stats_per_gw_detailed() {
             let stats = this.stats_2d
-            let all_data = stats.map(i => i[2].map(j => j.stats.map(k => ({'gw': i[0], 'id': i[1], 'fixture': j.fixture, ...k})))).flat().flat()
+            let all_data = stats.map(i => i[2].map(j => j.stats.map(k => ({ 'gw': i[0], 'id': i[1], 'fixture': j.fixture, ...k })))).flat().flat()
             return all_data
         },
         user_picks_detailed() {
             let team_data = this.team_data
             let fpl_data = this.fpl_element
             let stat_detailed = this.stats_per_gw_detailed
-            let all_team_picks = Object.keys(team_data).map(i => team_data[i].picks.map(j => ({'gw': i, ...j}))).flat()
+            let all_team_picks = Object.keys(team_data).map(i => team_data[i].picks.map(j => ({ 'gw': i, ...j }))).flat()
             let pick_mult_map = all_team_picks.map(i => [i.gw + ',' + i.element, i.multiplier])
             let pick_mult = Object.fromEntries(pick_mult_map)
             let picked_stats = stat_detailed.filter(i => (i.gw + "," + i.id) in pick_mult)
@@ -160,58 +159,62 @@ var app = new Vue({
         },
         user_picks_custom_stats() {
             let picked_stats = app.user_picks_detailed
-            let clean_sheets = picked_stats.filter(i => i.eltype<=2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
-            let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype<=2 && i.identifier == 'minutes' && i.multiplier > 0))
+            let clean_sheets = picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
+            let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'minutes' && i.multiplier > 0))
             for (let p of defense_picks) {
                 let match = clean_sheets.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
-                else {p.success = false; p.returns = 0}
+                if (match.length != 0) { p.success = true;
+                    p.returns = match[0].total_points } else { p.success = false;
+                    p.returns = 0 }
             }
-            let cs_stat = {'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF'}
+            let cs_stat = { 'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF' }
 
-            let goal_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'goals_scored' && i.multiplier > 0)
-            let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes' && i.multiplier > 0))
+            let goal_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'goals_scored' && i.multiplier > 0)
+            let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
             for (let p of attack_picks) {
                 let match = goal_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
-                else {p.success = false; p.returns = 0}
+                if (match.length != 0) { p.success = true;
+                    p.returns = match[0].total_points } else { p.success = false;
+                    p.returns = 0 }
             }
-            let goal_stat = {'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW'}
+            let goal_stat = { 'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW' }
 
-            let assists_count = picked_stats.filter(i => i.eltype>=3 && i.identifier == 'assists' && i.multiplier > 0)
-            let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype>=3 && i.identifier == 'minutes' && i.multiplier > 0))
+            let assists_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'assists' && i.multiplier > 0)
+            let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
             for (let p of assist_attack_picks) {
                 let match = assists_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
-                else {p.success = false; p.returns = 0}
+                if (match.length != 0) { p.success = true;
+                    p.returns = match[0].total_points } else { p.success = false;
+                    p.returns = 0 }
             }
-            let assist_stat = {'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW'}
+            let assist_stat = { 'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW' }
 
             let bonus_count = picked_stats.filter(i => i.identifier == 'bonus' && i.multiplier > 0)
             let all_count = _.cloneDeep(picked_stats.filter(i => i.identifier == 'minutes' && i.multiplier > 0))
             for (let p of all_count) {
                 let match = bonus_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true; p.returns = match[0].total_points}
-                else {p.success = false; p.returns = 0}
+                if (match.length != 0) { p.success = true;
+                    p.returns = match[0].total_points } else { p.success = false;
+                    p.returns = 0 }
             }
-            let bonus_stat = {'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players'}
+            let bonus_stat = { 'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players' }
 
-            let captain_pts = picked_stats.filter(i => i.multiplier>1)
+            let captain_pts = picked_stats.filter(i => i.multiplier > 1)
             let captain_game_pts = {}
             captain_pts.forEach((c) => {
-                if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0}
+                if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0 }
                 captain_game_pts[c.fixture] += c.total_points
             })
-            let non_blank_captain = Object.values(captain_game_pts).filter(i => i>7)
-            let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier>1 && i.identifier=='minutes'))
+            let non_blank_captain = Object.values(captain_game_pts).filter(i => i > 7)
+            let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier > 1 && i.identifier == 'minutes'))
             for (let p of captain_count) {
-                let match = ( captain_game_pts[p.fixture] || 0)
-                if (match >= 7) { p.success = true;}
+                let match = (captain_game_pts[p.fixture] || 0)
+                if (match >= 7) { p.success = true; }
                 p.returns = match
             }
-            let captain_stat = {'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns'}
+            let captain_stat = { 'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns' }
 
-            return {'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat}
+            return { 'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat }
         },
         stats_per_gw() {
             let stats = this.stats_2d
@@ -220,10 +223,10 @@ var app = new Vue({
             stats.forEach((e) => {
                 let f = e[2].map(i => i.stats).flat()
                 let summarized = _(f).groupBy('identifier').map(
-                    (arr,key) => ({
+                    (arr, key) => ({
                         'key': key,
-                        'value': arr.map(i => i.value).reduce((a,b) => a+b, 0),
-                        'points': arr.map(i => i.points).reduce((a,b) => a+b,0)
+                        'value': arr.map(i => i.value).reduce((a, b) => a + b, 0),
+                        'points': arr.map(i => i.points).reduce((a, b) => a + b, 0)
                     })).value()
                 for (let st of summarized) {
                     gw_data.push({
@@ -238,9 +241,9 @@ var app = new Vue({
         user_stats_per_gw() {
             if (!this.is_ready) { return [] }
             let stats = this.stats_per_gw
-            // let picks = this.team_data.map(i => i.picks)
+                // let picks = this.team_data.map(i => i.picks)
             let user_picks = this.user_player_stats
-            user_picks = user_picks.map(i=> ({'gw': i.gw, 'id': i.element, 'multiplier': i.multiplier})).filter(i => i.multiplier > 0)
+            user_picks = user_picks.map(i => ({ 'gw': i.gw, 'id': i.element, 'multiplier': i.multiplier })).filter(i => i.multiplier > 0)
             let stat_types = Object.keys(player_stat_types)
 
             let picked_stats = []
@@ -248,18 +251,18 @@ var app = new Vue({
                 for (let pick of user_picks) {
                     let m = stats.find(i => i.key == st && i.gw == pick.gw && i.id == pick.id)
                     if (m != undefined) {
-                        picked_stats.push({...m, 'multiplier': pick.multiplier, 'total_points': pick.multiplier * m.points})
+                        picked_stats.push({...m, 'multiplier': pick.multiplier, 'total_points': pick.multiplier * m.points })
                     }
                 }
             }
 
             let total_non_bench = user_picks.filter(i => i.multiplier > 0)
 
-            let gw_grouped = Object.fromEntries(_(picked_stats).groupBy('gw').map((i,k) => [k, _.groupBy(i, 'key')]).value())
+            let gw_grouped = Object.fromEntries(_(picked_stats).groupBy('gw').map((i, k) => [k, _.groupBy(i, 'key')]).value())
 
             let type_grouped = _(picked_stats).groupBy('key').value()
 
-            let pt_data = Object.entries(app.team_data).map(i => ({ 'gw': i[0], 'net_pts': i[1].entry_history.points - i[1].entry_history.event_transfers_cost, 'pts': i[1].entry_history.points, 'hit_pts': i[1].entry_history.event_transfers_cost}))
+            let pt_data = Object.entries(app.team_data).map(i => ({ 'gw': i[0], 'net_pts': i[1].entry_history.points - i[1].entry_history.event_transfers_cost, 'pts': i[1].entry_history.points, 'hit_pts': i[1].entry_history.event_transfers_cost }))
 
             let overall_total = getSum(pt_data.map(i => i.net_pts))
 
@@ -274,24 +277,40 @@ var app = new Vue({
         },
         user_player_gws() {
             let team = this.team_data
-            let all_picks = Object.entries(team).map(i => i[1].picks.map(j => ({'gw': i[0], 'id': j.element, 'multiplier': j.multiplier}))).flat()
+            let all_picks = Object.entries(team).map(i => i[1].picks.map(j => ({ 'gw': i[0], 'id': j.element, 'multiplier': j.multiplier }))).flat()
             return all_picks
         },
         user_points_by_eltype() {
             let stats = this.user_player_stats;
-            let values = stats.map(i => ({'id': i.element,  'eltype': i.raw.element_type, 'cost': i.raw.now_cost, 'total_points': (i.points || 0) * i.multiplier}))
-            // values = _(values).groupBy('eltype').value()
+            let values = stats.map(i => ({ 'id': i.element, 'eltype': i.raw.element_type, 'cost': i.raw.now_cost, 'total_points': (i.points || 0) * i.multiplier }))
+                // values = _(values).groupBy('eltype').value()
             let price_categories = {
-                1: [[50, 'Budget'], [55, 'Mid-Price'], [150, 'Premium']],
-                2: [[50, 'Budget'], [60, 'Mid-Price'], [150, 'Premium']],
-                3: [[75, 'Budget'], [100, 'Mid-Price'], [150, 'Premium']],
-                4: [[75, 'Budget'], [100, 'Mid-Price'], [150, 'Premium']]
+                1: [
+                    [50, 'Budget'],
+                    [55, 'Mid-Price'],
+                    [150, 'Premium']
+                ],
+                2: [
+                    [50, 'Budget'],
+                    [60, 'Mid-Price'],
+                    [150, 'Premium']
+                ],
+                3: [
+                    [75, 'Budget'],
+                    [100, 'Mid-Price'],
+                    [150, 'Premium']
+                ],
+                4: [
+                    [75, 'Budget'],
+                    [100, 'Mid-Price'],
+                    [150, 'Premium']
+                ]
             }
             let grouped_vals = {
-                1: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
-                2: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
-                3: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0},
-                4: {'Budget': 0, 'Mid-Price': 0, 'Premium': 0}
+                1: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
+                2: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
+                3: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
+                4: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 }
             }
             values.forEach((v) => {
                 let type = v.eltype
@@ -326,16 +345,17 @@ var app = new Vue({
             let cache = {};
             let gw = 1;
             let calls = []
-            for(gw=1; gw<39; gw++) {
+            for (gw = 1; gw < 39; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
                 let call = get_team_picks({
-                    gw: current_gw,
-                    team_id: app.team_id,
-                    force_last_gw: false})
-                .then((response) => {
-                    app.$set(app.team_data, current_gw, response.body)
-                })
+                        gw: current_gw,
+                        team_id: app.team_id,
+                        force_last_gw: false
+                    })
+                    .then((response) => {
+                        app.$set(app.team_data, current_gw, response.body)
+                    })
                 calls.push(call)
             }
             Promise.allSettled(calls).then(() => {
@@ -347,6 +367,7 @@ var app = new Vue({
                             app.refresh_table()
                             app.draw_top_5()
                             app.draw_pos_heatmap()
+                            app.draw_radar_svg()
                         })
                     })
                 }, 500)
@@ -366,8 +387,11 @@ var app = new Vue({
         draw_pos_heatmap() {
             draw_type_heatmap()
         },
+        draw_radar_svg() {
+            draw_radar_map()
+        },
         refresh_table() {
-            
+
             this.top_players_table = $("#top_players_table").DataTable({
                 "lengthChange": false,
                 "order": [],
@@ -391,10 +415,10 @@ var app = new Vue({
                 "searching": false,
                 // fixedHeader: true,
                 scrollY: '450px'
-                // fixedColumns: true,
-                // buttons: [
-                //     'copy', 'csv'
-                // ]
+                    // fixedColumns: true,
+                    // buttons: [
+                    //     'copy', 'csv'
+                    // ]
             })
 
             this.all_picks_table = $("#all_picks_per_stat").DataTable({
@@ -409,26 +433,26 @@ var app = new Vue({
                 buttons: [
                     'copy', 'csv'
                 ],
-                initComplete: function () {
-                    this.api().columns().every( function () {
+                initComplete: function() {
+                    this.api().columns().every(function() {
                         var column = this;
                         var select = $('<select class="w-100"><option value=""></option></select>')
-                            .appendTo( $(column.footer()).empty() )
-                            .on( 'change', function () {
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
                                 var val = $.fn.dataTable.util.escapeRegex(
                                     $(this).val()
                                 );
-         
+
                                 column
-                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .search(val ? '^' + val + '$' : '', true, false)
                                     .draw();
-                            } );
+                            });
 
-                        column.data().unique().sort((a,b) => parseInt(a) ? parseInt(a)-parseInt(b) : (a>b ? 1 : -1)).each( function ( d, j ) {
-                            select.append( '<option value="'+d+'">'+d+'</option>' )
-                        } );
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
 
-                    } );
+                    });
                 }
             })
             this.all_picks_table.buttons().container()
@@ -465,7 +489,7 @@ function get_stat(gw, key) {
 }
 
 function get_names(gw, key) {
-    let st = get_stat(gw,key)
+    let st = get_stat(gw, key)
     return st.map(ev => app.fpl_element[ev.id].web_name + (ev.value > 1 ? ` (${ev.value})` : '')).join(', ')
 }
 
@@ -479,14 +503,14 @@ function draw_player_bar_chart(div_id, id) {
     const raw_height = 120;
 
     const margin = { top: 20, right: 20, bottom: 25, left: 20 },
-    width = raw_width - margin.left - margin.right,
-    height = raw_height - margin.top - margin.bottom;
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
 
     let raw_data = app.pid_gw_pts[id] || []
     let pts_data = Object.entries(raw_data); // app.pid_gw_pts[player_id]
     let min_y = Math.min(0, Math.min(...pts_data.map(i => i[1])))
-    let max_y = Math.max( Math.max(...pts_data.map(i => i[1])) + 4, 6)
-    let max_x = Math.max( Math.max(...pts_data.map(i => i[0])), parseInt(gw) )
+    let max_y = Math.max(Math.max(...pts_data.map(i => i[1])) + 4, 6)
+    let max_x = Math.max(Math.max(...pts_data.map(i => i[0])), parseInt(gw))
 
     let team_pick_gws = app.user_player_gws
     let user_gws = team_pick_gws.filter(i => i.id == id)
@@ -498,38 +522,38 @@ function draw_player_bar_chart(div_id, id) {
 
     const svg = d3.select(div_id)
         // .append("svg")
-        .insert("svg",":first-child")
+        .insert("svg", ":first-child")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
         .attr('class', 'pull-center').style('display', 'block')
         .style('margin-bottom', '10px')
         .attr("id", `player-svg-${id}`)
         .append('g')
         .attr("transform",
-             "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + margin.left + "," + margin.top + ")");
 
     let x = d3.scaleBand()
-        .range([ 0, width ])
-        .domain(_.range(1, max_x+1))
+        .range([0, width])
+        .domain(_.range(1, max_x + 1))
         .padding(0.2);
     svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x).tickSize(0));
     let x2 = d3.scaleBand()
-        .range([ 0, width ])
-        .domain(_.range(1, max_x+1))
+        .range([0, width])
+        .domain(_.range(1, max_x + 1))
         .padding(0);
 
 
     let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
     svg.append('g').call(d3.axisRight(y).tickSize(width).tickValues(d3.range(min_y, max_y, 4)))
-            .call(g => g.selectAll(".tick line")
+        .call(g => g.selectAll(".tick line")
             .attr("stroke-opacity", 0.2)
             .attr("stroke", "#9a9a9a")
-            )
-            .call(g => g.selectAll(".tick text")
-                .attr("x", -10)
-                .attr("font-size", "5pt")
-                .attr("fill", "#9a9a9a")
-                .attr("text-anchor", "end"))
-            
+        )
+        .call(g => g.selectAll(".tick text")
+            .attr("x", -10)
+            .attr("font-size", "5pt")
+            .attr("fill", "#9a9a9a")
+            .attr("text-anchor", "end"))
+
     svg.call(g => g.selectAll(".domain")
         .attr("opacity", 0))
 
@@ -556,7 +580,7 @@ function draw_player_bar_chart(div_id, id) {
         .attr("width", d => x2.bandwidth())
         .attr("height", d => height - y(max_y))
         .attr("class", "lineup_bar")
-    
+
     svg.selectAll()
         .data(bench_gws)
         .enter()
@@ -568,13 +592,13 @@ function draw_player_bar_chart(div_id, id) {
         .attr("class", "bench_bar")
 
     svg.selectAll()
-    .data(pts_data)
-    .enter()
-    .append("rect")
+        .data(pts_data)
+        .enter()
+        .append("rect")
         .attr("x", (d) => x(d[0]))
         .attr("y", (d) => d[1] > 0 ? y(d[1]) : y(0))
         .attr("width", x.bandwidth())
-        .attr("height", (d) => d[1] > 0 ?  y(0) - y(d[1]) : y(d[1]) - y(0))
+        .attr("height", (d) => d[1] > 0 ? y(0) - y(d[1]) : y(d[1]) - y(0))
         .attr("class", "player_point_bar")
 
     svg.selectAll()
@@ -624,10 +648,10 @@ function draw_player_bar_chart(div_id, id) {
     }
 
     svg.append("rect")
-        .attr("x", width-20 )
+        .attr("x", width - 20)
         .attr("y", -20)
         .attr("width", 20)
-        .attr("height", 20 )
+        .attr("height", 20)
         .attr("fill", "#00000050")
         .attr("class", "close_box")
         .on("click", mouseclick)
@@ -635,7 +659,7 @@ function draw_player_bar_chart(div_id, id) {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("x", width-10 )
+        .attr("x", width - 10)
         .attr("y", -10)
         .attr("font-size", "6pt")
         .attr("fill", "white")
@@ -652,8 +676,8 @@ function draw_type_heatmap() {
     const raw_height = 400;
 
     const margin = { top: 20, right: 10, bottom: 5, left: 50 },
-    width = raw_width - margin.left - margin.right,
-    height = raw_height - margin.top - margin.bottom;
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
 
     let data = app.user_points_by_eltype
     let xvals = ["GK", "DF", "MD", "FW", "Total"]
@@ -663,22 +687,22 @@ function draw_type_heatmap() {
 
     const svg = d3.select("#type_heatmap")
         // .append("svg")
-        .insert("svg",":first-child")
+        .insert("svg", ":first-child")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
         .attr('class', 'pull-center').style('display', 'block')
         .style('margin-bottom', '10px')
         .append('g')
         .attr("transform",
-             "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + margin.left + "," + margin.top + ")");
 
     let x = d3.scaleBand()
-        .range([ 0, width ])
+        .range([0, width])
         .domain(xvals)
         .padding(0.05);
     svg.append('g').call(d3.axisTop(x).tickSize(0)).select(".domain").remove();
 
     let y = d3.scaleBand()
-        .range([ 0, height ])
+        .range([0, height])
         .domain(yvals)
         .padding(0.05);
     svg.append('g').call(d3.axisLeft(y).tickSize(0)).select(".domain").remove();
@@ -691,7 +715,7 @@ function draw_type_heatmap() {
 
     var myColor = (d) => {
         let p = d3.interpolateRgb("#ffffff", "#6fcfd6")
-        return p(d/valmax)
+        return p(d / valmax)
     }
 
     svg.selectAll()
@@ -702,9 +726,9 @@ function draw_type_heatmap() {
         .attr("y", function(d) { return y(d[1]) })
         .attr("rx", 4)
         .attr("ry", 4)
-        .attr("width", x.bandwidth() )
-        .attr("height", y.bandwidth() )
-        .style("fill", function(d) { return myColor(d[2])} )
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function(d) { return myColor(d[2]) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 1)
@@ -715,20 +739,20 @@ function draw_type_heatmap() {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
-        .attr("y", (d) => y(d[1]) + y.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
+        .attr("y", (d) => y(d[1]) + y.bandwidth() / 2)
         .attr("dy", 0)
         .attr("font-size", "12pt");
 
     text.append("tspan")
         .text((d) => d[2])
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
         .attr('dy', 0);
     text.append("tspan")
         // .attr('x', 0)
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
         .attr('dy', 12)
-        .text((d) => (100*d[2]/total).toFixed(0) + "%")
+        .text((d) => (100 * d[2] / total).toFixed(0) + "%")
         .attr("font-size", "6pt");
 
     // Plot title
@@ -739,7 +763,7 @@ function draw_type_heatmap() {
     //     .attr("font-size", "6pt")
     //     .text("Total points per price category and position");
 
-    let pos_totals = _(data).groupBy(0).map((i,v) => [v, _.sumBy(i, 2)]).value();
+    let pos_totals = _(data).groupBy(0).map((i, v) => [v, _.sumBy(i, 2)]).value();
 
     // Position sum
     let text2 = svg.selectAll()
@@ -748,24 +772,24 @@ function draw_type_heatmap() {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
-        .attr("y", (d) => y("Total") + y.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
+        .attr("y", (d) => y("Total") + y.bandwidth() / 2)
         .attr("dy", 0)
         .attr("fill", "white")
         .attr("font-size", "12pt");
     text2.append("tspan")
         .text((d) => d[1])
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
         .attr('dy', 0);
     text2.append("tspan")
         // .attr('x', 0)
-        .attr("x", (d) => x(d[0]) + x.bandwidth()/2)
+        .attr("x", (d) => x(d[0]) + x.bandwidth() / 2)
         .attr('dy', 12)
-        .text((d) => (100*d[1]/total).toFixed(1) + "%")
+        .text((d) => (100 * d[1] / total).toFixed(1) + "%")
         .attr("font-size", "6pt");
 
     // Price cat sum
-    let bud_totals = _(data).groupBy(1).map((i,v) => [v, _.sumBy(i, 2)]).value();
+    let bud_totals = _(data).groupBy(1).map((i, v) => [v, _.sumBy(i, 2)]).value();
 
     let text3 = svg.selectAll()
         .data(bud_totals)
@@ -773,27 +797,27 @@ function draw_type_heatmap() {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("x", (d) => x("Total") + x.bandwidth()/2)
-        .attr("y", (d) => y(d[0]) + y.bandwidth()/2)
+        .attr("x", (d) => x("Total") + x.bandwidth() / 2)
+        .attr("y", (d) => y(d[0]) + y.bandwidth() / 2)
         .attr("dy", 0)
         .attr("fill", "white")
         .attr("font-size", "12pt");
     text3.append("tspan")
         .text((d) => d[1])
-        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr("x", (d) => x("Total") + x.bandwidth() / 2)
         .attr('dy', 0);
     text3.append("tspan")
         // .attr('x', 0)
-        .attr("x", (d) => x("Total") + x.bandwidth()/2)
+        .attr("x", (d) => x("Total") + x.bandwidth() / 2)
         .attr('dy', 12)
-        .text((d) => (100*d[1]/total).toFixed(1) + "%")
+        .text((d) => (100 * d[1] / total).toFixed(1) + "%")
         .attr("font-size", "7pt");
 
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
-        .attr("x", (d) => x("Total") + x.bandwidth()/2)
-        .attr("y", (d) => y("Total") + y.bandwidth()/2)
+        .attr("x", (d) => x("Total") + x.bandwidth() / 2)
+        .attr("y", (d) => y("Total") + y.bandwidth() / 2)
         .attr("dy", 0)
         .attr("fill", "white")
         .attr("font-size", "12pt")
@@ -801,28 +825,213 @@ function draw_type_heatmap() {
 
 }
 
+function draw_radar_map() {
+    if (!app.is_ready) { return }
 
+    const raw_width = 600;
+    const raw_height = 400;
+
+    // bottom will be 40 when added new players
+    const margin = { top: 10, right: 30, bottom: 10, left: 30 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+    let margin_common = 40
+
+    let center = { x: width / 2, y: height / 2 }
+
+    const svg = d3.select("#manager_comparison")
+        .insert("svg", ":first-child")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    let raw_data = app.user_picks_custom_stats
+    let data = [Object.entries(app.user_picks_custom_stats).map(i => ({'stat': i[0], 'value': i[1].count / i[1].total*100}))]
+    const names = ["You"]
+
+    const maxvals = { 'Clean Sheet': 45, 'Goal': 35, 'Assist': 25, 'Bonus': 30, 'Captain': 70 }
+    // const names = ["Sertalp", "Fabio"]
+    // const data = [
+    //     [
+    //         { 'stat': 'Clean Sheet', 'value': 39.33 },
+    //         { 'stat': 'Goal', 'value': 27.34 },
+    //         { 'stat': 'Assist', 'value': 20.31 },
+    //         { 'stat': 'Bonus', 'value': 20.74 },
+    //         { 'stat': 'Captain', 'value': 60.47 }
+    //     ],
+    //     [
+    //         { 'stat': 'Clean Sheet', 'value': 40.98 },
+    //         { 'stat': 'Goal', 'value': 33.85 },
+    //         { 'stat': 'Assist', 'value': 21.79 },
+    //         { 'stat': 'Bonus', 'value': 26.59 },
+    //         { 'stat': 'Captain', 'value': 63.64 }
+    //     ]
+    // ]
+
+    data.forEach((d) => { d.forEach((s) => { s.perc = s.value / maxvals[s.stat] }) })
+
+    let axesDomain = data[0].map(i => i.stat)
+
+    let dotRadius = 4
+    let axisCircles = 5
+    let radius = (height - (margin_common * 2)) / 2
+    let axesLength = data[0].length
+    let angleSlice = Math.PI * 2 / axesLength
+    let axisLabelFactor = 1.20
+    let maxValue = 1
+    let rScale = d3.scaleLinear()
+        .domain([0, maxValue])
+        .range([0, radius])
+    let radarLine = d3.lineRadial()
+        .curve(d3['curveLinearClosed'])
+        .radius(d => rScale(d))
+        .angle((_, i) => i * angleSlice)
+    let color = d3.scaleOrdinal()
+        .range(["#EDC951", "#CC333F", "#00A0B0"])
+
+    var axisGrid = svg.append("g")
+        .attr("class", "axisWrapper");
+
+    axisGrid.selectAll(".levels")
+        .data(d3.range(1, (axisCircles + 1)).reverse())
+        .enter()
+        .append("circle")
+        .attr("class", "gridCircle")
+        .attr("cx", width / 2)
+        .attr("cy", height / 2)
+        .attr("r", (d, i) => radius / axisCircles * d)
+        .style("fill", "#CDCDCD")
+        .style("stroke", "#CDCDCD")
+        .style("fill-opacity", 0.1);
+
+    
+    const axis = axisGrid.selectAll(".axis")
+        .data(axesDomain)
+        .enter()
+        .append("g")
+        .attr("class", "axis");
+
+    axis.append("line")
+        .attr("x1", center.x)
+        .attr("y1", center.y)
+        .attr("x2", (d, i) => rScale(maxValue * 1.1) * Math.cos(angleSlice * i - Math.PI / 2) + center.x)
+        .attr("y2", (d, i) => rScale(maxValue * 1.1) * Math.sin(angleSlice * i - Math.PI / 2) + center.y)
+        .attr("class", "line")
+        .style("stroke", "#474747")
+        .style("stroke-width", "2px");
+
+    axis.append("text")
+        .attr("class", "legend")
+        .style("font-size", "10px")
+        .attr("text-anchor", "middle")
+        .attr("font-family", "sans-serif")
+        .attr("fill", "white")
+        .attr("dy", "0.35em")
+        .attr("x", (d, i) => rScale(maxValue * axisLabelFactor) * Math.cos(angleSlice * i - Math.PI / 2) + center.x)
+        .attr("y", (d, i) => rScale(maxValue * axisLabelFactor) * Math.sin(angleSlice * i - Math.PI / 2) + center.y)
+        .text(d => d);
+
+    axis.selectAll()
+        // .data((d) => ({...d, 'c': d3.range(1, (axisCircles + 1)).reverse()}))
+        // .enter()
+        .data((d,j) => d3.range(1, axisCircles + 1).map(i => ({i, 'd': d, 'j': j})))
+        .enter()
+        .append("text")
+        .attr("x", (d) => rScale(maxValue * d.i/axisCircles) * Math.cos(angleSlice * d.j - Math.PI / 2) + center.x)
+        .attr("text-anchor", "start")
+        .attr("y", (d) => rScale(maxValue * d.i/axisCircles) * Math.sin(angleSlice * d.j - Math.PI / 2) + center.y)
+        .attr("alignment-baseline", "middle")
+        .attr("fill", "white")
+        .attr("font-size", "8px")
+        // .attr("class", "white-shadow")
+        .text((d, i) => d.i/axisCircles*maxvals[d.d] + "%")
+
+
+    const plots = svg.append('g')
+        .selectAll('g')
+        .data(data)
+        .join('g')
+        .attr("data-name", (d, i) => names[i])
+        .attr("fill", "none")
+        .attr("stroke", "steelblue");
+
+    plots.append('path')
+        .attr("d", d => radarLine(d.map(v => v.perc)))
+        .attr("fill", (d, i) => color(i))
+        .attr("fill-opacity", 0.1)
+        .attr("stroke", (d, i) => color(i))
+        .attr("stroke-width", 2)
+        .attr("transform", "translate(" + center.x + "," + center.y + ")");
+
+    plots.selectAll("circle")
+        .data((d, j) => d.map(i => ({...i, 'order': j })))
+        .join("circle")
+        .attr("r", dotRadius)
+        .attr("cx", (d, i) => rScale(d.perc) * Math.cos(angleSlice * i - Math.PI / 2) + center.x)
+        .attr("cy", (d, i) => rScale(d.perc) * Math.sin(angleSlice * i - Math.PI / 2) + center.y)
+        .style("fill-opacity", 0.8)
+        .attr("stroke", "none")
+        .attr("fill", (d, i) => color(d.order));
+
+    let legend_y = raw_height - margin.bottom - 10
+
+    let legend = svg.append('g')
+    let props = { 'sep': 130, 'constant': 10, 'text_margin': 25, 'width': 20, 'height': 10 }
+    let initial_x = (width - (data.length * props.sep)) / 2
+
+    // legend
+    //     .append("rect")
+    //     .attr("x", initial_x - 10)
+    //     .attr("y", legend_y - 10)
+    //     .attr("width", data.length * props.sep + 20)
+    //     .attr("height", props.height + 20)
+    //     .attr("fill", "black")
+    //     .attr("opacity", 0.4)
+
+    // legend.selectAll()
+    //     .data(names)
+    //     .enter()
+    //     .append("rect")
+    //     .attr("x", (d, i) => props.sep * i + initial_x)
+    //     .attr("y", legend_y)
+    //     .attr("width", props.width)
+    //     .attr("height", props.height)
+    //     .attr("stroke", "white")
+    //     .attr("fill", (d, i) => color(i))
+
+    // legend.selectAll()
+    //     .data(names)
+    //     .enter().append("text")
+    //     .attr("x", (d, i) => props.sep * i + initial_x + props.text_margin)
+    //     .attr("y", legend_y + props.height / 2)
+    //     .attr("alignment-baseline", "middle")
+    //     .attr("fill", "white")
+    //     .attr("font-size", "10px")
+    //     .attr("class", "white-shadow")
+    //     .text((d, i) => d)
+
+}
 
 
 $(document).ready(() => {
     Promise.all([
-        get_points(),
-        fetch_main_data()
-    ]).then((values) => {
-        Vue.$cookies.config('120d')
-        app.$nextTick(() => {
-            console.log('READY!')
-            let cached_team = Vue.$cookies.get('team_id')
-            if (cached_team !== null) {
-                app.team_id = cached_team;
-                app.$nextTick(() => {
-                    app.fetch_team_picks()
-                })
-            }
+            get_points(),
+            fetch_main_data()
+        ]).then((values) => {
+            Vue.$cookies.config('120d')
+            app.$nextTick(() => {
+                console.log('READY!')
+                let cached_team = Vue.$cookies.get('team_id')
+                if (cached_team !== null) {
+                    app.team_id = cached_team;
+                    app.$nextTick(() => {
+                        app.fetch_team_picks()
+                    })
+                }
+            })
         })
-    })
-    .catch((error) => {
-        console.error("An error has occured: " + error);
-    });
+        .catch((error) => {
+            console.error("An error has occured: " + error);
+        });
 })
-

@@ -1012,6 +1012,10 @@ option:checked {
     text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 2px black, 0px 0px 2px black, 0px 0px 2px black;
 }
 
+.white-shadow {
+    text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 2px white, 0px 0px 2px white, 0px 0px 2px white;
+}
+
 .text-red {
     color: red;
 }
