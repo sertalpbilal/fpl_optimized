@@ -828,8 +828,8 @@ function draw_type_heatmap() {
 function draw_radar_map() {
     if (!app.is_ready) { return }
 
-    const raw_width = 600;
-    const raw_height = 400;
+    const raw_width = 500;
+    const raw_height = 450;
 
     // bottom will be 40 when added new players
     const margin = { top: 10, right: 30, bottom: 10, left: 30 },
@@ -878,7 +878,7 @@ function draw_radar_map() {
     let radius = (height - (margin_common * 2)) / 2
     let axesLength = data[0].length
     let angleSlice = Math.PI * 2 / axesLength
-    let axisLabelFactor = 1.20
+    let axisLabelFactor = 1.15
     let maxValue = 1
     let rScale = d3.scaleLinear()
         .domain([0, maxValue])
@@ -944,7 +944,7 @@ function draw_radar_map() {
         .attr("alignment-baseline", "middle")
         .attr("fill", "white")
         .attr("font-size", "8px")
-        // .attr("class", "white-shadow")
+        .attr("class", "text-with-shadow")
         .text((d, i) => d.i/axisCircles*maxvals[d.d] + "%")
 
 
