@@ -12,14 +12,14 @@
                     <div class="row no-gutters justify-content-center">
                         <div class="col-md-3 col-8">
                             <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id" :disabled="loading">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks">Generate</button>
+                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Generate</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row no-gutters justify-content-center mt-2" v-if="!ready">
+                    <div class="row no-gutters justify-content-center mt-2" v-if="loading" v-cloak>
                         <div class="col-md-3 col-8">
                             <span class="text-muted text-xs">Loading the data can take a few seconds.</span>
                             <div class="progress">
@@ -341,6 +341,17 @@
                                         </tr>
                                     </template>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="text-center text-muted text-xs">GID</th>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Player</th>
+                                        <th class="text-center">Pos</th>
+                                        <th class="text-center">Stat</th>
+                                        <th class="text-center">Pts</th>
+                                        <th class="text-center">Success</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
