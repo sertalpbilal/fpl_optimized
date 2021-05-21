@@ -1324,7 +1324,7 @@ function init_timeline() {
         .attr("alignment-baseline", "hanging")
         .attr("x", d => x(d.node_info.end)-1) // (x(d.node_info.end) + x(d.node_info.start)) / 2)
         .attr("y", d => y(d.order)+1) //y(d.order) + y.bandwidth() / 3)
-        .attr("font-size", Math.round(7 * 1e+9 / (x_high - x_low)) / 16 + "pt")
+        .attr("font-size", Math.max(Math.min(Math.round(7 * 1e+9 / (x_high - x_low)) / 16, 7), 2) + "pt")
         .attr("fill", "white")
         .style('pointer-events', 'none')
         .text((d, i) => (i+1)); //"ID: " + (i + 1));
@@ -1336,9 +1336,10 @@ function init_timeline() {
             .enter()
             .append('text')
             .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
             .attr("x", d => (x(d.node_info.end) + x(d.node_info.start)) / 2)
-            .attr("y", d => y(d.order) + y.bandwidth() * 0.85)
-            .attr("font-size", Math.round(14 * 1e+9 / (x_high - x_low)) / 13 + "pt")
+            .attr("y", d => y(d.order) + y.bandwidth() * 0.65)
+            .attr("font-size", Math.max(Math.min(Math.round(14 * 1e+9 / (x_high - x_low)) / 13, 8), 4) + "pt")
             .attr("fill", "white")
             .style('pointer-events', 'none')
             .text((d) => d.players_owned);
