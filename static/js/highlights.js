@@ -4,13 +4,15 @@ var app = new Vue({
         season: season,
         team_id: '',
         points_data: {},
+        team_info: {},
         team_data: {},
         el_data: [],
         ready: false,
         loading: false,
         top_players_table: undefined,
         gw_table: undefined,
-        all_picks_table: undefined
+        all_picks_table: undefined,
+        rival_info: []
     },
     computed: {
         is_ready() {
@@ -158,63 +160,65 @@ var app = new Vue({
             return picked_stats
         },
         user_picks_custom_stats() {
-            let picked_stats = app.user_picks_detailed
-            let clean_sheets = picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
-            let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'minutes' && i.multiplier > 0))
-            for (let p of defense_picks) {
-                let match = clean_sheets.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true;
-                    p.returns = match[0].total_points } else { p.success = false;
-                    p.returns = 0 }
-            }
-            let cs_stat = { 'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF' }
+            // let picked_stats = this.user_picks_detailed
+            let team_data = this.team_data
+            return get_team_stats_picks(team_data)
+            // let clean_sheets = picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
+            // let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'minutes' && i.multiplier > 0))
+            // for (let p of defense_picks) {
+            //     let match = clean_sheets.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+            //     if (match.length != 0) { p.success = true;
+            //         p.returns = match[0].total_points } else { p.success = false;
+            //         p.returns = 0 }
+            // }
+            // let cs_stat = { 'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF' }
 
-            let goal_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'goals_scored' && i.multiplier > 0)
-            let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
-            for (let p of attack_picks) {
-                let match = goal_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true;
-                    p.returns = match[0].total_points } else { p.success = false;
-                    p.returns = 0 }
-            }
-            let goal_stat = { 'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW' }
+            // let goal_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'goals_scored' && i.multiplier > 0)
+            // let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
+            // for (let p of attack_picks) {
+            //     let match = goal_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+            //     if (match.length != 0) { p.success = true;
+            //         p.returns = match[0].total_points } else { p.success = false;
+            //         p.returns = 0 }
+            // }
+            // let goal_stat = { 'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW' }
 
-            let assists_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'assists' && i.multiplier > 0)
-            let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
-            for (let p of assist_attack_picks) {
-                let match = assists_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true;
-                    p.returns = match[0].total_points } else { p.success = false;
-                    p.returns = 0 }
-            }
-            let assist_stat = { 'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW' }
+            // let assists_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'assists' && i.multiplier > 0)
+            // let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
+            // for (let p of assist_attack_picks) {
+            //     let match = assists_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+            //     if (match.length != 0) { p.success = true;
+            //         p.returns = match[0].total_points } else { p.success = false;
+            //         p.returns = 0 }
+            // }
+            // let assist_stat = { 'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW' }
 
-            let bonus_count = picked_stats.filter(i => i.identifier == 'bonus' && i.multiplier > 0)
-            let all_count = _.cloneDeep(picked_stats.filter(i => i.identifier == 'minutes' && i.multiplier > 0))
-            for (let p of all_count) {
-                let match = bonus_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
-                if (match.length != 0) { p.success = true;
-                    p.returns = match[0].total_points } else { p.success = false;
-                    p.returns = 0 }
-            }
-            let bonus_stat = { 'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players' }
+            // let bonus_count = picked_stats.filter(i => i.identifier == 'bonus' && i.multiplier > 0)
+            // let all_count = _.cloneDeep(picked_stats.filter(i => i.identifier == 'minutes' && i.multiplier > 0))
+            // for (let p of all_count) {
+            //     let match = bonus_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+            //     if (match.length != 0) { p.success = true;
+            //         p.returns = match[0].total_points } else { p.success = false;
+            //         p.returns = 0 }
+            // }
+            // let bonus_stat = { 'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players' }
 
-            let captain_pts = picked_stats.filter(i => i.multiplier > 1)
-            let captain_game_pts = {}
-            captain_pts.forEach((c) => {
-                if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0 }
-                captain_game_pts[c.fixture] += c.total_points
-            })
-            let non_blank_captain = Object.values(captain_game_pts).filter(i => i > 7)
-            let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier > 1 && i.identifier == 'minutes'))
-            for (let p of captain_count) {
-                let match = (captain_game_pts[p.fixture] || 0)
-                if (match >= 7) { p.success = true; }
-                p.returns = match
-            }
-            let captain_stat = { 'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns' }
+            // let captain_pts = picked_stats.filter(i => i.multiplier > 1)
+            // let captain_game_pts = {}
+            // captain_pts.forEach((c) => {
+            //     if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0 }
+            //     captain_game_pts[c.fixture] += c.total_points
+            // })
+            // let non_blank_captain = Object.values(captain_game_pts).filter(i => i > 7)
+            // let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier > 1 && i.identifier == 'minutes'))
+            // for (let p of captain_count) {
+            //     let match = (captain_game_pts[p.fixture] || 0)
+            //     if (match >= 7) { p.success = true; }
+            //     p.returns = match
+            // }
+            // let captain_stat = { 'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns' }
 
-            return { 'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat }
+            // return { 'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat }
         },
         stats_per_gw() {
             let stats = this.stats_2d
@@ -262,7 +266,7 @@ var app = new Vue({
 
             let type_grouped = _(picked_stats).groupBy('key').value()
 
-            let pt_data = Object.entries(app.team_data).map(i => ({ 'gw': i[0], 'net_pts': i[1].entry_history.points - i[1].entry_history.event_transfers_cost, 'pts': i[1].entry_history.points, 'hit_pts': i[1].entry_history.event_transfers_cost }))
+            let pt_data = Object.entries(this.team_data).map(i => ({ 'gw': i[0], 'net_pts': i[1].entry_history.points - i[1].entry_history.event_transfers_cost, 'pts': i[1].entry_history.points, 'hit_pts': i[1].entry_history.event_transfers_cost }))
 
             let overall_total = getSum(pt_data.map(i => i.net_pts))
 
@@ -345,6 +349,12 @@ var app = new Vue({
             let cache = {};
             let gw = 1;
             let calls = []
+
+            let init_call = get_team_info(this.team_id).then((response) => {
+                this.team_info = response
+            })
+            calls.push(init_call)
+
             for (gw = 1; gw < 39; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
@@ -458,6 +468,46 @@ var app = new Vue({
             this.all_picks_table.buttons().container()
                 .appendTo('#csv_buttons3');
 
+        },
+        add_ID_to_compare() {
+            let val = document.getElementById("new_id").value
+
+            document.getElementById("new_id").value = ""
+            
+            let gw = 1;
+            let calls = []
+            responses = {}
+            let opp_info = {}
+
+            let init_call = get_team_info(val).then((response) => {
+                opp_info = response
+            })
+            calls.push(init_call)
+
+            for (gw = 1; gw < 39; gw++) {
+                console.log('Fetching GW', gw);
+                let current_gw = gw;
+                let call = get_team_picks({
+                        gw: current_gw,
+                        team_id: val,
+                        force_last_gw: false
+                    })
+                    .then((response) => {
+                        responses[current_gw] = response.body
+                    })
+                calls.push(call)
+            }
+            Promise.allSettled(calls).then(() => {
+                this.rival_info.push({
+                    'info': opp_info,
+                    'picks': responses
+                })
+                draw_radar_map()
+            });
+        },
+        clear_rivals() {
+            this.rival_info = []
+            draw_radar_map()
         }
     }
 })
@@ -493,6 +543,79 @@ function get_names(gw, key) {
     return st.map(ev => app.fpl_element[ev.id].web_name + (ev.value > 1 ? ` (${ev.value})` : '')).join(', ')
 }
 
+function get_team_stats_picks(picks) {
+
+    let team_data = picks
+    let fpl_data = app.fpl_element
+    let stat_detailed = app.stats_per_gw_detailed
+    let all_team_picks = Object.keys(team_data).map(i => team_data[i].picks.map(j => ({ 'gw': i, ...j }))).flat()
+    let pick_mult_map = all_team_picks.map(i => [i.gw + ',' + i.element, i.multiplier])
+    let pick_mult = Object.fromEntries(pick_mult_map)
+    let picked_stats = stat_detailed.filter(i => (i.gw + "," + i.id) in pick_mult)
+    picked_stats.forEach((p) => {
+        p.multiplier = pick_mult[p.gw + "," + p.id]
+        p.total_points = p.points * p.multiplier
+        p.eltype = fpl_data[p.id].element_type
+        p.name = fpl_data[p.id].web_name
+    })
+
+    let clean_sheets = picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'clean_sheets' && i.multiplier > 0)
+    let defense_picks = _.cloneDeep(picked_stats.filter(i => i.eltype <= 2 && i.identifier == 'minutes' && i.multiplier > 0))
+    for (let p of defense_picks) {
+        let match = clean_sheets.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+        if (match.length != 0) { p.success = true;
+            p.returns = match[0].total_points } else { p.success = false;
+            p.returns = 0 }
+    }
+    let cs_stat = { 'count': clean_sheets.length, 'total': defense_picks.length, 'values': defense_picks, 'info': 'Rate of CS gains out of all GK and DF' }
+
+    let goal_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'goals_scored' && i.multiplier > 0)
+    let attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
+    for (let p of attack_picks) {
+        let match = goal_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+        if (match.length != 0) { p.success = true;
+            p.returns = match[0].total_points } else { p.success = false;
+            p.returns = 0 }
+    }
+    let goal_stat = { 'count': goal_count.length, 'total': attack_picks.length, 'values': attack_picks, 'info': 'Rate of goal returns out of all MD and FW' }
+
+    let assists_count = picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'assists' && i.multiplier > 0)
+    let assist_attack_picks = _.cloneDeep(picked_stats.filter(i => i.eltype >= 3 && i.identifier == 'minutes' && i.multiplier > 0))
+    for (let p of assist_attack_picks) {
+        let match = assists_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+        if (match.length != 0) { p.success = true;
+            p.returns = match[0].total_points } else { p.success = false;
+            p.returns = 0 }
+    }
+    let assist_stat = { 'count': assists_count.length, 'total': assist_attack_picks.length, 'values': assist_attack_picks, 'info': 'Rate of assist returns out of all MD and FW' }
+
+    let bonus_count = picked_stats.filter(i => i.identifier == 'bonus' && i.multiplier > 0)
+    let all_count = _.cloneDeep(picked_stats.filter(i => i.identifier == 'minutes' && i.multiplier > 0))
+    for (let p of all_count) {
+        let match = bonus_count.filter(i => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture)
+        if (match.length != 0) { p.success = true;
+            p.returns = match[0].total_points } else { p.success = false;
+            p.returns = 0 }
+    }
+    let bonus_stat = { 'count': bonus_count.length, 'total': all_count.length, 'values': all_count, 'info': 'Rate of bonus returns out of all players' }
+
+    let captain_pts = picked_stats.filter(i => i.multiplier > 1)
+    let captain_game_pts = {}
+    captain_pts.forEach((c) => {
+        if (!(c.fixture in captain_game_pts)) { captain_game_pts[c.fixture] = 0 }
+        captain_game_pts[c.fixture] += c.total_points
+    })
+    let non_blank_captain = Object.values(captain_game_pts).filter(i => i > 7)
+    let captain_count = _.cloneDeep(picked_stats.filter(i => i.multiplier > 1 && i.identifier == 'minutes'))
+    for (let p of captain_count) {
+        let match = (captain_game_pts[p.fixture] || 0)
+        if (match >= 7) { p.success = true; }
+        p.returns = match
+    }
+    let captain_stat = { 'count': non_blank_captain.length, 'total': captain_count.length, 'values': captain_count, 'info': 'Rate of non-blanking (7+ pts) captain returns' }
+
+    return { 'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat }
+}
 
 
 function draw_player_bar_chart(div_id, id) {
@@ -829,15 +952,17 @@ function draw_radar_map() {
     if (!app.is_ready) { return }
 
     const raw_width = 500;
-    const raw_height = 450;
+    const raw_height = 500;
 
     // bottom will be 40 when added new players
-    const margin = { top: 10, right: 30, bottom: 10, left: 30 },
+    const margin = { top: 10, right: 0, bottom: 10, left: 0 },
         width = raw_width - margin.left - margin.right,
         height = raw_height - margin.top - margin.bottom;
-    let margin_common = 40
+    let margin_common = 50
 
-    let center = { x: width / 2, y: height / 2 }
+    let center = { x: raw_width / 2, y: raw_height / 2 }
+
+    document.getElementById("manager_comparison").innerHTML = ""
 
     const svg = d3.select("#manager_comparison")
         .insert("svg", ":first-child")
@@ -848,7 +973,13 @@ function draw_radar_map() {
 
     let raw_data = app.user_picks_custom_stats
     let data = [Object.entries(app.user_picks_custom_stats).map(i => ({'stat': i[0], 'value': i[1].count / i[1].total*100}))]
-    const names = ["You"]
+    const names = [app.team_info.player_first_name + " " + app.team_info.player_last_name]
+
+    for (let r of app.rival_info) {
+        names.push(r.info.player_first_name + " " + r.info.player_last_name)
+        let picks = get_team_stats_picks(r.picks)
+        data.push(Object.entries(picks).map(i => ({'stat': i[0], 'value': i[1].count / i[1].total*100})))
+    }
 
     const maxvals = { 'Clean Sheet': 45, 'Goal': 35, 'Assist': 25, 'Bonus': 30, 'Captain': 70 }
     // const names = ["Sertalp", "Fabio"]
@@ -888,7 +1019,9 @@ function draw_radar_map() {
         .radius(d => rScale(d))
         .angle((_, i) => i * angleSlice)
     let color = d3.scaleOrdinal()
-        .range(["#EDC951", "#CC333F", "#00A0B0"])
+        .range(["#EDC951", "#CC333F", "#00A0B0", "#00B055", "#71356D"])
+
+    // let color = d3.scaleOrdinal(d3.schemeCategory10)
 
     var axisGrid = svg.append("g")
         .attr("class", "axisWrapper");
@@ -898,8 +1031,8 @@ function draw_radar_map() {
         .enter()
         .append("circle")
         .attr("class", "gridCircle")
-        .attr("cx", width / 2)
-        .attr("cy", height / 2)
+        .attr("cx", center.x)
+        .attr("cy", center.y)
         .attr("r", (d, i) => radius / axisCircles * d)
         .style("fill", "#CDCDCD")
         .style("stroke", "#CDCDCD")
@@ -922,8 +1055,8 @@ function draw_radar_map() {
         .style("stroke-width", "2px");
 
     axis.append("text")
-        .attr("class", "legend")
-        .style("font-size", "10px")
+        .attr("class", "legend text-with-shadow")
+        .style("font-size", "12px")
         .attr("text-anchor", "middle")
         .attr("font-family", "sans-serif")
         .attr("fill", "white")
@@ -978,38 +1111,62 @@ function draw_radar_map() {
 
     let legend = svg.append('g')
     let props = { 'sep': 130, 'constant': 10, 'text_margin': 25, 'width': 20, 'height': 10 }
-    let initial_x = (width - (data.length * props.sep)) / 2
+    let initial_x = (raw_width - (data.length * props.sep)) / 2
 
-    // legend
-    //     .append("rect")
-    //     .attr("x", initial_x - 10)
-    //     .attr("y", legend_y - 10)
-    //     .attr("width", data.length * props.sep + 20)
-    //     .attr("height", props.height + 20)
-    //     .attr("fill", "black")
-    //     .attr("opacity", 0.4)
 
-    // legend.selectAll()
-    //     .data(names)
-    //     .enter()
-    //     .append("rect")
-    //     .attr("x", (d, i) => props.sep * i + initial_x)
-    //     .attr("y", legend_y)
-    //     .attr("width", props.width)
-    //     .attr("height", props.height)
-    //     .attr("stroke", "white")
-    //     .attr("fill", (d, i) => color(i))
+    // mouseclick = (d) => {
+    //     console.log(d)
+    // }
 
-    // legend.selectAll()
-    //     .data(names)
-    //     .enter().append("text")
-    //     .attr("x", (d, i) => props.sep * i + initial_x + props.text_margin)
-    //     .attr("y", legend_y + props.height / 2)
+    // svg.append("rect")
+    //     .attr("x", width-50)
+    //     .attr("y", 0)
+    //     .attr("width", 50)
+    //     .attr("height", 30)
+    //     .attr("fill", "#00000050")
+    //     .attr("class", "close_box")
+    //     .on("click", mouseclick)
+
+    // svg.append("text")
+    //     .attr("text-anchor", "middle")
     //     .attr("alignment-baseline", "middle")
+    //     .attr("x", width - 25)
+    //     .attr("y", 15)
+    //     .attr("font-size", "6pt")
     //     .attr("fill", "white")
-    //     .attr("font-size", "10px")
-    //     .attr("class", "white-shadow")
-    //     .text((d, i) => d)
+    //     .attr("class", "close_text")
+    //     .text("Compare")
+
+    legend
+        .append("rect")
+        .attr("x", initial_x - 10)
+        .attr("y", legend_y - 10)
+        .attr("width", data.length * props.sep + 20)
+        .attr("height", props.height + 20)
+        .attr("fill", "black")
+        .attr("opacity", 0.4)
+
+    legend.selectAll()
+        .data(names)
+        .enter()
+        .append("rect")
+        .attr("x", (d, i) => props.sep * i + initial_x)
+        .attr("y", legend_y)
+        .attr("width", props.width)
+        .attr("height", props.height)
+        .attr("stroke", "white")
+        .attr("fill", (d, i) => color(i))
+
+    legend.selectAll()
+        .data(names)
+        .enter().append("text")
+        .attr("x", (d, i) => props.sep * i + initial_x + props.text_margin)
+        .attr("y", legend_y + props.height / 2)
+        .attr("alignment-baseline", "middle")
+        .attr("fill", "white")
+        .attr("font-size", "10px")
+        .attr("class", "white-shadow")
+        .text((d, i) => d)
 
 }
 

@@ -413,10 +413,23 @@
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-8">
-                            <div id="manager_comparison">
+                        <div class="col-12 col-md-8 row justify-content-center">
+                            <div id="manager_comparison" class="col-12">
                                 
                             </div>
+                            <div class="col-12 col-md-8">
+                                <span class="text-small">Enter a team ID to compare</span>
+                                <div class="input-group mb-3">
+                                    <input type="number" class="form-control" placeholder="Team ID" id="new_id">
+                                    <div class="input-group-append">
+                                      <button class="btn btn-secondary" type="button" @click="add_ID_to_compare">Compare</button>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-danger" type="button" @click="clear_rivals">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="row justify-content-center">
