@@ -1177,3 +1177,14 @@ tbody tr:last-child td.highlighted-col {
 #match_report_all tr td {
     padding: 0.2em 0.1em;
 }
+
+.avg-formation {
+    background-color: #a7bfc1;
+    padding: 20px;
+    font-weight: 500;
+    color: #c10000;
+}
+
+#formation_analysis_sum_table tbody tr:first-child {
+    background-color: #b96700;
+}

@@ -373,6 +373,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 mb-2">
+                            <div id="event_heatmap">
+
+                            </div>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -540,6 +547,72 @@
                     </div>
                     <div class="text-xs text-center">
                         Price categories (Budget, Mid-Price, Premieum) are as follows: GK Below 5, 5-5.5, Above 5.5 - DF Below 5, 5-6, Above 6 - MD Below 7.5, 7.5-10, Above 10 - FW Below 7.5, 7.5-10, Above 10
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Formation Analysis</h5>
+                <div class="scenario_detail">
+                    Chosen formations and returns
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-md-8">
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_table" v-if="ready">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Position</th>
+                                        <th class="text-center">Picked (GW)</th>
+                                        <th class="text-center">Games</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Points per pick (GW)</th>
+                                        <th class="text-center">Points per game</th>
+                                        <th class="text-center">Average pick</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="(value, key) in user_formation_analysis_by_eltype" class="owned-row">
+                                        <td class="text-center">{{ element_type[key].name }}</td>
+                                        <td class="text-center">{{ value.picked }}</td>
+                                        <td class="text-center">{{ value.games }}</td>
+                                        <td class="text-center">{{ value.points }}</td>
+                                        <td class="text-center">{{ rounded(value.ppp,2) }}</td>
+                                        <td class="text-center">{{ rounded(value.ppg,2) }}</td>
+                                        <td class="text-center">{{ rounded(value.avg_pick,2) }}</td>
+                                </tbody>
+                            </table>
+                            <div class="text-center avg-formation">Average Formation: 
+                                <span v-for="(value, key) in user_formation_analysis_by_eltype" v-if="key != 1">
+                                    {{ rounded(value.avg_pick,2)  }} <span v-if="key != 4">-</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_sum_table" v-if="ready">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Formation</th>
+                                        <th class="text-center">Picked</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Average Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="value in user_formation_analysis_by_gw.sorted" class="owned-row">
+                                        <td class="text-center">{{ value.formation }}</td>
+                                        <td class="text-center">{{ value.count }}</td>
+                                        <td class="text-center">{{ value.points }}</td>
+                                        <td class="text-center">{{ rounded(value.avg, 2) }}</td>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
