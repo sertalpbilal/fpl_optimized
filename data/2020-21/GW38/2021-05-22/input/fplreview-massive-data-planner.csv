@@ -10,13 +10,13 @@ G,Leno,5.0,5.0,Arsenal,88,3.791
 M,Xhaka,5.2,5.2,Arsenal,68,2.238
 D,Marí,4.4,4.4,Arsenal,24,0.957
 D,Bellerín,5.0,5.0,Arsenal,0,0
-G,Martínez,5.4,5.4,Aston Villa,88,3.098
+G,Martínez,5.3,5.4,Aston Villa,88,3.098
 D,Chambers,4.5,4.5,Arsenal,76,3.485
 D,Kolasinac,4.8,4.8,Arsenal,0,0
 D,Maitland-Niles,4.6,4.6,West Brom,68,1.291
 D,Holding,4.3,4.2,Arsenal,79,3.104
 D,Tierney,5.2,5.2,Arsenal,83,3.853
-M,Pépé,7.7,7.7,Arsenal,63,4.062
+M,Pépé,7.7,7.7,Arsenal,68,4.365
 M,Torreira,4.7,4.7,Arsenal,0,0
 M,Willock,4.9,4.9,Newcastle,79,3.144
 M,Nelson,5.1,5.1,Arsenal,0,0
@@ -44,7 +44,7 @@ D,Targett,5.0,5.0,Aston Villa,86,1.727
 D,Bree,4.5,4.5,Aston Villa,0,0
 M,Nakamba,4.3,4.3,Aston Villa,12,0.352
 M,El Ghazi,5.2,5.2,Aston Villa,67,2.769
-D,Konsa,4.7,4.7,Aston Villa,86,1.614
+D,Konsa,4.6,4.7,Aston Villa,86,1.614
 D,Guilbert,4.3,4.3,Aston Villa,0,0
 F,Wesley,6.0,6.0,Aston Villa,10,0.422
 F,Samatta,5.9,5.9,Aston Villa,0,0
@@ -89,7 +89,7 @@ F,Barnes,6.0,6.0,Burnley,15,0.9
 D,Mee,4.7,4.7,Burnley,87,2.815
 M,Westwood,5.3,5.3,Burnley,85,2.857
 M,Gudmundsson,5.4,5.4,Burnley,44,1.939
-F,Wood,6.5,6.5,Burnley,78,5.257
+F,Wood,6.6,6.5,Burnley,78,5.257
 D,Lowton,4.4,4.4,Burnley,86,2.885
 F,Vydra,4.8,4.8,Burnley,58,3.375
 D,Gibson,3.9,3.9,Burnley,0,0
@@ -162,8 +162,8 @@ D,Kenny,4.3,4.3,Everton,0,0
 M,Gbamin,5.0,5.0,Everton,0,0
 D,Mina,5.5,5.5,Everton,49,0.914
 M,Davies,5.2,5.2,Everton,29,0.897
-F,Calvert-Lewin,7.5,7.5,Everton,82,3.314
-D,Holgate,4.8,4.8,Everton,65,1.168
+F,Calvert-Lewin,7.5,7.5,Everton,83,3.348
+D,Holgate,4.8,4.8,Everton,79,1.401
 F,Richarlison,7.7,7.7,Everton,80,3.055
 G,Virgínia,4.3,4.3,Everton,0,0
 M,Gordon,4.3,4.3,Everton,0,0
@@ -200,8 +200,8 @@ M,Klich,5.2,5.2,Leeds,0,0
 M,Forshaw,4.8,4.8,Leeds,0,0
 D,Dallas,5.5,5.5,Leeds,85,4.234
 D,Alioski,4.4,4.3,Leeds,77,3.715
-F,Bamford,6.6,6.5,Leeds,75,6.57
-M,Harrison,5.6,5.6,Leeds,79,4.485
+F,Bamford,6.6,6.5,Leeds,79,6.89
+M,Harrison,5.6,5.6,Leeds,80,4.536
 M,Phillips,4.9,4.9,Leeds,69,2.628
 M,Costa,5.0,5.0,Leeds,0,0
 M,Roberts,4.6,4.6,Leeds,53,2.619
@@ -211,7 +211,7 @@ M,Poveda-Ocampo,4.2,4.2,Leeds,10,0.541
 M,Shackleton,4.8,4.8,Leeds,3,0.124
 D,Struijk,4.0,4.0,Leeds,63,2.704
 M,Stevens,4.3,4.3,Leeds,0,0
-G,Meslier,4.8,4.8,Leeds,3,0.129
+G,Meslier,4.8,4.8,Leeds,0,0
 D,Davis,3.8,3.8,Leeds,0,0
 D,Casey,3.8,3.8,Leeds,0,0
 D,Morgan,4.4,4.4,Leicester,1,0.034
@@ -231,7 +231,7 @@ M,Pérez,6.0,6.0,Leicester,53,2.63
 M,Gray,5.1,5.1,Leicester,0,0
 M,Maddison,7.2,7.2,Leicester,68,3.683
 D,Chilwell,5.9,5.9,Chelsea,78,4.13
-F,Iheanacho,6.2,6.2,Leicester,78,4.596
+F,Iheanacho,6.2,6.2,Leicester,79,4.648
 M,Choudhury,4.6,4.6,Leicester,4,0.134
 M,Barnes,6.6,6.6,Leicester,0,0
 M,Ndidi,4.8,4.8,Leicester,85,2.65
@@ -252,8 +252,8 @@ D,van Dijk,6.2,6.2,Liverpool,0,0
 M,Mané,11.8,11.8,Liverpool,81,7.531
 G,Alisson,6.0,6.0,Liverpool,88,4.37
 M,Fabinho,5.4,5.4,Liverpool,82,2.932
-M,Salah,12.9,12.5,Liverpool,83,9.101
-D,Robertson,7.2,7.2,Liverpool,84,5.276
+M,Salah,12.9,12.5,Liverpool,82,8.998
+D,Robertson,7.3,7.2,Liverpool,84,5.276
 F,Origi,5.1,5.1,Liverpool,7,0.563
 M,Harry Wilson,5.1,5.1,Liverpool,0,0
 M,Minamino,6.0,6.0,Southampton,18,0.767
@@ -268,13 +268,13 @@ D,Fernandinho,5.4,5.4,Man City,22,1.071
 G,Bravo,4.5,4.5,Man City,0,0
 F,Agüero,10.3,10.3,Man City,54,3.902
 D,Otamendi,4.9,4.9,Man City,0,0
-D,Walker,6.1,6.1,Man City,75,3.466
+D,Walker,6.1,6.1,Man City,76,3.513
 M,Gündogan,5.5,5.5,Man City,41,2.397
 M,De Bruyne,11.8,11.8,Man City,65,4.974
-D,Stones,5.1,5.1,Man City,63,2.934
+D,Stones,5.1,5.1,Man City,66,3.073
 D,Mendy,5.9,5.9,Man City,33,1.575
 M,Mahrez,8.1,8.1,Man City,40,2.768
-M,Sterling,11.0,11.0,Man City,49,3.401
+M,Sterling,10.9,11.0,Man City,49,3.401
 D,Cancelo,5.8,5.8,Man City,0,0
 G,Ederson,6.1,6.1,Man City,89,4.072
 D,Aké,5.4,5.4,Man City,29,1.42
@@ -300,7 +300,7 @@ D,Maguire,5.5,5.5,Man Utd,0,0
 M,Fred,5.3,5.3,Man Utd,59,1.693
 D,Shaw,5.5,5.5,Man Utd,40,1.341
 M,Lingard,6.6,6.4,West Ham,79,4.612
-M,Fernandes,11.4,11.1,Man Utd,42,2.438
+M,Fernandes,11.3,11.0,Man Utd,42,2.438
 F,Martial,8.6,8.6,Man Utd,16,0.752
 M,Pereira,4.8,4.8,Man Utd,0,0
 G,Henderson,5.2,5.2,Man Utd,76,2.848
@@ -313,7 +313,7 @@ M,James,6.2,6.2,Man Utd,35,1.516
 D,Fosu-Mensah,4.3,4.3,Man Utd,0,0
 D,Wan-Bissaka,5.8,5.8,Man Utd,60,1.792
 D,Dalot,4.8,4.8,Man Utd,0,0
-M,Greenwood,7.3,7.3,Man Utd,45,2.282
+M,Greenwood,7.3,7.3,Man Utd,69,3.399
 M,Chong,4.4,4.4,Man Utd,0,0
 M,Garner,4.4,4.4,Man Utd,0,0
 D,Williams,4.2,4.2,Man Utd,7,0.193
@@ -368,7 +368,7 @@ F,Ings,8.4,8.4,Southampton,65,3.414
 D,Stephens,4.6,4.6,Southampton,47,1.093
 M,Armstrong,5.5,5.5,Southampton,72,2.655
 D,Vestergaard,4.7,4.7,Southampton,86,2.041
-M,Ward-Prowse,5.9,5.9,Southampton,85,3.097
+M,Ward-Prowse,5.9,5.9,Southampton,86,3.126
 G,Gunn,4.3,4.3,Southampton,0,0
 M,Boufal,5.4,5.4,Southampton,0,0
 M,Reed,4.4,4.4,Fulham,49,1.64
@@ -386,7 +386,7 @@ D,Rose,4.7,4.7,Spurs,0,0
 M,Sissoko,4.7,4.7,Spurs,6,0.201
 D,Alderweireld,5.4,5.4,Spurs,87,2.071
 M,Lamela,5.7,5.7,Spurs,15,0.624
-F,Kane,11.9,11.7,Spurs,85,4.896
+F,Kane,11.9,11.7,Spurs,84,4.845
 D,Aurier,5.2,5.2,Spurs,63,1.733
 M,Son,9.6,9.3,Spurs,83,3.893
 D,Dier,4.6,4.6,Spurs,87,2.112
@@ -443,7 +443,7 @@ F,Haller,6.1,6.1,West Ham,0,0
 D,Masuaku,4.3,4.3,West Ham,9,0.391
 D,Balbuena,4.1,4.1,West Ham,0,0
 F,Hugill,5.5,5.5,West Ham,0,0
-M,Bowen,5.9,5.9,West Ham,39,2.619
+M,Bowen,5.8,5.9,West Ham,39,2.619
 M,Diangana,5.0,5.0,West Brom,33,1.314
 F,Ajeti,5.5,5.5,West Ham,0,0
 M,Rice,4.7,4.7,West Ham,87,3.209
@@ -466,7 +466,7 @@ M,Dendoncker,4.6,4.6,Wolves,57,2.125
 M,Traoré,6.0,6.0,Wolves,83,3.609
 M,Neves,5.1,5.1,Wolves,70,3.066
 D,Buur,3.9,3.9,Wolves,0,0
-M,Jota,6.9,6.9,Liverpool,11,0.962
+M,Jota,6.9,6.9,Liverpool,14,1.218
 M,Podence,5.3,5.3,Wolves,0,0
 D,Kilman,3.8,3.8,Wolves,12,0.394
 D,Vinagre,4.1,4.1,Wolves,0,0
@@ -498,7 +498,7 @@ D,Cash,5.0,5.0,Aston Villa,0,0
 M,Murphy,4.9,4.9,Newcastle,85,2.788
 D,Castagne,5.8,5.8,Leicester,81,2.994
 D,Kipre,4.3,4.3,West Brom,0,0
-M,Havertz,8.3,8.3,Chelsea,30,2.242
+M,Havertz,8.3,8.3,Chelsea,33,2.46
 M,Ceballos,4.7,4.7,Arsenal,26,1.043
 M,Allan,5.2,5.2,Everton,75,2.046
 G,Walton,4.0,4.0,Brighton,0,0
@@ -554,7 +554,7 @@ M,Palmer,4.4,4.4,Man City,0,0
 M,Shabani,4.4,4.4,Wolves,0,0
 M,Ramsey,4.5,4.5,Aston Villa,27,0.898
 M,Krovinovic,4.9,4.9,West Brom,0,0
-D,Dias,5.9,5.9,Man City,45,2.019
+D,Dias,5.9,5.9,Man City,40,1.795
 M,Lookman,4.7,4.7,Fulham,21,1.332
 D,Coufal,4.8,4.7,West Ham,84,3.631
 D,Nkounkou,4.0,4.0,Everton,0,0
@@ -568,7 +568,7 @@ D,Godfrey,5.1,5.1,Everton,80,1.389
 M,Partey,4.9,4.9,Arsenal,42,1.636
 D,Telles,5.3,5.3,Man Utd,40,1.356
 F,Cavani,8.0,8.0,Man Utd,44,2.261
-M,Raphinha,5.6,5.5,Leeds,83,5.551
+M,Raphinha,5.6,5.5,Leeds,82,5.491
 D,Andersen,4.5,4.5,Fulham,86,3.006
 D,Adarabioyo,4.5,4.5,Fulham,86,2.956
 G,Olsen,4.5,4.5,Everton,1,0.035
@@ -587,7 +587,7 @@ D,Kongolo,4.3,4.3,Fulham,0,0
 G,Butland,4.5,4.5,Crystal Palace,0,0
 M,Benrahma,5.9,5.9,West Ham,68,3.865
 F,Welbeck,5.5,5.5,Brighton,1,0.049
-D,Phillips,4.2,4.2,Liverpool,86,4.45
+D,Phillips,4.2,4.2,Liverpool,83,4.294
 F,N'Lundulu,4.5,4.5,Southampton,0,0
 F,Thompson,4.5,4.5,Burnley,0,0
 F,Richardson,4.5,4.5,Burnley,0,0
@@ -663,7 +663,7 @@ M,Leshabela,4.4,4.4,Leicester,0,0
 G,McGill,3.9,3.9,Brighton,0,0
 D,Karbownik,4.5,4.5,Brighton,4,0.102
 M,Caicedo,5.0,5.0,Brighton,0,0
-F,Maja,5.1,5.1,Fulham,37,2.27
+F,Maja,5.0,5.1,Fulham,37,2.27
 F,Scarlett,4.5,4.5,Spurs,0,0
 F,Gelhardt,4.5,4.5,Leeds,0,0
 M,Coventry,4.5,4.5,West Ham,0,0
