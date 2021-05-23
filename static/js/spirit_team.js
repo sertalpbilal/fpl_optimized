@@ -100,7 +100,7 @@ var app = new Vue({
                 if (team_rank.length > user_rank.length) {
                     team_rank.pop()
                 }
-                let input = _.zip(team_rank, user_rank)
+                let input = _.zip(team_rank, user_rank.slice(0, team_rank.length))
                 r = regression.linear(input)
                 if (r.equation[0] < 0) {
                     r.final_r2 = -r.r2;
