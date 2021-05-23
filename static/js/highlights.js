@@ -22,10 +22,12 @@ var app = new Vue({
             return _.size(this.team_data)
         },
         stats_2d() {
+            if (!this.is_ready) { return [] }
             let structured_data = Object.entries(this.points_data).map(i => i[1].map(j => [i[0], j.id, j.e]))
             return structured_data.flat()
         },
         points_2d() {
+            if (!this.is_ready) { return {} }
             let st_data = this.stats_2d
             let pt_data = st_data.map((e) => {
                 let pts = e[2].map(f => f.stats.map(s => s.points)).flat()
@@ -35,18 +37,21 @@ var app = new Vue({
             return pt_data
         },
         gw_pid_pts() {
+            if (!this.is_ready) { return [] }
             let pts_data = this.points_2d
             let gw_grouped = _.groupBy(pts_data, 'gw')
             Object.keys(gw_grouped).map((key, index) => { gw_grouped[key] = Object.fromEntries(gw_grouped[key].map(i => [i.id, i.pts])) })
             return gw_grouped
         },
         pid_gw_pts() {
+            if (!this.is_ready) { return [] }
             let pts_data = this.points_2d
             let id_grouped = _.groupBy(pts_data, 'id')
             Object.keys(id_grouped).map((key, index) => { id_grouped[key] = Object.fromEntries(id_grouped[key].map(i => [i.gw, i.pts])) })
             return id_grouped
         },
         fpl_element() {
+            if (!this.is_ready) { return [] }
             return Object.fromEntries(this.el_data.map(i => [i.id, i]))
         },
         user_player_stats() {
@@ -139,11 +144,13 @@ var app = new Vue({
             return selected_players
         },
         stats_per_gw_detailed() {
+            if (!this.is_ready) { return [] }
             let stats = this.stats_2d
             let all_data = stats.map(i => i[2].map(j => j.stats.map(k => ({ 'gw': i[0], 'id': i[1], 'fixture': j.fixture, ...k })))).flat().flat()
             return all_data
         },
         user_picks_detailed() {
+            if (!this.is_ready) { return [] }
             let team_data = this.team_data
             let fpl_data = this.fpl_element
             let stat_detailed = this.stats_per_gw_detailed
@@ -160,11 +167,13 @@ var app = new Vue({
             return picked_stats
         },
         user_picks_custom_stats() {
+            if (!this.is_ready) { return [] }
             // let picked_stats = this.user_picks_detailed
             let team_data = this.team_data
             return get_team_stats_picks(team_data)
         },
         stats_per_gw() {
+            if (!this.is_ready) { return [] }
             let stats = this.stats_2d
             let gw_data = []
             gw_data = []
@@ -189,6 +198,7 @@ var app = new Vue({
         user_stats_per_gw() {
             if (!this.is_ready) { return [] }
             let stats = this.stats_per_gw
+            let stat_dict = Object.fromEntries(stats.map(i => [[i.key, i.gw, i.id].join("_"), i]))
                 // let picks = this.team_data.map(i => i.picks)
             let user_picks = this.user_player_stats
             let fpl_data = this.fpl_element
@@ -198,7 +208,8 @@ var app = new Vue({
             let picked_stats = []
             for (let st of stat_types) {
                 for (let pick of user_picks) {
-                    let m = stats.find(i => i.key == st && i.gw == pick.gw && i.id == pick.id)
+                    // let m = stats.find(i => i.key == st && i.gw == pick.gw && i.id == pick.id)
+                    let m = stat_dict[[st, pick.gw, pick.id].join("_")]
                     if (m != undefined) {
                         picked_stats.push({...m, 'multiplier': pick.multiplier, 'total_points': pick.multiplier * m.points, 'eltype': fpl_data[pick.id].element_type })
                     }
@@ -214,6 +225,17 @@ var app = new Vue({
             let pos_grouped = _(picked_stats).groupBy('eltype').value()
 
             let pt_data = Object.entries(this.team_data).map(i => ({ 'gw': i[0], 'net_pts': i[1].entry_history.points - i[1].entry_history.event_transfers_cost, 'pts': i[1].entry_history.points, 'hit_pts': i[1].entry_history.event_transfers_cost }))
+            for (let pgw of pt_data) {
+                let gw = pgw.gw
+                let type_sums = {}
+                let type_names = {}
+                for (let key in gw_grouped[gw]) {
+                    let t = gw_grouped[gw][key]
+                    type_sums[key] = getSum(t.map(i => i.value))
+                    type_names[key] = t.map(ev => this.fpl_element[ev.id].web_name + (ev.value > 1 ? ` (${ev.value})` : '')).join(', ')
+                }
+                pgw.info = {type_sums, type_names}
+            }
 
             let overall_total = getSum(pt_data.map(i => i.net_pts))
 
@@ -228,11 +250,13 @@ var app = new Vue({
             }
         },
         user_player_gws() {
+            if (!this.is_ready) { return [] }
             let team = this.team_data
             let all_picks = Object.entries(team).map(i => i[1].picks.map(j => ({ 'gw': i[0], 'id': j.element, 'multiplier': j.multiplier }))).flat()
             return all_picks
         },
         user_points_by_eltype() {
+            if (!this.is_ready) { return [] }
             let stats = this.user_player_stats;
             let values = stats.map(i => ({ 'id': i.element, 'eltype': i.raw.element_type, 'cost': i.raw.now_cost, 'total_points': (i.points || 0) * i.multiplier }))
                 // values = _(values).groupBy('eltype').value()
@@ -282,6 +306,7 @@ var app = new Vue({
 
         },
         user_formation_analysis_by_eltype() {
+            if (!this.is_ready) { return [] }
             let stats = this.user_picks_detailed
             let gw_count = _.uniq(stats.map(i => i.gw)).length
             stats = stats.filter(i => i.multiplier > 0)
@@ -299,6 +324,7 @@ var app = new Vue({
             return picked
         },
         user_formation_analysis_by_gw() {
+            if (!this.is_ready) { return [] }
             let stats = this.user_picks_detailed
             // let gw_count = _.uniq(stats.map(i => i.gw)).length
             let gameweeks = stats.map(i => i.gw)
@@ -527,15 +553,6 @@ async function fetch_main_data() {
     return get_fpl_main_data().then((data) => {
         app.el_data = data['elements'];
     })
-}
-
-function get_stat(gw, key) {
-    return ((app.user_stats_per_gw.gw_grouped[gw] || {})[key] || [])
-}
-
-function get_names(gw, key) {
-    let st = get_stat(gw, key)
-    return st.map(ev => app.fpl_element[ev.id].web_name + (ev.value > 1 ? ` (${ev.value})` : '')).join(', ')
 }
 
 function get_team_stats_picks(picks) {
