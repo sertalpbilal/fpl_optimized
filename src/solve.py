@@ -12,13 +12,14 @@ import random
 
 
 def solve_all(input_folder, output_folder):
-    solve_no_limit_best_11(input_folder, output_folder)
-    solve_limited_best_squad(input_folder, output_folder)
-    solve_limited_squad_with_bench_weight(input_folder, output_folder)
-    solve_bench_boost_squad(input_folder, output_folder)
-    solve_best_differential_team(input_folder, output_folder)
-    solve_best_set_and_forget(input_folder, output_folder)
+    # solve_no_limit_best_11(input_folder, output_folder)
+    # solve_limited_best_squad(input_folder, output_folder)
+    # solve_limited_squad_with_bench_weight(input_folder, output_folder)
+    # solve_bench_boost_squad(input_folder, output_folder)
+    # solve_best_differential_team(input_folder, output_folder)
+    # solve_best_set_and_forget(input_folder, output_folder)
     # solve_iterative_squads(input_folder, output_folder, 10)
+    pass
 
 
 def solve_no_limit_best_11(input_folder, output_folder):

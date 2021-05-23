@@ -53,7 +53,12 @@ var app = new Vue({
         },
         gameweeks() {
             if (!this.is_all_ready) { return [] }
-            let this_gw = app.main_data.events.find(i => i.is_next).id;
+            let this_gw;
+            try {
+                this_gw = app.main_data.events.find(i => i.is_next).id;
+            } catch {
+                this_gw = 38;
+            }
             let weeks = _.uniq(this.fixture_data.map(i => i.event), true)
             if (weeks[0] == null) {
                 weeks = [...weeks.slice(1), weeks[0]]

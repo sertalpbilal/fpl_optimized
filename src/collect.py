@@ -25,6 +25,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions as EC
 from sys import platform
 from concurrent.futures import ProcessPoolExecutor
+import glob
 
 
 FPL_API = {
@@ -42,10 +43,10 @@ FPL_API = {
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
     input_folder, output_folder, season_folder = create_folders()
-    get_data_fpl_api(input_folder)
-    get_data_fplreview(input_folder)
-    generate_intermediate_layer(input_folder)
-    get_fivethirtyeight_data(input_folder)
+    # get_data_fpl_api(input_folder)
+    # get_data_fplreview(input_folder)
+    # generate_intermediate_layer(input_folder)
+    # get_fivethirtyeight_data(input_folder)
     cache_realized_points_data(season_folder)
     return input_folder, output_folder
 
@@ -57,7 +58,10 @@ def create_folders():
         data = json.loads(url.read().decode())
     vals = read_static()
     season = vals['season']
-    target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
+    try:
+        target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
+    except:
+        target_gw = "GW 38"
     gw_numeric = int(target_gw.split()[1])
     gameweek = "GW" + str(target_gw.split()[1]).strip()
     date = datetime.datetime.now(pytz.timezone('EST')).date().isoformat()
@@ -465,6 +469,12 @@ def cache_realized_points_data(season_folder):
     with open(season_folder / "points.json", "w") as file:
         json.dump(gw_data, file)
     print("Cache file generated")
+
+
+def cache_effective_ownership(season_folder):
+    # glob.glob(season_folder / '*/input')
+    pass
+
 
 # TODO: fbref?
 
