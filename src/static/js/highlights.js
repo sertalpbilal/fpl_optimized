@@ -629,6 +629,17 @@ function get_team_stats_picks(picks) {
     return { 'Clean Sheet': cs_stat, 'Goal': goal_stat, 'Assist': assist_stat, 'Bonus': bonus_stat, 'Captain': captain_stat }
 }
 
+function export_raw_data() {
+    let obj = Object.entries(app.$data).filter(i => !i[0].includes("_table"))
+    downloadToFile(JSON.stringify(obj, undefined, 2), 'myFPLdata.json', 'application/json')
+}
+
+function export_all_data() {
+    let raw_data = Object.entries(app.$data).filter(i => !i[0].includes("_table"))
+    let comp_data = Object.fromEntries(Object.keys(app.$options.computed).map(i => [i, app[i]]))
+    let obj = {...raw_data, ...comp_data}
+    downloadToFile(JSON.stringify(obj, undefined, 2), 'myFPLdata_extended.json', 'application/json')
+}
 
 function draw_player_bar_chart(div_id, id) {
 
@@ -1140,8 +1151,6 @@ function draw_radar_map() {
         .text((d, i) => d)
 
 }
-
-
 
 function draw_event_heatmap() {
 
