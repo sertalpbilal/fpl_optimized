@@ -4,6 +4,7 @@ var app = new Vue({
         season: season,
         team_id: '',
         points_data: {},
+        eo_data: {},
         team_info: {},
         team_data: {},
         el_data: [],
@@ -12,7 +13,9 @@ var app = new Vue({
         top_players_table: undefined,
         gw_table: undefined,
         all_picks_table: undefined,
-        rival_info: []
+        rival_info: [],
+        sample_selection: 0,
+        sample_options: []
     },
     computed: {
         is_ready() {
@@ -352,6 +355,33 @@ var app = new Vue({
             }
             sorted_vals = _.orderBy(sorted_vals, ['count', 'points'], ['desc', 'desc'])
             return {'sorted': sorted_vals, 'summary': summary, 'details': gw_vals}
+        },
+        parsed_eo_data() {
+            let eo_data = this.eo_data
+            let key = this.sample_options[this.sample_selection]
+            let gws = Object.keys(eo_data)
+            let values = Object.keys(eo_data).map(gw => Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])).flat()
+            let values_dict = Object.fromEntries(values.map(i => [i[0] + '_' + i[1], i[2]]))
+            return {gw: gws, raw_values: values, dict: values_dict}
+        },
+        user_ownership_gain_loss() {
+            let gws = this.parsed_eo_data.gw
+            let all_pids = Object.keys(this.fpl_element)
+            // let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'pid': pid}])).flat())
+            let eo_data = _.cloneDeep(this.parsed_eo_data.dict)
+            let user_picks = this.user_player_gws
+            let points = this.gw_pid_pts
+            for (let pick of user_picks) {
+                pick.pts = points[pick.gw][pick.id] || 0
+                pick.total_pts = pick.pts * pick.multiplier
+                pick.eo = eo_data[pick.gw + '_' + pick.id] || 0
+                pick.owned = true
+                pick.net = pick.pts * ((100 * pick.multiplier - pick.eo) /100)
+                // if (pick.multiplier > 0) {
+                //     delete all_pairs[pick.gw + '_' + pick.id]
+                // }
+            }
+            return user_picks
         }
     },
     methods: {
@@ -364,6 +394,7 @@ var app = new Vue({
             this.gw_table = undefined
             $("#all_picks_per_stat").DataTable().destroy()
             this.all_picks_table = undefined
+            $("#gain_table").DataTable().destroy()
 
             this.team_data = {}
             let cache = {};
@@ -489,6 +520,40 @@ var app = new Vue({
             this.all_picks_table.buttons().container()
                 .appendTo('#csv_buttons3');
 
+            $("#gain_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+
+
         },
         add_ID_to_compare() {
             let val = document.getElementById("new_id").value
@@ -541,6 +606,24 @@ async function get_points() {
         dataType: "json",
         success: (data) => {
             app.points_data = data;
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
+async function get_eo() {
+    return $.ajax({
+        type: "GET",
+        url: `data/${season}/eo.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            app.eo_data = data;
+            app.sample_options = Object.keys(data[1])
+            app.sample_selection = Object.keys(data[1]).length - 1
         },
         error: (xhr, status, error) => {
             console.log(error);
@@ -1297,6 +1380,7 @@ function draw_event_heatmap() {
 $(document).ready(() => {
     Promise.all([
             get_points(),
+            get_eo(),
             fetch_main_data()
         ]).then((values) => {
             Vue.$cookies.config('120d')

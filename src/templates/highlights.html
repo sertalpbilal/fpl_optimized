@@ -10,7 +10,7 @@
                 </div>
                 <div class="card-body text-center p-3">
                     <div class="row no-gutters justify-content-center">
-                        <div class="col-md-3 col-8">
+                        <div class="col-lg-4 col-8">
                             <div class="input-group">
                                 <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id" :disabled="loading">
                                 <div class="input-group-append">
@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="row no-gutters justify-content-center mt-2" v-if="loading" v-cloak>
-                        <div class="col-md-3 col-8">
+                        <div class="col-lg-3 col-8">
                             <span class="text-muted text-xs">Loading the data can take a few seconds.</span>
                             <div class="progress">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: completed/gw*100 + '%' }" aria-valuemin="0" aria-valuemax="100"></div>
@@ -41,10 +41,10 @@
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
-                        <div class="col-12 col-md-6" id="top_players_field">
+                        <div class="col-12 col-lg-6" id="top_players_field">
 
                             <div class="lineup gray-bg">
-                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709" style="max-height: 700px">
                                     <svg class="field">
                                         <g class="g_field">
                                             <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
@@ -113,7 +113,7 @@
                             </div>
 
                         </div>
-                        <div class="col-12 col-md-6" id="top_players_list" v-if="ready">
+                        <div class="col-12 col-lg-6" id="top_players_list" v-if="ready">
                             <div class="row justify-content-center">
                                 <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
                                     <thead>
@@ -159,7 +159,7 @@
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
-                        <div class="col-12 col-md-6 mb-2">
+                        <div class="col-12 col-lg-6 mb-2">
                             <span>Point distribution of key events per GW</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="gw_points_table" v-if="ready">
                                 <thead>
@@ -202,7 +202,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             <span>Point distribution per event type</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="type_points_table" v-if="ready">
                                 <thead>
@@ -275,7 +275,7 @@
                 <div class="card-body" v-if="ready" v-cloak>
 
                     <div class="row justify-content-center mb-2">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-lg-8">
                             <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="key_events_ratio_table">
                                 <thead>
                                     <tr>
@@ -299,11 +299,11 @@
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-8 row justify-content-center">
+                        <div class="col-12 col-lg-8 row justify-content-center">
                             <div id="manager_comparison" class="col-12">
                                 
                             </div>
-                            <div class="col-12 col-md-8">
+                            <div class="col-10 col-lg-8">
                                 <span class="text-small">Enter a team ID to compare</span>
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" placeholder="Team ID" id="new_id">
@@ -319,7 +319,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-lg-8">
                             <span>Success and returns out of key stats</span>
                             <table class="col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive p-0" id="all_picks_per_stat">
                                 <thead>
@@ -361,7 +361,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="row col-8 col-md-6 justify-content-center" id="csv_buttons3">
+                        <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons3">
                         </div>
                     </div>
                 </div>
@@ -381,7 +381,7 @@
                         <div class="col-12">
                             <div id="add_chart_button_group" class="justify-content-center row">
 
-                                <div class="col-8 col-md-6 input-group mb-3">
+                                <div class="col-8 col-lg-6 input-group mb-3">
                                     <select class="custom-select" id="new_player_id">
                                         <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{ p.points_total }})</option>
                                     </select>
@@ -409,23 +409,30 @@
         </div>
     </div>
 
-    <!-- <div class="row" id="graph-section-wrapper">
+    <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership Analysis</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Ownership / Differential Analysis</h5>
                 <div class="scenario_detail">
                     Gains and losses from key players
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-lg-4">
+                            <select class="custom-select" id="sample_selection" v-model="sample_selection">
+                                <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mb-3">
                         <div class="col-12">
                             <div id="benefit-candlestick-chart">
-
+                                
                             </div>
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-6">
+                        <!-- <div class="col-12 col-lg-6">
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="ownership_gw_table">
                                 <thead>
                                     <tr>
@@ -441,30 +448,47 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="ownership_gw_table">
+                        </div> -->
+                        <div class="col-8 col-lg-8">
+                            <span>Gain Analysis</span>
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="gain_table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">GW</th>
                                         <th class="text-center">Player</th>
-                                        <th class="text-center">Owned</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Mult</th>
                                         <th class="text-center">EO%</th>
                                         <th class="text-center">Net Effect</th>
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr class="owned-row">
-                                        <td></td>
+                                    <tr class="owned-row" v-for="pair in user_ownership_gain_loss">
+                                        <td class="text-center">{{ pair.gw }}</td>
+                                        <td class="text-center">{{ fpl_element[pair.id].web_name }}</td>
+                                        <td class="text-center">{{ pair.pts }}</td>
+                                        <td class="text-center">{{ pair.multiplier }}</td>
+                                        <td class="text-center">{{ pair.eo }}%</td>
+                                        <td class="text-center">{{ rounded(pair.net,2) }}</td>
                                     </tr>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Player</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Mult</th>
+                                        <th class="text-center">EO%</th>
+                                        <th class="text-center">Net Effect</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
@@ -475,7 +499,7 @@
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-lg-8">
                             <div id="type_heatmap">
                                 
                             </div>
@@ -498,7 +522,7 @@
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center mb-3">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-lg-8">
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_table" v-if="ready">
                                 <thead>
                                     <tr>
@@ -531,7 +555,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-lg-8">
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_sum_table" v-if="ready">
                                 <thead>
                                     <tr>
