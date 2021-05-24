@@ -594,6 +594,12 @@ var app = new Vue({
         clear_rivals() {
             this.rival_info = []
             draw_radar_map()
+        },
+        invalidate_cache() {
+            this.$nextTick(() => {
+                var table = $("#gain_table").DataTable();
+                table.cells("td").invalidate().draw();
+            })
         }
     }
 })
