@@ -5,6 +5,7 @@ import datetime
 import json
 import math
 import os
+import sys
 import pathlib
 import pytz
 import random
@@ -472,8 +473,28 @@ def cache_realized_points_data(season_folder):
 
 
 def cache_effective_ownership(season_folder):
-    # glob.glob(season_folder / '*/input')
-    pass
+    files = glob.glob('build/sample/*/fpl_sampled.json')
+    if sys.platform == 'win32':
+        files = [{'gw': int(i.replace('\\', '/').split('/')[2]), 'file': i} for i in files]
+    files = sorted(files, key=lambda i: i['gw'])
+    season_eo = {}
+    for f in files:
+        with open(f['file'], 'r') as file:
+            data = json.loads(file.read())
+            picks_dict = dict()
+            for key in data.keys():
+                tier_picks = picks_dict[key] = {}
+                for team in data[key]:
+                    for player in team['data']['picks']:
+                        pid = player['element']
+                        tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
+                        tier_picks[pid]['count'] += 1
+                        tier_picks[pid]['multiplier'] += player['multiplier']
+                        tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(data[key]) * 100, 2)
+            season_eo[f['gw']] = picks_dict
+    with open(season_folder / 'eo.json', 'w') as file:
+        json.dump(season_eo, file)
+    return
 
 
 # TODO: fbref?
@@ -494,8 +515,9 @@ if __name__ == "__main__":
 
     # pass
 
-    input_folder, output_folder, season_folder = create_folders()
-    cache_realized_points_data(season_folder)
+    # input_folder, output_folder, season_folder = create_folders()
+    # cache_realized_points_data(season_folder)
+    # cache_effective_ownership(season_folder)
     # print(gw_no)
     # get_fivethirtyeight_data(input_folder)
 
