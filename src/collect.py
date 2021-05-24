@@ -433,6 +433,7 @@ def get_team_season_review(team, debug=False):
             inputfield.send_keys(Keys.ENTER)
             wait.until(EC.presence_of_element_located((By.ID, "points_table")))
 
+    wait.until(EC.text_to_be_present_in_element((By.XPATH, '//tr[5]/td[3]'), '%'))
     score_table = chrome.find_element(By.ID, 'points_table')
     rows = score_table.find_elements_by_tag_name('tr')
     for group in list(zip(range(1,6), ['FPL', 'xG', 'IO', 'MD', 'Luck'])):
