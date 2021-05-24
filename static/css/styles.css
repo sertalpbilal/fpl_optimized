@@ -1193,3 +1193,13 @@ tbody tr:last-child td.highlighted-col {
     padding: 0.25rem 0.4rem;
     border: 0px solid black;
 }
+
+#loss_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
+
+.border-below-orange {
+    border-bottom: 1px solid #b96700;
+    margin-bottom: 3px;
+}

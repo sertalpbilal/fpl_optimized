@@ -340,8 +340,10 @@ var app = new Vue({
                 let cnt = row['counts'] = _.countBy(filtered_picks, 'eltype')
                 row['formation'] = (filtered_picks.length > 11 ? "(BB) " : "") + cnt[2] + '-' + cnt[3] + '-' + cnt[4]
                 row['points'] = getSum(stats.filter(i => i.gw == gw).map(i => i.total_points))
+                row['total'] = filtered_picks.length
             }
             let summary = Object.values(gw_vals)
+            summary = summary.filter(i => i.total >= 11)
             summary = _.groupBy(summary, 'formation')
             let sorted_vals = []
             for (let f in summary) {
@@ -367,9 +369,9 @@ var app = new Vue({
         user_ownership_gain_loss() {
             let gws = this.parsed_eo_data.gw
             let all_pids = Object.keys(this.fpl_element)
-            // let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'pid': pid}])).flat())
+            let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'id': pid}])).flat())
             let eo_data = _.cloneDeep(this.parsed_eo_data.dict)
-            let user_picks = this.user_player_gws
+            let user_picks = this.user_player_gws.filter(i => i.multiplier > 0)
             let points = this.gw_pid_pts
             for (let pick of user_picks) {
                 pick.pts = points[pick.gw][pick.id] || 0
@@ -378,10 +380,19 @@ var app = new Vue({
                 pick.owned = true
                 pick.net = pick.pts * ((100 * pick.multiplier - pick.eo) /100)
                 // if (pick.multiplier > 0) {
-                //     delete all_pairs[pick.gw + '_' + pick.id]
+                delete all_pairs[pick.gw + '_' + pick.id]
                 // }
             }
-            return user_picks
+            all_pairs = Object.values(all_pairs)
+            for (let pair of all_pairs) {
+                pair.pts = points[pair.gw][pair.id] || 0
+                pair.total_pts = pair.pts
+                pair.eo = eo_data[pair.gw + '_' + pair.id] || 0
+                pair.owned = false
+                pair.net = -1 * pair.pts * (pair.eo / 100)
+            }
+            all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
+            return {'gains': user_picks, 'losses': all_pairs}
         }
     },
     methods: {
@@ -395,6 +406,7 @@ var app = new Vue({
             $("#all_picks_per_stat").DataTable().destroy()
             this.all_picks_table = undefined
             $("#gain_table").DataTable().destroy()
+            $("#loss_table").DataTable().destroy()
 
             this.team_data = {}
             let cache = {};
@@ -553,6 +565,39 @@ var app = new Vue({
                 }
             })
 
+            $("#loss_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+
 
         },
         add_ID_to_compare() {
@@ -598,6 +643,8 @@ var app = new Vue({
         invalidate_cache() {
             this.$nextTick(() => {
                 var table = $("#gain_table").DataTable();
+                table.cells("td").invalidate().draw();
+                table = $("#loss_table").DataTable();
                 table.cells("td").invalidate().draw();
             })
         }
