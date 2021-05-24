@@ -419,7 +419,7 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-4">
-                            <select class="custom-select" id="sample_selection" v-model="sample_selection">
+                            <select class="custom-select" id="sample_selection" v-model="sample_selection" @change="invalidate_cache">
                                 <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
                             </select>
                         </div>
