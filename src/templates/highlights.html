@@ -114,33 +114,34 @@
 
                         </div>
                         <div class="col-12 col-lg-6" id="top_players_list" v-if="ready">
-                            <div class="row justify-content-center">
-                                <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-muted">ID</th>
-                                            <th>Name</th>
-                                            <th>Pos</th>
-                                            <th>Lineup</th>
-                                            <th>Bench</th>
-                                            <th>Capt</th>
-                                            <th>Points</th>
-                                            <!-- <th>Eff.Points</th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody v-cloak>
-                                        <tr v-for="p in user_player_sum" class="owned-row">
-                                            <td class="text-muted">{{ p.id }}</td>
-                                            <td>{{ p.name }}</td>
-                                            <td>{{ element_type[p.position].short }}</td>
-                                            <td>{{ p.lineup_count }}</td>
-                                            <td>{{ p.squad_count - p.lineup_count }}</td>
-                                            <td>{{ p.cap_count }}</td>
-                                            <td>{{ p.points_total }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <span class="d-block border-below-orange">All squad players and their point returns</span>
+                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-muted">ID</th>
+                                        <th>Name</th>
+                                        <th>Pos</th>
+                                        <th>Lineup</th>
+                                        <th>Bench</th>
+                                        <th>Capt</th>
+                                        <th>Points</th>
+                                        <!-- <th>Eff.Points</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="p in user_player_sum" class="owned-row">
+                                        <td class="text-muted">{{ p.id }}</td>
+                                        <td>{{ p.name }}</td>
+                                        <td>{{ element_type[p.position].short }}</td>
+                                        <td>{{ p.lineup_count }}</td>
+                                        <td>{{ p.squad_count - p.lineup_count }}</td>
+                                        <td>{{ p.cap_count }}</td>
+                                        <td>{{ p.points_total }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 col-lg-6">
                             <div class="mt-1 d-flex mx-auto justify-content-center" id="csv_buttons">
                             </div>
                         </div>
@@ -160,7 +161,7 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
                         <div class="col-12 col-lg-6 mb-2">
-                            <span>Point distribution of key events per GW</span>
+                            <span class="d-block border-below-orange">Total counts of key events per GW</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="gw_points_table" v-if="ready">
                                 <thead>
                                     <tr>
@@ -203,7 +204,7 @@
                             </table>
                         </div>
                         <div class="col-12 col-lg-6">
-                            <span>Point distribution per event type</span>
+                            <span class="d-block border-below-orange">Point distribution per event type</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="type_points_table" v-if="ready">
                                 <thead>
                                     <tr>
@@ -254,6 +255,7 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 mb-2">
+                            <span class="d-block border-below-orange">Detailed points returns per event type and GW</span>
                             <div id="event_heatmap">
 
                             </div>
@@ -320,7 +322,7 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 col-lg-8">
-                            <span>Success and returns out of key stats</span>
+                            <span class="d-block border-below-orange">Success and returns out of key stats</span>
                             <table class="col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive p-0" id="all_picks_per_stat">
                                 <thead>
                                     <tr>
@@ -419,9 +421,12 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-4">
-                            <select class="custom-select" id="sample_selection" v-model="sample_selection" @change="invalidate_cache">
-                                <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
-                            </select>
+                            <div class="form-group">
+                                <label>Sample tier</label>
+                                <select class="custom-select" id="sample_selection" v-model="sample_selection" @change="invalidate_cache">
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="row justify-content-center mb-3">
@@ -431,26 +436,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row justify-content-center">
-                        <!-- <div class="col-12 col-lg-6">
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="ownership_gw_table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Gain</th>
-                                        <th class="text-center">Loss</th>
-                                        <th class="text-center">Net</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr class="owned-row">
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div> -->
+                    <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
-                            <span>Gain Analysis</span>
+                            <span class="d-block border-below-orange">Gain Analysis</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="gain_table">
                                 <thead>
                                     <tr>
@@ -463,7 +451,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr class="owned-row" v-for="pair in user_ownership_gain_loss">
+                                    <tr class="owned-row" v-for="pair in user_ownership_gain_loss.gains">
                                         <td class="text-center">{{ pair.gw }}</td>
                                         <td class="text-center">{{ fpl_element[pair.id].web_name }}</td>
                                         <td class="text-center">{{ pair.pts }}</td>
@@ -484,7 +472,49 @@
                                 </tfoot>
                             </table>
                         </div>
+                        <div class="col-12 col-lg-8">
+                            <span class="text-smaller">This table shows your lineup picks, their corresponding points per week and your relative gain. Gain is equal to points multiplied with your ownership rate (Multiplier * 100 - EO), which shows you the relative gain compared to field average.</span>
+                        </div>
                     </div>
+
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-lg-8">
+                            <span class="d-block border-below-orange">Loss Analysis (Key Players)</span>
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="loss_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Player</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">EO%</th>
+                                        <th class="text-center">Net Effect</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr class="owned-row" v-for="pair in user_ownership_gain_loss.losses">
+                                        <td class="text-center">{{ pair.gw }}</td>
+                                        <td class="text-center">{{ fpl_element[pair.id].web_name }}</td>
+                                        <td class="text-center">{{ pair.pts }}</td>
+                                        <td class="text-center">{{ pair.eo }}%</td>
+                                        <td class="text-center">{{ rounded(pair.net,2) }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Player</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">EO%</th>
+                                        <th class="text-center">Net Effect</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-12 col-lg-8">
+                            <span class="text-smaller">This table shows players you haven't picked, their corresponding points per week and your relative loss. Loss is equal to points multiplied with effective ownership rate (EO), which shows you the relative loss compared to field average.</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -556,6 +586,7 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 col-lg-8">
+                            <span class="d-block border-below-orange">Performance per formation type (after auto-sub)</span>
                             <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_sum_table" v-if="ready">
                                 <thead>
                                     <tr>
