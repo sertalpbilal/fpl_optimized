@@ -391,8 +391,35 @@ var app = new Vue({
                 pair.owned = false
                 pair.net = -1 * pair.pts * (pair.eo / 100)
             }
+            let combined = all_pairs.concat(user_picks)
+            combined = Object.entries(_.groupBy(combined, 'gw'))
+            for (let gw_entry of combined) {
+                let groups = _.groupBy(gw_entry[1], (entry) => entry.net >0)
+                let loss = getSum(groups.false.map(i => i.net))
+                let gain = getSum(groups.true.map(i => i.net))
+                let top_losses = _.orderBy(groups.false, ['net'], ['asc']).slice(0,3)
+                let top_gains = _.orderBy(groups.true, ['net'], ['desc']).slice(0,3)
+                gw = gw_entry[0]
+                gw_entry[1] = {loss, gain, top_gains, top_losses, gw}
+            }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
-            return {'gains': user_picks, 'losses': all_pairs}
+            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined}
+        },
+        user_candlestick_values() {
+            if (!this.is_ready) { return [] }
+            let values = this.user_ownership_gain_loss.combined_per_gw
+            let flat_vals = values.map(i => i[1]).flat()
+            let current = 0
+            let chart_entries = []
+            for (let e of flat_vals) {
+                let original = current
+                current += e.gain
+                chart_entries.push({...e, 'was': original, 'current': current, 'part': 1})
+                original = current
+                current += e.loss
+                chart_entries.push({...e, 'was': original, 'current': current, 'part': 2})
+            }
+            return chart_entries
         }
     },
     methods: {
@@ -442,6 +469,7 @@ var app = new Vue({
                             app.draw_pos_heatmap()
                             app.draw_radar_svg()
                             draw_event_heatmap()
+                            draw_gain_loss_candlestick()
                         })
                     })
                 }, 500)
@@ -1423,6 +1451,242 @@ function draw_event_heatmap() {
         .attr("font-size", "5pt")
         .attr("fill", "white")
         .text("Total points per event type and GW");
+
+}
+
+function draw_gain_loss_candlestick() {
+
+    if (!app.is_ready) { return }
+
+    let existing = document.getElementById("candlestick-chart-1")
+    if (existing)
+        existing.remove()
+
+    const raw_width = 500;
+    const raw_height = 200;
+
+    const margin = { top: 20, right: 10, bottom: 20, left: 25 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+
+    let data = app.user_candlestick_values
+
+    const raw_svg = d3.select("#benefit-candlestick-chart")
+    .insert("svg", ":first-child")
+    .attr("id", "candlestick-chart-1")
+    .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+    .attr('class', 'pull-center').style('display', 'block')
+    // basic zoom - disabled
+    // .call(d3.zoom().on("zoom", function (event) {
+    //     svg.attr("transform", event.transform)
+    //  }))
+    .style('margin-bottom', '10px')
+
+    raw_svg.append("defs").append("SVG:clipPath")
+        .attr("id", "clip")
+        .append("SVG:rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
+    
+    let svg = raw_svg.append('g')
+        .attr("class", "mainbg")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("rect")
+        .attr("id","rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr("clip-path", "url(#clip)")
+
+    let chart_body = svg.append('g')
+        .attr('clip-path', 'url(#clip)')
+
+    let xvals = _.range(1, 39)
+    let x = d3.scaleBand()
+        .range([0, width])
+        .domain(xvals)
+        .padding(0);
+    svg.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'x-axis')
+        .call(d3.axisBottom(x).tickSize(0));
+
+    let val_sum = [...data.map(i => i.was), ...data.map(i => i.current)]
+    let max_y = Math.max(...val_sum) + 5
+    let min_y = Math.min(...val_sum) - 5
+
+    let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
+    svg.append('g').attr('class', 'y-axis').call(d3.axisRight(y).tickSize(width)
+                        //.tickValues(d3.range(min_y, max_y, 4))
+    )
+    .call(g => g.selectAll(".tick line")
+        .attr("stroke-opacity", 0.2)
+        .attr("stroke", "#9a9a9a")
+    )
+    .call(g => g.selectAll(".tick text")
+        .attr("x", -10)
+        .attr("font-size", "5pt")
+        .attr("fill", "#9a9a9a")
+        .attr("text-anchor", "end"))
+
+    // axis style
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+    svg.call(s => s.selectAll(".tick").attr("font-size", "5pt").attr("fill", "white"))
+    svg.call(s => s.selectAll(".tick text").attr("fill", "white"))
+
+    
+
+    // gw backgrounds
+    chart_body.selectAll()
+        .data(xvals)
+        .enter()
+        .append('rect')
+        .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
+        .attr("height", y(min_y)-y(max_y))
+        .attr("x", (d) => x(d))
+        .attr("y", y(max_y))
+        .attr("class", (d) => d % 2 == 0 ? "gw-bg gw-bg-even" : "gw-bg gw-bg-odd")
+
+
+    // zero line
+    let zero_line = chart_body.append('g')
+        .append('line')
+        .attr('x1', x(0))
+        .attr('y1', y(0))
+        .attr('x2', width)
+        .attr('y2', y(0))
+        .style('stroke', 'white')
+        .style("stroke-opacity", 0.5)
+        .style("stroke-width", 1)
+        .style('pointer-events', 'none');
+
+    
+    // extent = [[margin.left, margin.top], [width - margin.right, height-margin.top]]
+    extent = [[0,0], [width, height]]
+    let zoom = d3.zoom()
+        .scaleExtent([1, 15])
+        .translateExtent(extent)
+        .extent(extent)
+        .on("zoom", zoomin)
+        .on('zoom.end', zoomend);
+
+    let perc_gap = 0.07
+
+    let mouseover = (e,d) => hoverBar(e,d) 
+    let mousemove = (e,d) => hoverBar(e,d)
+    let mouseleave = (e,d) => clearHover(e,d)
+
+    let candles = chart_body.selectAll()
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr("width", (d) => x.bandwidth() * (0.5-2*perc_gap)) //x.bandwidth()/2 * 0.95)
+        .attr("height", (d) => Math.abs(y(d.current) - y(d.was)))
+        .attr("x", (d) => {
+            if (d.part == 1){
+                return x(d.gw) + x.bandwidth() * perc_gap
+            } else {
+                return x(d.gw) + x.bandwidth() * (0.5 + perc_gap)
+            }
+        })
+        .attr("y", (d) => y(Math.max(d.was, d.current)))
+        .attr("class", (d) => d.part == 1 ? "candle candle-gain" : "candle candle-loss")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+        
+    raw_svg.call(zoom)
+
+    function zoomin(event) {
+        x.range([0, width].map(d => event.transform.applyX(d)))
+        svg.selectAll("rect.candle")
+            .attr("x", (d) => {
+                if (d.part == 1){
+                    return x(d.gw) + x.bandwidth() * perc_gap
+                } else {
+                    return x(d.gw) + x.bandwidth() * (0.5 + perc_gap)
+                }
+            })
+            .attr("width", (d) => x.bandwidth() * (0.5-2*perc_gap));
+        svg.selectAll("rect.gw-bg")
+            .attr("x", (d) => x(d))
+            .attr("width", x.bandwidth());
+        svg.selectAll(".x-axis").call(g => g
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x).tickSize(0)
+                .tickFormat((d) => x(d) + x.bandwidth()/2 < 0 ? '' : d)))
+    }
+
+    let resizeTimer;
+
+    function zoomend(event) {
+        var t = event.transform
+        clearTimeout(resizeTimer)
+        resizeTimer = setTimeout(() => {
+            let filtered = data.filter(d => x(d.gw) >= 0 && x(d.gw) <= width - x.bandwidth())
+            let new_yvalues = filtered.map(i => i.was).concat(filtered.map(i => i.current))
+            let new_max = Math.max(...new_yvalues) + 5
+            let new_min = Math.min(...new_yvalues) - 5
+            y.domain([new_min, new_max])
+            candles.transition()
+                .duration(800)
+                .attr("y", (d) => y(Math.max(d.was, d.current)))
+                .attr("height", (d) => Math.abs(y(d.current) - y(d.was)))
+            zero_line.transition().duration(800)
+                .attr('y1', y(0))
+                .attr('y2', y(0))
+
+            svg.selectAll(".y-axis").transition().duration(800).call(g => g
+                .call(d3.axisRight(y).tickSize(width))
+            )
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke-opacity", 0.2)
+                .attr("stroke", "#9a9a9a")
+            )
+            .call(g => g.selectAll(".tick text")
+                .attr("x", -10)
+                .attr("font-size", "5pt")
+                .attr("fill", "#9a9a9a")
+                .attr("text-anchor", "end"))
+        }, 500)
+    }
+
+    function hoverBar(event, d) {
+        let hoverbar = document.getElementById("hover_top_players")
+        let tg = '<span class="gain-blue">Top Gains: ' + d.top_gains.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join(', ') + '</span>'
+        let tl = '<span class="loss-red">Top Losses: ' + d.top_losses.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join(', ') + '</span>'
+        hoverbar.innerHTML = 'GW ' + d.gw + '<br/>' + tg + ' - ' + tl
+    }
+
+    function clearHover(event, d) {
+        let hoverbar = document.getElementById("hover_top_players")
+        hoverbar.innerHTML = ''
+    }
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 20)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Gameweeks");
+
+    // y-title
+    svg.append("text")
+        .attr("text-anchor", "start")
+        .attr("x", -margin.left + 2)
+        .attr("y", -3)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Relative Change");
+
+
 
 }
 
