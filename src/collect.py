@@ -362,7 +362,8 @@ def retry(f):
         while cnt < 4:
             try:
                 return f(*args, **kwargs)
-            except:
+            except Exception as e:
+                print(e)
                 cnt += 1
                 pass
         print("Function failed for 4 times")
@@ -398,8 +399,8 @@ def get_team_season_review(team, debug=False):
         chrome = webdriver.Chrome(executable_path=env['unix_driver'], options=options, desired_capabilities=capa)
     
     print(".", end="", flush=True)
-    wait = WebDriverWait(chrome, 90)
-    chrome.implicitly_wait(90)
+    wait = WebDriverWait(chrome, 120)
+    chrome.implicitly_wait(120)
     chrome.maximize_window()
     chrome.get(r"https://fplreview.com/season-review")
 
@@ -434,19 +435,11 @@ def get_team_season_review(team, debug=False):
 
     score_table = chrome.find_element(By.ID, 'points_table')
     rows = score_table.find_elements_by_tag_name('tr')
-    result_row = rows[1].find_elements_by_tag_name('td')
-    rank_row = rows[2].find_elements_by_tag_name('td')
-    wait.until(EC.text_to_be_present_in_element((By.XPATH, '//tr[2]/td[6]'), '%'))        
-    team_vals['FPL'] = float(result_row[1].text)
-    team_vals['xG'] = float(result_row[2].text)
-    team_vals['IO'] = float(result_row[3].text)
-    team_vals['MD'] = float(result_row[4].text)
-    team_vals['Luck'] = float(result_row[5].text)
-    team_vals['FPL_Rank'] = int(rank_row[1].text.replace(',', ''))
-    team_vals['xG_Rank'] = int(rank_row[2].text.replace(',', ''))
-    team_vals['IO_Rank'] = int(rank_row[3].text.replace(',', ''))
-    team_vals['MD_Rank'] = int(rank_row[4].text.replace(',', ''))
-    team_vals['Luck_Rank'] = rank_row[5].text
+    for group in list(zip(range(1,6), ['FPL', 'xG', 'IO', 'MD', 'Luck'])):
+        print(group[0])
+        row_text = rows[group[0]].text.split()
+        team_vals[group[1]] = float(row_text[-2])
+        team_vals[f'{group[1]}_Rank'] = float(row_text[-1]) if '%' not in row_text[-1] else row_text[-1]
     chrome.close()
     print(f"Done {team['twitter']}")
     return team_vals
@@ -520,5 +513,7 @@ if __name__ == "__main__":
     # cache_effective_ownership(season_folder)
     # print(gw_no)
     # get_fivethirtyeight_data(input_folder)
+
+    get_team_season_review({'twitter': 'x', 'id': 2221044}, True)
 
     pass
