@@ -221,3 +221,32 @@ rect.bench_bar {
 .close_box {
     cursor: pointer;
 }
+
+.candle {
+    opacity: 0.9
+}
+
+.candle:hover {
+    opacity: 1;
+}
+
+.candle-gain {
+    fill: #6fcfd6;
+}
+.candle-loss {
+    fill: #de6363;
+}
+
+.svg-legend-text {
+    font-size: small;
+}
+
+.gw-bg-odd {
+    fill: white;
+    opacity: 0.1;
+}
+
+.gw-bg-even {
+    fill: none;
+    opacity: 0;
+}
