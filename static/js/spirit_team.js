@@ -96,7 +96,7 @@ var app = new Vue({
             let user_rank = this.fpl_all_week_ranks
             let clubs = this.clubs
             let stats = clubs.map((club, index) => {
-                let team_rank = app.team_positions[club].map(i => i.position).slice(1)
+                let team_rank = app.team_positions[club].map(i => i.position) // .slice(1)
                 if (team_rank.length > user_rank.length) {
                     team_rank.pop()
                 }
@@ -149,7 +149,12 @@ var app = new Vue({
             let el = document.querySelector("#teamID_input")
             this.fpl_id = parseInt(el.value)
             fetch_fpl_history()
-        }
+        },
+        submitTeam(e) {
+            if (e.keyCode === 13) {
+                this.enterTeam()
+            }
+        },
     }
 });
 
@@ -215,12 +220,13 @@ async function redraw_graph(match) {
 
     // Second y-axis
     var y2 = d3.scaleLinear().domain([20, 1]).range([height, 0]);
-    svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisRight(y2).ticks(20));
+    svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisRight(y2).ticks(20).tickSize(0));
 
     // axis_functions[graph_id].y = y;
 
     svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
+            .attr("fill", "white")
+            .attr("class", "spirit-ticks"))
         .call(g => g.selectAll(".tick line")
             .attr("stroke-dasharray", "4,2")
             .attr("stroke", "#f1f1f1")
