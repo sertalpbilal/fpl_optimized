@@ -1527,6 +1527,7 @@ function draw_gain_loss_candlestick() {
     .call(g => g.selectAll(".tick line")
         .attr("stroke-opacity", 0.2)
         .attr("stroke", "#9a9a9a")
+        .attr("pointer-events", "none")
     )
     .call(g => g.selectAll(".tick text")
         .attr("x", -10)
@@ -1629,44 +1630,60 @@ function draw_gain_loss_candlestick() {
         var t = event.transform
         clearTimeout(resizeTimer)
         resizeTimer = setTimeout(() => {
-            let filtered = data.filter(d => x(d.gw) >= 0 && x(d.gw) <= width - x.bandwidth())
+            let filtered = data.filter(d => x(d.gw) >= 0 && x(d.gw) <= width)
             let new_yvalues = filtered.map(i => i.was).concat(filtered.map(i => i.current))
             let new_max = Math.max(...new_yvalues) + 5
             let new_min = Math.min(...new_yvalues) - 5
             y.domain([new_min, new_max])
             candles.transition()
-                .duration(800)
+                .duration(400)
                 .attr("y", (d) => y(Math.max(d.was, d.current)))
                 .attr("height", (d) => Math.abs(y(d.current) - y(d.was)))
-            zero_line.transition().duration(800)
+            zero_line.transition().duration(400)
                 .attr('y1', y(0))
                 .attr('y2', y(0))
 
-            svg.selectAll(".y-axis").transition().duration(800).call(g => g
+            svg.selectAll(".y-axis").transition().duration(400).call(g => g
                 .call(d3.axisRight(y).tickSize(width))
             )
             .call(g => g.selectAll(".tick line")
                 .attr("stroke-opacity", 0.2)
                 .attr("stroke", "#9a9a9a")
+                .attr("pointer-events", "none")
             )
             .call(g => g.selectAll(".tick text")
                 .attr("x", -10)
                 .attr("font-size", "5pt")
                 .attr("fill", "#9a9a9a")
                 .attr("text-anchor", "end"))
-        }, 500)
+        }, 300)
     }
 
     function hoverBar(event, d) {
-        let hoverbar = document.getElementById("hover_top_players")
-        let tg = '<span class="gain-blue">Top Gains: ' + d.top_gains.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join(', ') + '</span>'
-        let tl = '<span class="loss-red">Top Losses: ' + d.top_losses.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join(', ') + '</span>'
-        hoverbar.innerHTML = 'GW ' + d.gw + '<br/>' + tg + ' - ' + tl
+        document.getElementById("hover_gw").innerHTML = d.gw
+        document.getElementById("hover_gw_gain").innerHTML = getWithSign(d.gain)
+        document.getElementById("hover_gw_loss").innerHTML = getWithSign(d.loss)
+        let tg = '<span class="gain-blue">' + d.top_gains.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join('<br/>') + '</span>'
+        let tl = '<span class="loss-red">' + d.top_losses.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.net,2) + ')').join('<br/>') + '</span>'
+        document.getElementById("hover_top_gains").innerHTML = tg
+        document.getElementById("hover_top_losses").innerHTML = tl
+        if (d.part == 1) {
+            document.getElementById("hover_gw_gain").parentElement.classList.add("highlighted-div")
+            document.getElementById("hover_top_gains").parentElement.classList.add("highlighted-div")
+        }
+        else if(d.part == 2) {
+            document.getElementById("hover_gw_loss").parentElement.classList.add("highlighted-div")
+            document.getElementById("hover_top_losses").parentElement.classList.add("highlighted-div")
+        }
     }
 
     function clearHover(event, d) {
-        let hoverbar = document.getElementById("hover_top_players")
-        hoverbar.innerHTML = ''
+        // document.getElementById("hover_gw").innerHTML = ''
+        // document.getElementById("hover_gw_gain").innerHTML = ''
+        // document.getElementById("hover_gw_loss").innerHTML = ''
+        // document.getElementById("hover_top_gains").innerHTML = ''
+        // document.getElementById("hover_top_losses").innerHTML = ''
+        document.querySelectorAll(".highlighted-div").forEach((e) => e.classList.remove("highlighted-div"))
     }
 
     svg.append("text")

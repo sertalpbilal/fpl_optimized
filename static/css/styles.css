@@ -1209,5 +1209,9 @@ tbody tr:last-child td.highlighted-col {
 }
 
 .loss-red {
-    color: #de6363;
+    color: #f88a8a; /* de6363 */
+}
+
+.highlighted-div {
+    border: 1px solid #ff9500;
 }
