@@ -1454,6 +1454,8 @@ function draw_event_heatmap() {
 
 }
 
+let refresh_y_axis;
+
 function draw_gain_loss_candlestick() {
 
     if (!app.is_ready) { return }
@@ -1469,7 +1471,14 @@ function draw_gain_loss_candlestick() {
         width = raw_width - margin.left - margin.right,
         height = raw_height - margin.top - margin.bottom;
 
-    let data = app.user_candlestick_values
+    let data = _.cloneDeep(app.user_candlestick_values)
+    data.forEach((e) => { e.net = e.gain + e.loss })
+    let cum_sum = 0
+    data.forEach((e) => {
+        e['before'] = cum_sum
+        e['after'] = cum_sum + e.net
+        if (e.part == 2) {cum_sum += e.net;}
+    })
 
     const raw_svg = d3.select("#benefit-candlestick-chart")
     .insert("svg", ":first-child")
@@ -1598,6 +1607,7 @@ function draw_gain_loss_candlestick() {
         })
         .attr("y", (d) => y(Math.max(d.was, d.current)))
         .attr("class", (d) => d.part == 1 ? "candle candle-gain" : "candle candle-loss")
+        .attr("opacity", 0.9)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
@@ -1630,32 +1640,7 @@ function draw_gain_loss_candlestick() {
         var t = event.transform
         clearTimeout(resizeTimer)
         resizeTimer = setTimeout(() => {
-            let filtered = data.filter(d => x(d.gw) >= 0 && x(d.gw) <= width)
-            let new_yvalues = filtered.map(i => i.was).concat(filtered.map(i => i.current))
-            let new_max = Math.max(...new_yvalues) + 5
-            let new_min = Math.min(...new_yvalues) - 5
-            y.domain([new_min, new_max])
-            candles.transition()
-                .duration(400)
-                .attr("y", (d) => y(Math.max(d.was, d.current)))
-                .attr("height", (d) => Math.abs(y(d.current) - y(d.was)))
-            zero_line.transition().duration(400)
-                .attr('y1', y(0))
-                .attr('y2', y(0))
-
-            svg.selectAll(".y-axis").transition().duration(400).call(g => g
-                .call(d3.axisRight(y).tickSize(width))
-            )
-            .call(g => g.selectAll(".tick line")
-                .attr("stroke-opacity", 0.2)
-                .attr("stroke", "#9a9a9a")
-                .attr("pointer-events", "none")
-            )
-            .call(g => g.selectAll(".tick text")
-                .attr("x", -10)
-                .attr("font-size", "5pt")
-                .attr("fill", "#9a9a9a")
-                .attr("text-anchor", "end"))
+            refresh_y_axis()
         }, 300)
     }
 
@@ -1703,7 +1688,99 @@ function draw_gain_loss_candlestick() {
         .attr("fill", "white")
         .text("Relative Change");
 
+    function set_new_yaxis() {
+        let filtered = data.filter(d => x(d.gw) >= 0 && x(d.gw) <= width);
+        let cumulative = document.getElementById("cumulative_switch").checked
+        let net_ch = document.getElementById("net_switch").checked
+        let new_yvalues, new_max, new_min, y_func, h_func, o_func;
 
+        if (cumulative == true) { // default
+            if (net_ch == false) {
+                new_yvalues = filtered.map(i => i.was).concat(filtered.map(i => i.current))
+                y_func = (d) => y(Math.max(d.was, d.current))
+                h_func = (d) => Math.abs(y(d.current) - y(d.was))
+                o_func = (d) => 1
+            }
+            else {
+                new_yvalues = filtered.map(i => i.before).concat(filtered.map(i => i.after))
+                y_func = (d) => y(Math.max(d.before, d.after))
+                h_func = (d) => Math.abs(y(d.after) - y(d.before))
+                o_func = (d) => ((d.net >= 0 && d.part == 1) || (d.net < 0 && d.part == 2)) ? 0.9 : 0
+            }
+
+            new_max = Math.max(...new_yvalues) + 5
+            new_min = Math.min(...new_yvalues) - 5
+        }
+        else { // individual bars
+            if (net_ch == false){
+                new_yvalues = filtered.map(i => Math.max(i.current-i.was, 0))
+                y_func = (d) => y(Math.abs(d.was-d.current))
+                h_func = (d) => Math.abs(y(d.current) - y(d.was))
+                o_func = (d) => 1
+            }
+            else {
+                new_yvalues = filtered.map(i => i.net)
+                y_func = (d) => y(Math.max(0, d.net))
+                h_func = (d) => Math.abs(y(d.after) - y(d.before))
+                o_func = (d) => ((d.net >= 0 && d.part == 1) || (d.net < 0 && d.part == 2)) ? 0.9 : 0
+            }
+            
+            new_max = Math.max(...new_yvalues) + 5
+            new_min = Math.min(...new_yvalues, 0) - 5
+            
+        }
+
+        y.domain([new_min, new_max])
+        let yt = candles.transition()
+            .duration(400)
+        yt.attr("y", (d) => y_func(d))
+        yt.attr("height", (d) => h_func(d))
+        yt.attr("opacity", (d) => o_func(d))
+        yt.attr("pointer-events", (d) => o_func(d) > 0.5 ? "auto" : "none" )
+
+        svg.selectAll(".y-axis").transition().duration(400).call(g => g
+            .call(d3.axisRight(y).tickSize(width))
+        )
+        .call(g => g.selectAll(".tick line")
+            .attr("stroke-opacity", 0.2)
+            .attr("stroke", "#9a9a9a")
+            .attr("pointer-events", "none")
+        )
+        .call(g => g.selectAll(".tick text")
+            .attr("x", -10)
+            .attr("font-size", "5pt")
+            .attr("fill", "#9a9a9a")
+            .attr("text-anchor", "end"))
+        zero_line.transition().duration(400)
+            .attr('y1', y(0))
+            .attr('y2', y(0))
+
+        return yt
+    }
+
+    function set_x_by_net(yt) {
+        let net_ch = document.getElementById("net_switch").checked
+        if (net_ch == true) {
+            yt
+                .attr("x", (d) => x(d.gw) + x.bandwidth() * perc_gap)
+                .attr("width", x.bandwidth() * (1-2*perc_gap))
+        } else {
+            yt
+                .attr("x", (d) => d.part == 1 ? x(d.gw) + x.bandwidth() * perc_gap : x(d.gw) + x.bandwidth() * (0.5 + perc_gap))
+                .attr("width", x.bandwidth() * (0.5-2*perc_gap))
+        }
+    }
+
+    let c_switch_timer = undefined;
+    refresh_y_axis = () => {
+        clearTimeout(c_switch_timer)
+        c_switch_timer = setTimeout(() => {
+            let yt = set_new_yaxis();
+            set_x_by_net(yt);
+        }, 100);
+    }
+
+    refresh_y_axis()
 
 }
 

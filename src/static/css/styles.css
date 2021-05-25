@@ -1219,3 +1219,9 @@ tbody tr:last-child td.highlighted-col {
 .spirit-ticks {
     font-size: 3pt;
 }
+
+.custom-control-input:checked~.custom-control-label.highlighted-checkbox::before {
+    color: #fff;
+    border-color: white;
+    background-color: #ff9500;
+}

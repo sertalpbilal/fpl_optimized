@@ -439,6 +439,16 @@
                                     <rect x="0" y="0" width="20" height="20" fill="#de6363" opacity="0.9"></rect></g>
                                 </svg> Loss</span>
                             </div>
+                            <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="cumulative_switch" checked @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox" for="cumulative_switch">Cumulative</label>
+                                </div>
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="net_switch" @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox" for="net_switch">Net Change</label>
+                                </div>
+                            </div>
                             <div id="benefit-candlestick-chart">
                                 
                             </div>

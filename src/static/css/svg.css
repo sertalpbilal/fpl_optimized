@@ -223,11 +223,13 @@ rect.bench_bar {
 }
 
 .candle {
-    opacity: 0.9
+    /* opacity: 0.9 */
 }
 
 .candle:hover {
     opacity: 1;
+    stroke: #ff9500;
+    stroke-width: 1px;
 }
 
 .candle-gain {
