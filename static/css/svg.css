@@ -232,6 +232,15 @@ rect.bench_bar {
     stroke-width: 1px;
 }
 
+circle.risk-nodes {
+    fill: #579e00;
+    stroke: white;
+}
+
+circle.risk-nodes:hover {
+    stroke: #ffb10f;
+}
+
 .candle-gain {
     fill: #6fcfd6;
 }
