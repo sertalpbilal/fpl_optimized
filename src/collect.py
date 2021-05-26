@@ -257,9 +257,12 @@ def get_element_event_expected_minutes(r):
             return 0
 
 
-def sample_fpl_teams(gw=None):
+def sample_fpl_teams(gw=None, seed=None):
 
     sample_dict = dict()
+
+    if seed is not None:
+        random.seed(seed)
 
     t0 = time.time()
     with urlopen(FPL_API['now']) as url:
@@ -277,6 +280,7 @@ def sample_fpl_teams(gw=None):
 
     # Part 1 - 99% Overall sampling
     selected_ids = random.sample(range(1, total_players), 666)
+    # selected_ids = random.sample(range(1, total_players), 2000)
     with ProcessPoolExecutor(max_workers=8) as executor:
         random_squads = list(executor.map(get_single_team_data, selected_ids, itertools.repeat(gw)))
     random_squads = [i for i in random_squads if i is not None]
@@ -285,6 +289,7 @@ def sample_fpl_teams(gw=None):
 
     # Part 2 - Various Ranges
     pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
+    # pairs = [[100, 100], [1000, 500], [10000, 600], [100000, 800], [1000000, 1000]]
     for target, nsample in pairs:
         print(f"Sampling inside top {target}")
         player_targets = random.sample(range(1, target+1), nsample)
@@ -515,6 +520,13 @@ if __name__ == "__main__":
     # print(gw_no)
     # get_fivethirtyeight_data(input_folder)
 
-    get_team_season_review({'twitter': 'x', 'id': 2221044}, True)
+    # get_team_season_review({'twitter': 'x', 'id': 2221044}, True)
+
+    # for gw in range(1, 39):
+    #     sample_fpl_teams(gw)
+    #     time.sleep(10)
+
+    input_folder, output_folder, season_folder = create_folders()
+    cache_effective_ownership(season_folder)
 
     pass
