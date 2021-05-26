@@ -378,6 +378,7 @@ var app = new Vue({
                 pick.total_pts = pick.pts * pick.multiplier
                 pick.eo = eo_data[pick.gw + '_' + pick.id] || 0
                 pick.owned = true
+                pick.own_rate = pick.multiplier * 100 - pick.eo
                 pick.net = pick.pts * ((100 * pick.multiplier - pick.eo) /100)
                 // if (pick.multiplier > 0) {
                 delete all_pairs[pick.gw + '_' + pick.id]
@@ -399,8 +400,16 @@ var app = new Vue({
                 let gain = getSum(groups.true.map(i => i.net))
                 let top_losses = _.orderBy(groups.false, ['net'], ['asc']).slice(0,3)
                 let top_gains = _.orderBy(groups.true, ['net'], ['desc']).slice(0,3)
+                let gw_picks = gw_entry[1].filter(i => i.owned)
                 gw = gw_entry[0]
-                gw_entry[1] = {loss, gain, top_gains, top_losses, gw}
+                let this_gw_own = gw_picks.map(i => i.own_rate)
+                // own_perc = getSum(gw_entry[1].filter(i => i.owned).map(i => i.multiplier*100 - i.eo))/1200
+                let total_own = getSum(gw_entry[1].map(i => i.eo))
+                let risk = getSum(this_gw_own) / total_own * 100
+                let top_bets_for = _.orderBy(gw_picks, ['own_rate'], ['desc']).slice(0,3)
+                let top_bets_against = _.orderBy(gw_entry[1].filter(i => !i.owned), ['eo'], ['desc']).slice(0,3)
+                let net = gain + loss
+                gw_entry[1] = {net, loss, gain, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
             }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
             return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined}
@@ -470,6 +479,7 @@ var app = new Vue({
                             app.draw_radar_svg()
                             draw_event_heatmap()
                             draw_gain_loss_candlestick()
+                            draw_risk_reward_plot()
                         })
                     })
                 }, 500)
@@ -704,7 +714,8 @@ async function get_eo() {
         success: (data) => {
             app.eo_data = data;
             app.sample_options = Object.keys(data[1])
-            app.sample_selection = Object.keys(data[1]).length - 1
+            // default 10K
+            app.sample_selection = 2 //Object.keys(data[1]).length - 1
         },
         error: (xhr, status, error) => {
             console.log(error);
@@ -1472,7 +1483,6 @@ function draw_gain_loss_candlestick() {
         height = raw_height - margin.top - margin.bottom;
 
     let data = _.cloneDeep(app.user_candlestick_values)
-    data.forEach((e) => { e.net = e.gain + e.loss })
     let cum_sum = 0
     data.forEach((e) => {
         e['before'] = cum_sum
@@ -1784,8 +1794,219 @@ function draw_gain_loss_candlestick() {
 
 }
 
+function draw_risk_reward_plot() {
 
+    if (!app.is_ready) { return }
 
+    let existing = document.getElementById("scatter-plot-1")
+    if (existing)
+        existing.remove()
+
+    const raw_width = 500;
+    const raw_height = 300;
+
+    const margin = { top: 20, right: 10, bottom: 25, left: 25 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+
+    let data = _.cloneDeep(app.user_ownership_gain_loss.combined_per_gw)
+    let entries = data.map(i => ({'gw': i[0], ...i[1]}))
+
+    // actual svg object
+    const raw_svg = d3.select("#gw-risk-chart")
+        .insert("svg", ":first-child")
+        .attr("id", "scatter-plot-1")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+    
+    // clip object for zoom/transition effects
+    raw_svg.append("defs").append("SVG:clipPath")
+        .attr("id", "clip2")
+        .append("SVG:rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
+
+    // x clip
+    // raw_svg.append("clipPath")
+    //     .attr('id', 'clip-x-axis')
+    //     .append('rect')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .attr('width', width)
+    //     .attr('height', margin.bottom);
+    
+    // // y clip
+    // raw_svg.append("clipPath")
+    //     .attr('id', 'clip-y-axis')
+    //     .append('rect')
+    //     .attr('x', - margin.left)
+    //     .attr('y', 0)
+    //     .attr('height', height)
+    //     .attr('width', margin.left);
+
+    // main container -- everything lives on top of this
+    let svg = raw_svg.append('g')
+        .attr("class", "mainbg")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+    // hidden rect for interactivity
+    svg.append("rect")
+        .attr("id","rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr("clip-path", "url(#clip)")
+    // inside group that bars/nodes appear (to get clipped on zoom)
+    let chart_body = svg.append('g')
+        .attr('clip-path', 'url(#clip2)')
+
+    // x axis
+    let max_x = 100
+    let min_x = 0
+    // let xvals = data.map(i => i.risk)
+    let x = d3.scaleLinear()
+        .range([0, width])
+        .domain([min_x, max_x]);
+    let x_group = svg.append('g')
+        // .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'x-axis')
+        // .attr('clip-path', 'url(#clip-x-axis)')
+
+    // y axis
+    let yvals = entries.map(i => i.net)
+    let max_y = Math.ceil(Math.max(...yvals) / 5) * 5 + 5
+    let min_y = Math.floor(Math.min(...yvals) / 5) * 5 - 5
+
+    let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
+    let y_group = svg.append('g')
+        .attr('class', 'y-axis')
+        // .attr('clip-path', 'url(#clip-y-axis)')
+    
+    function setup_axes(x_in, y_in) {
+
+        
+        x_group.call(d3.axisBottom(x_in).tickSize(height).tickFormat((d) => d + "%"));
+
+        y_group.call(d3.axisRight(y_in).tickSize(width))
+        .call(g => g.selectAll(".tick text")
+            .attr("x", -5)
+            .attr("text-anchor", "end"))
+    
+        // axis style
+        svg.call(g => g.selectAll(".domain").attr("opacity", 0))
+        svg.call(g => g.selectAll(".tick line")
+            .attr("stroke-opacity", 0.2)
+            .attr("stroke", "#9a9a9a")
+            .attr("pointer-events", "none")
+        )
+        svg.call(s => s.selectAll(".tick").attr("font-size", "6pt").attr("fill", "white"))
+        svg.call(s => s.selectAll(".tick text").attr("fill", "white"))
+    }
+    
+    setup_axes(x,y)
+    
+
+    // zero line
+    let zero_line = chart_body.append('g')
+        .append('line')
+        .attr('x1', x(0))
+        .attr('y1', y(0))
+        .attr('x2', width)
+        .attr('y2', y(0))
+        .style('stroke', 'white')
+        .style("stroke-opacity", 0.5)
+        .style("stroke-width", 1)
+        .style('pointer-events', 'none');
+    
+    // zero line x
+    let zero_line_2 = chart_body.append('g')
+        .append('line')
+        .attr('x1', x(50))
+        .attr('y1', y(min_y))
+        .attr('x2', x(50))
+        .attr('y2', y(max_y))
+        .style('stroke', 'white')
+        .style("stroke-opacity", 0.5)
+        .style("stroke-width", 1)
+        .style('pointer-events', 'none');
+
+    let extent = [[0,0], [width, height]]
+    let zoom = d3.zoom()
+        .scaleExtent([1, 10])
+        .translateExtent(extent)
+        .extent(extent)
+        .on("zoom", applyZoom)
+        // .on('zoom.end', zoomend);
+
+    let mouseover = (e,d) => hoverRiskBar(e,d) 
+    let mousemove = (e,d) => hoverRiskBar(e,d)
+
+    let nodes = chart_body.selectAll()
+        .data(entries)
+        .enter()
+        // .append('rect')
+        // .attr("width", 6) //x.bandwidth()/2 * 0.95)
+        // .attr("height", 6)
+        // .attr("x", (d) => x(d.risk)-3)
+        // .attr("y", (d) => y(d.net)-3)
+        .append('circle')
+        .attr('cx', (d) => x(d.risk))
+        .attr('cy', (d) => y(d.net))
+        .attr('r', 3)
+        .attr("class", "risk-nodes")
+        .attr("opacity", 0.9)
+        .attr("fill", "orange")
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        // .on("mouseleave", mouseleave);
+
+    function hoverRiskBar(event, d) {
+        document.getElementById("risk_hover_gw").innerHTML = d.gw
+        document.getElementById("risk_hover_diff_rate").innerHTML = rounded(d.risk) +"%"
+        document.getElementById("risk_hover_reward").innerHTML = getWithSign(d.net)
+        let tg = '<span class="gain-blue">' + d.top_bets_for.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.own_rate,2) + '%)').join('<br/>') + '</span>'
+        let tl = '<span class="loss-red">' + d.top_bets_against.map(i => app.fpl_element[i.id].web_name + ' (' + rounded(i.eo,2) + '%)').join('<br/>') + '</span>'
+        document.getElementById("risk_top_bets_for").innerHTML = tg
+        document.getElementById("risk_top_bets_against").innerHTML = tl
+    }
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 20)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Risk (Differential) Percentage");
+
+    // y-title
+    svg.append("text")
+        .attr("text-anchor", "start")
+        .attr("x", -margin.left + 2)
+        .attr("y", -5)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Relative Change");
+
+    function applyZoom(event) {
+        const new_x = event.transform.rescaleX(x)
+        const new_y = event.transform.rescaleY(y)
+        setup_axes(new_x, new_y)
+        nodes.attr("transform", event.transform) // you can redefine "r" if want the same radius
+        zero_line.attr("transform", event.transform)
+        zero_line_2.attr("transform", event.transform)
+    }
+
+    raw_svg.call(zoom)
+}
+
+function redraw_graphs() {
+    draw_gain_loss_candlestick();
+    draw_risk_reward_plot();
+}
 
 
 $(document).ready(() => {

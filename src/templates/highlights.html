@@ -423,7 +423,7 @@
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
                                 <label>Sample tier</label>
-                                <select class="custom-select" id="sample_selection" v-model="sample_selection" @change="invalidate_cache(); draw_gain_loss_candlestick();">
+                                <select class="custom-select" id="sample_selection" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
                                     <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
                                 </select>
                             </div>
@@ -524,28 +524,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
-                            <!-- <div class="text-center text-small row" id="hover_top_players">
-                                <div class="col-1">
-                                    GW
-                                </div>
-                                <div class="col-1" id="hover_gw">
-
-                                </div>
-                                <div class="col-1">
-                                    Top 3 Gains
-                                </div>
-                                <div class="col-4" id="hover_gains">
-                                    
-                                </div>
-                                <div class="col-1">
-                                    Top 3 Losses
-                                </div>
-                                <div class="col-4" id="hover_losses">
-                                    
-                                </div>
-                            </div> -->
                         </div>
                     </div>
                     <div class="row justify-content-center mb-3">
@@ -624,6 +602,106 @@
                         </div>
                         <div class="col-12 col-lg-8">
                             <span class="text-smaller">This table shows players you haven't picked, their corresponding points per week and your relative loss. Loss is equal to points multiplied with effective ownership rate (EO), which shows you the relative loss compared to field average.</span>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-1">
+                        <div class="col-12 col-lg-8">
+                            <span class="d-block border-below-orange">Risk Analysis</span>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-1">
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label>Sample tier</label>
+                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12">
+                            <div id="gw-risk-chart">
+
+                            </div>
+                            <div class="row flex-grow-1 no-gutters text-small mb-1 pt-1 pb-1">
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                GW
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="risk_hover_gw">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Differential Rate <!-- Total your ownership divided by 1200% -->
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="risk_hover_diff_rate">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Change <!-- Gain minus loss -->
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="risk_hover_reward">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Top Bets For
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="risk_top_bets_for">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Top Bets Against
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="risk_top_bets_against">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-8">
+                            <span class="text-smaller">This scatter plot shows your relative change to average and your differential (risk) percentage. This value is calculated based on how different your lineup compared to tier effective ownership. It is a measure of how much you are betting against the template.</span>
                         </div>
                     </div>
 
