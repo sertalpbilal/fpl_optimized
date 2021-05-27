@@ -480,6 +480,7 @@ var app = new Vue({
                             draw_event_heatmap()
                             draw_gain_loss_candlestick()
                             draw_risk_reward_plot()
+                            draw_tree_map()
                         })
                     })
                 }, 500)
@@ -2006,6 +2007,115 @@ function draw_risk_reward_plot() {
 function redraw_graphs() {
     draw_gain_loss_candlestick();
     draw_risk_reward_plot();
+}
+
+function draw_tree_map() {
+    const raw_width = 500;
+    const raw_height = 400;
+
+    const margin = { top: 5, right: 20, bottom: 25, left: 20 },
+    width = raw_width - margin.left - margin.right,
+    height = raw_height - margin.top - margin.bottom;
+
+    let d1 = app.user_player_sum
+    let player_data = d1.filter(i => i['points_total'] > 0)
+    player_data.forEach((e) => {e.value = e.points_total; e.pos = element_type[e.position].short})
+    let group_max = Object.fromEntries(_(player_data).groupBy('pos').map((i,v) => [v, Math.max(...i.map(j => j.points_total))]).value())
+    player_data.forEach((e) => {e.ratio = e.points_total / group_max[e.pos]})
+    let sorted_data = _(player_data).orderBy(['points_total'], ['desc']).value() //.slice(0, 100)
+    let pos_data = _(sorted_data).groupBy("pos").map((i,v) => ({'name': v, 'children': i})).value();
+    pos_data = {'name': 'main', 'children': pos_data}
+
+    debugger
+
+    // let pts_data = _(d1).groupBy("gw_no").map((gw,i) => [parseInt(i), gw.map(player => player.Contribution).reduce((a,b) => parseInt(a)+parseInt(b), 0)]).value();
+    let root = d3.hierarchy(pos_data).sum(function(d) { return d.value });
+
+    const svg = d3.select("#points_tree_map")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+        .append('g')
+        .attr("transform",
+             "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.treemap()
+        .size([width, height])
+        .paddingTop(10)
+        .paddingRight(3)
+        .paddingInner(2)      // Padding between each rectangle
+        //.paddingOuter(6)
+        //.padding(20)
+        (root)
+
+    let color_cat = d3.scaleOrdinal()
+        .domain(["GK", "DF", "MD", "FW"])
+        .range([ "#ff8811", "#E1A1A7", "#CBC5EA", "#87B37A"])
+    var color = (c, e) => d3.interpolateRgb("#ffffff", color_cat(c))(e)  // ff8811
+
+    // var opacity_by_pos = (d) => d3.scaleLinear()
+    //     .domain([0, 200])
+    //     .range([.4, 1])(d.data.value / d.data.pos)
+
+    var opacity = d3.scaleLinear()
+        //.domain([0, 200])
+        .domain([0, 1])
+        .range([.5, 1])
+    var fontsize = d3.scaleLinear()
+        .domain([0, 200])
+        .range([2, 8])
+    var paddingsize = d3.scaleLinear()
+        .domain([0, 500])
+        .range([1, 8])
+
+    svg.selectAll()
+        .data(root.leaves())
+        .enter()
+        .append("rect")
+        .attr('x', function (d) { return d.x0; })
+        .attr('y', function (d) { return d.y0; })
+        .attr('width', function (d) { return d.x1 - d.x0; })
+        .attr('height', function (d) { return d.y1 - d.y0; })
+        .style("stroke", "black")
+        .style("fill", function(d){ return color(d.parent.data.name, d.data.ratio)} )
+        // .style("fill", function(d){ return d3.rgb(color(d.parent.data.name).lighter(d.data.ratio))} )
+        // .style("opacity", function(d){ return opacity(d.data.ratio)})
+
+    svg.selectAll()
+        .data(root.leaves())
+        .enter()
+        .append("text")
+        .attr("text-anchor", "start")
+        .attr("alignment-baseline", "hanging")
+        .attr("x", (d) => d.x0 + 2)
+        .attr("y", (d) => d.y0 + 2)
+        // .attr("x", function(d){ return d.x0+paddingsize(d.data.value)})
+        // .attr("y", function(d){ return d.y0+paddingsize(d.data.value)*3})
+        .text((d) => `${d.data.name} (${d.data.value})`)
+        .attr("font-size", (d) => fontsize(d.data.value)+ "pt")
+        .attr("fill", "black")
+        // .attr("opacity", (d) => opacity(d.data.value))
+
+    svg.selectAll()
+        .data(root.descendants().filter(function(d){return d.depth==1}))
+        .enter()
+        .append("text")
+        .attr("x", function(d){ return d.x0})
+        .attr("y", function(d){ return d.y0+8})
+        .text((d) => `${d.data.name} (${d.value})`)
+        .attr("font-size", "6pt")
+        .attr("fill",  'white' )
+
+    // Plot title
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 15)
+        .attr("font-size", "6pt")
+        .text("Total points by position/player")
+        .attr("fill",  'white' )
+
 }
 
 

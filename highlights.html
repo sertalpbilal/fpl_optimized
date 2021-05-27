@@ -214,7 +214,7 @@
                         </div>
                         <div class="col-12 col-lg-6" id="top_players_list" v-if="ready">
                             <span class="d-block border-below-orange">All squad players and their point returns</span>
-                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
+                            <table class="p-0 col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
                                 <thead>
                                     <tr>
                                         <th class="text-muted">ID</th>
@@ -809,6 +809,20 @@
         </div>
     </div>
 
+    <!-- <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Fixture Difficulty Analysis</h5>
+                <div class="scenario_detail">
+                    Fixture difficulty ratings of your picks through season using FiveThirtyEight data
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    xxx
+                </div>
+            </div>
+        </div>
+    </div> -->
+
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -817,15 +831,23 @@
                     Total points per price category and position
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
                             <div id="type_heatmap">
                                 
                             </div>
                         </div>
+                        <div class="text-xs text-center">
+                            Price categories (Budget, Mid-Price, Premieum) are as follows: GK Below 5, 5-5.5, Above 5.5 - DF Below 5, 5-6, Above 6 - MD Below 7.5, 7.5-10, Above 10 - FW Below 7.5, 7.5-10, Above 10
+                        </div>
                     </div>
-                    <div class="text-xs text-center">
-                        Price categories (Budget, Mid-Price, Premieum) are as follows: GK Below 5, 5-5.5, Above 5.5 - DF Below 5, 5-6, Above 6 - MD Below 7.5, 7.5-10, Above 10 - FW Below 7.5, 7.5-10, Above 10
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-log-8">
+                            <span class="d-block border-below-orange">Point Distribution Tree Map</span>
+                            <div id="points_tree_map">
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
