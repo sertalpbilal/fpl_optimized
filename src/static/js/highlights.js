@@ -5,6 +5,8 @@ var app = new Vue({
         team_id: '',
         points_data: {},
         eo_data: {},
+        fixture_data: [],
+        fdr_data: [],
         team_info: {},
         team_data: {},
         el_data: [],
@@ -380,9 +382,12 @@ var app = new Vue({
                 pick.owned = true
                 pick.own_rate = pick.multiplier * 100 - pick.eo
                 pick.net = pick.pts * ((100 * pick.multiplier - pick.eo) /100)
-                // if (pick.multiplier > 0) {
+                // table values
+                pick.points_gain = pick.pts * pick.multiplier
+                pick.relative_gain = pick.net
+                pick.points_loss = pick.pts * pick.eo / 100
+                pick.relative_loss = 0
                 delete all_pairs[pick.gw + '_' + pick.id]
-                // }
             }
             all_pairs = Object.values(all_pairs)
             for (let pair of all_pairs) {
@@ -391,9 +396,23 @@ var app = new Vue({
                 pair.eo = eo_data[pair.gw + '_' + pair.id] || 0
                 pair.owned = false
                 pair.net = -1 * pair.pts * (pair.eo / 100)
+                // table values
+                pair.points_gain = 0
+                pair.relative_gain = 0
+                pair.points_loss = pair.pts * pair.eo / 100
+                pair.relative_loss = pair.points_loss
             }
-            let combined = all_pairs.concat(user_picks)
-            combined = Object.entries(_.groupBy(combined, 'gw'))
+            let all_data = all_pairs.concat(user_picks)
+            let player_gains = _(all_data).groupBy('id')
+                .map((i,v) => {
+                    let gain = getSum(i.map(j => j.relative_gain))
+                    let loss = getSum(i.map(j => j.relative_loss))
+                    return {'id': v, gain, loss, 'net': gain - loss, 'magnitude': Math.abs(gain - loss)}
+                }).value()
+            player_gains = _(player_gains).orderBy(['magnitude'], ['desc']).value()
+            let max_impact = player_gains[0].magnitude
+            player_gains.forEach((e) => {e.impact = e.magnitude / max_impact * 100})
+            let combined = Object.entries(_.groupBy(all_data, 'gw'))
             for (let gw_entry of combined) {
                 let groups = _.groupBy(gw_entry[1], (entry) => entry.net >0)
                 let loss = getSum(groups.false.map(i => i.net))
@@ -412,7 +431,7 @@ var app = new Vue({
                 gw_entry[1] = {net, loss, gain, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
             }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
-            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined}
+            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains}
         },
         user_candlestick_values() {
             if (!this.is_ready) { return [] }
@@ -443,6 +462,7 @@ var app = new Vue({
             this.all_picks_table = undefined
             $("#gain_table").DataTable().destroy()
             $("#loss_table").DataTable().destroy()
+            $("#total_gain_loss_table").DataTable().destroy()
 
             this.team_data = {}
             let cache = {};
@@ -636,6 +656,44 @@ var app = new Vue({
                     });
                 }
             })
+            
+
+            // total_gain_loss_table
+
+            let tg_table = $("#total_gain_loss_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+            tg_table.buttons().container()
+                .appendTo('#csv_buttons4');
 
 
         },
@@ -689,47 +747,6 @@ var app = new Vue({
         }
     }
 })
-
-async function get_points() {
-    return $.ajax({
-        type: "GET",
-        url: `data/${season}/points.json`,
-        async: true,
-        dataType: "json",
-        success: (data) => {
-            app.points_data = data;
-        },
-        error: (xhr, status, error) => {
-            console.log(error);
-            console.error(xhr, status, error);
-        }
-    });
-}
-
-async function get_eo() {
-    return $.ajax({
-        type: "GET",
-        url: `data/${season}/eo.json`,
-        async: true,
-        dataType: "json",
-        success: (data) => {
-            app.eo_data = data;
-            app.sample_options = Object.keys(data[1])
-            // default 10K
-            app.sample_selection = 2 //Object.keys(data[1]).length - 1
-        },
-        error: (xhr, status, error) => {
-            console.log(error);
-            console.error(xhr, status, error);
-        }
-    });
-}
-
-async function fetch_main_data() {
-    return get_fpl_main_data().then((data) => {
-        app.el_data = data['elements'];
-    })
-}
 
 function get_team_stats_picks(picks) {
 
@@ -2158,11 +2175,88 @@ function draw_tree_map() {
 
 }
 
+async function get_points() {
+    return $.ajax({
+        type: "GET",
+        url: `data/${season}/points.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            app.points_data = data;
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
+async function get_eo() {
+    return $.ajax({
+        type: "GET",
+        url: `data/${season}/eo.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            app.eo_data = data;
+            app.sample_options = Object.keys(data[1])
+            // default 10K
+            app.sample_selection = 2 //Object.keys(data[1]).length - 1
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
+async function get_fixture_data() {
+    return $.ajax({
+        type: "GET",
+        url: `data/${season}/fixture.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            app.fixture_data = data;
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
+async function get_538_data() {
+    return $.ajax({
+        type: "GET",
+        url: `data/${season}/fivethirtyeight_spi.csv`,
+        async: true,
+        success: (data) => {
+            let tablevals = data.split('\n').map(i => i.split(','));
+            let keys = tablevals[0];
+            let values = tablevals.slice(1);
+            let final_data = values.map(i => _.zipObject(keys, i));
+            app.fdr_data = final_data;
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
+async function fetch_main_data() {
+    return get_fpl_main_data().then((data) => {
+        app.el_data = data['elements'];
+    })
+}
 
 $(document).ready(() => {
     Promise.all([
             get_points(),
             get_eo(),
+            get_fixture_data(),
+            get_538_data(),
             fetch_main_data()
         ]).then((values) => {
             Vue.$cookies.config('120d')
