@@ -2009,6 +2009,8 @@ function redraw_graphs() {
     draw_risk_reward_plot();
 }
 
+let refresh_point_dist;
+
 function draw_tree_map() {
     const raw_width = 500;
     const raw_height = 400;
@@ -2019,18 +2021,15 @@ function draw_tree_map() {
 
     let d1 = app.user_player_sum
     let player_data = d1.filter(i => i['points_total'] > 0)
-    player_data.forEach((e) => {e.value = e.points_total; e.pos = element_type[e.position].short})
-    let group_max = Object.fromEntries(_(player_data).groupBy('pos').map((i,v) => [v, Math.max(...i.map(j => j.points_total))]).value())
-    player_data.forEach((e) => {e.ratio = e.points_total / group_max[e.pos]})
-    let sorted_data = _(player_data).orderBy(['points_total'], ['desc']).value() //.slice(0, 100)
-    let pos_data = _(sorted_data).groupBy("pos").map((i,v) => ({'name': v, 'children': i})).value();
-    pos_data = {'name': 'main', 'children': pos_data}
 
-    debugger
-
-    // let pts_data = _(d1).groupBy("gw_no").map((gw,i) => [parseInt(i), gw.map(player => player.Contribution).reduce((a,b) => parseInt(a)+parseInt(b), 0)]).value();
-    let root = d3.hierarchy(pos_data).sum(function(d) { return d.value });
-
+    let gain = app.user_ownership_gain_loss.gains
+    let player_gains = Object.fromEntries(_(gain).groupBy('id').map((i,v) => [v, getSum(i.map(j => j.net))]).value())
+    player_data.forEach((e) => {
+        e.value = e.points_total;
+        e.pos = element_type[e.position].short
+        e.gain = player_gains[e.id] || 0
+    })
+    
     const svg = d3.select("#points_tree_map")
         .append("svg")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
@@ -2039,15 +2038,6 @@ function draw_tree_map() {
         .append('g')
         .attr("transform",
              "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.treemap()
-        .size([width, height])
-        .paddingTop(10)
-        .paddingRight(3)
-        .paddingInner(2)      // Padding between each rectangle
-        //.paddingOuter(6)
-        //.padding(20)
-        (root)
 
     let color_cat = d3.scaleOrdinal()
         .domain(["GK", "DF", "MD", "FW"])
@@ -2058,54 +2048,13 @@ function draw_tree_map() {
     //     .domain([0, 200])
     //     .range([.4, 1])(d.data.value / d.data.pos)
 
-    var opacity = d3.scaleLinear()
-        //.domain([0, 200])
-        .domain([0, 1])
-        .range([.5, 1])
+    // var opacity = d3.scaleLinear()
+    //     //.domain([0, 200])
+    //     .domain([0, 1])
+    //     .range([.5, 1])
     var fontsize = d3.scaleLinear()
-        .domain([0, 200])
-        .range([2, 8])
-    var paddingsize = d3.scaleLinear()
-        .domain([0, 500])
-        .range([1, 8])
-
-    svg.selectAll()
-        .data(root.leaves())
-        .enter()
-        .append("rect")
-        .attr('x', function (d) { return d.x0; })
-        .attr('y', function (d) { return d.y0; })
-        .attr('width', function (d) { return d.x1 - d.x0; })
-        .attr('height', function (d) { return d.y1 - d.y0; })
-        .style("stroke", "black")
-        .style("fill", function(d){ return color(d.parent.data.name, d.data.ratio)} )
-        // .style("fill", function(d){ return d3.rgb(color(d.parent.data.name).lighter(d.data.ratio))} )
-        // .style("opacity", function(d){ return opacity(d.data.ratio)})
-
-    svg.selectAll()
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("text-anchor", "start")
-        .attr("alignment-baseline", "hanging")
-        .attr("x", (d) => d.x0 + 2)
-        .attr("y", (d) => d.y0 + 2)
-        // .attr("x", function(d){ return d.x0+paddingsize(d.data.value)})
-        // .attr("y", function(d){ return d.y0+paddingsize(d.data.value)*3})
-        .text((d) => `${d.data.name} (${d.data.value})`)
-        .attr("font-size", (d) => fontsize(d.data.value)+ "pt")
-        .attr("fill", "black")
-        // .attr("opacity", (d) => opacity(d.data.value))
-
-    svg.selectAll()
-        .data(root.descendants().filter(function(d){return d.depth==1}))
-        .enter()
-        .append("text")
-        .attr("x", function(d){ return d.x0})
-        .attr("y", function(d){ return d.y0+8})
-        .text((d) => `${d.data.name} (${d.value})`)
-        .attr("font-size", "6pt")
-        .attr("fill",  'white' )
+        .domain([0, 1])
+        .range([2, 6])
 
     // Plot title
     svg.append("text")
@@ -2115,6 +2064,97 @@ function draw_tree_map() {
         .attr("font-size", "6pt")
         .text("Total points by position/player")
         .attr("fill",  'white' )
+
+    refresh_point_dist = () => {
+
+        let gain_switch = document.getElementById("actual_gain_switch").checked || false
+
+        let sorted_data = undefined;
+        let text_func, pos_text;
+        if (gain_switch) {
+            player_data.forEach((e) => {e.value = e.gain})
+            group_max = Object.fromEntries(_(player_data).groupBy('pos').map((i,v) => [v, Math.max(...i.map(j => j.gain))]).value())
+            player_data.forEach((e) => {e.ratio = e.gain / group_max[e.pos]})
+            sorted_data = _(player_data).orderBy(['points_total'], ['desc']).value()
+            text_func = (d) => `${d.data.name} (${rounded(d.data.value)})`
+            pos_text = (d) => `${d.data.name} (${rounded(d.value)})`
+        }
+        else {
+            player_data.forEach((e) => {e.value = e.points_total})
+            group_max = Object.fromEntries(_(player_data).groupBy('pos').map((i,v) => [v, Math.max(...i.map(j => j.points_total))]).value())
+            player_data.forEach((e) => {e.ratio = e.points_total / group_max[e.pos]})
+            sorted_data = _(player_data).orderBy(['points_total'], ['desc']).value()
+            text_func = (d) => `${d.data.name} (${d.data.value})`
+            pos_text = (d) => `${d.data.name} (${d.value})`
+        }
+
+        let pos_data = _(sorted_data).groupBy("pos").map((i,v) => ({'name': v, 'children': i})).value();
+        pos_data = _.cloneDeep({'name': 'main', 'children': pos_data})
+
+        // let pts_data = _(d1).groupBy("gw_no").map((gw,i) => [parseInt(i), gw.map(player => player.Contribution).reduce((a,b) => parseInt(a)+parseInt(b), 0)]).value();
+        let newroot = d3.hierarchy(pos_data).sum(d => d.value);
+
+        d3.treemap()
+            .size([width, height])
+            .paddingTop(10)
+            .paddingRight(3)
+            .paddingInner(2)
+            (newroot);
+
+        let newleaves = svg.selectAll('.tm-leaves')
+            .data(newroot.leaves());
+        newleaves.exit().remove();
+        newleaves
+            .enter()
+            .append("rect")
+            .attr("class", "tm-leaves")
+            .style("stroke", "black")
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 0)
+            .attr('height', 0)
+            .attr('fill', 'black');
+            
+        newleaves.transition().duration(500)
+            .attr('x', function (d) { return d.x0; })
+            .attr('y', function (d) { return d.y0; })
+            .attr('width', function (d) { return d.x1 - d.x0; })
+            .attr('height', function (d) { return d.y1 - d.y0; })
+            .style("fill", function(d){ return color(d.parent.data.name, d.data.ratio)} );
+        
+        let newtext = svg.selectAll('.tm-text')
+            .data(newroot.leaves());
+        newtext.exit().attr('opacity', 1).text('').remove().attr('opacity', 0);
+        newtext
+            .enter()
+            .append("text")
+            .attr("class", "tm-text")
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "hanging")
+            .attr("fill", "black")
+            .text((d) => text_func(d));
+        newtext.transition().duration(500)
+            .attr("x", (d) => d.x0 + 2)
+            .attr("y", (d) => d.y0 + 2)
+        svg.selectAll('.tm-text').text((d) => text_func(d)).attr("font-size", (d) => fontsize(d.data.ratio)+ "pt");;
+
+        let newpostext = svg.selectAll('.pos-summary')
+            .data(newroot.descendants().filter(d => d.depth==1))
+        newpostext.exit().remove()
+        newpostext
+            .enter()
+            .append("text")
+            .attr("class", "pos-summary")
+            .attr("fill",  'white' )
+        newpostext.transition().duration(500)
+            .attr("x", function(d){ return d.x0})
+            .attr("y", function(d){ return d.y0+8})
+        svg.selectAll('.pos-summary').text((d) => pos_text(d)).attr("font-size", "6pt")
+        
+    }
+
+    refresh_point_dist()
+    refresh_point_dist()
 
 }
 
