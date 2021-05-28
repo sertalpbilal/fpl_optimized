@@ -407,7 +407,8 @@ var app = new Vue({
                 .map((i,v) => {
                     let gain = getSum(i.map(j => j.relative_gain))
                     let loss = getSum(i.map(j => j.relative_loss))
-                    return {'id': v, gain, loss, 'net': gain - loss, 'magnitude': Math.abs(gain - loss)}
+                    let pts = getSum(i.map(j => j.pts))
+                    return {'id': v, gain, loss, 'net': gain - loss, 'magnitude': Math.abs(gain - loss), 'points': pts}
                 }).value()
             player_gains = _(player_gains).orderBy(['magnitude'], ['desc']).value()
             let max_impact = player_gains[0].magnitude
@@ -667,6 +668,9 @@ var app = new Vue({
                 "paging": true,
                 "pageLength": 15,
                 "searching": true,
+                scrollX: true,
+                // sScrollX: "100%",
+                // responsive: true,
                 buttons: [
                     'copy', 'csv'
                 ],

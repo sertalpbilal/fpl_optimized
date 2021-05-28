@@ -709,41 +709,44 @@
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
                             <span class="d-block border-below-orange">Total gain / loss per player</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table">
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th class="text-center text-muted">ID</th>
+                                        <!-- <th class="text-center text-muted">ID</th> -->
                                         <th class="text-center">Name</th>
                                         <th class="text-center">Team</th>
-                                        <th class="text-center">Position</th>
-                                        <th class="text-center">Total Gain</th>
-                                        <th class="text-center">Total Loss</th>
-                                        <th class="text-center">Net</th>
+                                        <th class="text-center">Pos</th>
+                                        <th class="text-center">Pts</th>
+                                        <th class="text-center">Gain</th>
+                                        <th class="text-center">Loss</th>
+                                        <th class="text-center highlighted-text-col">Net</th>
                                         <th class="text-center">Impact</th>
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
                                     <tr v-for="p in user_ownership_gain_loss.combined_per_player" :class="{'owned-row': p.net>0, 'nonowned-row': p.net < 0}">
-                                        <td class="text-center text-muted">{{ p.id }}</td>
+                                        <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
                                         <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
                                         <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
                                         <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                        <td class="text-center">{{ p.points }}</td>
                                         <td class="text-center">{{ rounded(p.gain) }}</td>
                                         <td class="text-center">{{ rounded(p.loss) }}</td>
-                                        <td class="text-center">{{ rounded(p.net) }}</td>
+                                        <td class="text-center highlighted-text-col">{{ rounded(p.net) }}</td>
                                         <td class="text-center">{{ rounded(p.impact) }}%</td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th class="text-center text-muted">ID</th>
-                                        <th class="text-center">Name</th>
-                                        <th class="text-center">Team</th>
-                                        <th class="text-center">Position</th>
-                                        <th class="text-center">Total Gain</th>
-                                        <th class="text-center">Total Loss</th>
-                                        <th class="text-center">Net</th>
-                                        <th class="text-center">Impact</th>
+                                        <!-- <th class="text-center text-muted">ID</th> -->
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
+                                        <th class="text-center"></th>
                                     </tr>
                                 </tfoot>
                             </table>
