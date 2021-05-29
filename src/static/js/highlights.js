@@ -171,6 +171,9 @@ var app = new Vue({
             })
             return picked_stats
         },
+        user_grouped_by_fixture() {
+            return _(this.user_picks_detailed).groupBy('id').map((i,v) => [v, _(i).groupBy('fixture').value()]).value()
+        },
         user_picks_custom_stats() {
             if (!this.is_ready) { return [] }
             // let picked_stats = this.user_picks_detailed
@@ -449,6 +452,93 @@ var app = new Vue({
                 chart_entries.push({...e, 'was': original, 'current': current, 'part': 2})
             }
             return chart_entries
+        },
+        team_fdr_values() {
+            let fivethirtyeight_data = this.fdr_data
+            let teams = _.cloneDeep(teams_ordered)
+            teams.forEach((team, order) => {
+                let team_name = team.name;
+                let entry = fivethirtyeight_data.find(i => i.name == team_name)
+                if (entry == undefined) {
+                    let team_long = team.long;
+                    entry = fivethirtyeight_data.find(i => i.name == team_long)
+                }
+                team.offense = parseFloat(entry.off);
+                team.defense = parseFloat(entry.def);
+                team.strength = parseFloat(entry.off) - parseFloat(entry.def)
+                team.raw = entry;
+                let keys = Object.keys(team_codes)
+                let key = keys.find(i => team_codes[i].name == team_name)
+                team.key = key
+                team.order = order
+            })
+
+            let offense_max = Math.max(...teams.map(i => i.offense))
+            let offense_min = Math.min(...teams.map(i => i.offense))
+            let defense_max = Math.max(...teams.map(i => i.defense))
+            let defense_min = Math.min(...teams.map(i => i.defense))
+            let c = (r) => d3.scaleLinear().domain([0, 0.5, 1]).range(["#67ADB2", "#999898", "#C85454"])(r)
+            teams.forEach((team, order) => {
+                team.offense_ratio = (team.offense - offense_min) / (offense_max - offense_min)
+                team.defense_ratio = (defense_max - team.defense) / (defense_max - defense_min)
+                team.offense_color = c(team.offense_ratio)
+                team.defense_color = c(team.defense_ratio)
+            })
+            return teams;
+        },
+        user_fdr_values() {
+            if (!this.is_ready) { return [] }
+            let fixture = Object.fromEntries(this.fixture_data.map(i => [i.id, i]))
+            let picks = this.user_picks_detailed.filter(i => i.identifier == 'minutes' && i.multiplier > 0)
+            let fdr_values = this.team_fdr_values
+            let fpl_data = this.fpl_element
+            let total_points_dict = Object.fromEntries(this.user_grouped_by_fixture)
+
+            picks.forEach((p) => {
+                let game = fixture[p.fixture]
+                let self_team = fpl_data[p.id].team
+                let opposite = self_team == game.team_h ? game.team_a : game.team_h
+                let fixture_fdr = fdr_values[opposite-1]
+                p.fixture_fdr = fixture_fdr
+                let pf = p.player_fdr = p.eltype <= 2 ? fixture_fdr.offense : fixture_fdr.defense
+
+                p.player_fdr_ratio = p.eltype <= 2 ? fixture_fdr.offense_ratio : fixture_fdr.defense_ratio
+
+                p.self_team = fdr_values[self_team-1]
+                p.opp_team = fdr_values[opposite-1]
+                p.position = element_type[p.eltype].short
+
+                p.self_team_fdr = p.eltype <= 2 ? p.self_team.defense_ratio : p.self_team.offense_ratio
+
+                p.total = getSum(total_points_dict[p.id][p.fixture].map(i => i.points))
+                
+            })
+
+            picks = _(picks).orderBy(['player_fdr_ratio', 'self_team_fdr', 'total'], ['asc', 'desc', 'desc']).value()
+
+            return picks
+        },
+        user_fdr_tiers() {
+            if (!this.is_ready) {return [] }
+            let groups = [.25, .50, .75, 1]
+            let picks = this.user_fdr_values
+            picks.forEach((p) => {
+                for (let i in groups) {
+                    if (p.player_fdr_ratio <= groups[i]) {
+                        p.tier = i
+                        break
+                    }
+                }
+            })
+            let tiers = {}
+            for (let type of [1,2,3,4]) {
+                let ct = tiers[type] = {}
+                let group_picks = picks.filter(i => i.eltype==type)
+                for (let tier in _.range(groups.length)) {
+                    ct[tier] = group_picks.filter(i => i.tier == tier).length
+                }
+            }
+            return {groups, tiers}
         }
     },
     methods: {
@@ -464,6 +554,7 @@ var app = new Vue({
             $("#gain_table").DataTable().destroy()
             $("#loss_table").DataTable().destroy()
             $("#total_gain_loss_table").DataTable().destroy()
+            $("#all_fdr_table").DataTable().destroy()
 
             this.team_data = {}
             let cache = {};
@@ -659,8 +750,6 @@ var app = new Vue({
             })
             
 
-            // total_gain_loss_table
-
             let tg_table = $("#total_gain_loss_table").DataTable({
                 "lengthChange": false,
                 "order": [],
@@ -698,6 +787,44 @@ var app = new Vue({
             })
             tg_table.buttons().container()
                 .appendTo('#csv_buttons4');
+
+            let fdr_table = $("#all_fdr_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                scrollX: true,
+                // sScrollX: "100%",
+                // responsive: true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+            fdr_table.buttons().container()
+                .appendTo('#csv_buttons5');
 
 
         },
@@ -2240,7 +2367,7 @@ async function get_538_data() {
             let keys = tablevals[0];
             let values = tablevals.slice(1);
             let final_data = values.map(i => _.zipObject(keys, i));
-            app.fdr_data = final_data;
+            app.fdr_data = final_data.filter(i => i.league == "Barclays Premier League");
         },
         error: (xhr, status, error) => {
             console.log(error);
