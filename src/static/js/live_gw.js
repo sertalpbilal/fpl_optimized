@@ -1963,8 +1963,17 @@ async function app_initialize(refresh_team = false) {
 }
 
 $(document).ready(function() {
+
+    // 2021 disabled for now
+    Vue.$cookies.keys().forEach(cookie => Vue.$cookies.remove(cookie))
+
+    return
+
     Vue.$cookies.config('120d')
     app_initialize().then(() => {
+
+        
+
         let cached_team = Vue.$cookies.get('team_id');
         if (cached_team !== null) {
             app.loadAutoSettings();

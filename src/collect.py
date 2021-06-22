@@ -47,7 +47,7 @@ def get_all_data():
     # get_data_fpl_api(input_folder)
     # get_data_fplreview(input_folder)
     # generate_intermediate_layer(input_folder)
-    # get_fivethirtyeight_data(input_folder)
+    get_fivethirtyeight_data(input_folder)
     cache_realized_points_data(season_folder)
     return input_folder, output_folder
 

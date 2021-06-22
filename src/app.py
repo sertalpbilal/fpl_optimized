@@ -31,6 +31,7 @@ app.jinja_options = jinja_options
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
 def folder_order(fname):
+    print(fname)
     if sys.platform == 'win32':
         f = [j for i in fname.split('\\') for j in i.split('/')]
     else:
@@ -51,7 +52,7 @@ def gw_order(fname):
 
 @app.route('/')
 def home_page():
-    all_dates = glob.glob('build/data/*/*/*')
+    all_dates = glob.glob('build/data/*/GW*/*')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
@@ -193,7 +194,7 @@ def fpl_fixture_page():
 def spirit_team_page():
     page_name = 'spirit_team.html'
 
-    all_weeks = glob.glob('build/data/*/*/')
+    all_weeks = glob.glob('build/data/*/GW*/')
     if sys.platform == 'win32':
         all_weeks = [i.replace('\\', '/') for i in all_weeks]
     all_weeks.sort(key=gw_order, reverse=True)
