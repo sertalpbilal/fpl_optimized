@@ -2129,6 +2129,10 @@ $("#customInputModal").on('hidden.bs.modal', function(e) {
 })
 
 $(document).ready(function() {
+
+    // 2021 disabled for now
+    return
+
     load_gw();
     Vue.$cookies.config('30d')
     let t = Vue.$cookies.get('team_id');

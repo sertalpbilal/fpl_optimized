@@ -186,6 +186,8 @@ async function load_sample_data() {
 }
 
 $(document).ready(() => {
+    // 2021 disabled for now
+    return
     Promise.all([
             fetch_last_gw_data(),
             fetch_fpl_main(),

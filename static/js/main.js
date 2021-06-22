@@ -36,6 +36,7 @@ if (!Promise.allSettled) {
 let team_codes = {
     3: { name: "Arsenal", short: "ARS" },
     7: { name: "Aston Villa", short: "AVL" },
+    94: { name: "Brentford", short: "BRE" },
     36: { name: "Brighton", short: "BHA" },
     90: { name: "Burnley", short: "BUR" },
     8: { name: "Chelsea", short: "CHE" },
@@ -48,10 +49,12 @@ let team_codes = {
     43: { name: "Man City", short: "MCI" },
     1: { name: "Man Utd", short: "MUN" },
     4: { name: "Newcastle", short: "NEW" },
-    49: { name: "Sheffield Utd", short: "SHU" },
+    45: { name: "Norwich", short: "NOR" },
+    49: { name: "Sheffield Utd", short: "SHU" }, // demoted
     20: { name: "Southampton", short: "SOU" },
     6: { name: "Spurs", short: "TOT" },
-    35: { name: "West Brom", short: "WBA" },
+    57: { name: "Watford", short: "WAT" },
+    35: { name: "West Brom", short: "WBA" }, // demoted
     21: { name: "West Ham", short: "WHU" },
     39: { name: "Wolves", short: "WOL" }
 }
@@ -59,22 +62,25 @@ let team_codes = {
 let teams_ordered = [
     { name: "Arsenal", short: "ARS" },
     { name: "Aston Villa", short: "AVL" },
+    { name: "Brentford", short: "BRE" },
     { name: "Brighton", short: "BHA", long: "Brighton and Hove Albion" },
     { name: "Burnley", short: "BUR" },
     { name: "Chelsea", short: "CHE" },
     { name: "Crystal Palace", short: "CRY" },
     { name: "Everton", short: "EVE" },
-    { name: "Fulham", short: "FUL" },
+    // { name: "Fulham", short: "FUL" },
     { name: "Leicester", short: "LEI", long: "Leicester City" },
     { name: "Leeds", short: "LEE", long: "Leeds United" },
     { name: "Liverpool", short: "LIV" },
     { name: "Man City", short: "MCI", long: "Manchester City" },
     { name: "Man Utd", short: "MUN", long: "Manchester United" },
     { name: "Newcastle", short: "NEW" },
-    { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
+    { name: "Norwich", short: "NOR", long: "Norwich City" },
+    // { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
     { name: "Southampton", short: "SOU" },
     { name: "Spurs", short: "TOT", long: "Tottenham Hotspur" },
-    { name: "West Brom", short: "WBA", long: "West Bromwich Albion" },
+    { name: "Watford", short: "WAT" },
+    // { name: "West Brom", short: "WBA", long: "West Bromwich Albion" },
     { name: "West Ham", short: "WHU", long: "West Ham United" },
     { name: "Wolves", short: "WOL", long: "Wolverhampton" }
 ]
