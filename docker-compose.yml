@@ -9,4 +9,4 @@ services:
     # env_file:
     #   - ./user.env
     volumes:
-      - /fpl_aa:/app
+      - ./src:/app
