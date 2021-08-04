@@ -55,7 +55,6 @@ def get_all_data():
 
 def create_folders():
     """Creates folders for data storage"""
-
     with urlopen(FPL_API['now']) as url:
         data = json.loads(url.read().decode())
     vals = read_static()
@@ -78,6 +77,7 @@ def create_folders():
 
     season_folder = pathlib.Path(base_folder / f"build/data/{season}/")
     
+    print("Creating folder -- done")
     return input_folder, output_folder, season_folder
 
 
@@ -101,6 +101,7 @@ def get_data_fpl_api(target_folder):
 
     fixture_data = pd.DataFrame(data)
     fixture_data.to_csv(target_folder / "fixture.csv")
+    print("Getting FPL API data -- done")
 
 
 def generate_intermediate_layer(target_folder, page="massive-data-planner"):
@@ -130,6 +131,8 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     element_gameweek_df = element_gameweek_df[['player_id', 'event', 'event_id', 'web_name', 'points_md', 'xmins_md', 'team', 'opp_team']].copy()
     element_gameweek_df.sort_values(by=['player_id', 'event'], inplace=True, ignore_index=True)
     element_gameweek_df.to_csv(target_folder / f'element_gameweek.csv')
+
+    print("Generating intermediate data -- done")
 
 
 def read_static():
@@ -372,6 +375,7 @@ def get_fivethirtyeight_data(target_folder):
     with urlopen(fte_data) as url, open(target_folder / 'fivethirtyeight_spi.csv', 'w') as f:
         data = url.read().decode()
         f.write(data)
+    print("Generating 538 data -- done")
 
 
 def cache_realized_points_data(season_folder):
