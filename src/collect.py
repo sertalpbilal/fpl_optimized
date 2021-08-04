@@ -47,7 +47,7 @@ def get_all_data():
     input_folder, output_folder, season_folder = create_folders()
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder, page='free-planner')
-    generate_intermediate_layer(input_folder)
+    generate_intermediate_layer(input_folder, page='free-planner')
     get_fivethirtyeight_data(input_folder)
     # cache_realized_points_data(season_folder)
     return input_folder, output_folder
