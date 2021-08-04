@@ -1,5 +1,6 @@
 FROM sertalpbilal/coin-or-optimization-with-batteries:latest
 
+RUN pip install cryptography
 COPY src /app
 WORKDIR /app
 

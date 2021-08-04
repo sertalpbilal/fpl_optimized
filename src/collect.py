@@ -27,6 +27,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from sys import platform
 from concurrent.futures import ProcessPoolExecutor
 import glob
+from fplreview import get_data_fplreview
 
 
 FPL_API = {
@@ -44,11 +45,11 @@ FPL_API = {
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
     input_folder, output_folder, season_folder = create_folders()
-    # get_data_fpl_api(input_folder)
-    # get_data_fplreview(input_folder)
-    # generate_intermediate_layer(input_folder)
+    get_data_fpl_api(input_folder)
+    get_data_fplreview(input_folder, page='free-planner')
+    generate_intermediate_layer(input_folder)
     get_fivethirtyeight_data(input_folder)
-    cache_realized_points_data(season_folder)
+    # cache_realized_points_data(season_folder)
     return input_folder, output_folder
 
 
@@ -100,92 +101,6 @@ def get_data_fpl_api(target_folder):
 
     fixture_data = pd.DataFrame(data)
     fixture_data.to_csv(target_folder / "fixture.csv")
-
-
-def get_data_fplreview(target_folder, page="massive-data-planner", debug=False):
-    """Grabs data from fplreview.com, assumes FPL API is already pulled in"""
-
-    env = read_static()
-
-    options = webdriver.ChromeOptions()
-    options.add_argument("--no-sandbox")
-    if not debug:
-        options.add_argument("--headless")
-    options.add_argument('--log-level=3')
-    capa = DesiredCapabilities.CHROME
-    capa["pageLoadStrategy"] = "none"
-    if platform == "win32":
-        options.add_experimental_option("prefs", {
-            "download.default_directory": r"C:\temp",
-            "download.prompt_for_download": False,
-        })
-        chrome = webdriver.Chrome(executable_path=env['win_driver'], options=options, desired_capabilities=capa)
-    elif platform == "linux":
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_experimental_option("prefs", {
-            "download.default_directory": "/tmp",
-            "download.prompt_for_download": False,
-        })
-        chrome = webdriver.Chrome(executable_path=env['unix_driver'], options=options, desired_capabilities=capa)
-    elif platform == "darwin":
-        chrome=webdriver.Chrome()
-        
-    print(".", end="", flush=True)
-    wait = WebDriverWait(chrome, 60)
-    chrome.implicitly_wait(60)
-    chrome.maximize_window()
-    chrome.get(r"https://fplreview.com/" + page + "/")
-    wait.until(EC.presence_of_element_located((By.NAME, "TeamID")))
-    e = chrome.find_element_by_id("Weeks")
-    options = e.find_elements_by_tag_name("option")
-    print(".", end="", flush=True)
-    for i in options:
-        if i.get_attribute("value") == "8":
-            i.click()
-
-    inputfield = chrome.find_element_by_name('TeamID')
-    inputfield.send_keys("1")
-    inputfield.send_keys(Keys.ENTER)
-
-    try:
-        print("Trying to fetch with HiveMind")
-        wait.until(EC.visibility_of_element_located((By.ID, "orderModal_popop2")))
-    except:
-        print("Trying to fetch without HiveMind")
-        wait.until(EC.visibility_of_element_located((By.ID, "orderModal_popop")))
-    e = chrome.find_elements_by_id("butt")
-    print(".", end="", flush=True)
-    for i in e:
-        if i.is_displayed():
-            i.click()
-
-    wait.until(EC.presence_of_element_located((By.ID, "myGroup")))
-    e = chrome.find_element_by_id("myGroup")
-    options = e.find_elements_by_tag_name("option")
-    print(".", end="", flush=True)
-    options[-1].click()
-
-    if os.path.exists("/tmp/fplreview.csv"):
-        os.remove("/tmp/fplreview.csv")
-
-    wait.until(EC.element_to_be_clickable((By.ID, 'exportbutton')))
-    e = chrome.find_element_by_id('exportbutton')
-    print(".")
-    e.click()
-
-    time.sleep(2)
-
-    if platform == "win32":
-        shutil.move(r"C:\temp\fplreview.csv", target_folder / f"fplreview-{page}.csv")
-    elif platform == "linux":
-        shutil.move("/tmp/fplreview.csv", target_folder / f"fplreview-{page}.csv")
-    elif platform == "darwin":
-        shutil.move((os.path.expanduser("~/Downloads/fplreview.csv")), target_folder / f"fplreview-{page}.csv")
-  
-    chrome.close()
-    print("Done")
-
-    return
 
 
 def generate_intermediate_layer(target_folder, page="massive-data-planner"):
