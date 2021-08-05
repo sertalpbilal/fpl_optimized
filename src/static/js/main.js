@@ -227,11 +227,11 @@ function get_fixture(gw) {
     });
 }
 
-function get_sample_data(target_gw) {
+function get_sample_data(season, target_gw) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
-            url: `sample/${target_gw}/fpl_sampled.json`,
+            url: `sample/${season}/${target_gw}/fpl_sampled.json`,
             dataType: "json",
             async: true,
             success: function(data) {

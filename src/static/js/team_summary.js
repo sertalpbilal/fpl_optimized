@@ -1231,7 +1231,7 @@ function load_gw() {
 
     target_gw = parseInt((gw).slice(2));
 
-    get_sample_data(target_gw)
+    get_sample_data(season, target_gw)
         .then((data) => {
             app.saveSampleData(true, data);
         })
@@ -1241,7 +1241,7 @@ function load_gw() {
             if (gw == next_gw) {
                 target_gw = parseInt(gw.slice(2)) - 1;
             }
-            get_sample_data(target_gw)
+            get_sample_data(season, target_gw)
                 .then((data) => {
                     app.saveSampleData(true, data);
                 })

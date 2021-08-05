@@ -1118,7 +1118,7 @@ async function load_rp_data() {
 }
 
 async function load_sample_data() {
-    return get_sample_data(app.gw.slice(2))
+    return get_sample_data(app.season, app.gw.slice(2))
         .then((data) => {
             app.saveSampleData(true, data);
         })

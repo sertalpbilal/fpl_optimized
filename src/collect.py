@@ -195,6 +195,9 @@ def get_element_event_expected_minutes(r):
 
 def sample_fpl_teams(gw=None, seed=None):
 
+    env = read_static()
+    season = env['season']
+
     sample_dict = dict()
 
     if seed is not None:
@@ -211,7 +214,7 @@ def sample_fpl_teams(gw=None, seed=None):
             gw = list(filter((lambda x: x['is_previous']), data['events']))[0]['id']
     
     base_folder = pathlib.Path().resolve()
-    input_folder = pathlib.Path(base_folder / f"build/sample/{gw}/")
+    input_folder = pathlib.Path(base_folder / f"build/sample/{season}/{gw}/")
     input_folder.mkdir(parents=True, exist_ok=True)
 
     # Part 1 - 99% Overall sampling
