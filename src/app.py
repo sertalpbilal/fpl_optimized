@@ -289,23 +289,23 @@ def impact_summary_page():
             season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
 
 
-@app.route('/highlights.html')
-def highlights():
-    page_name = 'highlights.html'
+# @app.route('/highlights.html')
+# def highlights():
+#     page_name = 'highlights.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+#     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
-    # with open('static/json/fpl_analytics.json') as f:
-    #     league_list = f.read()
+#     # with open('static/json/fpl_analytics.json') as f:
+#     #     league_list = f.read()
 
-    gw = target[1].split('GW')[1]
+#     gw = target[1].split('GW')[1]
 
-    if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", page_name="Season Highlights", season=target[0], gw=gw)
-            # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
-    else:
-        return render_template(page_name, repo_name="", page_name="Season Highlights", season=target[0], gw=gw)
-            # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+#     if app.config['DEBUG']:
+#         return render_template(page_name, repo_name="/..", page_name="Season Highlights", season=target[0], gw=gw)
+#             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+#     else:
+#         return render_template(page_name, repo_name="", page_name="Season Highlights", season=target[0], gw=gw)
+#             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
 
@@ -316,7 +316,7 @@ def list_all_snapshots():
 def list_one_per_gw():
 
     is_active_gw = 'false'
-    active_gw = -1
+    active_gw = 1
     data = get_fpl_info('now')
     gws = [i for i in data['events'] if i['is_current'] == True]
     if len(gws) == 1:
@@ -324,7 +324,7 @@ def list_one_per_gw():
             is_active_gw = 'true'
             active_gw = gws[0]['id']
 
-    all_dates = glob.glob('build/data/*/*/*/input/*planner.csv')
+    all_dates = glob.glob('build/data/*/*/*/input/element.csv')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]

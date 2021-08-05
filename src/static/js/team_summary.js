@@ -301,7 +301,7 @@ var app = new Vue({
             let self = this;
             $.ajax({
                 type: "GET",
-                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
+                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15_weighted.csv`,
                 dataType: "text",
                 success: function(data) {
                     tablevals = data.split('\n').map(i => i.split(','));
@@ -309,11 +309,24 @@ var app = new Vue({
                     values = tablevals.slice(1);
                     values_filtered = values.filter(i => i.length > 1);
                     let squad = values_filtered.map(i => _.zipObject(keys, i));
-                    self.team_data.picks.forEach(function load(val, index) {
-                        val.element = parseInt(squad[index].player_id);
-                        val.multiplier = index < 11 ? 1 : 0;
-                        val.is_captain = squad[index].is_captain == "True";
-                    })
+                    if (_.isEmpty(self.team_data)) {
+                        self.team_data = {'picks': [], 'event_transfers_cost': [], 'entry_history': {'event_transfers_cost': []}}
+                        squad.forEach((item, index) => {
+                            item.element = parseInt(item.player_id)
+                            item.multiplier = index < 11 ? (item.is_captain == "True" ? 2 : 1) : 0;
+                            item.is_captain = item.is_captain == "True";
+                            self.team_data.picks.push(item)
+                        })
+                        self.$forceUpdate();
+                    }
+                    else {
+                        self.team_data.picks.forEach(function load(val, index) {
+                            val.element = parseInt(squad[index].player_id);
+                            val.multiplier = index < 11 ? 1 : 0;
+                            val.is_captain = squad[index].is_captain == "True";
+                        })
+                    }
+                    
                     self.generateList();
                     self.$nextTick(() => {
                         $(".plot").empty();
@@ -930,7 +943,6 @@ var app = new Vue({
             try {
                 let games_with_id = Object.fromEntries(this.fixture_data.map(i => [parseInt(i.id), i]))
             } catch (e) {
-                debugger;
             }
 
             let this_gw_games = this.fixture_data.filter(i => i.event == this.gw.slice(2))
@@ -1200,72 +1212,45 @@ function load_gw() {
     let gw = app.gw;
     let date = app.date;
 
-    $.ajax({
-        type: "GET",
-        url: `data/${season}/${gw}/${date}/input/element_gameweek.csv`,
-        dataType: "text",
-        success: function(data) {
-            tablevals = data.split('\n').map(i => i.split(','));
-            keys = tablevals[0];
-            values = tablevals.slice(1);
-            let xp_data = values.map(i => _.zipObject(keys, i));
-            app.saveXP(xp_data);
-        },
-        error: function(xhr, status, error) {
-            console.log(error);
-            console.error(xhr, status, error);
-        }
-    });
+    getXPData_Fernet({ season, gw, date })
+        .then((data) => {
+            app.saveXP(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
-    $.ajax({
-        type: "GET",
-        url: `data/${season}/${gw}/${date}/input/element.csv`,
-        dataType: "text",
-        success: function(data) {
-            tablevals = data.split('\n').map(i => i.split(','));
-            keys = tablevals[0];
-            values = tablevals.slice(1);
-            let el_data = values.map(i => _.zipObject(keys, i));
-            app.saveEl(el_data);
-        },
-        error: function(xhr, status, error) {
-            console.log(error);
-            console.error(xhr, status, error);
-        }
-    });
+    get_cached_element_data({ season, gw, date })
+        .then((data) => {
+            app.saveEl(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
 
     target_gw = parseInt((gw).slice(2));
 
-    $.ajax({
-        type: "GET",
-        url: `sample/${target_gw}/fpl_sampled.json`,
-        dataType: "json",
-        success: function(data) {
-            app.warn_old_data = false;
+    get_sample_data(target_gw)
+        .then((data) => {
             app.saveSampleData(true, data);
-        },
-        error: function() {
+        })
+        .catch(error => {
+            // Delete sample data and force official FPL API values
             console.log("This gw has no sample data");
-            // app.saveSampleData(false, []);
-            console.log("Cannot get GW sample, trying last week")
             if (gw == next_gw) {
                 target_gw = parseInt(gw.slice(2)) - 1;
             }
-            $.ajax({
-                type: "GET",
-                url: `sample/${target_gw}/fpl_sampled.json`,
-                dataType: "json",
-                success: function(data) {
-                    app.warn_old_data = true;
+            get_sample_data(target_gw)
+                .then((data) => {
                     app.saveSampleData(true, data);
-                },
-                error: function() {
+                })
+                .catch(error => {
+                    // Delete sample data and force official FPL API values
+                    console.error(error)
                     app.saveSampleData(false, [])
-                }
-            });
-        }
-    });
-
+                });
+        });
 
 
     // https://fantasy.premierleague.com/api/event/14/live/
@@ -1392,7 +1377,8 @@ function load_team() {
                     error: function(xhr, status, error) {
                         console.log(error);
                         console.error(xhr, status, error);
-                        alert("Cannot get picks for given team ID and gameweek");
+                        // alert("Cannot get picks for given team ID and gameweek");
+                        app.loadOptimal()
                         $("#waitModal").modal('hide');
                     }
                 });
@@ -2129,9 +2115,6 @@ $("#customInputModal").on('hidden.bs.modal', function(e) {
 })
 
 $(document).ready(function() {
-
-    // 2021 disabled for now
-    return
 
     load_gw();
     Vue.$cookies.config('30d')

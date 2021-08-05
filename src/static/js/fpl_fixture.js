@@ -98,7 +98,6 @@ var app = new Vue({
                 let team_name = teams_ordered[team - 1].name;
                 let entry = app.fte_data.find(i => i.name == team_name)
                 if (entry == undefined) {
-                    debugger
                     let team_long = teams_ordered[team - 1].long;
                     entry = app.fte_data.find(i => i.name == team_long)
                 }
@@ -480,7 +479,6 @@ async function fetch_fpl_main() {
 
 async function fetch_fivethirtyeight() {
     return read_local_file(data_target).then((data) => {
-        debugger
         let tablevals = data.split('\n').map(i => i.split(','));
         let keys = tablevals[0];
         let values = tablevals.slice(1);

@@ -7,6 +7,7 @@ import math
 import os
 import sys
 import pathlib
+from threading import local
 import pytz
 import random
 import shutil
@@ -28,6 +29,7 @@ from sys import platform
 from concurrent.futures import ProcessPoolExecutor
 import glob
 from fplreview import get_data_fplreview
+from encrypt import encrypt
 
 
 FPL_API = {
@@ -45,6 +47,7 @@ FPL_API = {
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
     input_folder, output_folder, season_folder = create_folders()
+    get_fixture(season_folder)
     get_data_fpl_api(input_folder)
     get_data_fplreview(input_folder, page='free-planner')
     generate_intermediate_layer(input_folder, page='free-planner')
@@ -79,6 +82,14 @@ def create_folders():
     
     print("Creating folder -- done")
     return input_folder, output_folder, season_folder
+
+
+def get_fixture(season_folder):
+    with urlopen(FPL_API['fixture']) as url:
+        data = json.loads(url.read().decode())
+    with open(season_folder / "fixture.json", "w") as f:
+        json.dump(data, f)
+    print("Getting fixture -- done")
 
 
 def get_data_fpl_api(target_folder):
@@ -134,6 +145,13 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
 
     print("Generating intermediate data -- done")
 
+
+def encrypt_files(target_folder, page, remove=True):
+    encrypt(str(target_folder / f'element_gameweek.csv'), key_name='REVIEW_KEY')
+    encrypt(str(target_folder / f'fplreview-{page}.csv'), key_name='REVIEW_KEY')
+    if remove:
+        os.remove(target_folder / f'element_gameweek.csv')
+        os.remove(target_folder / f'fplreview-{page}.csv')
 
 def read_static():
     """Reads user-specified static values from JSON file"""

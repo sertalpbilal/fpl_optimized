@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: engine
-  # schedule:
-  #   - cron: '0 4,10,16,22 * * *'
+  schedule:
+    - cron: '0 4,10,16,22 * * *'
 
 jobs:
   build-and-run:
@@ -30,7 +30,7 @@ jobs:
       - name: Run docker image with optimization
         if: "!contains(github.event.commits[0].message, '[skip opt]')"
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build webapp bash -c "python3 -c \"import encrypt; encrypt.decrypt('fplreview.py');\""
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build webapp bash -c "python3 -c \"import encrypt; encrypt.decrypt('fplreview.py');\" && python3 run.py"
       - name: Only populate pages, no optimization
         if: "contains(github.event.commits[0].message, '[skip opt]')"
         run: |

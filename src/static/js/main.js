@@ -396,6 +396,35 @@ function getXPData({ season, gw, date }) {
     });
 }
 
+function getXPData_Fernet({season, gw, date}) {
+    if (season == "2020-21") {
+        return getXPData({season, gw, date})
+    }
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `data/${season}/${gw}/${date}/input/element_gameweek.csv-encrypted`,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                var secret = new fernet.Secret('symZ1LvXcAtjllNsDmhSp-GT1gDNPXw0P5eijrU8ogQ=');
+                var token = new fernet.Token({
+                    secret: secret,
+                    token: data,
+                    ttl: 0
+                })
+                let raw = token.decode();
+                let csvdata = $.csv.toObjects(raw)
+                resolve(csvdata.filter(i => i.event == gw.slice(2)))
+            },
+            error: ()  => {
+                reject("Could not get XP data");
+            }
+        });
+    })
+}
+
+
 function getRPData(gw) {
     return new Promise((resolve, reject) => {
         $.ajax({

@@ -136,7 +136,6 @@ load_all();
 //         values = tablevals.slice(1);
 //         values_filtered = values.filter(i => i.length > 1);
 //         let squad = values_filtered.map(i => _.zipObject(keys, i));
-//         debugger;
 //         app.setSolution('unlimited_best_11', squad);
 //     }
 // });

@@ -12,7 +12,8 @@ if __name__ == "__main__":
         opts = sys.argv[1]
 
     if opts != "skip-opt":
-        from collect import get_all_data
+        from collect import get_all_data, encrypt_files
         input_folder, output_folder = get_all_data()
         solve_all(input_folder, output_folder)
+        encrypt_files(input_folder, page='free-planner', remove=True)
     freeze_all()
