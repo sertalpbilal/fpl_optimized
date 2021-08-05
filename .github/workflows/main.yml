@@ -31,6 +31,9 @@ jobs:
         if: "!contains(github.event.commits[0].message, '[skip opt]')"
         run: |
           docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build webapp bash -c "python3 -c \"import encrypt; encrypt.decrypt('fplreview.py');\" && python3 run.py"
+        env:
+          FERNET_KEY: ${{ secrets.FERNET_KEY }}
+          REVIEW_KEY: ${{ secrets.REVIEW_KEY }}
       - name: Only populate pages, no optimization
         if: "contains(github.event.commits[0].message, '[skip opt]')"
         run: |
