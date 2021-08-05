@@ -49,6 +49,9 @@ function autosubbed_team(team_picks, autosub_dict) {
     for (let i of lineup) {
         let id = i.element;
         let info = autosub_dict[id];
+        if (info === undefined) {
+            continue;
+        }
         if (info.autosub) {
             let original_mult = i.multiplier;
             i.multiplier = 0;
