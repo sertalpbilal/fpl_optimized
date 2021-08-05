@@ -57,15 +57,15 @@
 
     <div id="app">
 
-        <header class="bg-dark-gray">
+        <header class="bg-dark-gray mb-1">
             <div class="container">
                 <nav class="navbar navbar-collapse navbar-dark container-fluid pl-0 pr-0">
                     <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3 mr-auto flex-grow-1" href="/" aria-label="Bootstrap">FPL Optimized</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
+                    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse text-secondary flex-row-reverse" id="menuToggler">
-                        <!-- <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span> -->
+                        <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
                         <ul class="navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link" href="week.html">Optimal Squads</a>
@@ -79,14 +79,15 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
                             </li>
-                            <!-- <li class="nav-item no-sep">
+                            <li class="nav-item no-sep">
                                 <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
-                            </li> -->
+                            </li>
                         </ul>
-                    </div>
+                    </div> -->
                 </nav>
             </div>
         </header>
+
 
         <!-- <div class="mt-1 container">
             <div class="row pl-3 pr-3">
@@ -98,17 +99,17 @@
                 </div>
             </div>
         </div> -->
-
-        <div class="mt-1 container">
+<!-- 
+        <div class="mt-2 container">
             <div class="row pl-3 pr-3">
-                <div class="col-12 alert alert-danger alert-dismissible text-small fade show" role="alert">
-                    <i class="fas fa-info-circle"></i> Some functionalities of FPL Optimized won't be available while we are getting ready for 2021-22 season.</a>
+                <div class="col-12 alert alert-success alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> FPLOptimized is ready for new season! Welcome back :)</a>
                     <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             </div>
-        </div>
+        </div> -->
 
 
 <main class="container">
@@ -334,16 +335,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.js" integrity="sha512-2ypsPur7qcA+2JjmmIJR1c4GWFqTLIe1naXXplraMg0aWyTOyAMpOk+QL+ULpzwrO/GdwA3qB3FhVyyiR8gdhw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.1/fernetBrowser.js"></script>
 
 <script>
     let repo_name = ""
-    let season = "2020-21";
-    let gw = "GW38";
-    let next_gw = "GW38";
+    let season = "2021-22";
+    let gw = "GW1";
+    let next_gw = "GW1";
     let date = "";
-    let lastupdate = "2021-06-22T18:34:25.443961+00:00";
+    let lastupdate = "2021-08-05T03:17:52.035540+00:00";
     let listdates = [
-        "2020-21 / GW37 / 2021-05-18 ", 
+        "2020-21 / GW38 / 2021-05-23 ", 
     ];
     let is_active = false ;
     let active_gw = -1 ;
@@ -363,6 +367,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-06-22T18:34:25.443961+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-08-05T03:17:52.035540+00:00</div>
 
 </html> 

@@ -133,7 +133,6 @@ var app = new Vue({
             //     return this.season + " / " + this.gw + " / " + this.date;
             // },
             // set: function(value) {
-            //     debugger;
             //     this.selected_date_pos;
             //     let v = value.split(' / ');
             //     this.season = v[0];
@@ -148,7 +147,6 @@ var app = new Vue({
             },
             set: function(value) {
                 this.selected_date_pos = value;
-                debugger;
                 let cv = this.listdates[value];
                 let v = cv.split(' / ');
                 this.season = v[0].trim();

@@ -296,8 +296,6 @@ async function redraw_graph(match) {
 }
 
 $(document).ready(() => {
-    // 2021 disabled for now
-    return
     Promise.all([
             fetch_fpl_fixture()
         ]).then((values) => {

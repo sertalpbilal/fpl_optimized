@@ -1239,3 +1239,14 @@ tbody tr:last-child td.highlighted-col {
     padding: 0.25rem 0.4rem;
     border: 0px solid black;
 }
+
+.disabled-card {
+    border: 1px solid rgb(61, 61, 61) !important;
+    background-color: rgb(75, 75, 75);
+    color: rgb(92, 92, 92);
+    cursor: none;
+}
+
+#homepage .card {
+    border:none;
+}

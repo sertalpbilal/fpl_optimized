@@ -308,6 +308,7 @@ var app = new Vue({
         get_graph_checkpoints() {
             const gw_info = this.gameweek_info;
             if (_.isEmpty(gw_info)) { return [] }
+            if (_.isEmpty(this.team_data)) {return []}
 
             let cloned_fixture = this.gameweek_games_with_metadata;
 
@@ -488,6 +489,7 @@ var app = new Vue({
         team_data_with_metadata() {
             if (!this.is_ready) { return []; }
             if (!this.is_el_ready) { return []; }
+            if (_.isEmpty(this.team_data)) {return [];}
 
             const el_data_combined = this.element_data_combined;
             if (_.isEmpty(el_data_combined)) { return []; }
@@ -498,6 +500,7 @@ var app = new Vue({
                 let el_info = e.data.el_data;
                 Object.assign(e, e.data);
             })
+
             picks.forEach((player) => {
                 let data = player.data;
                 let cnt = picks.filter(j => j.element_type == data.element_type).filter(j => j.multiplier > 0).length;
@@ -644,7 +647,7 @@ var app = new Vue({
         loadOptimal() {
             $.ajax({
                 type: "GET",
-                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15.csv`,
+                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15_weighted.csv`,
                 dataType: "text",
                 async: true,
                 success: (data) => {
@@ -653,11 +656,25 @@ var app = new Vue({
                     values = tablevals.slice(1);
                     values_filtered = values.filter(i => i.length > 1);
                     let squad = values_filtered.map(i => _.zipObject(keys, i));
-                    this.team_data.picks.forEach(function load(val, index) {
-                        val.element = parseInt(squad[index].player_id);
-                        val.multiplier = index < 11 ? (squad[index].is_captain == "True" ? 2 : 1) : 0;
-                        val.is_captain = squad[index].is_captain == "True";
-                    })
+                    if(_.isEmpty(this.team_data)) {
+                        this.team_data = {'picks': [], 'event_transfers_cost': [], 'entry_history': {'event_transfers_cost': []}}
+                        squad.forEach((item, index) => {
+                            item.element = parseInt(item.player_id)
+                            item.multiplier = index < 11 ? (item.is_captain == "True" ? 2 : 1) : 0;
+                            item.is_captain = item.is_captain == "True";
+                            this.team_data.picks.push(item)
+                        })
+                        this.original_team_data = _.cloneDeep(this.team_data);
+                        this.$forceUpdate();
+                    }
+                    else {
+                        this.team_data.picks.forEach(function load(val, index) {
+                            val.element = parseInt(squad[index].player_id);
+                            val.multiplier = index < 11 ? (squad[index].is_captain == "True" ? 2 : 1) : 0;
+                            val.is_captain = squad[index].is_captain == "True";
+                        })
+                    }
+                    
                     this.$nextTick(() => {
                         refresh_all_graphs();
                     });
@@ -1057,6 +1074,7 @@ async function load_team_data(graph_refresh = false) {
         }
     }).catch(error => {
         console.error(error);
+        app.loadOptimal()
     });
 
     return get_team_info(app.team_id)
@@ -1079,7 +1097,7 @@ async function load_element_data() {
 }
 
 async function load_xp_data() {
-    return getXPData({ season: app.season, gw: app.gw, date: app.date })
+    return getXPData_Fernet({ season: app.season, gw: app.gw, date: app.date })
         .then((data) => {
             app.saveXP(data);
         })
@@ -1964,16 +1982,8 @@ async function app_initialize(refresh_team = false) {
 
 $(document).ready(function() {
 
-    // 2021 disabled for now
-    Vue.$cookies.keys().forEach(cookie => Vue.$cookies.remove(cookie))
-
-    return
-
     Vue.$cookies.config('120d')
     app_initialize().then(() => {
-
-        
-
         let cached_team = Vue.$cookies.get('team_id');
         if (cached_team !== null) {
             app.loadAutoSettings();
