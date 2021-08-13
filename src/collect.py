@@ -226,16 +226,17 @@ def sample_fpl_teams(gw=None, seed=None):
     print("Sampled", len(random_squads), "random teams")
     sample_dict['Overall'] = random_squads
 
-    # Part 2 - Various Ranges
-    pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
-    # pairs = [[100, 100], [1000, 500], [10000, 600], [100000, 800], [1000000, 1000]]
-    for target, nsample in pairs:
-        print(f"Sampling inside top {target}")
-        player_targets = random.sample(range(1, target+1), nsample)
-        with ProcessPoolExecutor(max_workers=8) as executor:
-            grabbed_squads = list(executor.map(get_rank_n_player, player_targets, itertools.repeat(gw)))
-        grabbed_squads = [i for i in grabbed_squads if i is not None]
-        sample_dict[target] = grabbed_squads
+    if gw != 1:
+        # Part 2 - Various Ranges
+        pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
+        # pairs = [[100, 100], [1000, 500], [10000, 600], [100000, 800], [1000000, 1000]]
+        for target, nsample in pairs:
+            print(f"Sampling inside top {target}")
+            player_targets = random.sample(range(1, target+1), nsample)
+            with ProcessPoolExecutor(max_workers=8) as executor:
+                grabbed_squads = list(executor.map(get_rank_n_player, player_targets, itertools.repeat(gw)))
+            grabbed_squads = [i for i in grabbed_squads if i is not None]
+            sample_dict[target] = grabbed_squads
 
     with open(input_folder / 'fpl_sampled.json', 'w') as file:
         json.dump(sample_dict, file)
