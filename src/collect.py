@@ -28,7 +28,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from sys import platform
 from concurrent.futures import ProcessPoolExecutor
 import glob
-from fplreview import get_data_fplreview
 from encrypt import encrypt
 
 
@@ -49,6 +48,7 @@ def get_all_data():
     input_folder, output_folder, season_folder = create_folders()
     get_fixture(season_folder)
     get_data_fpl_api(input_folder)
+    from fplreview import get_data_fplreview
     get_data_fplreview(input_folder, page='free-planner')
     generate_intermediate_layer(input_folder, page='free-planner')
     get_fivethirtyeight_data(input_folder)
