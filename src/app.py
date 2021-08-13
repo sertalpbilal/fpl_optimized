@@ -95,7 +95,10 @@ def best_gw_squads():
 def team_summary():
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
-    with open('static/json/fpl_analytics.json') as f:
+    # with open('static/json/fpl_analytics.json') as f:
+    #     league_list = f.read()
+
+    with open('static/json/league.json') as f:
         league_list = f.read()
 
     if app.config['DEBUG']:
@@ -139,7 +142,10 @@ def live_gw_page():
 
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
-    with open('static/json/fpl_analytics.json') as f:
+    # with open('static/json/fpl_analytics.json') as f:
+    #     league_list = f.read()
+
+    with open('static/json/league.json') as f:
         league_list = f.read()
 
     if app.config['DEBUG']:

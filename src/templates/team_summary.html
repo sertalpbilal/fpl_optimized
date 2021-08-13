@@ -458,7 +458,7 @@
                         <label for="fpl_analytics_league_select">-OR- Choose a team among FPL Analytics League</label>
                         <select class="form-control" id="fpl_analytics_league_select" @change="selectLeagueTeam">
                             <option></option>
-                            <option v-for="i in league_list" :value="i.id">{{ i.twitter }}</option>
+                            <option v-for="i in league_list" :value="i.entry">{{ `${i.player_first_name} ${i.player_last_name} (${i.entry_name})` }}</option>
                         </select>
                     </div>
                 </div>

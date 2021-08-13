@@ -2122,6 +2122,9 @@ $(document).ready(function() {
     if (t !== null) {
         app.autoTeamID(t)
     }
+    else {
+        $("#teamModal").modal('show');
+    }
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         app.refresh_plots();
     });
