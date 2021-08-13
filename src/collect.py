@@ -218,6 +218,7 @@ def sample_fpl_teams(gw=None, seed=None):
     input_folder.mkdir(parents=True, exist_ok=True)
 
     # Part 1 - 99% Overall sampling
+    print("PART1")
     selected_ids = random.sample(range(1, total_players), 666)
     # selected_ids = random.sample(range(1, total_players), 2000)
     with ProcessPoolExecutor(max_workers=8) as executor:
@@ -226,7 +227,8 @@ def sample_fpl_teams(gw=None, seed=None):
     print("Sampled", len(random_squads), "random teams")
     sample_dict['Overall'] = random_squads
 
-    if gw != 1:
+    if int(gw) != 1:
+        print("PART2")
         # Part 2 - Various Ranges
         pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
         # pairs = [[100, 100], [1000, 500], [10000, 600], [100000, 800], [1000000, 1000]]
@@ -261,13 +263,14 @@ def get_rank_n_player(rank, gw):
 def get_single_team_data(tid, gw=16):
     "Returns single team data from FPL API"
     print(f"Getting {tid} for {gw}")
-    time.sleep(0.1)
+    time.sleep(0.5)
     team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
     try:
         with urlopen(FPL_API['team_info'].format(PID=tid)) as url:
             team_data = json.loads(url.read().decode())
         with urlopen(FPL_API['picks'].format(PID=tid, GW=gw)) as url:
             pick_data = json.loads(url.read().decode())
+        time.sleep(0.5)
         return {'team': {key: team_data[key] for key in team_keys}, 'data': pick_data}
     except Exception as e:
         print("Encountered error, waiting 3 seconds:", e)
