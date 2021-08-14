@@ -26,7 +26,7 @@ jobs:
         run: docker pull sertalpbilal/selenium_docker:latest
       - name: Run docker image
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build sertalpbilal/selenium_docker bash -c "cd /app && python3 xp_league.py"
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd):/app sertalpbilal/selenium_docker bash -c "cd /app && python3 xp_league.py"
       - name: Add changes to the branch
         run: |
           cd build
