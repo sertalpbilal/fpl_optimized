@@ -691,7 +691,7 @@
                         <input type="number" class="form-control" id="teamIdEnter" v-model.lazy="current_team_id" placeholder="Team ID">
                         <select class="form-control" id="fpl_analytics_league_select" @change="selectLeagueTeam" v-if="show_league" placeholder="Select team">
                             <option></option>
-                            <option v-for="i in league_list" :value="i.entry">{{ `${i.player_first_name} ${i.player_last_name} (${i.entry_name})` }}</option>
+                            <option v-for="i in league_list" :value="i.entry">{{ `${i.player_name} (${i.entry_name})` }}</option>
                         </select>
                     </div>
                     <div class="form-group">
