@@ -26,13 +26,13 @@ jobs:
         run: docker pull sertalpbilal/selenium_docker:latest
       - name: Run docker image
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build sertalpbilal/selenium_docker bash -c "echo 'Hello world' && ls -la"
-      # - name: Add changes to the branch
-      #   run: |
-      #     cd build
-      #     git add -u
-      #     git add .
-      #     git config user.name "Github Action"
-      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git commit -m "Manual Update - Analytics League $GITHUB_RUN_ID"
-      #     git push
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build sertalpbilal/selenium_docker bash -c "cd /app && python3 xp_league.py"
+      - name: Add changes to the branch
+        run: |
+          cd build
+          git add -u
+          git add .
+          git config user.name "Github Action"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Auto Update - Analytics xP League $GITHUB_RUN_ID"
+          git push
