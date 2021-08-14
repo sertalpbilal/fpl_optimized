@@ -1,0 +1,38 @@
+name: Get data for Analytics xP League
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 7 * * *'
+
+jobs:
+  build-and-run:
+    name: Fetch IDs and picks for Analytics xP league
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check current directory
+        run: pwd
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Checkout webpage branch
+        uses: actions/checkout@v2
+        with:
+          ref: 'webpage'
+          path: ./build
+      - name: Make sure data folder exists
+        run: mkdir -p ./build/data
+      - name: Fetch docker image
+        run: docker pull sertalpbilal/selenium_docker:latest
+      - name: Run docker image
+        run: |
+          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build sertalpbilal/selenium_docker bash -c "echo 'Hello world' && ls -la"
+      # - name: Add changes to the branch
+      #   run: |
+      #     cd build
+      #     git add -u
+      #     git add .
+      #     git config user.name "Github Action"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git commit -m "Manual Update - Analytics League $GITHUB_RUN_ID"
+      #     git push
