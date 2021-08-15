@@ -21,14 +21,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'webpage'
-          path: ./build
+          path: ./src/build
       - name: Make sure data folder exists
-        run: mkdir -p ./build/sample
-      - name: Build docker image
-        run: docker build -f Dockerfile-scrap -t scraper .
+        run: mkdir -p ./src/build/sample
+      - name: Pull docker image
+        run: docker pull sertalpbilal/selenium_docker:latest
       - name: Run docker image
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -e GW=${{ github.event.inputs.GW }} -v $(pwd)/build:/app/build scraper
+          docker run -t --rm -e LANG=C.UTF-8 -e GW=${{ github.event.inputs.GW }} -v $(pwd):/app sertalpbilal/selenium_docker bash -c "cd /app/scripts && ./sample.sh && ./update_league.sh"
       - name: Add changes to the branch
         run: |
           cd build

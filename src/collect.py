@@ -285,22 +285,23 @@ def get_fpl_info(info_type, **kwargs):
     return data
 
 
-def get_fpl_analytics_league(target_folder, debug=False):
-    # https://fplrevver.blob.core.windows.net/fpldata/analytics_league.csv
-    base_folder = pathlib.Path().resolve()
-    with open(base_folder / 'static/json/fpl_analytics.json') as f:
-        data = json.load(f)
+# Old way of scraping data
+# def get_fpl_analytics_league(target_folder, debug=False):
+#     # https://fplrevver.blob.core.windows.net/fpldata/analytics_league.csv
+#     base_folder = pathlib.Path().resolve()
+#     with open(base_folder / 'static/json/fpl_analytics.json') as f:
+#         data = json.load(f)
 
-    if debug:
-        review_values = [get_team_season_review(data[0], True)]
-    else:
-        with ProcessPoolExecutor(max_workers=16) as executor:
-            review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
+#     if debug:
+#         review_values = [get_team_season_review(data[0], True)]
+#     else:
+#         with ProcessPoolExecutor(max_workers=16) as executor:
+#             review_values = list(executor.map(get_team_season_review, data, itertools.repeat(False)))
 
-    review_values = [i for i in review_values if i is not None]
-    df = pd.DataFrame(review_values)
-    print(df)
-    df.to_csv(target_folder / 'fpl_analytics_league.csv')
+#     review_values = [i for i in review_values if i is not None]
+#     df = pd.DataFrame(review_values)
+#     print(df)
+#     df.to_csv(target_folder / 'fpl_analytics_league.csv')
     
 
 def retry(f):
