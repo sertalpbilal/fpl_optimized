@@ -121,7 +121,7 @@
                 <div class="scenario_detail">
                     A detailed table of all FPL Gameweeks
                 </div>
-                <div class="card-body pl-0 pr-0">
+                <div class="card-body pl-0 pr-0 pt-1 pb-1">
 
                     <div class="card mt-1 mr-3 m-1 ml-3 bg-gray-3 text-small">
                         <div class="card-header pt-1 pb-0 click-title collapsed" data-toggle="collapse" data-target="#controls" aria-expanded="false" aria-controls="controls">
@@ -131,7 +131,7 @@
                             </div>
                         </div>
                         <div class="collapse" id="controls">
-                            <div class="card-body pt-1 pb-2 d-flex">
+                            <div class="card-body pt-1 pb-2 d-flex flex-wrap justify-content-center">
                                 <div class="flex-column metric mw-10 ml-1">
                                     <div class="text-center p-0">Data Source</div>
                                     <div class="setting-value text-center p-0">
@@ -257,16 +257,16 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-center align-items-center flex-column bd-highlight mb-3">
+                    <div class="d-flex justify-content-center align-items-center flex-column bd-highlight mb-1">
                         
-                        <div class="btn-group mb-1" role="group" aria-label="Basic example">
+                        <div class="btn-group mb-1" role="group">
                             <a href role="button" class="btn btn-info starter-button btn-sm" aria-disabled="true" disabled>Data</a>
                             <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=0; invalidate_cache()">Overall</button>
                             <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=1; invalidate_cache()">Offense</button>
                             <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=2; invalidate_cache()">Defense</button>
                         </div>
 
-                        <div class="btn-group" role="group" aria-label="Basic example">
+                        <div class="btn-group" role="group">
                             <a href role="button" class="btn btn-info starter-button btn-sm" aria-disabled="true" disabled>Sort by</a>
                             <button type="button" class="btn btn-secondary btn-sm" v-for="gw in _.range(1,7)" @click="range_from=this_gw; range_to=this_gw+gw-1; order_by_diff()">{{gw}}GW</button>
                         </div>
@@ -580,7 +580,7 @@
     let gw = "GW2";
     let next_gw = "GW2";
     let date = "2021-08-16";
-    let lastupdate = "2021-08-16T17:45:19.712479+00:00";
+    let lastupdate = "2021-08-16T17:54:04.629662+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -601,6 +601,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-08-16T17:45:19.712479+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-08-16T17:54:04.629662+00:00</div>
 
 </html> 
