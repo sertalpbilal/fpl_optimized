@@ -9,9 +9,9 @@ var app = new Vue({
         main_data: undefined,
         fte_data: undefined,
         choice_data_source: [
-            { 'name': "FiveThirtyEight - FDR", 'attribute': 'fdr_fte' },
-            { 'name': "FTE - Defensive", 'attribute': 'fdr_off' }, // attribute is named "_off" because it is opponent's offense that defines difficulty
-            { 'name': "FTE - Offensive", 'attribute': 'fdr_def' }, // attribute is named "_def" because it is opponent's defense that defines difficutly
+            { 'name': "538 - FDR", 'attribute': 'fdr_fte' },
+            { 'name': "538 - Defensive", 'attribute': 'fdr_off' }, // attribute is named "_off" because it is opponent's offense that defines difficulty
+            { 'name': "538 - Offensive", 'attribute': 'fdr_def' }, // attribute is named "_def" because it is opponent's defense that defines difficutly
             { 'name': "Official FPL", 'attribute': 'fdr' }
         ],
         option_data_source: 0,
@@ -256,6 +256,11 @@ var app = new Vue({
         },
     },
     methods: {
+        order_by_diff() {
+            this.invalidate_cache()
+            let table = $("#main_fixture").DataTable();
+            table.order([table.columns().header().length - 1, 'asc']).draw()
+        },
         saveFixtureData(data) {
             data.forEach((g) => {
                 g.original_event = g.event;
