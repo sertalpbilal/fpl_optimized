@@ -42,6 +42,10 @@ body {
     background-color: #343436;
 }
 
+.bg-gray-3 {
+    background-color: #6b6b6b;
+}
+
 .bg-squad-card {
     background-color: #474747;
 }
@@ -1250,3 +1254,31 @@ tbody tr:last-child td.highlighted-col {
 #homepage .card {
     border:none;
 }
+
+.click-title {
+    cursor: pointer;
+}
+
+.click-title .toggle-button {
+    /* transform: rotate(-180deg); */
+    transition: transform 250ms ease;
+}
+
+.click-title.collapsed .toggle-button {
+    transform: rotate(180deg);
+}
+
+
+.flex-column.metric .text-center {
+    white-space: nowrap;
+}
+
+
+.starter-button {
+    background-color: #bfbfbf;
+    color: black;
+    border-color: #6d6d6d;
+    pointer-events: none;
+}
+
+
