@@ -458,6 +458,23 @@ function read_local_file(url) {
     });
 }
 
+function get_analytics_data({season, gw}) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `sample/${season}/${gw}/analytics_league.json`,
+            dataType: "json",
+            async: true,
+            success: (data) => {
+                resolve(data)
+            },
+            error: ()  => {
+                reject("Could not find league data");
+            }
+        });
+    })
+}
+
 let rank_formatter = Intl.NumberFormat('en');
 
 function formatted_rank(value) {

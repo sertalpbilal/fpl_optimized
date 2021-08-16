@@ -1281,4 +1281,24 @@ tbody tr:last-child td.highlighted-col {
     pointer-events: none;
 }
 
+.player-name {
+    font-style: italic;
+    color: #faffe6!important;
+}
 
+.team-name a {
+    color: #8ff5ff;
+    white-space: nowrap;
+    /* border-bottom: 1px dashed; */
+}
+
+.team-name a:hover {
+    text-decoration: none;
+    color:#ff9a9a;
+}
+
+
+#league_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}

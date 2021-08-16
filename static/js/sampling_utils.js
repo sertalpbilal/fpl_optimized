@@ -91,6 +91,93 @@ function autosubbed_team(team_picks, autosub_dict) {
     return { 'team': team_picks, 'sub_replacement': sub_replacements, 'cap_replacement': cap_replacements };
 }
 
+function prepare_fixture_data(data) {
+
+    data.forEach((game, index) => {
+        game.start_dt = new Date(game.kickoff_time);
+        game.end_dt = new Date(game.start_dt.getTime() + (105 * 60 * 1000));
+        game.node_info = { start: (game.start_dt).getTime(), end: game.end_dt.getTime(), content: 'Game' }
+    })
+
+    data.sort((a, b) => { return a.node_info.start - b.node_info.start });
+
+    data.forEach((game, index) => {
+        game.duration = 105 * 60 * 1000;
+        game.team_h_name = teams_ordered[game.team_h - 1].name;
+        game.team_a_name = teams_ordered[game.team_a - 1].name;
+        game.label = teams_ordered[game.team_h - 1].name + " vs " + teams_ordered[game.team_a - 1].name;
+        let order = 0;
+        data.slice(0, index).forEach((game2) => {
+            if ((game.start_dt >= game2.start_dt && game.start_dt <= game2.end_dt) ||
+                (game.end_dt >= game2.start_dt && game.end_dt <= game2.end_dt)) {
+                if (game2.order == order) {
+                    order += 1;
+                }
+            }
+        })
+        game.order = order;
+    })
+
+    return data;
+}
+
+
+function get_provisional_bonus(gw_fixture) {
+    let bonus_players = {};
+
+    gw_fixture.forEach((game) => {
+        let bps_provisional = {};
+
+        if (game.started && !game.finished) {
+            try {
+                let bps_stats = game.stats.find(i => i.identifier == "bps")
+                let all_players = bps_stats.h.concat(bps_stats.a)
+                let sorted_groups = Object.entries(_.groupBy(all_players, i => i.value)).sort((a, b) => b[0] - a[0]).slice(0, 3)
+                sorted_groups.forEach((cat, i) => {
+                    let bonus = 3 - i;
+                    cat[1].forEach((p) => {
+                        bonus_players[p.element] = bonus;
+                    });
+                })
+            } catch (err) {}
+        }
+    })
+
+    return bonus_players;
+}
+
+function rp_by_id_dict(fixture, rp_data) {
+    rp_data.forEach((p) => {
+        try {
+            p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
+            if (p.games_finished && p.stats.minutes == 0) {
+                p.autosub = true;
+            } else {
+                p.autosub = false;
+            }
+        } catch (e) {
+            console.log("Player game_finished error", e)
+        }
+    })
+    let rp_obj = Object.fromEntries(_.cloneDeep(rp_data.map(i => [i.id, i])));
+    if (!_.isEmpty(this.provisional_bonus) && !_.isEmpty(rp_obj)) {
+        Object.entries(this.provisional_bonus).forEach(entry => {
+            const [key, value] = entry;
+            rp_obj[key].stats.total_points += value;
+        })
+    }
+    return rp_obj;
+}
+
+function generate_autosub_dict(el_data, rp_by_id) {
+    let autosubs = [];
+    el_data.forEach((e) => {
+        autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+    })
+    let autosub_dict = Object.fromEntries(autosubs);
+    return autosub_dict;
+}
+
 function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs) {
 
     let teams = [];
