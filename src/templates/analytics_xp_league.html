@@ -1,0 +1,94 @@
+"% include 'header.html' %"
+
+<main class="container" v-cloak>
+    
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                
+                <div class="card-body text-center p-3">
+                    <div class="text-center mb-1">Analytics xP League</div>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw <= 1" @click="active_gw_update(-1)"><i class="fas fa-caret-left"></i></button>
+                        </div>
+                        <div class="col-10 col-lg-2">
+                            {{ 'GW ' + active_gw }}
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= gw" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 mb-0-lg">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Standings - GW</h5>
+                <!-- <div class="scenario_detail">Best lineup xP, no team limit, no budget limit, no bench players</div> -->
+                <div class="card-body field-body p-3">
+                    <div class="table-responsivex" v-if="!_.isEmpty(processed_league_data)">
+                        <table class="table table-sm text-white table-striped text-small" id="league_table"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Team</th>
+                                    <th>pre-xP</th>
+                                    <th>post-xP</th>
+                                    <th>Pts</th>
+                                    <th>Pts-xP</th>
+                                    <th>TV</th>
+                                    <th>ITB</th>
+                                    <th>Chip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="entry in processed_league_data">
+                                    <td>{{ entry.info.rank }}</td>
+                                    <td :data-search="entry[0].entry_name + ' ' + entry[0].player_name">
+                                        <span class="team-name"><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry[0].entry+'/event/' + active_gw">{{ entry[0].entry_name }}</a></span>
+                                        <!-- <br/><span class="player-name">{{ entry[0].player_name }}</span> -->
+                                    </td>
+                                    <td>{{ rounded(entry.info.pre_xp,3) }}</td>
+                                    <td>{{ rounded(entry.info.post_xp,3) }}</td>
+                                    <td>{{ entry.info.rp }}</td>
+                                    <td :data-order="entry.info.luck">{{ getWithSign(entry.info.luck,3) }}</td>
+                                    <td>{{ entry.info.team_value }}</td>
+                                    <td>{{ entry[1].entry_history.bank/10 }}</td>
+                                    <td>{{ entry[1].active_chip }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center d-block mx-auto" id="loading_box" v-else>
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <!-- <div class="card-body text-left">
+                    <h5>Note</h5>
+                    <p>Data on this page is refreshed every 6 hours. It is possible that some values/graphs do not function properly while a GW is ongoing.</p>
+                </div> -->
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+"% with scripts=["main", "sampling_utils", "analytics_league"] %" "% include 'footer.html' %" "% endwith %"

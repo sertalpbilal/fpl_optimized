@@ -2383,8 +2383,6 @@ async function fetch_main_data() {
 }
 
 $(document).ready(() => {
-    // 2021 disabled for now
-    Vue.$cookies.keys().forEach(cookie => Vue.$cookies.remove(cookie))
     Promise.all([
             get_points(),
             get_eo(),

@@ -28,6 +28,7 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
+global_season = "2021-22"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
 def folder_order(fname):
@@ -122,19 +123,40 @@ def ownership_trend():
         return render_template('ownership_trend.html', repo_name="", page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
 
-@app.route('/fpl_analytics_league.html')
+# @app.route('/fpl_analytics_league.html')
+# def fpl_analytics():
+
+#     # First (old) season for archive purposes
+#     all_dates = glob.glob('build/data/*/*/*/input/fpl_analytics_league.csv')
+#     all_dates.sort(key=folder_order, reverse=True)
+#     if sys.platform == 'win32':
+#         all_dates = [i.replace('\\', '/') for i in all_dates]
+#     list_dates = ([i.split('/')[2:5] for i in all_dates])
+#     target = list_dates[0]
+#     list_dates = [' / '.join(i) for i in list_dates]
+
+
+#     if app.config['DEBUG']:
+#         return render_template('fpl_analytics_league.html', repo_name="/..", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+#     else:
+#         return render_template('fpl_analytics_league.html', repo_name="", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+
+@app.route('/analytics_league.html')
 def fpl_analytics():
-    all_dates = glob.glob('build/data/*/*/*/input/fpl_analytics_league.csv')
-    all_dates.sort(key=folder_order, reverse=True)
-    if sys.platform == 'win32':
-        all_dates = [i.replace('\\', '/') for i in all_dates]
-    list_dates = ([i.split('/')[2:5] for i in all_dates])
-    target = list_dates[0]
-    list_dates = [' / '.join(i) for i in list_dates]
-    if app.config['DEBUG']:
-        return render_template('fpl_analytics_league.html', repo_name="/..", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+
+    # gw = get_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+
+    if is_active_gw == 'true':
+        target = list_dates[0].split(' / ')
     else:
-        return render_template('fpl_analytics_league.html', repo_name="", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        target = list_dates[1].split(' / ')
+
+    if app.config['DEBUG']:
+        return render_template('analytics_xp_league.html', repo_name="/..", page_name="Analytics xP League", season=global_season, gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+    else:
+        return render_template('analytics_xp_league.html', repo_name="", page_name="Analytics xP League", season=global_season, gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+
 
 @app.route('/live_gw.html')
 def live_gw_page():
@@ -319,7 +341,7 @@ def impact_summary_page():
 def list_all_snapshots():
     pass
 
-def list_one_per_gw():
+def list_one_per_gw(season_filter='*'):
 
     is_active_gw = 'false'
     active_gw = 1
@@ -330,7 +352,7 @@ def list_one_per_gw():
             is_active_gw = 'true'
             active_gw = gws[0]['id']
 
-    all_dates = glob.glob('build/data/*/*/*/input/element.csv')
+    all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/element.csv')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
@@ -361,6 +383,22 @@ def read_data(path):
 def read_sample(path):
     print(path)
     return send_from_directory('build', 'sample/' + path)
+
+
+def get_gw():
+    import requests
+    r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
+    vals = r.json()
+    gw = 38
+    for i in vals['events']:
+        if i['is_current']:
+            gw = i['id']
+            break
+        elif i['is_next']:
+            gw = i['id']
+            break
+    return gw
+
 
 if __name__ == "__main__":
     app.config['DEBUG']=True
