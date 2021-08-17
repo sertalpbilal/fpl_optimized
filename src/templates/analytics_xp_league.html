@@ -17,7 +17,7 @@
                             {{ 'GW ' + active_gw }}
                         </div>
                         <div class="col-1">
-                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= gw" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
                         </div>
                     </div>
                 </div>
