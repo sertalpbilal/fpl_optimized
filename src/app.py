@@ -162,7 +162,7 @@ def fpl_analytics():
 def live_gw_page():
     page_name = 'live_gw.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()

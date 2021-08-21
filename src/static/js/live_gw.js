@@ -1949,6 +1949,10 @@ function refresh_all_graphs() {
 
 async function app_initialize(refresh_team = false) {
 
+    if (!is_active) {
+        app.gw = `GW${parseInt(app.gw.slice(2))+1}`
+    }
+
     $("#updateModal").modal({
         backdrop: 'static',
         keyboard: false
