@@ -77,7 +77,40 @@ var app = new Vue({
     },
     methods: {
         active_gw_update(val) {
-            this.active_gw += parseInt(val)
+            
+            $("#league_table").DataTable().destroy()
+            this.league_data = []
+
+            this.active_gw = this.active_gw + parseInt(val)
+
+            let cgw = this.active_gw
+
+
+            Promise.all([
+                get_fpl_main_data().then((data) => {
+                    app.static_data = data
+                }),
+                get_analytics_data({gw: cgw, season}).then((data) => {
+                    app.league_data = data
+                }),
+                get_fixture(cgw).then((data) => {
+                    app.fixture_data = prepare_fixture_data(data);
+                }),
+                getRPData(cgw).then((data) => {
+                    app.rp_data = data
+                }),
+                getXPData_Fernet({season, gw, date}).then((data) => {
+                    app.xp_data = data
+                })
+            ]).then(() => {
+                app.rp_by_id = rp_by_id_dict(app.fixture_data, app.rp_data)
+                app.autosub_dict = generate_autosub_dict(app.el_data, app.rp_by_id)
+        
+                app.$nextTick(() => {
+                    app.refresh_table()
+                })
+            })
+
         },
         refresh_table() {
 
