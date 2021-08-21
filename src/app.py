@@ -147,15 +147,19 @@ def fpl_analytics():
     # gw = get_gw()
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
 
-    if is_active_gw == 'true':
-        target = list_dates[0].split(' / ')
-    else:
-        target = list_dates[1].split(' / ')
+    # if is_active_gw == 'true':
+    #     target = list_dates[0].split(' / ')
+    # else:
+    #     target = list_dates[1].split(' / ')
+
+    print(list_dates)
+
+    target = [i.strip() for i in list_dates[1].split('/')]
 
     if app.config['DEBUG']:
-        return render_template('analytics_xp_league.html', repo_name="/..", page_name="Analytics xP League", season=global_season, gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('analytics_xp_league.html', repo_name="/..", page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time)
     else:
-        return render_template('analytics_xp_league.html', repo_name="", page_name="Analytics xP League", season=global_season, gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('analytics_xp_league.html', repo_name="", page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time)
 
 
 @app.route('/live_gw.html')
