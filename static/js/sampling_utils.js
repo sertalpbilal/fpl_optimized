@@ -71,7 +71,7 @@ function autosubbed_team(team_picks, autosub_dict) {
             let current_cnt = team_picks.filter(j => j.multiplier > 0 && (autosub_dict[j.element] && autosub_dict[j.element].element_type == target_pos)).length;
             if (element_type[target_pos].min > current_cnt || target_pos == "1") {
                 // only this type
-                let player_to_enter = bench.find(j => autosub_dict[j.element].element_type == target_pos && autosub_dict[j.element] && autosub_dict[j.element].autosub == false)
+                let player_to_enter = bench.find(j => autosub_dict[j.element] && autosub_dict[j.element].element_type == target_pos && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
@@ -79,7 +79,7 @@ function autosubbed_team(team_picks, autosub_dict) {
                 }
             } else {
                 // anyone on bench
-                let player_to_enter = bench.find(j => autosub_dict[j.element].element_type != "1" && autosub_dict[j.element] && autosub_dict[j.element].autosub == false)
+                let player_to_enter = bench.find(j => autosub_dict[j.element] && autosub_dict[j.element].element_type != "1" && autosub_dict[j.element].autosub == false)
                 if (player_to_enter) {
                     player_to_enter.multiplier = 1;
                     bench = bench.filter(i => i.element != player_to_enter.element)
