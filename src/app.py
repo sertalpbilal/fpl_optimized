@@ -94,7 +94,7 @@ def best_gw_squads():
 
 @app.route('/team_summary.html')
 def team_summary():
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()
@@ -170,6 +170,13 @@ def live_gw_page():
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()
+
+    print("LIVE GW")
+    print(target)
+    print(list_dates)
+    print(next_gw)
+    print(is_active_gw)
+    print(active_gw)
 
     with open('static/json/league.json') as f:
         league_list = f.read()
@@ -280,7 +287,7 @@ def ownership_rates():
     # season = s[2]
     # gw = s[3]
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
     if len(list_dates) > 1:
         dates = [list_dates[1]]
     else:
@@ -307,7 +314,7 @@ def impact_summary_page():
     # season = s[2]
     # gw = s[3]
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
     if len(list_dates) > 1:
         dates = [list_dates[1]]
     else:
@@ -348,9 +355,10 @@ def list_all_snapshots():
 def list_one_per_gw(season_filter='*'):
 
     is_active_gw = 'false'
-    active_gw = 1
+    active_gw = -1
     data = get_fpl_info('now')
     gws = [i for i in data['events'] if i['is_current'] == True]
+    print(gws)
     if len(gws) == 1:
         if gws[0]['finished'] == False:
             is_active_gw = 'true'
@@ -361,6 +369,7 @@ def list_one_per_gw(season_filter='*'):
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
     list_dates = ([i.split('/')[2:5] for i in all_dates])
+    print(list_dates)
     filtered_dates = []
     exist = set()
     for i in list_dates:
