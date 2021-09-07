@@ -328,23 +328,27 @@ def impact_summary_page():
             season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
 
 
-# @app.route('/highlights.html')
-# def highlights():
-#     page_name = 'highlights.html'
+@app.route('/highlights.html')
+def highlights():
+    page_name = 'highlights.html'
 
-#     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    from collect import cache_effective_ownership, create_folders, get_fivethirtyeight_data, cache_realized_points_data, read_static
 
-#     # with open('static/json/fpl_analytics.json') as f:
-#     #     league_list = f.read()
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
-#     gw = target[1].split('GW')[1]
+    print(next_gw)
 
-#     if app.config['DEBUG']:
-#         return render_template(page_name, repo_name="/..", page_name="Season Highlights", season=target[0], gw=gw)
-#             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
-#     else:
-#         return render_template(page_name, repo_name="", page_name="Season Highlights", season=target[0], gw=gw)
-#             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+    # with open('static/json/fpl_analytics.json') as f:
+    #     league_list = f.read()
+
+    gw = target[1].split('GW')[1]
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="Season Highlights", season=target[0], gw=gw)
+            # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+    else:
+        return render_template(page_name, repo_name="", page_name="Season Highlights", season=target[0], gw=gw)
+            # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
 

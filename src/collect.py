@@ -52,9 +52,24 @@ def get_all_data():
     get_data_fplreview(input_folder, page='free-planner')
     generate_intermediate_layer(input_folder, page='free-planner')
     get_fivethirtyeight_data(input_folder)
-    # cache_realized_points_data(season_folder)
+
+    cache_effective_ownership(season_folder)
+    get_fivethirtyeight_data(season_folder)
+    cache_realized_points_data(season_folder)
+
     return input_folder, output_folder
 
+
+def get_gw():
+    with urlopen(FPL_API['now']) as url:
+        data = json.loads(url.read().decode())
+    try:
+        target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
+    except:
+        target_gw = "GW 38"
+    gw = int(target_gw.split()[1])
+    print(f"Gameweek {gw}")
+    return gw
 
 def create_folders():
     """Creates folders for data storage"""
@@ -66,6 +81,8 @@ def create_folders():
         target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
     except:
         target_gw = "GW 38"
+
+    current_gw = target_gw
     gw_numeric = int(target_gw.split()[1])
     gameweek = "GW" + str(target_gw.split()[1]).strip()
     date = datetime.datetime.now(pytz.timezone('EST')).date().isoformat()
@@ -405,8 +422,11 @@ def get_fivethirtyeight_data(target_folder):
 
 
 def cache_realized_points_data(season_folder):
+
+    maxgw = get_gw()
+
     gw_data = {}
-    for gw in range(1,39):
+    for gw in range(1,maxgw):
         r = requests.get(FPL_API['live'].format(GW=gw))
         if r.status_code == 200:
             raw_data = r.json()
@@ -417,9 +437,16 @@ def cache_realized_points_data(season_folder):
 
 
 def cache_effective_ownership(season_folder):
-    files = glob.glob('build/sample/*/fpl_sampled.json')
-    if sys.platform == 'win32':
-        files = [{'gw': int(i.replace('\\', '/').split('/')[2]), 'file': i} for i in files]
+
+    vals = read_static()
+    season = vals['season']
+
+    files = glob.glob(f'build/sample/{season}/*/fpl_sampled.json')
+    print(files)
+    print(files[0].replace('\\', '/').split('/'))
+    if True: # sys.platform == 'win32':
+        files = [{'gw': int(i.replace('\\', '/').split('/')[3]), 'file': i} for i in files]
+    print(files)
     files = sorted(files, key=lambda i: i['gw'])
     season_eo = {}
     for f in files:
