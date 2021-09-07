@@ -3,6 +3,8 @@ var app = new Vue({
     data: {
         season: season,
         team_id: '',
+        next_gw: gw,
+        max_gw: Math.min(gw, 39),
         points_data: {},
         eo_data: {},
         fixture_data: [],
@@ -566,7 +568,7 @@ var app = new Vue({
             })
             calls.push(init_call)
 
-            for (gw = 1; gw < 39; gw++) {
+            for (gw = 1; gw < this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
                 let call = get_team_picks({
@@ -829,10 +831,10 @@ var app = new Vue({
 
         },
         add_ID_to_compare() {
-            let val = document.getElementById("new_id").value
 
+            let val = document.getElementById("new_id").value
             document.getElementById("new_id").value = ""
-            
+
             let gw = 1;
             let calls = []
             responses = {}
@@ -843,7 +845,7 @@ var app = new Vue({
             })
             calls.push(init_call)
 
-            for (gw = 1; gw < 39; gw++) {
+            for (gw = 1; gw < this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
                 let call = get_team_picks({
@@ -980,7 +982,8 @@ function draw_player_bar_chart(div_id, id) {
     let pts_data = Object.entries(raw_data); // app.pid_gw_pts[player_id]
     let min_y = Math.min(0, Math.min(...pts_data.map(i => i[1])))
     let max_y = Math.max(Math.max(...pts_data.map(i => i[1])) + 4, 6)
-    let max_x = Math.max(Math.max(...pts_data.map(i => i[0])), parseInt(gw))
+    // let max_x = Math.max(Math.max(...pts_data.map(i => i[0])), parseInt(gw))
+    let max_x = 39
 
     let team_pick_gws = app.user_player_gws
     let user_gws = team_pick_gws.filter(i => i.id == id)
@@ -1328,7 +1331,7 @@ function draw_radar_map() {
         data.push(Object.entries(picks).map(i => ({'stat': i[0], 'value': i[1].count / i[1].total*100})))
     }
 
-    const maxvals = { 'Clean Sheet': 45, 'Goal': 35, 'Assist': 25, 'Bonus': 30, 'Captain': 70 }
+    const maxvals = { 'Clean Sheet': 60, 'Goal': 60, 'Assist': 40, 'Bonus': 60, 'Captain': 70 }
 
     data.forEach((d) => { d.forEach((s) => { s.perc = s.value / maxvals[s.stat] }) })
 
@@ -2332,7 +2335,7 @@ async function get_eo() {
             app.eo_data = data;
             app.sample_options = Object.keys(data[1])
             // default 10K
-            app.sample_selection = 2 //Object.keys(data[1]).length - 1
+            app.sample_selection = 0 //Object.keys(data[1]).length - 1
         },
         error: (xhr, status, error) => {
             console.log(error);
@@ -2391,16 +2394,16 @@ $(document).ready(() => {
             fetch_main_data()
         ]).then((values) => {
             Vue.$cookies.config('120d')
-            app.$nextTick(() => {
-                console.log('READY!')
-                let cached_team = Vue.$cookies.get('team_id')
-                if (cached_team !== null) {
-                    app.team_id = cached_team;
-                    app.$nextTick(() => {
-                        app.fetch_team_picks()
-                    })
-                }
-            })
+            // app.$nextTick(() => {
+            //     console.log('READY!')
+            //     let cached_team = Vue.$cookies.get('team_id')
+            //     if (cached_team !== null) {
+            //         app.team_id = cached_team;
+            //         app.$nextTick(() => {
+            //             app.fetch_team_picks()
+            //         })
+            //     }
+            // })
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
