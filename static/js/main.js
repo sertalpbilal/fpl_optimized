@@ -442,6 +442,34 @@ function getRPData(gw) {
     });
 }
 
+function getSeasonRPData(max_gw=38) {
+    return new Promise((resolve, reject) => {
+        let calls = []
+        for (gw = 1; gw <= max_gw; gw++) {
+            let current_gw = gw;
+            let call = getRPData(gw)
+                .then((data) => {
+                    let d = {gw: current_gw, 'data': data.filter(i => i.stats.minutes !=0).map(i => {return {'id': i.id, 'e': i.explain}})}
+                    return(d)
+                })
+                .catch((e) => {
+                    // ignore
+                })
+            calls.push(call)
+        }
+
+        Promise.allSettled(calls).then((data) => {
+            debugger
+            let combined = data.filter(i => i.status == 'fulfilled').map(i => i.value).map(i => [i.gw, i.data])
+            let all_rp = Object.fromEntries(combined)
+            resolve(all_rp)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+    
+}
+
 function read_local_file(url) {
     return new Promise((resolve, reject) => {
         $.ajax({

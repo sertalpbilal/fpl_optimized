@@ -568,7 +568,7 @@ var app = new Vue({
             })
             calls.push(init_call)
 
-            for (gw = 1; gw < this.max_gw; gw++) {
+            for (gw = 1; gw <= this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
                 let call = get_team_picks({
@@ -578,6 +578,9 @@ var app = new Vue({
                     })
                     .then((response) => {
                         app.$set(app.team_data, current_gw, response.body)
+                    })
+                    .catch((e) => {
+                        // ignore
                     })
                 calls.push(call)
             }
@@ -2322,19 +2325,24 @@ function draw_tree_map() {
 }
 
 async function get_points() {
-    return $.ajax({
-        type: "GET",
-        url: `data/${season}/points.json`,
-        async: true,
-        dataType: "json",
-        success: (data) => {
-            app.points_data = data;
-        },
-        error: (xhr, status, error) => {
-            console.log(error);
-            console.error(xhr, status, error);
-        }
-    });
+    debugger
+    return getSeasonRPData(parseInt(gw)).then((data) => {
+        app.points_data = data;
+    })
+
+    // return $.ajax({
+    //     type: "GET",
+    //     url: `data/${season}/points.json`,
+    //     async: true,
+    //     dataType: "json",
+    //     success: (data) => {
+    //         app.points_data = data;
+    //     },
+    //     error: (xhr, status, error) => {
+    //         console.log(error);
+    //         console.error(xhr, status, error);
+    //     }
+    // });
 }
 
 async function get_eo() {
