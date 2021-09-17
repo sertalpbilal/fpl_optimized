@@ -1311,3 +1311,9 @@ tbody tr:last-child td.highlighted-col {
     font-family: "Font Awesome 5 Free"; font-weight: 900; content: " \f0dc";
 }
 
+#ownership_table th {
+    position: sticky;
+    top: 0px;
+    background-color: black;
+    border-top: 0px;
+}
