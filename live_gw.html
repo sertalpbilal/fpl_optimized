@@ -464,7 +464,7 @@
                                                     <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
                                                 </g></svg> Expected (You)
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="points-expected-you">
                                                 
@@ -738,6 +738,141 @@
         </div>
     </div>
 
+    <div class="row" v-cloak id="ownership-box">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Ownership</h5>
+                <div class="card-body" v-if="is_ready">
+
+                    <div class="row justify-content-center mb-1">
+                        <div class="col-12 col-md-8">
+                            <div id="ownership-graph">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mb-1">
+                        <div class="col-4 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        Player
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && selected_player.name || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        Eff. Ownership
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && (selected_player.ownership).toFixed(2) + '%' || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-3 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        xP
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && (selected_player.xp).toFixed(1) || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        Exp. Gain/Loss
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && getWithSign(selected_player.xp_net) || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        rP
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && (selected_player.rp_total).toFixed(0) || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 col-md-2 mb-1 pl-0 pr-0" v-cloak>
+                            <div class="d-flex flex-column metric">
+                                <div class="text-center p-0">
+                                    <div class="legend-box text-center">
+                                        Real. Gain/Loss
+                                    </div>
+                                </div>
+                                <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                    <span class="setting-value-text">
+                                        {{ (selected_player && getWithSign(selected_player.rp_net) || "") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive" style="max-height: 500px;">
+                        <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="ownership_table" data-source="sorted_ownership_cache">
+                            <thead>
+                                <tr>
+                                    <th class="text-muted sortable-th" @click="sortData" data-tag="id">ID</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="name">Name</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="ownership">Tier Effective Ownership</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="multiplier">Multiplier</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="xp">xP</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="xp_net">Exp. Gain/Loss</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="rp_total">rP</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="rp_net">Real. Gain/Loss</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="e in sorted_ownership_cache" :key="e.id" :class="{'owned-row': e.multiplier >0, 'nonowned-row': e.multiplier == 0}" v-if="e.xp > 0 && e.ownership > 0">
+                                    <td class="text-muted">{{ e.id }}</td>
+                                    <td class="text-center">{{ e.name }}</td>
+                                    <td class="text-center">{{ (e.ownership).toFixed(2) }}%</td>
+                                    <td class="text-center">{{ e.multiplier }}</td>
+                                    <td class="text-center">{{ (e.xp).toFixed(1) }}</td>
+                                    <td class="text-center">{{ getWithSign(e.xp_net) }}</td>
+                                    <td class="text-center">{{ (e.rp_total).toFixed(0) }}</td>
+                                    <td class="text-center">{{ getWithSign(e.rp_net) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <span class="d-none">{{ sorted_ownership }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
@@ -1499,7 +1634,7 @@
     let gw = "GW5";
     let next_gw = "GW5";
     let date = "2021-09-17";
-    let lastupdate = "2021-09-17T10:17:51.085258+00:00";
+    let lastupdate = "2021-09-17T20:56:16.481788+00:00";
     let listdates = [
         "2021-22 / GW5 / 2021-09-17 ", 
         "2021-22 / GW4 / 2021-09-11 ", 
@@ -1507,8 +1642,8 @@
         "2021-22 / GW2 / 2021-08-21 ", 
         "2021-22 / GW1 / 2021-08-13 ", 
     ];
-    let is_active = false ;
-    let active_gw = -1 ;
+    let is_active = true ;
+    let active_gw = 5 ;
 </script>
 
 <script src="/static/js/main.js"></script>
@@ -1525,6 +1660,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-09-17T10:17:51.085258+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-09-17T20:56:16.481788+00:00</div>
 
 </html> 

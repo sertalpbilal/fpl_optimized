@@ -261,3 +261,25 @@ circle.risk-nodes:hover {
     fill: none;
     opacity: 0;
 }
+
+.svg-circles:hover {
+    opacity:1
+}
+
+.owned-circle {
+    fill:rgb(111, 207, 214);
+    stroke:white;
+    opacity: 0.7;
+    stroke-width: 0.2;
+    cursor: pointer;
+}
+
+.nonowned-circle {
+    fill:rgb(255 83 83);
+    stroke:white;
+    opacity: 0.3;
+    stroke-width: 0.2;
+    cursor: pointer;
+}
+
+

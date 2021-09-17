@@ -38,7 +38,11 @@ var app = new Vue({
         marked_dt: undefined,
         show_details: true,
         show_league: false,
-        remember_me_button: false
+        remember_me_button: false,
+        // sortable tables
+        sorted_ownership_cache: [],
+        sorted_ownership_cache_last_sort: undefined,
+        selected_player: undefined
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -81,6 +85,7 @@ var app = new Vue({
             return this.sample_data[key];
         },
         ownership_data() {
+            if (_.isEmpty(this.rp_by_id)) { return [] }
             if (!this.is_using_autosub || !this.is_using_sample) {
                 let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
                 this.autosub_stats['sub'] = [];
@@ -108,6 +113,13 @@ var app = new Vue({
             let own_object = Object.fromEntries(ownership.map(i => [i.id, i]))
             return own_object
         },
+        sorted_ownership() {
+            if (_.isEmpty(this.element_data_combined)) { return [] }
+            const all_elements = Object.values(this.element_data_combined)
+            let sorted_own = _.orderBy(all_elements, ["ownership", "xp"], ["desc", "desc"])
+            this.sorted_ownership_cache = sorted_own
+            return 0
+        },
         el_by_id() {
             if (this.el_data == undefined) { return undefined; }
             return Object.fromEntries(this.el_data.map(i => [i.id, i]));
@@ -117,11 +129,13 @@ var app = new Vue({
             return Object.fromEntries(this.xp_data.map(i => [i.player_id, i]));
         },
         rp_by_id() {
-            if (this.rp_data == undefined) { return undefined; }
+            if (_.isEmpty(this.rp_data)) { return undefined; }
             let rp_original = _.cloneDeep(this.rp_data);
             const fixture = this.gw_fixture;
             // Autosub
             rp_original.forEach((p) => {
+                let total_score = getSum(p.explain.map(i => i.stats.map(j => j.points)).flat())
+                p.rp = total_score
                 try {
                     p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
                     if (p.games_finished && p.stats.minutes == 0) {
@@ -461,9 +475,17 @@ var app = new Vue({
                     let multiplier = n.multiplier = is_squad ? picks.find(i => i.element == e).multiplier : 0;
                     n.is_lineup = multiplier > 0;
                     let ownership = n.ownership = this.is_using_sample ? n.own_data.effective_ownership : parseFloat(n.own_data.selected_by_percent);
+
                     n.xp_gain = points_md * (Math.max(multiplier, 1) - ownership / 100);
                     n.xp_loss = points_md * ownership / 100;
                     n.xp_net = points_md * (multiplier - ownership / 100);
+
+                    let rp = rp_by_id[e].rp
+                    n.rp_total = rp
+                    n.rp_gain = rp * (Math.max(multiplier, 1) - ownership / 100);
+                    n.rp_loss = rp * ownership / 100;
+                    n.rp_net = rp * (multiplier - ownership / 100);
+
                     n.element_type = parseInt(n.el_data.element_type);
                     n.team = team_codes[parseInt(n.el_data.team_code)];
                     n.now_cost_str = (parseFloat(n.el_data.now_cost) / 10).toFixed(1);
@@ -1058,6 +1080,23 @@ var app = new Vue({
                 refresh_all_graphs();
             })
 
+        },
+        sortData(e) {
+            let tag = e.currentTarget.dataset.tag
+            let source = jQuery(e.currentTarget).closest('table').data('source')
+            let last_sort = this[source + "_last_sort"]
+            let new_order
+            let new_value
+            if (tag == last_sort){
+                new_order = _.orderBy(this[source], tag, 'desc')
+                new_value = undefined
+            }
+            else {
+                new_order = _.orderBy(this[source], tag, 'asc')
+                new_value = tag
+            }
+            this[source] = new_order
+            this[source + "_last_sort"]  = new_value 
         }
     },
 })
@@ -1711,6 +1750,133 @@ async function draw_user_graph(options = {}) {
     })
 }
 
+function draw_tier_ownership_graph() {
+    // xxx
+
+    return new Promise((resolve, reject) => {
+
+        if (_.isEmpty(app.sorted_ownership_cache)) { resolve("Not ready"); }
+
+        var margin = { top: 20, bottom: 10, left: 10, right: 10 },
+            width = 250 - margin.left - margin.right,
+            height = 150
+
+        jQuery("#ownership-graph").empty()
+
+        let cnv = d3.select("#ownership-graph")
+            .append("svg")
+            .attr("id", "ownership-svg")
+            .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+            // .attr('class', 'pull-center active-graph')
+            .style('display', 'block')
+            .style('min-width', '300px')
+
+        let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        let grayrect = svg.append('g');
+        grayrect.append('rect').attr('fill', '#5a5d5c').attr('width', width).attr('height', height).attr("stroke", "white").attr("stroke-width", "0.5");
+
+        // Min max values
+        let vals = app.sorted_ownership_cache.filter(i => i.xp > 0 && i.ownership >= 0.5);
+        let x_high = Math.max(...vals.map(i => i.ownership)) * 1.2
+        let x_low = 0.5
+
+        // Axis-x
+        // Add X axis
+        var x = d3.scaleLog().base(2)
+            .domain([x_low, x_high])
+            .range([0, width]);
+        svg.append("g")
+            .attr("opacity", 1)
+            .call(d3.axisBottom(x)
+                .tickSize(height)
+            )
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke-opacity", 0.1)
+                .attr("stroke-width", 0.5)
+                .attr("stroke-dasharray", "3,1")
+                .style('pointer-events', 'none')
+                )
+            // .call(g => g.selectAll(".tick text").attr("dy", 11)
+            // );
+
+        // Add X axis label:
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height + 15)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text("Effective Ownership % (Log)");
+
+        // Axis -y
+        let y_high = Math.max(...vals.map(i => i.xp)) + 0.5
+        var y = d3.scaleLinear().domain([0, y_high]).range([height, 0]);
+        svg.append('g')
+            .call(d3.axisRight(y).tickSize(width))
+            .call(g => g.selectAll(".tick text").attr("x", -8))
+            .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
+
+        svg.call(g => g.selectAll(".tick text")
+                .attr("fill", "white"))
+            .call(g => g.selectAll(".tick line")
+                .attr("stroke-dasharray", "3,1")
+                .attr("stroke-width", 0.5)
+                .attr("stroke-opacity", 0.1)
+                .style('pointer-events', 'none'))
+            .call(g => g.selectAll(".domain")
+                .attr("opacity", 0))
+            
+        // Add y axis label:
+        svg.append("text")
+            .attr("text-anchor", "left")
+            .attr("x", -margin.left)
+            .attr("y", -5)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text("Expected Points");
+
+        // Title
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "center")
+            .attr("dominant-baseline", "center")
+            .attr("x", width / 2)
+            .attr("y", -15)
+            .attr("font-size", "4.5pt")
+            .attr("fill", "white")
+            .text("Expected Points versus Effective Ownership (Log)");
+
+        svg.call(s => s.selectAll(".tick").attr("font-size", "4pt"));
+
+        let players = svg.selectAll()
+            .data(vals)
+            .enter()
+
+        let mouseover = (e) => {
+            let pid = e.currentTarget.dataset['id']
+            let entry = app.element_data_combined[pid]
+            app.selected_player = entry
+        }
+
+        let mouseleave = (e) = {}
+
+        let if_mobile = window.screen.width < 700
+
+        players
+            .append("circle")
+            .attr("class", (d) => d.multiplier > 0 ? "svg-circles owned-circle" : "svg-circles nonowned-circle")
+            .attr("cx", (d) => x(d.ownership))
+            .attr("cy", (d) => y(d.xp))
+            .attr("r", if_mobile ? 3 : 1.7)
+            .attr("data-id", (d) => d.id)
+            .on("mouseover", mouseover)
+            .on("mouseleave", mouseleave);
+
+        resolve()
+
+    });
+}
+
 function reset_graph_values() {
     let graph_types = ["graph-points", "graph-diff", "graph-gain", "graph-loss"];
     let x_raw = app.now_dt;
@@ -1937,7 +2103,8 @@ function refresh_all_graphs() {
             draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" }),
             draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" }),
             draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" }),
-            draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" })
+            draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" }),
+            draw_tier_ownership_graph()
         ]).then((values) => {
             app.$nextTick(() => {
                 $("#waitModal").modal('hide');

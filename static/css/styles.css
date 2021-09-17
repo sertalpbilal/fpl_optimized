@@ -1302,3 +1302,12 @@ tbody tr:last-child td.highlighted-col {
     padding: 0.25rem 0.4rem;
     border: 0px solid black;
 }
+
+.sortable-th {
+    cursor: pointer;
+}
+
+.sortable-th::after {
+    font-family: "Font Awesome 5 Free"; font-weight: 900; content: " \f0dc";
+}
+
