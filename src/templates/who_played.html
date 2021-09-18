@@ -1,0 +1,160 @@
+"% include 'header.html' %"
+
+<main class="container">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Who Played?</h5>
+                <div class="scenario_detail">
+                    Minutes played by each player and each team
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Team/GW Data</h5>
+                <div class="scenario_detail">
+                    Select a team and GW to see players played
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center">
+                        <div class="col-6 col-md-3">
+                            <div class="form-group">
+                                <label for="team_select">Team</label>
+                                <select class="form-control" id="team_select" v-model="team_selected">
+                                    <option v-for="(team,key) in teams" :value="key+1">{{ team.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="form-group">
+                                <label for="team_select">GW</label>
+                                <select class="form-control" id="gw_select" v-model="gw_selected">
+                                    <option v-for="w in gameweeks" :value="w">GW{{ w }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-6" id="top_players_field">
+                            <div class="lineup gray-bg">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709" style="max-height: 700px">
+                                    <svg class="field">
+                                        <g class="g_field">
+                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
+                                            <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
+                                            <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
+                                            <path class="field-common" id="right_bottom_corner" d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z" transform="scale(-1)" />
+                                            <path class="field-common" id="left_bottom_corner" d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z" transform="rotate(-90)" />
+                                            <rect class="field-common" id="top_penalty_box" width="46.726002" height="21.884615" x="32.992699" y="3.852963" />
+                                            <rect class="field-common" id="top_inner_box" width="24.50474" height="11.328758" x="44.101284" y="3.828212" />
+                                            <path class="field-common" id="top_arch" d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
+                                            <path class="field-common" id="bottom_arch" d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002" height="21.884615" x="-79.962532" y="-140.46913" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_inner_box" width="24.50474" height="11.328759" x="-68.851799" y="-140.42613" transform="scale(-1)" />
+                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208" r="14.196868" />
+                                            <path class="field-common field-last-path" d="M 4.1010416,71.569791 H 108.51143" id="center_line" inkscape:connector-curvature="0"/>
+                                            <rect class="field-common" id="bench_box" width="104.4753" height="24.503908" x="4.0935702" y="140.51396" />
+                                        </g>
+                                    </svg>
+                                <svg v-for="player in filtered_players" :key="player.id" :x="player.x" :y="player.y">
+                                        <g class="g_jersey" style="transform:translate(-20px,-35px)">
+                                            <path  d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular" :class="{'jersey-warning': !player.full_time}" />
+                                            <g >
+                                                <path class="jersey-regular" d="m 24.461842,40.986418 1.07576,2.642627"   />
+                                                <path class="jersey-regular" d="m 25.186811,40.518696 0.748355,1.91766"  />
+                                            </g>
+                                            <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)" >
+                                                <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627"   />
+                                                <path class="jersey-regular" d="m 35.16062,41.067378 0.748355,1.91766"   />
+                                            </g>
+                                            <path d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712" class="jersey-regular" :class="{'jersey-warning-inner': !player.full_time}" />
+                                            <g clip-path="url(#clipPath867)" transform="translate(22.73135,-236.63834)">
+                                                <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
+                                                        <tspan
+                                                            class="jersey-xp-text"
+                                                            y="285.37598" x="9.281539"  ><tspan style="font-size:5.5px" >{{ player.total_min }}</tspan>
+                                                        </tspan>
+                                                    </text>
+                                                    <!-- <rect y="291.74704" x="0.028824098" height="3.1975782" width="18.470304" class="jersey-name-bg" /> -->
+                                                    <!-- <rect y="294.94461" x="0.028824052" height="2.0213056" width="18.470306" class="jersey-team-bg" /> -->
+                                                    <text  y="294.1311" x="9.3312988" class="jersey-regular-text"
+                                                        xml:space="preserve">
+                                                        <tspan
+                                                            class="jersey-player-name"
+                                                            y="294.1311" x="9.3312988" >{{ player.player.web_name }}</tspan>
+                                                    </text>
+                                                    <text y="296.74948" x="9.2921124" class="jersey-regular-text"
+                                                        xml:space="preserve">
+                                                        <tspan
+                                                            class="jersey-points-display"
+                                                            y="296.74948" x="9.2921124" >{{ player.total_pts }}</tspan>
+                                                    </text>
+                                                    
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </svg>
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-lg-6" id="top_players_list" v-if="ready">
+                            <table class="p-0 col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-muted">ID</th>
+                                        <th class="text-center">Name</th>
+                                        <th class="text-center">Pos</th>
+                                        <th class="text-center">Full Time?</th>
+                                        <th class="text-center">Minutes</th>
+                                        <th class="text-center">Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="p in filtered_players" :class="{'owned-row': p.full_time, 'nonowned-row': !p.full_time}">
+                                        <td class="text-muted">{{ p.id }}</td>
+                                        <td class="text-center">{{ p.player.web_name }}</td>
+                                        <td class="text-center">{{ element_type[p.player.element_type].short }}</td>
+                                        <td class="text-center">{{ p.full_time ? "Yes" : "No" }}</td>
+                                        <td class="text-center">{{ p.total_min }}</td>
+                                        <td class="text-center">{{ p.total_pts }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="mt-1 d-flex mx-auto justify-content-center" id="csv_buttons">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <!-- <div class="card-body text-left">
+                    <h5>Note</h5>
+                    <p>Data on this page is refreshed every 6 hours. It is possible that some values/graphs do not function properly while a GW is ongoing.</p>
+                </div> -->
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    let gameweeks = ** gameweeks **;
+    let elements = ** elements|safe **;
+</script>
+
+"% with scripts=["main", "sampling_utils", "who_played"] %" "% include 'footer.html' %" "% endwith %"

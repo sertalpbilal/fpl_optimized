@@ -11,8 +11,9 @@ import os
 import sys
 import datetime
 from collect import get_fpl_info
+import requests
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, jsonify
 app = Flask(__name__)
 app.config['FREEZER_REMOVE_EXTRA_FILES'] = False
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -332,8 +333,6 @@ def impact_summary_page():
 def highlights():
     page_name = 'highlights.html'
 
-    from collect import cache_effective_ownership, create_folders, get_fivethirtyeight_data, cache_realized_points_data, read_static
-
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
     print(next_gw)
@@ -349,6 +348,48 @@ def highlights():
     else:
         return render_template(page_name, repo_name="", page_name="Season Highlights", season=target[0], gw=gw)
             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+
+
+# @app.route('/country_stats.html')
+# def country_stats():
+#     page_name = 'country_stats.html'
+
+#     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+
+#     print(next_gw)
+#     import pandas as pd
+
+#     country_data = glob.glob(f"build/data/{global_season}/main/*/country_league_sizes.csv")
+#     cdf = pd.read_csv(country_data[0])
+
+#     gw = target[1].split('GW')[1]
+
+#     if app.config['DEBUG']:
+#         return render_template(page_name, repo_name="/..", page_name="Country Stats", season=target[0], gw=gw, country_data=cdf.to_dict(orient='records'))
+#     else:
+#         return render_template(page_name, repo_name="", page_name="Country Stats", season=target[0], gw=gw, country_data=cdf.to_dict(orient='records'))
+
+
+
+@app.route('/who_played.html')
+def whp_played():
+    page_name = 'who_played.html'
+
+    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+
+    print(next_gw, is_active_gw)
+
+    r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
+    vals = r.json()
+    elements = vals['elements']
+
+    gw = target[1].split('GW')[1]
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw))), elements=json.dumps(elements))
+            # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
+    else:
+        return render_template(page_name, repo_name="", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw))), elements=json.dumps(elements))
 
 
 
