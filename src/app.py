@@ -386,10 +386,10 @@ def whp_played():
     gw = target[1].split('GW')[1]
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw))), elements=json.dumps(elements))
+        return render_template(page_name, repo_name="/..", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements))
             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template(page_name, repo_name="", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw))), elements=json.dumps(elements))
+        return render_template(page_name, repo_name="", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements))
 
 
 

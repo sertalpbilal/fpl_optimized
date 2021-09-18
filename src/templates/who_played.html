@@ -38,6 +38,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="text-small alert alert-warning" role="alert" v-if="team_selected != undefined && gw_selected != undefined && filtered_players.length == 0">
+                        Game is not played yet.
+                    </div>
                     <div class="row">
                         <div class="col-12 col-lg-6" id="top_players_field">
                             <div class="lineup gray-bg">
@@ -93,7 +96,6 @@
                                                             class="jersey-points-display"
                                                             y="296.74948" x="9.2921124" >{{ player.total_pts }}</tspan>
                                                     </text>
-                                                    
                                                 </g>
                                             </g>
                                         </g>
@@ -162,7 +164,10 @@
                                         <th class="text-center vertical-name">Name</th>
                                         <th class="text-center">Pos</th>
                                         <th class="text-center">Price</th>
-                                        <th class="text-center" v-for="w in _.range(1,parseInt(next_gw))">GW{{ w }}</th>
+                                        <th class="text-center">MP</th>
+                                        <th class="text-center">Mins PG</th>
+                                        <th class="text-center">Mins Total</th>
+                                        <th class="text-center" v-for="w in _.range(1,parseInt(next_gw)+1)">GW{{ w }} <span v-if="!team_played">(NP)</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,7 +175,10 @@
                                         <th class="text-center vertical-name">{{ p.web_name }}</td>
                                         <td class="text-center">{{ element_type[p.element_type].short }}</td>
                                         <td class="text-center">{{ (p.now_cost/10).toFixed(1) }}</td>
-                                        <td class="text-center" v-for="w in _.range(1,parseInt(next_gw))" :style="{color: p.muted ? null : scaled_color({d: p.min_data[w], min:0, max:90, revert:true})}">{{ w in p.min_data ? p.min_data[w] : "-" }}</td>
+                                        <td class="text-center">{{ p.matches_played }}</td>
+                                        <td class="text-center" :style="{color: scaled_color({d: p.min_per_game, min:0, max:90, revert:true})}">{{ (p.min_per_game).toFixed(2) }}</td>
+                                        <td class="text-center">{{ p.total_min }}</td>
+                                        <td class="text-center" v-for="w in _.range(1,parseInt(next_gw)+1)" :style="{color: (!team_played && w==next_gw) ? null : p.muted ? null : scaled_color({d: p.min_data[w], min:0, max:90, revert:true})}">{{ w in p.min_data && !(!team_played && w==next_gw) ? p.min_data[w] : "-" }}</td>
                                     </tr>
                                 </tbody>
                             </table>

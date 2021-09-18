@@ -55,23 +55,38 @@ var app = new Vue({
         filtered_by_season_players() {
             if (this.team_selected == undefined) { return []}
             let players = this.elements.filter(i => i.team == this.team_selected)
+            let overall_total = 0
             players.forEach((p) => {
                 p.min_data = {}
                 p.total_min = 0
+                p.matches_played = 0
                 for (let w of this.gameweeks) {
                     let entry = this.points_data[w].find(i => i.id == p.id)
                     if (entry == undefined) {
                         p.min_data[w] = 0
                     }
                     else {
+                        p.matches_played += 1
                         p.min_data[w] = entry.total_min
                         p.total_min += entry.total_min
+                        if (w == this.next_gw) {
+                            overall_total += entry.total_min
+                        }
                     }
+                    
                 }
                 p.muted = p.total_min == 0
             })
+            players.forEach((p) => {
+                p.overall_total = overall_total
+                p.min_per_game = p.total_min / (p.matches_played > 0 ? p.matches_played : 1)
+            })
             players = _.orderBy(players, ['element_type', 'total_min', 'id'], ['asc', 'desc', 'asc'])
             return players
+        },
+        team_played() {
+            if (this.team_selected == undefined || _.isEmpty(this.filtered_by_season_players)) { return true}
+            return this.filtered_by_season_players[0].overall_total > 0
         }
     },
     methods: {
