@@ -1317,3 +1317,9 @@ tbody tr:last-child td.highlighted-col {
     background-color: black;
     border-top: 0px;
 }
+
+th.vertical-name {
+    position: sticky;
+    left: 0;
+    background-color: #474747;
+}
