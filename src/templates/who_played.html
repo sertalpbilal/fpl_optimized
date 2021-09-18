@@ -136,6 +136,53 @@
         </div>
     </div>
 
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">GW Breakdown</h5>
+                <div class="scenario_detail">
+                    Player minutes breakdown per gameweek
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center">
+                        <div class="col-6 col-md-3">
+                            <div class="form-group">
+                                <label for="team_select">Team</label>
+                                <select class="form-control" id="team_select" v-model="team_selected">
+                                    <option v-for="(team,key) in teams" :value="key+1">{{ team.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="table-responsive col-12">
+                            <table class="p-0 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Name</th>
+                                        <th class="text-center">Pos</th>
+                                        <th class="text-center">Price</th>
+                                        <th class="text-center" v-for="w in _.range(1,parseInt(next_gw))">GW{{ w }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="p in filtered_by_season_players" :class="{'text-muted': p.muted}">
+                                        <td class="text-center">{{ p.web_name }}</td>
+                                        <td class="text-center">{{ element_type[p.element_type].short }}</td>
+                                        <td class="text-center">{{ (p.now_cost/10).toFixed(1) }}</td>
+                                        <td class="text-center" v-for="w in _.range(1,parseInt(next_gw))" :style="{color: p.muted ? null : scaled_color({d: p.min_data[w], min:0, max:90, revert:true})}">{{ w in p.min_data ? p.min_data[w] : "-" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white qa">
