@@ -1757,7 +1757,7 @@ function draw_tier_ownership_graph() {
 
         if (_.isEmpty(app.sorted_ownership_cache)) { resolve("Not ready"); }
 
-        var margin = { top: 20, bottom: 10, left: 10, right: 10 },
+        var margin = { top: 20, bottom: 20, left: 10, right: 10 },
             width = 250 - margin.left - margin.right,
             height = 150
 
@@ -1853,12 +1853,54 @@ function draw_tier_ownership_graph() {
             .enter()
 
         let mouseover = (e) => {
+            e.stopPropagation()
             let pid = e.currentTarget.dataset['id']
             let entry = app.element_data_combined[pid]
             app.selected_player = entry
+            $(".hovertext").remove()
+            let t = d3.select(e.target)
+            svg.append("text")
+                .attr("class", "hovertext")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "center")
+                .attr("dominant-baseline", "center")
+                .attr("x", t.attr("cx"))
+                .attr("y", parseFloat(t.attr("cy")) - 5)
+                .attr("font-size", "3pt")
+                .style("pointer-events", "none")
+                .attr("fill", "white")
+                .text(entry.name);
         }
 
-        let mouseleave = (e) = {}
+        let mouseclick = (e) => {
+            e.stopPropagation()
+            let pid = e.currentTarget.dataset['id']
+            let entry = app.element_data_combined[pid]
+            let t = d3.select(e.target)
+            if ($("#p-" + entry.id).length == 0) {
+                svg.append("text")
+                    .attr("id", "p-" + entry.id )
+                    .attr("text-anchor", "middle")
+                    .attr("alignment-baseline", "center")
+                    .attr("dominant-baseline", "center")
+                    .attr("x", t.attr("cx"))
+                    .attr("y", parseFloat(t.attr("cy")) - 5)
+                    .attr("font-size", "3pt")
+                    .style("pointer-events", "none")
+                    .attr("fill", "white")
+                    .text(entry.name);
+            }
+            else {
+                $("#p-" + entry.id).remove()
+            }
+        }
+
+        let mouseleave = (e) => {
+            e.stopPropagation()
+            app.selected_player = undefined
+            $(".hovertext").remove()
+        }
+
 
         let if_mobile = window.screen.width < 700
 
@@ -1867,10 +1909,12 @@ function draw_tier_ownership_graph() {
             .attr("class", (d) => d.multiplier > 0 ? "svg-circles owned-circle" : "svg-circles nonowned-circle")
             .attr("cx", (d) => x(d.ownership))
             .attr("cy", (d) => y(d.xp))
-            .attr("r", if_mobile ? 3 : 1.7)
+            .attr("r", if_mobile ? 3.5 : 2)
             .attr("data-id", (d) => d.id)
             .on("mouseover", mouseover)
-            .on("mouseleave", mouseleave);
+            .on("click", mouseclick)
+            .on("mouseleave", mouseleave)
+            ;
 
         resolve()
 
