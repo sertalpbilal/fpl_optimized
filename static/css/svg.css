@@ -23,6 +23,14 @@
     stroke-opacity: 1;
 }
 
+.jersey-warning {
+    fill: #ff8787 !important;
+}
+
+.jersey-warning-inner {
+    fill: #a5a5a5 !important;
+}
+
 .jersey-team-text {
     fill: #B81636;
 }
@@ -130,6 +138,24 @@
 
 .jersey-team-name {
     fill: #a10a28 !important;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 2.11666656px;
+    font-family: sans-serif;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-feature-settings: normal;
+    text-align: center;
+    writing-mode: lr-tb;
+    text-anchor: middle;
+    stroke-width: 0.26458332;
+}
+
+.jersey-points-display {
+    fill: wheat !important;
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
