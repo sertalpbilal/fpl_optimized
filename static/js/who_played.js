@@ -1,4 +1,19 @@
 
+let scaled_color = ({
+    d,
+    min = 0,
+    max = 1,
+    colors = ["#70f4ff", "#fbfbfb", "#ff8763"], //["#c6311b", "#676767", "#3390f7"]
+    revert = false
+}) => {
+    let dom = [-100, 0, 0.5, 1, 100]
+    if (revert) {
+        dom = [100, 1, 0.5, 0, -100]
+    }
+    let v = d3.scaleLinear().domain(dom).range([colors[0], colors[0], colors[1], colors[2], colors[2]])
+    return v((d - min) / (max - min))
+}
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -15,7 +30,8 @@ var app = new Vue({
         elements: elements,
         // selection
         team_selected: undefined,
-        gw_selected: undefined
+        gw_selected: undefined,
+        scaled_color: scaled_color
     },
     computed: {
         filtered_players() {
@@ -24,7 +40,6 @@ var app = new Vue({
             let player_ids = this.elements.filter(i => i.team == this.team_selected).map(i => i.id)
             filtered = filtered.filter(i => player_ids.includes(i.id))
             filtered = _.orderBy(filtered, ['player.element_type', 'total_min', 'total_pts'], ['asc', 'desc', 'desc'])
-            debugger
             let lineup_count = _.countBy(filtered, 'player.element_type')
             let ctr = {1: 1, 2: 1, 3: 1, 4: 1}
             filtered.forEach((p) => {
@@ -36,6 +51,27 @@ var app = new Vue({
                 p.y = (pos - 1) * 35 + 3;
             })
             return filtered
+        },
+        filtered_by_season_players() {
+            if (this.team_selected == undefined) { return []}
+            let players = this.elements.filter(i => i.team == this.team_selected)
+            players.forEach((p) => {
+                p.min_data = {}
+                p.total_min = 0
+                for (let w of this.gameweeks) {
+                    let entry = this.points_data[w].find(i => i.id == p.id)
+                    if (entry == undefined) {
+                        p.min_data[w] = 0
+                    }
+                    else {
+                        p.min_data[w] = entry.total_min
+                        p.total_min += entry.total_min
+                    }
+                }
+                p.muted = p.total_min == 0
+            })
+            players = _.orderBy(players, ['element_type', 'total_min', 'id'], ['asc', 'desc', 'asc'])
+            return players
         }
     },
     methods: {
