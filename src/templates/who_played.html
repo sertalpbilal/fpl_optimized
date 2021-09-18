@@ -167,7 +167,7 @@
                                         <th class="text-center">MP</th>
                                         <th class="text-center">Mins PG</th>
                                         <th class="text-center">Mins Total</th>
-                                        <th class="text-center" v-for="w in _.range(1,parseInt(next_gw)+1)">GW{{ w }} <span v-if="!team_played">(NP)</span></th>
+                                        <th class="text-center" v-for="w in _.range(1,parseInt(next_gw)+1)">GW{{ w }} <span v-if="!team_played && w == next_gw">(NP)</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
