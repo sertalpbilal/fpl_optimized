@@ -159,7 +159,7 @@
                             <table class="p-0 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Name</th>
+                                        <th class="text-center vertical-name">Name</th>
                                         <th class="text-center">Pos</th>
                                         <th class="text-center">Price</th>
                                         <th class="text-center" v-for="w in _.range(1,parseInt(next_gw))">GW{{ w }}</th>
@@ -167,7 +167,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="p in filtered_by_season_players" :class="{'text-muted': p.muted}">
-                                        <td class="text-center">{{ p.web_name }}</td>
+                                        <th class="text-center vertical-name">{{ p.web_name }}</td>
                                         <td class="text-center">{{ element_type[p.element_type].short }}</td>
                                         <td class="text-center">{{ (p.now_cost/10).toFixed(1) }}</td>
                                         <td class="text-center" v-for="w in _.range(1,parseInt(next_gw))" :style="{color: p.muted ? null : scaled_color({d: p.min_data[w], min:0, max:90, revert:true})}">{{ w in p.min_data ? p.min_data[w] : "-" }}</td>
