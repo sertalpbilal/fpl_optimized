@@ -33,7 +33,7 @@ global_season = "2021-22"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
 def folder_order(fname):
-    print(fname)
+    # print(fname)
     if sys.platform == 'win32':
         f = [j for i in fname.split('\\') for j in i.split('/')]
     else:
@@ -153,7 +153,7 @@ def fpl_analytics():
     # else:
     #     target = list_dates[1].split(' / ')
 
-    print(list_dates)
+    # print(list_dates)
 
     target = [i.strip() for i in list_dates[1].split('/')]
 
@@ -239,7 +239,7 @@ def spirit_team_page():
         all_weeks = [i.replace('\\', '/') for i in all_weeks]
     all_weeks.sort(key=gw_order, reverse=True)
     s = all_weeks[0].split('/')
-    print(s)
+    # print(s)
     season = s[2]
     gw = s[3]
     
@@ -377,8 +377,6 @@ def whp_played():
 
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
 
-    print(next_gw, is_active_gw)
-
     r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
     vals = r.json()
     elements = vals['elements']
@@ -403,7 +401,6 @@ def list_one_per_gw(season_filter='*'):
     active_gw = -1
     data = get_fpl_info('now')
     gws = [i for i in data['events'] if i['is_current'] == True]
-    print(gws)
     if len(gws) == 1:
         if gws[0]['finished'] == False:
             is_active_gw = 'true'
@@ -414,7 +411,7 @@ def list_one_per_gw(season_filter='*'):
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
     list_dates = ([i.split('/')[2:5] for i in all_dates])
-    print(list_dates)
+
     filtered_dates = []
     exist = set()
     for i in list_dates:
@@ -434,12 +431,12 @@ def list_one_per_gw(season_filter='*'):
 
 @app.route('/data/<path:path>')
 def read_data(path):
-    print(path)
+    # print(path)
     return send_from_directory('build', 'data/' + path)
 
 @app.route('/sample/<path:path>')
 def read_sample(path):
-    print(path)
+    # print(path)
     return send_from_directory('build', 'sample/' + path)
 
 
