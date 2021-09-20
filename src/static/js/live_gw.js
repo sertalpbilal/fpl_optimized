@@ -128,7 +128,15 @@ var app = new Vue({
             return Object.fromEntries(this.xp_data.map(i => [i.player_id, i]));
         },
         rp_by_id() {
-            if (_.isEmpty(this.rp_data)) { return undefined; }
+            if (_.isEmpty(this.rp_data)) { 
+                if (_.isEmpty(this.xp_data)) {
+                    return undefined; 
+                }
+                else {
+                    let ids = this.xp_data.map(i => [i.player_id, {'rp': 0}])
+                    return Object.fromEntries(ids)
+                }
+            }
             let rp_original = _.cloneDeep(this.rp_data);
             const fixture = this.gw_fixture;
             // Autosub
@@ -445,6 +453,8 @@ var app = new Vue({
         },
         element_data_combined() {
 
+            if (_.isEmpty(this.xp_data)) { return {}}
+
             let all_ids = this.xp_data.map(i => parseInt(i.player_id));
             let new_element_data = {};
 
@@ -464,7 +474,7 @@ var app = new Vue({
                     let n = {};
                     n.xp_data = xp_by_id[e];
                     n.el_data = el_by_id[e];
-                    n.rp_data = rp_by_id[e];
+                    n.rp_data = (rp_by_id && rp_by_id[e]) || undefined;
                     n.autosub = false;
                     if (n.rp_data !== undefined && n.rp_data.autosub) { n.autosub = true; }
                     n.own_data = own_by_id[e];
@@ -490,7 +500,8 @@ var app = new Vue({
                     n.now_cost_str = (parseFloat(n.el_data.now_cost) / 10).toFixed(1);
                     n.id = e;
                     new_element_data[e] = n;
-                } catch {
+                } catch(err) {
+                    console.log(err)
                     return;
                 }
             })
@@ -1059,12 +1070,11 @@ var app = new Vue({
         },
         applyAutosubtoTeam() {
             if (!this.is_ready) { return; }
-            if (_.isEmpty(this.rp_by_id)) { return; }
             let el_data = _.cloneDeep(this.el_data);
             let autosubs = [];
             let rp_by_id = this.rp_by_id;
             el_data.forEach((e) => {
-                    autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                    autosubs.push([e.id, { element_type: e.element_type, autosub: (rp_by_id && rp_by_id[e.id]) ? rp_by_id[e.id].autosub : false }]);
                 })
                 // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
             let autosub_dict = Object.fromEntries(autosubs);
@@ -1097,6 +1107,9 @@ var app = new Vue({
             }
             this[source] = new_order
             this[source + "_last_sort"]  = new_value 
+        },
+        breakpoint() {
+            debugger
         }
     },
 })
@@ -2158,7 +2171,6 @@ function refresh_all_graphs() {
             });
         })
         .catch((error) => {
-            debugger
             console.log(error)
         });
 
