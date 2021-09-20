@@ -88,6 +88,10 @@ var app = new Vue({
         team_played() {
             if (this.team_selected == undefined || _.isEmpty(this.filtered_by_season_players)) { return true}
             return this.filtered_by_season_players[0].overall_total > 0
+        },
+        team_selected_name() {
+            if (this.team_selected == undefined) { return ""}
+            return this.teams[this.team_selected-1].name
         }
     },
     methods: {
