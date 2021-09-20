@@ -1323,3 +1323,26 @@ th.vertical-name {
     left: 0;
     background-color: #474747;
 }
+
+.mh-500 {
+    max-height: 500px;
+}
+
+#league_table thead th {
+    position: sticky;
+    top: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    background-color: #474747;
+    box-shadow: inset 0px 0px 0 black, inset 0 -1px 0 white;
+    color: #ffeba0;
+}
+
+#league_table thead th::after {
+    color: white;
+}
+
+#league_table tbody td {
+    border-bottom: 1px solid #666869;
+    border-top: none;
+}

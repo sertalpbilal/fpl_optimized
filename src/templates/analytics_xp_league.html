@@ -31,23 +31,24 @@
                 <h5 class="card-header border-complement text-center scenario_title">Standings - GW</h5>
                 <!-- <div class="scenario_detail">Best lineup xP, no team limit, no budget limit, no bench players</div> -->
                 <div class="card-body field-body p-3">
-                    <div class="table-responsivex" v-if="!_.isEmpty(processed_league_data)">
-                        <table class="table table-sm text-white table-striped text-small" id="league_table"  style="width: 100%">
+                    <div class="table-responsive mh-500" v-if="!_.isEmpty(processed_league_data)">
+                        <!-- class="table-responsivex" -->
+                        <table class="table table-sm text-white table-striped text-small" id="league_table" data-source="processed_league_data_cached">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Team</th>
-                                    <th>pre-xP</th>
-                                    <th>post-xP</th>
-                                    <th>Pts</th>
-                                    <th>Pts-xP</th>
-                                    <th>TV</th>
-                                    <th>ITB</th>
-                                    <th>Chip</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.rank">#</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[0].entry_name">Team</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.pre_xp">pre-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.post_xp">post-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.rp">Pts</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.luck">Pts-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.team_value">TV</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[1].entry_history.bank">ITB</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[1].active_chip">Chip</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="entry in processed_league_data">
+                                <tr v-for="entry in processed_league_data_cached">
                                     <td>{{ entry.info.rank }}</td>
                                     <td :data-search="entry[0].entry_name + ' ' + entry[0].player_name">
                                         <span class="team-name"><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry[0].entry+'/event/' + active_gw">{{ entry[0].entry_name }}</a></span>
@@ -74,6 +75,42 @@
     </div>
 
     
+    <div class="row mb-3">
+        <div class="col-12 mb-0-lg">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Expected and Projected Points Data</h5>
+                <div class="card-body field-body p-3">
+                    <div class="row justify-content-center" v-if="!_.isEmpty(team_list_sorted_entry_name)">
+                        <div class="ml-1 mr-1">
+                            <div class="form-group text-center">
+                                <label for="sel_team">Team Name</label>
+                                <select class="form-control" id="sel_team" v-model="selected_team" @input="highlight_circle">
+                                    <option v-for="m in team_list_sorted_entry_name" :value="m.entry">{{ m.entry_name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="ml-1 mr-1">
+                            <div class="form-group text-center">
+                                <label for="sel_team">Manager</label>
+                                <select class="form-control" id="sel_team" v-model="selected_team" @input="highlight_circle">
+                                    <option v-for="m in team_list_sorted_player_name" :value="m.entry">{{ m.player_name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" v-if="selected_team">
+                        <div>
+                            <a target=_blank :href="'https://fantasy.premierleague.com/entry/'+selected_entry_ref[0].entry+'/event/' + active_gw" class="btn btn-secondary">Show Team</a>
+                        </div>
+                    </div>
+                    <div id="xp_vs_rp">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
             <div class="card border-dark bg-squad-card text-white qa">
