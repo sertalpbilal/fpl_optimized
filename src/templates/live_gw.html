@@ -626,7 +626,7 @@
         </div>
     </div>
 
-    <div class="row" v-cloak id="ownership-box">
+    <div class="row" v-cloak id="ownership-box" v-if="!_.isEmpty(sorted_ownership_cache)">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Ownership</h5>
@@ -756,11 +756,12 @@
                             </tbody>
                         </table>
                     </div>
-                    <span class="d-none">{{ sorted_ownership }}</span>
+                    
                 </div>
             </div>
         </div>
     </div>
+    <span class="d-none">{{ sorted_ownership }}</span>
 
     <div class="row" v-cloak>
         <div class="col-12 mb-3">

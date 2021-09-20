@@ -85,7 +85,6 @@ var app = new Vue({
             return this.sample_data[key];
         },
         ownership_data() {
-            if (_.isEmpty(this.rp_by_id)) { return [] }
             if (!this.is_using_autosub || !this.is_using_sample) {
                 let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
                 this.autosub_stats['sub'] = [];
@@ -1060,6 +1059,7 @@ var app = new Vue({
         },
         applyAutosubtoTeam() {
             if (!this.is_ready) { return; }
+            if (_.isEmpty(this.rp_by_id)) { return; }
             let el_data = _.cloneDeep(this.el_data);
             let autosubs = [];
             let rp_by_id = this.rp_by_id;
@@ -1951,6 +1951,9 @@ function update_graph_hover_values(x_raw, gid, reset = false) {
     let ratio = (x_raw - x_left.time) / Math.max(x_right.time - x_left.time, 1);
     const find_y = (left_val, right_val) => left_val * (1 - ratio) + right_val * ratio;
     const stat = target_stat[gid];
+    if (stat == undefined) {
+        return
+    }
     let expected_y = find_y(x_left.expected[stat], x_right.expected[stat]);
     $("#" + stat + "-expected-you").html(expected_y.toFixed(2));
     let digits = 2;
@@ -2153,6 +2156,10 @@ function refresh_all_graphs() {
             app.$nextTick(() => {
                 $("#waitModal").modal('hide');
             });
+        })
+        .catch((error) => {
+            debugger
+            console.log(error)
         });
 
     });
