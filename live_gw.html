@@ -738,7 +738,7 @@
         </div>
     </div>
 
-    <div class="row" v-cloak id="ownership-box">
+    <div class="row" v-cloak id="ownership-box" v-if="!_.isEmpty(sorted_ownership_cache)">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Ownership</h5>
@@ -868,11 +868,12 @@
                             </tbody>
                         </table>
                     </div>
-                    <span class="d-none">{{ sorted_ownership }}</span>
+                    
                 </div>
             </div>
         </div>
     </div>
+    <span class="d-none">{{ sorted_ownership }}</span>
 
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
@@ -1634,7 +1635,7 @@
     let gw = "GW6";
     let next_gw = "GW6";
     let date = "2021-09-19";
-    let lastupdate = "2021-09-20T00:52:01.452906+00:00";
+    let lastupdate = "2021-09-20T01:16:07.189877+00:00";
     let listdates = [
         "2021-22 / GW6 / 2021-09-19 ", 
         "2021-22 / GW5 / 2021-09-17 ", 
@@ -1661,6 +1662,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-09-20T00:52:01.452906+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-09-20T01:16:07.189877+00:00</div>
 
 </html> 
