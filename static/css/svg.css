@@ -308,4 +308,21 @@ circle.risk-nodes:hover {
     cursor: pointer;
 }
 
+.analytics_circles {
+    fill: #ff8f8f;
+    stroke:white;
+    opacity: 0.4;
+    stroke-width: 0.2;
+    cursor: pointer;
+}
+
+.analytics_circles:hover {
+    opacity: 1;
+}
+
+.selected-circle {
+    fill: #31fff9;
+    stroke: white;
+    opacity: 1;
+}
 
