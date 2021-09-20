@@ -36,6 +36,7 @@ var app = new Vue({
     computed: {
         filtered_players() {
             if (this.team_selected == undefined || this.gw_selected == undefined) { return []}
+            if (!(this.gw_selected in this.points_data)) { return []}
             let filtered = this.points_data[this.gw_selected]
             let player_ids = this.elements.filter(i => i.team == this.team_selected).map(i => i.id)
             filtered = filtered.filter(i => player_ids.includes(i.id))
@@ -61,7 +62,7 @@ var app = new Vue({
                 p.total_min = 0
                 p.matches_played = 0
                 for (let w of this.gameweeks) {
-                    let entry = this.points_data[w].find(i => i.id == p.id)
+                    let entry = w in this.points_data ? this.points_data[w].find(i => i.id == p.id) : undefined
                     if (entry == undefined) {
                         p.min_data[w] = 0
                     }
