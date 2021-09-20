@@ -94,9 +94,9 @@ var app = new Vue({
                 let el_data = _.cloneDeep(this.el_data);
                 let autosubs = [];
                 let rp_by_id = this.rp_by_id;
-                el_data.forEach((e) => {
 
-                        autosubs.push([e.id, { element_type: e.element_type, autosub: rp_by_id[e.id] ? rp_by_id[e.id].autosub : false }]);
+                el_data.forEach((e) => {
+                        autosubs.push([e.id, { element_type: e.element_type, autosub: (rp_by_id && rp_by_id[e.id]) ? rp_by_id[e.id].autosub : false }]);
                     })
                     // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
                 let autosub_dict = Object.fromEntries(autosubs);
@@ -113,7 +113,7 @@ var app = new Vue({
             return own_object
         },
         sorted_ownership() {
-            if (_.isEmpty(this.element_data_combined)) { return [] }
+            if (_.isEmpty(this.element_data_combined)) { this.sorted_ownership_cache = []; return [] }
             const all_elements = Object.values(this.element_data_combined)
             let sorted_own = _.orderBy(all_elements, ["ownership", "xp"], ["desc", "desc"])
             this.sorted_ownership_cache = sorted_own
