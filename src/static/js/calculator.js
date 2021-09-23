@@ -60,7 +60,7 @@ var app = new Vue({
             this.goal_points = this.goal_rate * point_rates['goal']
             this.assist_points = this.assist_rate * point_rates['assist']
             this.cs_points = this.gc_probs[0] * point_rates['cs']
-            this.gc_points = point_rates['2gc'] * (this.gc_probs[2] - 2 * this.gc_probs[4] - 3 * this.gc_probs[6] - 4 * this.gc_probs[8] - 5 * this.gc_probs[10])
+            this.gc_points = this.gc_probs.map((v,i) => point_rates['2gc'] * v * Math.floor(i/2)).reduce((a,b) => a+b,0)
             this.csgc_points = this.cs_points + this.gc_points
 
             this.expected_points = this.goal_points + this.assist_points + this.csgc_points
