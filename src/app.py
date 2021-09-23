@@ -370,6 +370,16 @@ def highlights():
 #         return render_template(page_name, repo_name="", page_name="Country Stats", season=target[0], gw=gw, country_data=cdf.to_dict(orient='records'))
 
 
+@app.route('/calculator.html')
+def calculator_page():
+    page_name = 'calculator.html'
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="FPL Expected Points Calculator")
+    else:
+        return render_template(page_name, repo_name="", page_name="FPL Expected Points Calculator")
+
+
 
 @app.route('/who_played.html')
 def whp_played():

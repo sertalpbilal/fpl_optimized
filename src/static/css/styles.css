@@ -1346,3 +1346,65 @@ th.vertical-name {
     border-bottom: 1px solid #666869;
     border-top: none;
 }
+
+.red-border-bottom {
+    border-bottom: 1px solid #B81636;
+}
+
+.major-display-box {
+    background-color: rgb(53, 53, 53);
+    border-radius: .5em;
+    box-shadow: 0px 0px 2px white;
+    text-align: center;
+    padding: 10px;
+}
+
+.major-box-title {
+    font-size: 25px;
+    line-height: 25px;
+    padding-top: 5px;
+}
+
+.major-box-value {
+    font-size: 62px;
+    line-height: 62px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.major-box-footnote {
+    font-size: 10px;
+    color: gray;
+}
+
+.minor-display-box {
+    background-color: rgb(53, 53, 53);
+    border-radius: .5em;
+    box-shadow: 0px 0px 2px white;
+    text-align: center;
+    padding: 5px;
+}
+
+.minor-box-title {
+    font-size: 12px;
+    line-height: 12px;
+    padding-top: 3px;
+}
+
+.minor-box-value {
+    font-size: 30px;
+    line-height: 30px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.minor-box-footnote {
+    font-size: 8px;
+    color: gray;
+}
+
+.metric-self {
+    border-bottom: 1px solid gray;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+}
