@@ -296,7 +296,7 @@ function draw_ev_graph(data, avg_value) {
             .attr("x", (d) => x(d.points))
             .attr("y", (d) => y(d.probability))
             .attr("width", x.bandwidth())
-            .attr("height", 0)
+            .attr("height", (d) => y(0)-y(d.probability))
             .attr("class", "probability-bars")
             .attr("fill", "white")
 
