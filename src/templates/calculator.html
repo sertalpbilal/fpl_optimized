@@ -7,11 +7,88 @@
                 <h5 class="card-header border-complement text-center scenario_title">FPL Expected Points Calculator</h5>
                 <div class="card-body red-border-bottom" v-cloak>
 
+                    <!-- <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="card mt-1 mr-3 m-1 ml-3 bg-gray-3 text-small">
+                                <div class="card-header pt-1 pb-0 click-title collapsed" data-toggle="collapse" data-target="#controls" aria-expanded="false" aria-controls="controls">
+                                    <span>Bet Convertor</span>
+                                    <div class="close text-white">
+                                        <i class="toggle-button fas fa-caret-up"></i>
+                                    </div>
+                                </div>
+                                <div class="collapse" id="controls">
+                                    <div class="card-body pt-1 pb-2 row justify-content-center">
+                                        
+                                        <div class="flex-column metric mw-10 ml-1 col-4 col-md-3">
+                                            <div class="text-center p-0">Fraction</div>
+                                            <div class="setting-value text-center p-0">
+                                                <div class="d-flex flex-row setting-line mb-0">
+                                                    <input type="text"  class="form-control live-select" v-model="bet_fraction">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-column metric mw-10 ml-1 col-4 col-md-3">
+                                            <div class="text-center p-0">Decimal</div>
+                                            <div class="setting-value text-center p-0">
+                                                <div class="d-flex flex-row setting-line mb-0">
+                                                    <input type="text"  class="form-control live-select" v-model="bet_decimal">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-column metric mw-10 ml-1 col-4 col-md-3">
+                                            <div class="text-center p-0">American</div>
+                                            <div class="setting-value text-center p-0">
+                                                <div class="d-flex flex-row setting-line mb-0">
+                                                    <input type="text"  class="form-control live-select" v-model="bet_american">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-column metric mw-10 ml-1 col-4 col-md-3">
+                                            <div class="text-center p-0">Bookmaker's Margin</div>
+                                            <div class="setting-value text-center p-0">
+                                                <div class="d-flex flex-row setting-line mb-0">
+                                                    <input type="text"  class="form-control live-select" v-model="bookmaker_margin">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex-column metric mw-10 ml-1 col-4 col-md-3">
+                                            <div class="text-center p-0">Implied Probability %</div>
+                                            <div class="setting-value text-center p-0">
+                                                <div class="d-flex flex-row setting-line mb-0">
+                                                    <input type="text"  class="form-control live-select" v-model="bookmaker_margin">
+                                                </div>
+                                            </div>
+                                        </div>
+            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+
                     <div class="text-center mb-2 text-small">
                         Sample values are available on <a href="https://fplreview.com/raw-free-model-data/" target=_blank>FPLReview</a> and <a href="https://www.drafthound.com/football/premier-league/players" target=_blank>DraftHound</a>.
                     </div>
 
                     <div class="controls-top row justify-content-center">
+
+
+                        <!-- player_name -->
+
+                        <div class="col-5 col-md-2 ml-1 mr-1">
+                            <div class="form-group">
+                                <label for="select-2">Player Name</label>
+                                <div class="input-group mb-3 no-wrap">
+                                    <input type="text" class="form-control" id="select-name" v-model="player_name">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-5 col-md-2 ml-1 mr-1">
                             <div class="form-group">
                                 <label for="select-1">Player Position</label>
@@ -287,9 +364,5 @@
     </div>
 
 </main>
-
-<script>
-    let country_data = ** country_data | safe **
-</script>
 
 "% with scripts=["main", "calculator"] %" "% include 'footer.html' %" "% endwith %"
