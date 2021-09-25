@@ -3,6 +3,7 @@ var app = new Vue({
     el: '#app',
     data: {
         first_draw: true,
+        player_name: '',
         player_position: 3,
         player_play: 100,
         player_goal: 40,
@@ -29,7 +30,14 @@ var app = new Vue({
         csgc_points: 0, // Clean sheet + GC
         active_rates: {},
         point_probs: {},
-        graph_updates: {}
+        graph_updates: {},
+        printed_name: '',
+        point_combinations: []
+        // bet_fraction: undefined,
+        // bet_decimal: undefined,
+        // bet_american: undefined,
+        // bookmaker_margin: 7,
+        // bet_implied: undefined
     },
     computed: {
         
@@ -44,6 +52,8 @@ var app = new Vue({
 
             if (this.player_cs > 100) { this.player_cs = 100 }
             if (this.player_cs <= 0) { this.player_cs = 1 }
+
+            this.printed_name = this.player_name
 
             // then
             this.goal_rate = this.percentage_to_lambda(this.player_goal/100)
@@ -74,7 +84,7 @@ var app = new Vue({
             let gc_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['2gc']*(Math.floor(g/2)), 'probability': this.gc_probs[g] * 100}})
 
             if (this.first_draw) {
-                this.graph_updates['goal'] = draw_generic({selector: "#goal_prob_graph", title: "Goal Probability vs Count", x_title: "Goals Scored", y_title: "Probability %", data: goal_data, color: this.colors[0]})
+                this.graph_updates['goal'] = draw_generic({selector: "#goal_prob_graph", title: "Goal Probability vs Count" , x_title: "Goals Scored", y_title: "Probability %", data: goal_data, color: this.colors[0]})
                 this.graph_updates['assist'] = draw_generic({selector: "#assist_prob_graph", title: "Assist Probability vs Count", x_title: "Assists Made", y_title: "Probability %", data: assist_data, color: this.colors[1]})
                 this.graph_updates['cs'] = draw_generic({selector: "#cs_prob_graph", title: "Clean Sheet Probability", x_title: "Clean Sheet", y_title: "Probability %", data: cs_data, color: this.colors[2]})
                 this.graph_updates['gc'] = draw_generic({selector: "#gc_prob_graph", title: "Goals Conceded Probability vs Count", x_title: "Goals Conceded", y_title: "Probability %", data: gc_data, color: this.colors[2]})
@@ -82,10 +92,10 @@ var app = new Vue({
                 
             }
             else {
-                this.graph_updates['goal'](goal_data)
-                this.graph_updates['assist'](assist_data)
-                this.graph_updates['cs'](cs_data)
-                this.graph_updates['gc'](gc_data)
+                this.graph_updates['goal'](goal_data, this.printed_name)
+                this.graph_updates['assist'](assist_data, this.printed_name)
+                this.graph_updates['cs'](cs_data, this.printed_name)
+                this.graph_updates['gc'](gc_data, this.printed_name)
             }
 
             let all_combinations = {}
@@ -112,11 +122,13 @@ var app = new Vue({
             });
             
             if (this.first_draw) {
-                this.graph_updates['total'] = draw_ev_graph(all_combinations, this.expected_points)
+                this.graph_updates['total'] = draw_ev_graph(all_combinations, this.expected_points, this.printed_name)
             }
             else {
-                this.graph_updates['total'](all_combinations, this.expected_points)
+                this.graph_updates['total'](all_combinations, this.expected_points, this.printed_name)
             }
+
+            this.point_combinations = all_combinations
 
             this.first_draw = false
 
@@ -135,15 +147,47 @@ var app = new Vue({
                 rates.push(current_rate)
             }
             return rates
-        }
+        },
+        // update_bet(type, value) {
+        //     if(type == 'bet_fraction') {
+        //         if ("/" in value) {
+        //             let v = value.split("/")
+        //             this.bet_base = parseFloat(v[0]) / parseFloat(v[1])
+        //         }
+        //     }
+        //     else if(type == 'bet_decimal') {
+        //         this.bet_base = parseFloat(value)
+        //     }
+        //     else if(type == 'bet_american') {
+        //         if (value < 0) {
+        //             this.bet_base = 100/(-value)+1
+        //         }
+        //         else {
+        //             this.bet_base = value/100+1
+        //         }
+        //     }
+        // }
     }
 })
 
-function draw_ev_graph(data, avg_value) {
+function draw_ev_graph(data, avg_value, name) {
+
+    
 
     var margin = { top: 15, bottom: 20, left: 20, right: 10 },
             width = 400 - margin.left - margin.right,
             height = 150 - margin.top - margin.bottom
+
+    let is_mobile = window.screen.width < 800
+
+    let font_size = '4pt'
+    let title_size = '4.5pt'
+
+    if (is_mobile) {
+        height = 180 - margin.top - margin.bottom
+        font_size = '6.5pt'
+        title_size = '7pt'
+    }
 
     let cnv = d3.select("#ev_graph")
         .append("svg")
@@ -184,8 +228,8 @@ function draw_ev_graph(data, avg_value) {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 15)
-        .attr("font-size", "4pt")
+        .attr("y", height + 20)
+        .attr("font-size", font_size)
         .attr("fill", "white")
         .text("Points");
 
@@ -214,24 +258,24 @@ function draw_ev_graph(data, avg_value) {
         .attr("text-anchor", "left")
         .attr("x", -margin.left)
         .attr("y", -5)
-        .attr("font-size", "4pt")
+        .attr("font-size", font_size)
         .attr("fill", "white")
         .text("Probability %");
 
     svg.call(g => g.selectAll(".tick")
-            .style("font-size", "4pt"))
+            .style("font-size", font_size))
     svg.call(g => g.selectAll(".domain")
             .attr("opacity", 0))
 
-    svg.append("text")
+    let ev_title = svg.append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "center")
         .attr("dominant-baseline", "center")
         .attr("x", width / 2)
         .attr("y", -8)
-        .attr("font-size", "4.5pt")
+        .attr("font-size", title_size)
         .attr("fill", "white")
-        .text("Point Probability Distribution");
+        .text("Point Probability Distribution" + (name != '' ? ` (${name})` : ''));
 
     let holder = svg.append('g')
 
@@ -261,15 +305,17 @@ function draw_ev_graph(data, avg_value) {
         .attr("dominant-baseline", "baseline")
         .attr("x", avg_place)
         .attr("y", -1)
-        .attr("font-size", "4.5pt")
+        .attr("font-size", title_size)
         .attr("fill", "#ffe400")
         .text(avg_value.toFixed(2));
 
-    let update_func = (new_data, new_avg) => {
+    let update_func = (new_data, new_avg, new_name) => {
 
         let new_x_high = Math.max(...new_data.map(i=>i.points))
         let new_x_low = Math.min(...new_data.map(i=>i.points))
         let new_x_domain = _.range(new_x_low, new_x_high+1)
+
+        ev_title.text("Point Probability Distribution" + (new_name != '' ? ` (${new_name})` : ''));
 
         x.domain(new_x_domain)
         xAxis.transition().duration(1000)
@@ -322,7 +368,7 @@ function draw_ev_graph(data, avg_value) {
                 .attr("opacity", 0))
 
         svg.call(g => g.selectAll(".tick")
-            .style("font-size", "4pt"))
+            .style("font-size", font_size))
         svg.call(g => g.selectAll(".domain")
             .attr("opacity", 0))
 
@@ -348,6 +394,17 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
     var margin = { top: 15, bottom: 20, left: 20, right: 10 },
             width = 400 - margin.left - margin.right,
             height = 150 - margin.top - margin.bottom
+
+    let is_mobile = window.screen.width < 800
+
+    let font_size = '4pt'
+    let title_size = '4.5pt'
+
+    if (is_mobile) {
+        height = 180 - margin.top - margin.bottom
+        font_size = '6.5pt'
+        title_size = '7pt'
+    }
 
     jQuery(selector).empty()
 
@@ -388,8 +445,8 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 15)
-        .attr("font-size", "4pt")
+        .attr("y", height + 20)
+        .attr("font-size", font_size)
         .attr("fill", "white")
         .text(x_title);
 
@@ -418,22 +475,22 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("text-anchor", "left")
         .attr("x", -margin.left)
         .attr("y", -5)
-        .attr("font-size", "4pt")
+        .attr("font-size", font_size)
         .attr("fill", "white")
         .text(y_title);
 
     svg.call(g => g.selectAll(".tick")
-            .style("font-size", "4pt"))
+            .style("font-size", font_size))
     svg.call(g => g.selectAll(".domain")
             .attr("opacity", 0))
 
-    svg.append("text")
+    let plot_title = svg.append("text")
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "center")
         .attr("dominant-baseline", "center")
         .attr("x", width / 2)
         .attr("y", -8)
-        .attr("font-size", "4.5pt")
+        .attr("font-size", title_size)
         .attr("fill", "white")
         .text(title);
 
@@ -460,11 +517,11 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("y", (d) => y(d.probability) - 2)
         .attr("alignment-baseline", "baseline")
         .attr("dominant-baseline", "baseline")
-        .attr("font-size", "4pt")
+        .attr("font-size", font_size)
         .attr("fill", "white")
 
 
-    let update_func = (new_data) => {
+    let update_func = (new_data, new_name) => {
 
         let new_y_high = Math.max(Math.max(...new_data.map(i => i.probability)) * 1.1, 0.5)
         y.domain([0, new_y_high])
@@ -472,6 +529,8 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
             .call(d3.axisLeft(y).tickSize(width))
             .call(g => g.selectAll(".tick text"))
             .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
+
+        plot_title.text(title + (new_name != '' ? ` (${new_name})` : ''))
 
         bar_entries
             .data(new_data)
@@ -498,7 +557,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
                 .attr("opacity", 0))
 
         svg.call(g => g.selectAll(".tick")
-            .style("font-size", "4pt"))
+            .style("font-size", font_size))
         svg.call(g => g.selectAll(".domain")
             .attr("opacity", 0))
     }
