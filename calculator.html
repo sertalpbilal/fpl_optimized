@@ -277,6 +277,21 @@
                         </div>
                     </div>
 
+                    <div class="row justify-content-center mb-3" v-if="players_cached.length == 2">
+                        <div class="minor-display-box m-1 p-3">
+                            <div class="minor-box-title">{{ players_cached[0].name }} > {{ players_cached[1].name }}</div>
+                            <div class="minor-box-value pb-2">{{ (comparison.p1_better * 100).toFixed(2) }}%</div>
+                        </div>
+                        <div class="minor-display-box m-1 p-3">
+                            <div class="minor-box-title">{{ players_cached[0].name }} = {{ players_cached[1].name }}</div>
+                            <div class="minor-box-value pb-2">{{ (comparison.players_equal * 100).toFixed(2) }}%</div>
+                        </div>
+                        <div class="minor-display-box m-1 p-3">
+                            <div class="minor-box-title">{{ players_cached[0].name }} < {{ players_cached[1].name }}</div>
+                            <div class="minor-box-value pb-2">{{ (comparison.p2_better * 100).toFixed(2) }}%</div>
+                        </div>
+                    </div>
+
                     <div class="row justify-content-center mb-3" v-for="(value,key) in players_cached">
                         <div class="col-4">
                             <div class="minor-display-box">

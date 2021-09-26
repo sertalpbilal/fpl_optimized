@@ -46,7 +46,8 @@ var app = new Vue({
         point_combinations: [[]],
         graph_data: [],
         player_colors: d3.scaleOrdinal(d3.schemeTableau10),
-        counter: 2
+        counter: 2,
+        comparison: [],
         // bet_fraction: undefined,
         // bet_decimal: undefined,
         // bet_american: undefined,
@@ -80,6 +81,14 @@ var app = new Vue({
                 this.calculate_single(i)
             })
             this.plot_graphs()
+
+            debugger
+
+            this.comparison = []
+            if (this.player_count == 2) {
+                this.compare_two()
+            }
+
         },
         calculate_single(idx) {
 
@@ -199,8 +208,6 @@ var app = new Vue({
             let ep_values = this.graph_data.map(i => i.ep)
             let player_names = this.graph_data.map(i => i.p_n)
 
-            debugger
-
             if (this.first_draw) {
                 this.graph_updates['total'] = draw_ev_graph(all_combinations, ep_values, player_names, this.player_colors)
             }
@@ -243,6 +250,31 @@ var app = new Vue({
         remove_player(i) {
             this.players = this.players.filter(j => j.oid != i.oid)
             this.player_count = this.player_count - 1
+            this.$forceUpdate()
+        },
+        compare_two() {
+            let p1 = this.point_combinations[0]
+            let p2 = this.point_combinations[1]
+
+            let p1_better = 0
+            let p2_better = 0
+            let players_equal = 0
+
+            p1.forEach(c1 => {
+                // p1 better
+                let c2 = p2.filter(i => i.points < c1.points)
+                p1_better += c2.map(i => i.probability/100 * c1.probability/100).reduce((a,b) => a+b,0)
+                // p2 better
+                c2 = p2.filter(i => i.points > c1.points)
+                p2_better += c2.map(i => i.probability/100 * c1.probability/100).reduce((a,b) => a+b,0)
+                // players are equal
+                c2 = p2.filter(i => i.points == c1.points)
+                players_equal += c2.map(i => i.probability/100 * c1.probability/100).reduce((a,b) => a+b,0)
+            })
+
+            this.comparison = {}
+            this.comparison = {p1_better, p2_better, players_equal}
+
             this.$forceUpdate()
         }
         // update_bet(type, value) {
@@ -531,7 +563,6 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             // bar_entries.remove()
 
         let flat_new_data = new_data.flat()
-        debugger
 
         let new_bars = svg.selectAll(".probability-bars").data(flat_new_data)
         new_bars.exit().remove()
