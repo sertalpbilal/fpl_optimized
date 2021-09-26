@@ -3,12 +3,23 @@ var app = new Vue({
     el: '#app',
     data: {
         first_draw: true,
-        player_name: '',
-        player_position: 3,
-        player_play: 100,
-        player_goal: 40,
-        player_assist: 28,
-        player_cs: 39,
+        player_count: 1,
+        players: [{
+            oid: 0,
+            name: 'Player 1',
+            position: 3,
+            play: 100,
+            goal: 40,
+            assist: 28,
+            cs: 39
+        }],
+        players_cached: [],
+        // player_name: '',
+        // player_position: 3,
+        // player_play: 100,
+        // player_goal: 40,
+        // player_assist: 28,
+        // player_cs: 39,
         colors: ["#40c8de", "#ff9650", "#97b070"], // goal, assist, cs
         point_rates: {
             1: {'goal': 6, 'assist': 3, 'cs': 4, '2gc': -1},
@@ -16,23 +27,26 @@ var app = new Vue({
             3: {'goal': 5, 'assist': 3, 'cs': 1, '2gc': 0},
             4: {'goal': 4, 'assist': 3, 'cs': 0, '2gc': 0},
         },
-        expected_points: 0,
-        goal_rate: 0,
-        assist_rate: 0,
-        gc_rate: 0,
-        goal_probs: [],
-        assist_probs: [],
-        gc_probs: [],
-        goal_points: 0,
-        assist_points: 0,
-        cs_points: 0,
-        gc_points: 0,
-        csgc_points: 0, // Clean sheet + GC
-        active_rates: {},
-        point_probs: {},
+        expected_points: [0],
+        goal_rate: [0],
+        assist_rate: [0],
+        gc_rate: [0],
+        goal_probs: [[]],
+        assist_probs: [[]],
+        gc_probs: [[]],
+        goal_points: [0],
+        assist_points: [0],
+        cs_points: [0],
+        gc_points: [0],
+        csgc_points: [0], // Clean sheet + GC
+        active_rates: [{}],
+        point_probs: [{}],
         graph_updates: {},
-        printed_name: '',
-        point_combinations: []
+        printed_name: {},
+        point_combinations: [[]],
+        graph_data: [],
+        player_colors: d3.scaleOrdinal(d3.schemeTableau10),
+        counter: 2
         // bet_fraction: undefined,
         // bet_decimal: undefined,
         // bet_american: undefined,
@@ -44,59 +58,86 @@ var app = new Vue({
     },
     methods: {
         calculate() {
-            if (this.player_goal >= 100) { this.player_goal = 99 }
-            if (this.player_goal < 0) { this.player_goal = 0 }
+            // clear existing data
+            this.printed_name = {}
+            this.goal_rate = {}
+            this.assist_rate = {}
+            this.gc_rate = {}
+            this.goal_probs = {}
+            this.assist_probs = {}
+            this.gc_probs = {}
+            this.active_rates = {}
+            this.goal_points = {}
+            this.assist_points = {}
+            this.cs_points = {}
+            this.gc_points = {}
+            this.csgc_points = {}
+            this.expected_points = {}
+            this.point_combinations = []
+            this.graph_data = []
 
-            if (this.player_assist >= 100) { this.player_assist = 99 }
-            if (this.player_assist < 0) { this.player_assist = 0 }
+            this.players.forEach((p,i) => {
+                this.calculate_single(i)
+            })
+            this.plot_graphs()
+        },
+        calculate_single(idx) {
 
-            if (this.player_cs > 100) { this.player_cs = 100 }
-            if (this.player_cs <= 0) { this.player_cs = 1 }
+            let player = this.players[idx]
 
-            this.printed_name = this.player_name
+            if (player.goal >= 100) { player.goal = 99 }
+            if (player.goal < 0) { player.goal = 0 }
+
+            if (player.assist >= 100) { player.assist = 99 }
+            if (player.assist < 0) { player.assist = 0 }
+
+            if (player.cs > 100) { player.cs = 100 }
+            if (player.cs <= 0) { player.cs = 1 }
+
+            let p_n = this.printed_name[idx] = player.name
 
             // then
-            this.goal_rate = this.percentage_to_lambda(this.player_goal/100)
-            this.assist_rate = this.percentage_to_lambda(this.player_assist/100)
-            this.gc_rate = this.percentage_to_lambda((100-this.player_cs)/100)
+            let g_r = this.goal_rate[idx] = this.percentage_to_lambda(player.goal/100)
+            let a_r = this.assist_rate[idx] = this.percentage_to_lambda(player.assist/100)
+            let gc_r = this.gc_rate[idx] = this.percentage_to_lambda((100-player.cs)/100)
 
-            this.goal_probs = this.get_poisson_probs(this.goal_rate)
-            this.assist_probs = this.get_poisson_probs(this.assist_rate)
-            this.gc_probs = this.get_poisson_probs(this.gc_rate)
+            let g_p = this.goal_probs[idx] = this.get_poisson_probs(g_r)
+            let a_p = this.assist_probs[idx] = this.get_poisson_probs(a_r)
+            let gc_p = this.gc_probs[idx] = this.get_poisson_probs(gc_r)
 
-            let point_rates = this.point_rates[this.player_position]
-            this.active_rates = point_rates
+            let point_rates = this.point_rates[player.position]
+            this.active_rates[idx] = point_rates
 
-            this.goal_points = this.goal_rate * point_rates['goal']
-            this.assist_points = this.assist_rate * point_rates['assist']
-            this.cs_points = this.gc_probs[0] * point_rates['cs']
-            this.gc_points = this.gc_probs.map((v,i) => point_rates['2gc'] * v * Math.floor(i/2)).reduce((a,b) => a+b,0)
-            this.csgc_points = this.cs_points + this.gc_points
+            let goal_pts = this.goal_points[idx] = g_r * point_rates['goal']
+            let assist_pts = this.assist_points[idx] = a_r * point_rates['assist']
+            let cs_pts = this.cs_points[idx] = gc_p[0] * point_rates['cs']
+            let gc_pts = this.gc_points[idx] = gc_p.map((v,i) => point_rates['2gc'] * v * Math.floor(i/2)).reduce((a,b) => a+b,0)
+            let csgc_pts = this.csgc_points[idx] = cs_pts + gc_pts
 
-            this.expected_points = this.goal_points + this.assist_points + this.csgc_points
+            let ep = this.expected_points[idx] = goal_pts + assist_pts + csgc_pts
 
-            let goal_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['goal']*g, 'probability': this.goal_probs[g] * 100}})
-            let assist_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['assist']*g, 'probability': this.assist_probs[g] * 100}})
+            let goal_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['goal']*g, 'probability': g_p[g] * 100}})
+            let assist_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['assist']*g, 'probability': a_p[g] * 100}})
             let cs_data = [
-                {'count': 'Yes', 'points': point_rates['cs'], 'probability': this.gc_probs[0] * 100},
-                {'count': 'No', 'points': 0, 'probability': (1-this.gc_probs[0]) * 100}
+                {'count': 'Yes', 'points': point_rates['cs'], 'probability': gc_p[0] * 100},
+                {'count': 'No', 'points': 0, 'probability': (1-gc_p[0]) * 100}
             ]
-            let gc_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['2gc']*(Math.floor(g/2)), 'probability': this.gc_probs[g] * 100}})
+            let gc_data = _.range(0,11).map(g => { return {'count': g, 'points': point_rates['2gc']*(Math.floor(g/2)), 'probability': gc_p[g] * 100}})
 
-            if (this.first_draw) {
-                this.graph_updates['goal'] = draw_generic({selector: "#goal_prob_graph", title: "Goal Probability vs Count" , x_title: "Goals Scored", y_title: "Probability %", data: goal_data, color: this.colors[0]})
-                this.graph_updates['assist'] = draw_generic({selector: "#assist_prob_graph", title: "Assist Probability vs Count", x_title: "Assists Made", y_title: "Probability %", data: assist_data, color: this.colors[1]})
-                this.graph_updates['cs'] = draw_generic({selector: "#cs_prob_graph", title: "Clean Sheet Probability", x_title: "Clean Sheet", y_title: "Probability %", data: cs_data, color: this.colors[2]})
-                this.graph_updates['gc'] = draw_generic({selector: "#gc_prob_graph", title: "Goals Conceded Probability vs Count", x_title: "Goals Conceded", y_title: "Probability %", data: gc_data, color: this.colors[2]})
+            this.graph_data[idx] = {goal_data, assist_data, cs_data, gc_data, ep, p_n}
 
-                
-            }
-            else {
-                this.graph_updates['goal'](goal_data, this.printed_name)
-                this.graph_updates['assist'](assist_data, this.printed_name)
-                this.graph_updates['cs'](cs_data, this.printed_name)
-                this.graph_updates['gc'](gc_data, this.printed_name)
-            }
+            // if (this.first_draw) {
+            //     this.graph_updates['goal'] = draw_generic({selector: "#goal_prob_graph", title: "Goal Probability vs Count" , x_title: "Goals Scored", y_title: "Probability %", data: goal_data, color: this.colors[0]})
+            //     this.graph_updates['assist'] = draw_generic({selector: "#assist_prob_graph", title: "Assist Probability vs Count", x_title: "Assists Made", y_title: "Probability %", data: assist_data, color: this.colors[1]})
+            //     this.graph_updates['cs'] = draw_generic({selector: "#cs_prob_graph", title: "Clean Sheet Probability", x_title: "Clean Sheet", y_title: "Probability %", data: cs_data, color: this.colors[2]})
+            //     this.graph_updates['gc'] = draw_generic({selector: "#gc_prob_graph", title: "Goals Conceded Probability vs Count", x_title: "Goals Conceded", y_title: "Probability %", data: gc_data, color: this.colors[2]})
+            // }
+            // else {
+            //     this.graph_updates['goal'](goal_data, p_n)
+            //     this.graph_updates['assist'](assist_data, p_n)
+            //     this.graph_updates['cs'](cs_data, p_n)
+            //     this.graph_updates['gc'](gc_data, p_n)
+            // }
 
             let all_combinations = {}
             for (let g of goal_data) {
@@ -121,14 +162,51 @@ var app = new Vue({
                 e.probability = e.probability*100
             });
             
+            // if (this.first_draw) {
+            //     this.graph_updates['total'] = draw_ev_graph(all_combinations, ep, p_n)
+            // }
+            // else {
+            //     this.graph_updates['total'](all_combinations, ep, p_n)
+            // }
+
+            this.point_combinations[idx] = all_combinations
+
+            this.players_cached = _.cloneDeep(this.players)
+
+            this.$forceUpdate()
+
+        },
+        plot_graphs() {
+
+            let idx = 0
+
+            let {goal_data, assist_data, cs_data, gc_data, ep, p_n} = this.graph_data[idx]
+
             if (this.first_draw) {
-                this.graph_updates['total'] = draw_ev_graph(all_combinations, this.expected_points, this.printed_name)
+                this.graph_updates['goal'] = draw_generic({selector: "#goal_prob_graph", title: "Goal Probability vs Count" , x_title: "Goals Scored", y_title: "Probability %", data: goal_data, color: this.colors[0]})
+                this.graph_updates['assist'] = draw_generic({selector: "#assist_prob_graph", title: "Assist Probability vs Count", x_title: "Assists Made", y_title: "Probability %", data: assist_data, color: this.colors[1]})
+                this.graph_updates['cs'] = draw_generic({selector: "#cs_prob_graph", title: "Clean Sheet Probability", x_title: "Clean Sheet", y_title: "Probability %", data: cs_data, color: this.colors[2]})
+                this.graph_updates['gc'] = draw_generic({selector: "#gc_prob_graph", title: "Goals Conceded Probability vs Count", x_title: "Goals Conceded", y_title: "Probability %", data: gc_data, color: this.colors[2]})
             }
             else {
-                this.graph_updates['total'](all_combinations, this.expected_points, this.printed_name)
+                this.graph_updates['goal'](goal_data, p_n)
+                this.graph_updates['assist'](assist_data, p_n)
+                this.graph_updates['cs'](cs_data, p_n)
+                this.graph_updates['gc'](gc_data, p_n)
             }
 
-            this.point_combinations = all_combinations
+            let all_combinations = this.point_combinations
+            let ep_values = this.graph_data.map(i => i.ep)
+            let player_names = this.graph_data.map(i => i.p_n)
+
+            debugger
+
+            if (this.first_draw) {
+                this.graph_updates['total'] = draw_ev_graph(all_combinations, ep_values, player_names, this.player_colors)
+            }
+            else {
+                this.graph_updates['total'](all_combinations, ep_values, player_names)
+            }
 
             this.first_draw = false
 
@@ -148,6 +226,25 @@ var app = new Vue({
             }
             return rates
         },
+        add_player() {
+            this.players.push({
+                oid: this.counter,
+                name: 'Player ' + this.counter,
+                position: 3,
+                play: 100,
+                goal: 40,
+                assist: 28,
+                cs: 39
+            })
+            this.player_count += 1
+            this.counter += 1
+            this.$forceUpdate()
+        },
+        remove_player(i) {
+            this.players = this.players.filter(j => j.oid != i.oid)
+            this.player_count = this.player_count - 1
+            this.$forceUpdate()
+        }
         // update_bet(type, value) {
         //     if(type == 'bet_fraction') {
         //         if ("/" in value) {
@@ -170,11 +267,9 @@ var app = new Vue({
     }
 })
 
-function draw_ev_graph(data, avg_value, name) {
+function draw_ev_graph(data, avg_value, player_names, colors) {
 
-    
-
-    var margin = { top: 15, bottom: 20, left: 20, right: 10 },
+    var margin = { top: 15, bottom: 20, left: 20, right: 50 },
             width = 400 - margin.left - margin.right,
             height = 150 - margin.top - margin.bottom
 
@@ -204,10 +299,15 @@ function draw_ev_graph(data, avg_value, name) {
         .attr("stroke", "white")
         .attr("stroke-width", "0.5");
 
-    
+    data.forEach((d,i) => {
+        d.forEach(j => {
+            j.player_no = i
+        })
+    })
+
     // Min max values
-    let x_high = Math.max(...data.map(i=>i.points))
-    let x_low = Math.min(...data.map(i=>i.points))
+    let x_high = Math.max(...data.map(i=>i.map(j => j.points)).flat())
+    let x_low = Math.min(...data.map(i=>i.map(j => j.points)).flat())
     let x_domain = _.range(x_low, x_high+1)
 
     // Axis-x
@@ -224,6 +324,14 @@ function draw_ev_graph(data, avg_value, name) {
             .tickSize(0)
         )
 
+    let players = _.range(data.length)
+
+    var x_sub = d3.scaleBand()
+        .domain(players)
+        .range([0, x.bandwidth()])
+        .paddingInner(0)
+        .paddingOuter(0);
+
     // Add X axis label:
     svg.append("text")
         .attr("text-anchor", "middle")
@@ -234,7 +342,7 @@ function draw_ev_graph(data, avg_value, name) {
         .text("Points");
 
     // Axis-y
-    let y_high = Math.max(Math.max(...data.map(i => i.probability)) * 1.1, 0.5)
+    let y_high = Math.max(Math.max(...data.map(i => i.map(j => j.probability)).flat()) * 1.1, 0.5)
     let y_low = 0
     var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
     let yAxis = svg.append('g')
@@ -275,58 +383,144 @@ function draw_ev_graph(data, avg_value, name) {
         .attr("y", -8)
         .attr("font-size", title_size)
         .attr("fill", "white")
-        .text("Point Probability Distribution" + (name != '' ? ` (${name})` : ''));
+        .text("Point Probability Distribution") // + (name != '' ? ` (${name})` : ''));
+
+    // Data plot
 
     let holder = svg.append('g')
 
-    let bars = holder.selectAll().data(data)
+    let flat_data = data.flat()
+
+    let bars = holder.selectAll()
+        .data(flat_data)
     // let points = holder.selectAll().data(data)
     
     let bar_entries = bars.enter().append("rect")
     bar_entries
         .attr("class", "probability-bars")
-        .attr("fill", "white")
-        .attr("x", (d) => x(d.points))
+        .attr("fill", d => colors(d.player_no))
+        // .attr("fill-opacity", 0.5)
+        .attr("stroke", "white")
+        .attr("stroke-width", 0.5)
+        .attr("x", (d) => x(d.points) + x_sub(d.player_no))
         .attr("y", (d) => y(d.probability))
-        .attr("width", x.bandwidth())
+        .attr("width", x_sub.bandwidth())
         .attr("height", (d) => y(0)-y(d.probability))
 
-    let avg_grp = svg.append('g')
-    let avg_place = x(Math.floor(avg_value)) + x.step()*(avg_value-Math.floor(avg_value)) + x.bandwidth()/2
-    let avg_line = avg_grp.append('line')
-            .attr("x1", avg_place)
-            .attr("x2", avg_place)
+
+    let avg_grp = svg.append('g').selectAll('.avg_lines').data(avg_value).enter()
+    let together = avg_grp.append('g').attr('class', 'avg_lines')
+    let avg_place = e => x(Math.floor(e)) + x.step()*(e-Math.floor(e)) + x.bandwidth()/2
+    let avg_line = together.append('line')
+            .attr("x1", d => avg_place(d))
+            .attr("x2", d => avg_place(d))
             .attr("y1", y(y_high))
             .attr("y2", y(y_low))
-            .attr("stroke", "#ffe400")
-    let avg_text = avg_grp.append('text')
+            .attr("stroke", "white")
+    let avg_text = together.append('text')
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "baseline")
         .attr("dominant-baseline", "baseline")
-        .attr("x", avg_place)
+        .attr("x", d => avg_place(d))
         .attr("y", -1)
         .attr("font-size", title_size)
-        .attr("fill", "#ffe400")
-        .text(avg_value.toFixed(2));
+        .attr("fill", (d,i) => colors(i))
+        .text(d => d.toFixed(2));
 
-    let update_func = (new_data, new_avg, new_name) => {
+    let legend = svg.append('g')
+            .attr("transform", "translate(" + (width+5) + ',0)')
+    let legend_box = legend.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 40)
+            .attr('height', 7*(player_names.length+0.5))
+            .attr("fill", "#5a5d5c")
+            .attr("stroke", "white")
+            .attr("stroke-width", 0.5)
+    let  legend_entry = legend.selectAll().data(player_names).enter().append('g')
+    legend_entry.append("rect")
+            .attr("class", "legend-rect")
+            .attr('x', 2)
+            .attr('y', (d,i) => 3.5 + 7 * i)
+            .attr('width', 10)
+            .attr('height', 3)
+            .attr('fill', (d,i) => colors(i))
+            .attr('stroke', 'white')
+            .attr('stroke-width', 0.5)
+    legend_entry.append('text')
+        .attr("class", "legend-text")
+        .attr("text-anchor", "start")
+        .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("x", 14)
+        .attr("y", (d,i) => 2 + 7*i + 3)
+        .attr("font-size", "4pt")
+        .attr("fill", "white")
+        .text(d => d)
 
-        let new_x_high = Math.max(...new_data.map(i=>i.points))
-        let new_x_low = Math.min(...new_data.map(i=>i.points))
+
+    let update_func = (new_data, new_avg, new_names) => {
+
+        new_data.forEach((d,i) => {
+            d.forEach(j => {
+                j.player_no = i
+            })
+        })
+
+        let new_x_high = Math.max(...new_data.map(i=>i.map(j => j.points)).flat())
+        let new_x_low = Math.min(...new_data.map(i=>i.map(j => j.points)).flat())
         let new_x_domain = _.range(new_x_low, new_x_high+1)
 
-        ev_title.text("Point Probability Distribution" + (new_name != '' ? ` (${new_name})` : ''));
+        // ev_title.text("Point Probability Distribution")
+
+        legend_box
+            .attr('height', 7*(new_names.length+0.5))
+        let new_legend_rect = legend.selectAll(".legend-rect").data(new_names)
+        new_legend_rect.exit().remove()
+        new_legend_rect.enter().append("rect")
+            .attr("class", "legend-rect")
+            .attr('x', 2)
+            .attr('y', (d,i) => 3.5 + 7 * i)
+            .attr('width', 10)
+            .attr('height', 3)
+            .attr('fill', (d,i) => colors(i))
+            .attr('stroke', 'white')
+            .attr('stroke-width', 0.5)
+        let new_legend_text = legend.selectAll(".legend-text").data(new_names)
+        new_legend_text.exit().remove()
+        new_legend_text
+            .attr("x", 14)
+            .attr("y", (d,i) => 2 + 7*i + 3)
+            .text(d => d)
+        new_legend_text.enter().append('text')
+            .attr("class", "legend-text")
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", 14)
+            .attr("y", (d,i) => 2 + 7*i + 3)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => d)
 
         x.domain(new_x_domain)
         xAxis.transition().duration(1000)
             .call(d3.axisBottom(x).tickSize(0))
 
-        let new_y_high = Math.max(Math.max(...new_data.map(i => i.probability)) * 1.1, 0.5)
+        let new_y_high = Math.max(Math.max(...new_data.map(i => i.map(j => j.probability)).flat()) * 1.1, 0.5)
         y.domain([0, new_y_high])
         yAxis.transition().duration(1000)
             .call(d3.axisLeft(y).tickSize(width))
             .call(g => g.selectAll(".tick text"))
             .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
+
+
+        let new_players = _.range(new_data.length)
+
+        x_sub.domain(new_players)
+            .range([0, x.bandwidth()])
+            .paddingInner(0)
+            .paddingOuter(0);
 
             // bar_entries
             // .data(new_data)
@@ -336,24 +530,33 @@ function draw_ev_graph(data, avg_value, name) {
 
             // bar_entries.remove()
 
-        let new_bars = holder.selectAll("rect").data(new_data)
+        let flat_new_data = new_data.flat()
+        debugger
+
+        let new_bars = svg.selectAll(".probability-bars").data(flat_new_data)
         new_bars.exit().remove()
-        new_bars.enter().append("rect")
-            .attr("x", (d) => x(d.points))
+
+        new_bars.transition().duration(1000)
+            .attr("fill", d => colors(d.player_no))
+            .attr("x", (d) => x(d.points) + x_sub(d.player_no))
             .attr("y", (d) => y(d.probability))
-            .attr("width", x.bandwidth())
+            .attr("width", x_sub.bandwidth())
+            .attr("height", (d) => y(0)-y(d.probability))
+
+        new_bars.enter().append("rect")
+            .attr("x", (d) => x(d.points) + x_sub(d.player_no))
+            .attr("y", (d) => y(d.probability))
+            .attr("width", x_sub.bandwidth())
             .attr("height", (d) => y(0)-y(d.probability))
             .attr("class", "probability-bars")
-            .attr("fill", "white")
+            .attr("fill", d => colors(d.player_no))
+            .attr("stroke", "white")
+            .attr("stroke-width", 0.5)
 
             // .attr("fill", "#f4afff")
             
         
-        new_bars.transition().duration(1000)
-            .attr("x", (d) => x(d.points))
-            .attr('y', (d) => y(d.probability))
-            .attr("width", x.bandwidth())
-            .attr("height", (d) => y(0)-y(d.probability))
+        
 
         // AXIS UPDATE
 
@@ -372,15 +575,52 @@ function draw_ev_graph(data, avg_value, name) {
         svg.call(g => g.selectAll(".domain")
             .attr("opacity", 0))
 
-        let new_avg_place = x(Math.floor(new_avg)) + x.step()*(new_avg-Math.floor(new_avg)) + x.bandwidth()/2
-        avg_line.transition().duration(1000)
-            .attr("x1", new_avg_place)
-            .attr("x2", new_avg_place)
+        let new_avg_grp = svg.selectAll('.avg_lines').data(new_avg)
+        let new_avg_place = e => x(Math.floor(e)) + x.step()*(e-Math.floor(e)) + x.bandwidth()/2
+        new_avg_grp.exit().remove()
+        new_avg_grp.transition().duration(1000)
+            .select('line')
+            .attr("x1", d => new_avg_place(d))
+            .attr("x2", d => new_avg_place(d))
             .attr("y1", y(new_y_high))
             .attr("y2", y(0))
-        avg_text.transition().duration(1000)
-        .attr("x", new_avg_place)
-        .text(new_avg.toFixed(2));
+            .attr("stroke", "white")
+        new_avg_grp.transition().duration(1000).select('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "baseline")
+            .attr("dominant-baseline", "baseline")
+            .attr("x", d => new_avg_place(d))
+            .attr("y", -1)
+            .attr("font-size", title_size)
+            .attr("fill", (d,i) => colors(i))
+            .text(d => d.toFixed(2));
+        let new_together = new_avg_grp.enter().append('g').attr('class', 'avg_lines')
+        new_together.append('line')
+            .attr("x1", d => new_avg_place(d))
+            .attr("x2", d => new_avg_place(d))
+            .attr("y1", y(new_y_high))
+            .attr("y2", y(0))
+            .attr("stroke", "white")
+        new_together.append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "baseline")
+            .attr("dominant-baseline", "baseline")
+            .attr("x", d => new_avg_place(d))
+            .attr("y", -1)
+            .attr("font-size", title_size)
+            .attr("fill", (d,i) => colors(i))
+            .text(d => d.toFixed(2));
+        
+
+        // let new_avg_place = x(Math.floor(new_avg)) + x.step()*(new_avg-Math.floor(new_avg)) + x.bandwidth()/2
+        // avg_line.transition().duration(1000)
+        //     .attr("x1", new_avg_place)
+        //     .attr("x2", new_avg_place)
+        //     .attr("y1", y(new_y_high))
+        //     .attr("y2", y(0))
+        // avg_text.transition().duration(1000)
+        // .attr("x", new_avg_place)
+        // .text(new_avg.toFixed(2));
 
     }
     return update_func
@@ -391,7 +631,7 @@ function draw_ev_graph(data, avg_value, name) {
 
 function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
     
-    var margin = { top: 15, bottom: 20, left: 20, right: 10 },
+    var margin = { top: 20, bottom: 20, left: 20, right: 10 },
             width = 400 - margin.left - margin.right,
             height = 150 - margin.top - margin.bottom
 
