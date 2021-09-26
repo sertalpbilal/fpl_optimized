@@ -75,24 +75,24 @@
                         Sample values are available on <a href="https://fplreview.com/raw-free-model-data/" target=_blank>FPLReview</a> and <a href="https://www.drafthound.com/football/premier-league/players" target=_blank>DraftHound</a>.
                     </div>
 
-                    <div class="controls-top row justify-content-center">
+                    <div class="controls-top row justify-content-center text-small">
 
 
                         <!-- player_name -->
 
-                        <div class="col-5 col-md-2 ml-1 mr-1">
+                        <div class="col-5 col-sm-2">
                             <div class="form-group">
                                 <label for="select-2">Player Name</label>
                                 <div class="input-group mb-3 no-wrap">
-                                    <input type="text" class="form-control" id="select-name" v-model="player_name">
+                                    <input type="text" class="form-control small-inner-text" id="select-name" v-model="player_name">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-5 col-md-2 ml-1 mr-1">
+                        <div class="col-5 col-sm-2">
                             <div class="form-group">
                                 <label for="select-1">Player Position</label>
-                                <select class="form-control" id="select-1" v-model="player_position">
+                                <select class="form-control small-inner-text" id="select-1" v-model="player_position">
                                     <option value="1">GK</option>
                                     <option value="2">DF</option>
                                     <option value="3">MD</option>
@@ -111,42 +111,45 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col-5 col-md-2 ml-1 mr-1">
+                        <div class="col-5 col-sm-2">
                             <div class="form-group">
                                 <label for="select-2" :style="{color: colors[0]}">Anytime Goal %</label>
                                 <div class="input-group mb-3 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="select-2" v-model.number="player_goal">
+                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-2" v-model.number="player_goal">
                                     <div class="input-group-append">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text small-perc">%</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-5 col-md-2 ml-1 mr-1">
+                        <div class="col-5 col-sm-2">
                             <div class="form-group">
                                 <label for="select-3" :style="{color: colors[1]}">Anytime Assist %</label>
                                 <div class="input-group mb-3 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="select-3" v-model.number="player_assist">
+                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-3" v-model.number="player_assist">
                                     <div class="input-group-append">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text small-perc">%</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-5 col-md-2 ml-1 mr-1">
+                        <div class="col-5 col-sm-2">
                             <div class="form-group">
                                 <label for="select-4" :style="{color: colors[2]}">Clean Sheet %</label>
                                 <div class="input-group mb-3 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="select-4" v-model.number="player_cs">
+                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-4" v-model.number="player_cs">
                                     <div class="input-group-append">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text small-perc">%</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="controls-top row justify-content-center text-small">
+                        <button class="btn btn-secondary text-small mb-3">+</button>
+                    </div>
                     <div class="text-center">
-                        <button class="btn btn-primary" @click="calculate">Calculate</button>
+                        <button class="btn btn-primary text-small" @click="calculate">Calculate</button>
                     </div>
                 </div>
                 <div class="card-body red-border-bottom">

@@ -1408,3 +1408,22 @@ th.vertical-name {
     padding-bottom: 1em;
     margin-bottom: 1em;
 }
+
+.small-inner-text {
+    font-size: 9pt;
+    padding-left: 0.3em;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+}
+
+.small-inner-text {
+    /* max-width: 60px; */
+}
+
+.small-perc {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+}
