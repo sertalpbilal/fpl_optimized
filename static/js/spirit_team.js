@@ -96,9 +96,10 @@ var app = new Vue({
             let user_rank = this.fpl_all_week_ranks
             let clubs = this.clubs
             let stats = clubs.map((club, index) => {
+                
                 let team_rank = app.team_positions[club].map(i => i.position) // .slice(1)
                 if (team_rank.length > user_rank.length) {
-                    team_rank.pop()
+                    team_rank.shift()
                 }
                 let input = _.zip(team_rank, user_rank.slice(0, team_rank.length))
                 r = regression.linear(input)
