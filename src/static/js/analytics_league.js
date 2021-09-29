@@ -49,6 +49,7 @@ var app = new Vue({
             if (_.isEmpty(this.league_data) || _.isEmpty(this.el_data_by_id) || _.isEmpty(this.xp_data) || _.isEmpty(this.rp_data) || _.isEmpty(this.rp_by_id)) { return []}
 
             let t = this.league_data
+            t = t.filter(i => i[1] != null)
             t.forEach((t) => {
                 t.info = {}
                 let picks = t[1].picks
