@@ -31,7 +31,8 @@ var app = new Vue({
         // selection
         team_selected: undefined,
         gw_selected: undefined,
-        scaled_color: scaled_color
+        scaled_color: scaled_color,
+        show_pts: false
     },
     computed: {
         filtered_players() {
@@ -59,12 +60,15 @@ var app = new Vue({
             let overall_total = 0
             players.forEach((p) => {
                 p.min_data = {}
+                p.pts_data = {}
                 p.total_min = 0
+                p.total_pts = 0
                 p.matches_played = 0
                 for (let w of this.gameweeks) {
                     let entry = w in this.points_data ? this.points_data[w].find(i => i.id == p.id) : undefined
                     if (entry == undefined) {
                         p.min_data[w] = 0
+                        p.pts_data[w] = 0
                     }
                     else {
                         p.matches_played += 1
@@ -73,6 +77,8 @@ var app = new Vue({
                         if (w == this.next_gw) {
                             overall_total += entry.total_min
                         }
+                        p.pts_data[w] = entry.total_pts
+                        p.total_pts += entry.total_pts
                     }
                     
                 }
@@ -81,6 +87,7 @@ var app = new Vue({
             players.forEach((p) => {
                 p.overall_total = overall_total
                 p.min_per_game = p.total_min / (p.matches_played > 0 ? p.matches_played : 1)
+                p.pts_per_game = p.total_pts / (p.matches_played > 0 ? p.matches_played : 1)
             })
             players = _.orderBy(players, ['element_type', 'total_min', 'id'], ['asc', 'desc', 'asc'])
             return players
@@ -95,7 +102,9 @@ var app = new Vue({
         }
     },
     methods: {
-        
+        togglePt(e) {
+            this.show_pts = e.currentTarget.checked
+        }
     }
 })
 
