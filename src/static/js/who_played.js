@@ -99,11 +99,46 @@ var app = new Vue({
         team_selected_name() {
             if (this.team_selected == undefined) { return ""}
             return this.teams[this.team_selected-1].name
+        },
+        team_computed: {
+            get: () => {
+                return app.team_selected
+            },
+            set: (v) => {
+                app.remove_dt()
+                app.team_selected = v
+                app.load_dt()
+            }
         }
     },
     methods: {
+        remove_dt() {
+            $("#value_table").DataTable().destroy();
+        },
+        load_dt() {
+            this.$nextTick(() => {
+                let table = $("#value_table").DataTable({
+                    "order": [],
+                    "lengthChange": false,
+                    "pageLength": 100,
+                    "searching": false,
+                    "info": false,
+                    "paging": false,
+                    "columnDefs": []
+                });
+                table.cells("td").invalidate().draw();
+            })
+        },
+        invalidate_cache() {
+            this.$nextTick(() => {
+                var table = $("#value_table").DataTable();
+                table.cells("td").invalidate().draw();
+            })
+        },
         togglePt(e) {
+            this.remove_dt()
             this.show_pts = e.currentTarget.checked
+            this.load_dt()
         }
     }
 })
@@ -137,6 +172,7 @@ $(document).ready(() => {
             get_points()
         ]).then((values) => {
             app.ready = true
+            app.load_dt()
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
