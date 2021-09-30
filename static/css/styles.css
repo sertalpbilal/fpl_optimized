@@ -1319,9 +1319,10 @@ tbody tr:last-child td.highlighted-col {
 }
 
 th.vertical-name {
-    position: sticky;
+    position: sticky !important;
     left: 0;
-    background-color: #474747;
+    background-color: #474747 !important;
+    z-index: 2;
 }
 
 .mh-500 {
