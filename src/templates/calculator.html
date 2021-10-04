@@ -75,6 +75,13 @@
                         Sample values are available on <a href="https://fplreview.com/raw-free-model-data/" target=_blank>FPLReview</a> and <a href="https://www.drafthound.com/football/premier-league/players" target=_blank>DraftHound</a>.
                     </div>
 
+                    <div class="text-center mb-2 text-small">
+                        <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                            <input type="checkbox" class="custom-control-input" id="r_switch" @change="toggle_rate">
+                            <label class="custom-control-label highlighted-checkbox" for="r_switch">Show Rates</label>
+                        </div>
+                    </div>
+
                     <div class="controls-top row justify-content-center text-small mb-3" v-for="p in _.range(player_count)">
 
 
@@ -113,33 +120,57 @@
                         </div> -->
                         <div class="col-4 col-sm-2">
                             <div class="form-group mb-0">
-                                <label for="select-2" :style="{color: colors[0]}">Anytime Goal %</label>
-                                <div class="input-group mb-1 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-2" v-model.number="players[p].goal">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text small-perc">%</span>
+                                <div v-if="!show_rates">
+                                    <label for="select-2" :style="{color: colors[0]}">Anytime Goal %</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-2" v-model.number="players[p].goal">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text small-perc">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <label for="comp-2" :style="{color: colors[0]}">Avg. Goal Rate</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text goal_rates" id="comp-2" @change="update_goal" :data-order="p">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-5 col-sm-2">
                             <div class="form-group mb-0 ">
-                                <label for="select-3" :style="{color: colors[1]}">Anytime Assist %</label>
-                                <div class="input-group mb-1 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-3" v-model.number="players[p].assist">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text small-perc">%</span>
+                                <div v-if="!show_rates">
+                                    <label for="select-3" :style="{color: colors[1]}">Anytime Assist %</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-3" v-model.number="players[p].assist">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text small-perc">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <label for="comp-3" :style="{color: colors[1]}">Avg. Assist Rate</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text assist_rates" id="comp-3" @change="update_assist" :data-order="p">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-5 col-sm-2">
                             <div class="form-group mb-0">
-                                <label for="select-4" :style="{color: colors[2]}">Clean Sheet %</label>
-                                <div class="input-group mb-1 no-wrap">
-                                    <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-4" v-model.number="players[p].cs">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text small-perc">%</span>
+                                <div v-if="!show_rates">
+                                    <label for="select-4" :style="{color: colors[2]}">Clean Sheet %</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-4" v-model.number="players[p].cs">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text small-perc">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <label for="comp-4" :style="{color: colors[2]}">Avg. Goals Conceded</label>
+                                    <div class="input-group mb-1 no-wrap">
+                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text gc_rates" id="comp-4" @change="update_gc" :data-order="p">
                                     </div>
                                 </div>
                             </div>

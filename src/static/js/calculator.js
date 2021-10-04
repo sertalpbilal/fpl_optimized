@@ -48,6 +48,7 @@ var app = new Vue({
         player_colors: d3.scaleOrdinal(d3.schemeTableau10),
         counter: 2,
         comparison: [],
+        show_rates: false
         // bet_fraction: undefined,
         // bet_decimal: undefined,
         // bet_american: undefined,
@@ -55,7 +56,6 @@ var app = new Vue({
         // bet_implied: undefined
     },
     computed: {
-        
     },
     methods: {
         calculate() {
@@ -81,8 +81,6 @@ var app = new Vue({
                 this.calculate_single(i)
             })
             this.plot_graphs()
-
-            debugger
 
             this.comparison = []
             if (this.player_count == 2) {
@@ -222,6 +220,10 @@ var app = new Vue({
             // converts P(k>0) info to Poisson lambda
             return -Math.log(1-p)
         },
+        lambda_to_percentage(lambda) {
+            // converts P(k>0) info to Poisson lambda
+            return Math.exp(-lambda)
+        },
         get_poisson_probs(lambda, k_max=10) {
             // converts Poisson lambda into probabilities for each k
             let rates = []
@@ -276,7 +278,24 @@ var app = new Vue({
             this.comparison = {p1_better, p2_better, players_equal}
 
             this.$forceUpdate()
-        }
+        },
+        toggle_rate() {
+            this.show_rates = !this.show_rates
+            this.$nextTick(() => {
+                let goal_values = this.players.map(i => this.percentage_to_lambda(i.goal/100))
+                jQuery(".goal_rates").each((i,v) => {
+                    v.value = parseFloat((goal_values[i]).toFixed(4))
+                })
+                let assist_values = this.players.map(i => this.percentage_to_lambda(i.assist/100))
+                jQuery(".assist_rates").each((i,v) => {
+                    v.value = parseFloat((assist_values[i]).toFixed(4))
+                })
+                let gc_values = this.players.map(i => this.percentage_to_lambda((100-i.cs)/100))
+                jQuery(".gc_rates").each((i,v) => {
+                    v.value = parseFloat((gc_values[i]).toFixed(4))
+                })
+            })
+        }, 
         // update_bet(type, value) {
         //     if(type == 'bet_fraction') {
         //         if ("/" in value) {
@@ -296,6 +315,27 @@ var app = new Vue({
         //         }
         //     }
         // }
+        update_goal(e) {
+            let order = e.currentTarget.dataset.order
+            let rate = e.currentTarget.value
+            let val = this.lambda_to_percentage(rate)
+            this.players[order].goal = parseFloat((100-100*val).toFixed(3))
+            this.$forceUpdate()
+        },
+        update_assist(e) {
+            let order = e.currentTarget.dataset.order
+            let rate = e.currentTarget.value
+            let val = this.lambda_to_percentage(rate)
+            this.players[order].assist = parseFloat((100-100*val).toFixed(3))
+            this.$forceUpdate()
+        },
+        update_gc(e) {
+            let order = e.currentTarget.dataset.order
+            let rate = e.currentTarget.value
+            let val = this.lambda_to_percentage(rate)
+            this.players[order].cs = parseFloat((100*val).toFixed(3))
+            this.$forceUpdate()
+        }
     }
 })
 
