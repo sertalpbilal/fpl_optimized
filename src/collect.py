@@ -166,9 +166,11 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
 def encrypt_files(target_folder, page, remove=True):
     encrypt(str(target_folder / f'element_gameweek.csv'), key_name='REVIEW_KEY')
     encrypt(str(target_folder / f'fplreview-{page}.csv'), key_name='REVIEW_KEY')
+    encrypt(str(target_folder / f'detailed-fplreview-{page}.csv'), key_name='REVIEW_KEY')
     if remove:
         os.remove(target_folder / f'element_gameweek.csv')
         os.remove(target_folder / f'fplreview-{page}.csv')
+        os.remove(target_folder / f'detailed-fplreview-{page}.csv')
 
 def read_static():
     """Reads user-specified static values from JSON file"""
