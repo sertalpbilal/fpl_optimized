@@ -217,6 +217,7 @@ var app = new Vue({
 
             this.team_data.picks[out_player_index].element = e
             this.select_out(this.picked_out) // clear selection
+            this.swap_out = undefined // clear bench swap
         },
         select_swap(e) {
             if (this.swap_out == e) { // cancel swap
