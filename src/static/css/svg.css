@@ -326,3 +326,62 @@ circle.risk-nodes:hover {
     opacity: 1;
 }
 
+.empty_captain {
+    fill: white !important;
+    fill-opacity: 0 !important;
+    cursor: pointer;
+    stroke: white !important;
+    stroke-opacity: 0.5;
+    stroke-width: 0.4pt !important;
+}
+
+.current_captain {
+    fill: #00837e !important;
+    fill-opacity: 1 !important;
+    cursor: pointer;
+    stroke: palegreen !important;
+    stroke-width: 0.4pt !important;
+}
+
+.captain_text {
+    stroke-width: 0 !important;
+    font-size: 2.4pt;
+    pointer-events: none;
+}
+
+.empty_out {
+    fill: white !important;
+    fill-opacity: 0 !important;
+    cursor: pointer;
+    stroke: white !important;
+    stroke-opacity: 0.2;
+    stroke-width: 0.4pt !important;
+}
+
+.selected_out {
+    fill: #e30000 !important;
+    fill-opacity: 1 !important;
+    cursor: pointer;
+    stroke: #ffffff !important;
+    stroke-opacity: 1;
+    stroke-width: 0.4pt !important;
+}
+
+.out_text {
+    stroke-width: 0 !important;
+    font-size: 1.8pt;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.half-opacity {
+    opacity: 0.5 !important;
+}
+
+.field_icons {
+    font-family: sans-serif;
+    font-weight: bold;
+    text-anchor: middle;
+    alignment-baseline: central;
+    dominant-baseline: central;
+}

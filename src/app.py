@@ -382,7 +382,7 @@ def calculator_page():
 
 
 @app.route('/who_played.html')
-def whp_played():
+def who_played():
     page_name = 'who_played.html'
 
     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
@@ -400,7 +400,24 @@ def whp_played():
         return render_template(page_name, repo_name="", page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements))
 
 
+@app.route('/scenarios.html')
+def scenario_page():
+    page_name = 'scenarios.html'
 
+    # Raw input data
+    # files = glob.glob(f"build/data/{global_season}/GW*/*/input/detailed-fplreview-*.csv-encrypted")
+    # files = sorted(files, key=os.path.getctime, reverse=True)
+    # files = ['/'.join(i.split('/')[1:]) for i in files]
+
+    # Scenario outputs
+    files = glob.glob(f"build/data/{global_season}/GW*/*/output/scenarios.csv")
+    files = sorted(files, key=os.path.getctime, reverse=True)
+    files = ['/'.join(i.split('/')[1:]) for i in files]
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", page_name="Scenarios", sc_files=files)
+    else:
+        return render_template(page_name, repo_name="", page_name="Scenarios", sc_files=files)
 
 def list_all_snapshots():
     pass

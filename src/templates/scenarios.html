@@ -1,0 +1,214 @@
+"% include 'header.html' %"
+
+<main class="container" v-cloak v-if="ready">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Random Scenario Evaluation</h5>
+                <div class="scenario_detail">
+                    Simulated outcomes based on current projections
+                </div>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-lg-4 col-8">
+                            <div class="input-group">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model="team_id" :disabled="loading" v-on:keyup="submitTeam">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Fetch</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h6 class="card-header border-complement text-center scenario_title">Overview</h6>
+                <div class="scenario_detail">
+                    This tool uses 100 randomly generated simulations to evaluate your team selections for the next GW
+                </div>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-12 col-md-6">
+                            <div class="lineup gray-bg">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
+                                    <svg class="field">
+                                        <g class="g_field">
+                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
+                                            <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
+                                            <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
+                                            <path class="field-common" id="right_bottom_corner" d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z" transform="scale(-1)" />
+                                            <path class="field-common" id="left_bottom_corner" d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z" transform="rotate(-90)" />
+                                            <rect class="field-common" id="top_penalty_box" width="46.726002" height="21.884615" x="32.992699" y="3.852963" />
+                                            <rect class="field-common" id="top_inner_box" width="24.50474" height="11.328758" x="44.101284" y="3.828212" />
+                                            <path class="field-common" id="top_arch" d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
+                                            <path class="field-common" id="bottom_arch" d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002" height="21.884615" x="-79.962532" y="-140.46913" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_inner_box" width="24.50474" height="11.328759" x="-68.851799" y="-140.42613" transform="scale(-1)" />
+                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208" r="14.196868" />
+                                            <path class="field-common field-last-path" d="M 4.1010416,71.569791 H 108.51143" id="center_line" inkscape:connector-curvature="0"/>
+                                            <rect class="field-common" id="bench_box" width="104.4753" height="30" x="4.0935702" y="140.51396" />
+                                        </g>
+                                    </svg>
+                                    <svg id="player_group" x=0 y=0>
+                                        <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
+                                            <g class="g_jersey" style="transform:translate(0,0)">
+                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);"></image>
+                                                <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
+                                                    <!-- Select captain -->
+                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}" @click="select_captain(player.element)" />
+                                                    <text x="18" y="14" class="field_icons captain_text">C</text>
+                                                </g>
+                                                <!-- Transfer Out -->
+                                                <g :class="{'half-opacity': player.element != picked_out}">
+                                                    <rect x="15" y="2" width="4" height="4" :class="{'empty_out': player.element != picked_out, 'selected_out': player.element == picked_out}" @click="select_out(player.element)" />
+                                                    <text x="17" y="4" class="field_icons out_text">X</text>
+                                                </g>
+                                                <!-- Swap bench -->
+                                                <g :class="{'half-opacity': player.element != swap_out}" v-show="swap_out == undefined || player.swap_available || player.element == swap_out">
+                                                    <rect x="1" y="2" width="4" height="4" :class="{'empty_out': player.element != swap_out, 'selected_out': player.element == swap_out}" @click="select_swap(player.element)" />
+                                                    <text x="3" y="4" class="field_icons out_text">⇅</text>
+                                                </g>
+                                                
+                                                <g  transform="translate(0,20)">
+                                                    <g>
+                                                        <text y="285.37598" x="9.281539" class="jersey-regular-text">
+                                                            <tspan
+                                                                class="jersey-xp-text"
+                                                                y="285.37598" x="9.281539"  ><tspan style="font-size:5.5px" >{{ player.points_total }}</tspan>
+                                                            </tspan>
+                                                        </text>
+                                                        <!-- <text  y="0" x="0" class="jersey-regular-text jersey-team-text">
+                                                            <tspan v-if="player.multiplier==2"
+                                                                class="jersey-captain-star"
+                                                                y="-15" x="2"  >★</tspan>
+                                                        </text> -->
+                                                        <rect y="0" x="0" height="4" width="19" class="jersey-name-bg" />
+                                                        <rect y="4" x="0" height="3" width="19" class="jersey-team-bg" />
+                                                        <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
+                                                            <tspan
+                                                                class="jersey-player-name"
+                                                                y="3" x="9" style="font-size: 2.2pt;">{{ player.data.web_name }}</tspan>
+                                                        </text>
+                                                        <text y="7" x="9" class="jersey-regular-text" 
+                                                            xml:space="preserve">
+                                                            <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan>
+                                                        </text>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </svg>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Team Average
+                                </div>
+                                <div class="col-6 p-2 value-side">
+                                    {{ scenario_stats.avg_score }} pts
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Confidence Interval
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.conf_interval && scenario_stats.conf_interval[0].toFixed(2)) || "" }} - {{ (scenario_stats.conf_interval && scenario_stats.conf_interval[1].toFixed(2)) || "" }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center title-side">
+                                    Box-and-Whiskers
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span v-if="!_.isEmpty(scenario_stats)">
+                                        <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.avg_score*2, 110) + ' 35'" width="100%">
+                                            <g>
+                                                <line :x1="scenario_stats.quantiles[0]" :x2="scenario_stats.quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
+                                                <circle :cx="scenario_stats.quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <circle :cx="scenario_stats.quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <rect :x="scenario_stats.quantiles[1]" :width="scenario_stats.quantiles[3]-scenario_stats.quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
+                                                <line :x1="scenario_stats.quantiles[2]" :x2="scenario_stats.quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
+                                                <text :x="scenario_stats.quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[0]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[4]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[1]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[3]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[2]*10)/10 }}</text>
+                                            </g>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Most Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Least Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Best Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Worst Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="display: none">
+        ** sc_files **
+
+        {{ team_data }}
+    </div>
+
+</main>
+
+<script>
+    let sc_files = ** sc_files | tojson **
+</script>
+
+"% with scripts=["main", "scenarios"] %" "% include 'footer.html' %" "% endwith %"
