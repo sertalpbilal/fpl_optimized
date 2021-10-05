@@ -111,7 +111,7 @@ var app = new Vue({
             let worst_diff_field = _.minBy(evals, 'diff')
             
             let variance = jStat.variance(sample_values)
-            let step = jStat.studentt.inv(0.95,sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
+            let step = jStat.studentt.inv((1-(1-0.95)/2),sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
             let conf_interval = [avg_score - step, avg_score + step]
             let quantiles = jStat.quantiles(sample_values, [0, 0.25, 0.5, 0.75, 1])
 
