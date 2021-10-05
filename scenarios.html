@@ -145,6 +145,7 @@
                 </div>
                 <div class="card-body text-center p-3" v-cloak>
                     <div class="row no-gutters justify-content-center">
+                        <!-- Left side: field -->
                         <div class="col-12 col-md-6">
                             <div class="lineup gray-bg">
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
@@ -218,28 +219,32 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-3">
-                                <div class="col-6 p-2 title-side">
-                                    Team Average
+                        <!-- Right side: data values -->
+                        <div class="col-12 col-md-6" v-show="picked_out == undefined">
+                            <div class="red-border-bottom text-center">
+                                <b>Points Analysis</b>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Average
                                 </div>
-                                <div class="col-6 p-2 value-side">
+                                <div class="col-6 p-1 value-side">
                                     {{ scenario_stats.avg_score }} pts
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 title-side">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
                                     Confidence Interval
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.conf_interval && scenario_stats.conf_interval[0].toFixed(2)) || "" }} - {{ (scenario_stats.conf_interval && scenario_stats.conf_interval[1].toFixed(2)) || "" }} pts</span>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center title-side">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center title-side">
                                     Box-and-Whiskers
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span v-if="!_.isEmpty(scenario_stats)">
                                         <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.avg_score*2, 110) + ' 35'" width="100%">
                                             <g>
@@ -258,38 +263,100 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 title-side">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
                                     Most Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 title-side">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
                                     Least Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
                                 </div>
                             </div>
-                            
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 title-side">
-                                    Best Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+
+                            <div class="red-border-bottom text-center mt-1">
+                                <b>Difference to Field Average Analysis</b>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Average
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 value-side">
+                                    {{ getWithSign(scenario_stats.avg_diff) }} pts
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center title-side">
+                                    Box-and-Whiskers
+                                </div>
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                    <span v-if="!_.isEmpty(scenario_stats)">
+                                        <svg :view-box.camel=" -Math.max(50, scenario_stats.diff_quantiles[4]*1.1, -scenario_stats.diff_quantiles[0]*1.1) + ' 0 ' + 2*(Math.max(50, scenario_stats.diff_quantiles[4]*1.1, -scenario_stats.diff_quantiles[0]*1.1)) + ' 35'" width="100%">
+                                            <g>
+                                                <line :x1="scenario_stats.diff_quantiles[0]" :x2="scenario_stats.diff_quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
+                                                <circle :cx="scenario_stats.diff_quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <circle :cx="scenario_stats.diff_quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <rect :x="scenario_stats.diff_quantiles[1]" :width="scenario_stats.diff_quantiles[3]-scenario_stats.diff_quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
+                                                <line :x1="scenario_stats.diff_quantiles[2]" :x2="scenario_stats.diff_quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
+                                                <text :x="scenario_stats.diff_quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[0]*100)/100 }}</text>
+                                                <text :x="scenario_stats.diff_quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[4]*100)/100 }}</text>
+                                                <text :x="scenario_stats.diff_quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[1]*100)/100 }}</text>
+                                                <text :x="scenario_stats.diff_quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[3]*100)/100 }}</text>
+                                                <text :x="scenario_stats.diff_quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[2]*100)/100 }}</text>
+                                            </g>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Best Diff. to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-3">
-                                <div class="col-6 p-2 title-side">
-                                    Worst Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Worst Diff. to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
                                 </div>
-                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6" v-show="picked_out != undefined">
+                            <div class="red-border-bottom mb-1"><b>Replace Player</b></div>
+                            <div>
+                                <table class="table table-sm text-small text-white table-striped" id="replacement_options">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted text-center">ID</th>
+                                            <th>Position</th>
+                                            <th>Name</th>
+                                            <th>Team</th>
+                                            <th>Price</th>
+                                            <th>Own%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="player in elements" v-if="player.element_type == player_filter && !team_ids.includes(player.id)" @click="transfer_in(player.id)" class="player-clickable">
+                                            <td class="text-muted">{{ player.id }}</td>
+                                            <td>{{ element_type[player.element_type].short }}</td>
+                                            <td>{{ player.web_name }}</td>
+                                            <td>{{ teams_ordered[player.team-1].name }}</td>
+                                            <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
+                                            <td>{{ player.selected_by_percent }}%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -298,7 +365,20 @@
         </div>
     </div>
 
-
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h6 class="card-header border-complement text-center scenario_title">Distribution and Scenario Details</h6>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-12 col-md-6">
+                            <b>Histogram</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
@@ -310,12 +390,6 @@
         </div>
     </div>
 
-
-    <div style="display: none">
-        [&#39;data/2021-22/GW8/2021-10-05/output/scenarios.csv&#39;, &#39;data/2021-22/GW8/2021-10-04/output/scenarios.csv&#39;, &#39;data/2021-22/GW8/2021-10-03/output/scenarios.csv&#39;]
-
-        {{ team_data }}
-    </div>
 
 </main>
 

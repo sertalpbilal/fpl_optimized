@@ -1447,3 +1447,11 @@ th.vertical-name {
     color: #fff292;
     font-size: smaller;
 }
+
+.player-clickable {
+    cursor: pointer;
+}
+
+.player-clickable:hover {
+    background-color: steelblue !important;
+}

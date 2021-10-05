@@ -12,6 +12,7 @@ var app = new Vue({
         // lineup: [],
         // bench: [],
         picked_out: undefined,
+        player_filter: undefined,
         swap_out: undefined,
         trigger: 0
     },
@@ -113,6 +114,11 @@ var app = new Vue({
             let step = jStat.studentt.inv(0.95,sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
             let conf_interval = [avg_score - step, avg_score + step]
             let quantiles = jStat.quantiles(sample_values, [0, 0.25, 0.5, 0.75, 1])
+
+            let diff_values = evals.map(i => i.diff)
+            let diff_quantiles = jStat.quantiles(diff_values, [0, 0.25, 0.5, 0.75, 1])
+            let avg_diff = jStat.mean(diff_values)
+
             return {
                 avg_score, 
                 best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
@@ -121,8 +127,14 @@ var app = new Vue({
                 worst_diff: {'sim': worst_diff_field.sim, 'diff': worst_diff_field.diff},
                 total_scores: sample_values,
                 quantiles,
-                conf_interval
+                conf_interval,
+                diff_quantiles,
+                avg_diff
             }
+        },
+        team_ids() {
+            if (_.isEmpty(this.team_data)) { return [] }
+            return this.team_data.picks.map(i => i.element)
         }
     },
     methods: {
@@ -171,12 +183,40 @@ var app = new Vue({
             })
         },
         select_out(e) {
+            if (this.picked_out != undefined) {
+                $("#replacement_options").DataTable().destroy();
+            }
             if (this.picked_out == e) {
                 this.picked_out = undefined
+                this.player_filter = undefined
             }
             else {
                 this.picked_out = e
+                this.player_filter = this.elements.find(i => i.id == e).element_type
+
+                // replacement_options
+                this.$nextTick(() => {
+                    let table = $("#replacement_options").DataTable({
+                        "order": [5],
+                        "lengthChange": false,
+                        "pageLength": 15,
+                        "searching": true,
+                        "info": false,
+                        "paging": true,
+                        "columnDefs": []
+                    });
+                    table.cells("td").invalidate().draw();
+                })
             }
+        },
+        transfer_in(e) {
+            if (this.picked_out == undefined) { return }
+            // let out_player = this.team_data.picks.find(i => i.element == this.picked_out)
+            let out_player_index = this.team_data.picks.findIndex(i => i.element == this.picked_out)
+            // let in_player = elements.find(i => i.id == e)
+
+            this.team_data.picks[out_player_index].element = e
+            this.select_out(this.picked_out) // clear selection
         },
         select_swap(e) {
             if (this.swap_out == e) { // cancel swap
