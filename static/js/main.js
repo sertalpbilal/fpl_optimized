@@ -486,6 +486,34 @@ function read_local_file(url) {
     });
 }
 
+
+function read_local_file_Fernet(url) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                var secret = new fernet.Secret('symZ1LvXcAtjllNsDmhSp-GT1gDNPXw0P5eijrU8ogQ=');
+                var token = new fernet.Token({
+                    secret: secret,
+                    token: data,
+                    ttl: 0
+                })
+                let raw = token.decode();
+                resolve(raw)
+            },
+            error: ()  => {
+                reject("Could not get XP data");
+            }
+        });
+    })
+}
+
+
+
+
 function get_analytics_data({season, gw}) {
     return new Promise((resolve, reject) => {
         $.ajax({

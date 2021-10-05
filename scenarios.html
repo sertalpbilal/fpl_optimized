@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+    <title>FPL Optimized  - Scenarios</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Optimized squads for Fantasy Premier League -- everyday!" />
+    <meta name="keywords" content="fantasy, football, soccer, premier league, mathematics, optimization, analytics, sports" />
+    <meta name="author" content="Sertalp B. Cay (sertalpbilal@gmail.com)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+    <link href="//unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css"> -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L07T8LS957"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-L07T8LS957');
+    </script>
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/svg.css">
+
+    <link rel="manifest" href="/static/asset/manifest.json">
+    <link rel="apple-touch-icon" href="/static/asset/apple_logo_114.png">
+    <link rel="apple-touch-startup-image" href="/static/asset/apple_splash_320.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FPLOptimized">
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <header class="bg-dark-gray mb-1">
+            <div class="container">
+                <nav class="navbar navbar-collapse navbar-dark container-fluid pl-0 pr-0">
+                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3 mr-auto flex-grow-1" href="/" aria-label="Bootstrap">FPL Optimized</a>
+                    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse text-secondary flex-row-reverse" id="menuToggler">
+                        <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="week.html">Optimal Squads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="live_gw.html">Live GW</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="team_summary.html">GW Summary</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
+                            </li>
+                            <li class="nav-item no-sep">
+                                <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
+                            </li>
+                        </ul>
+                    </div> -->
+                </nav>
+            </div>
+        </header>
+
+
+        <!-- <div class="mt-1 container">
+            <div class="row pl-3 pr-3">
+                <div class="col-12 alert alert-info alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> First time on FPL Optimized? Read a summary of tools <a target="_blank" href="https://threadreaderapp.com/thread/1391100607205941253.html">here.</a>
+                    <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div> -->
+<!-- 
+        <div class="mt-2 container">
+            <div class="row pl-3 pr-3">
+                <div class="col-12 alert alert-success alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> FPLOptimized is ready for new season! Welcome back :)</a>
+                    <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div> -->
+
+
+<main class="container" v-cloak v-if="ready">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Random Scenario Evaluation</h5>
+                <div class="scenario_detail">
+                    Simulated outcomes based on current projections
+                </div>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-lg-4 col-8">
+                            <div class="input-group">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model="team_id" :disabled="loading" v-on:keyup="submitTeam">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Fetch</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h6 class="card-header border-complement text-center scenario_title">Overview</h6>
+                <div class="scenario_detail">
+                    This tool uses 100 randomly generated simulations to evaluate your team selections for the next GW
+                </div>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-12 col-md-6">
+                            <div class="lineup gray-bg">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
+                                    <svg class="field">
+                                        <g class="g_field">
+                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
+                                            <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
+                                            <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
+                                            <path class="field-common" id="right_bottom_corner" d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z" transform="scale(-1)" />
+                                            <path class="field-common" id="left_bottom_corner" d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z" transform="rotate(-90)" />
+                                            <rect class="field-common" id="top_penalty_box" width="46.726002" height="21.884615" x="32.992699" y="3.852963" />
+                                            <rect class="field-common" id="top_inner_box" width="24.50474" height="11.328758" x="44.101284" y="3.828212" />
+                                            <path class="field-common" id="top_arch" d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
+                                            <path class="field-common" id="bottom_arch" d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002" height="21.884615" x="-79.962532" y="-140.46913" transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_inner_box" width="24.50474" height="11.328759" x="-68.851799" y="-140.42613" transform="scale(-1)" />
+                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208" r="14.196868" />
+                                            <path class="field-common field-last-path" d="M 4.1010416,71.569791 H 108.51143" id="center_line" inkscape:connector-curvature="0"/>
+                                            <rect class="field-common" id="bench_box" width="104.4753" height="30" x="4.0935702" y="140.51396" />
+                                        </g>
+                                    </svg>
+                                    <svg id="player_group" x=0 y=0>
+                                        <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
+                                            <g class="g_jersey" style="transform:translate(0,0)">
+                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);"></image>
+                                                <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
+                                                    <!-- Select captain -->
+                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}" @click="select_captain(player.element)" />
+                                                    <text x="18" y="14" class="field_icons captain_text">C</text>
+                                                </g>
+                                                <!-- Transfer Out -->
+                                                <g :class="{'half-opacity': player.element != picked_out}">
+                                                    <rect x="15" y="2" width="4" height="4" :class="{'empty_out': player.element != picked_out, 'selected_out': player.element == picked_out}" @click="select_out(player.element)" />
+                                                    <text x="17" y="4" class="field_icons out_text">X</text>
+                                                </g>
+                                                <!-- Swap bench -->
+                                                <g :class="{'half-opacity': player.element != swap_out}" v-show="swap_out == undefined || player.swap_available || player.element == swap_out">
+                                                    <rect x="1" y="2" width="4" height="4" :class="{'empty_out': player.element != swap_out, 'selected_out': player.element == swap_out}" @click="select_swap(player.element)" />
+                                                    <text x="3" y="4" class="field_icons out_text">⇅</text>
+                                                </g>
+                                                
+                                                <g  transform="translate(0,20)">
+                                                    <g>
+                                                        <text y="285.37598" x="9.281539" class="jersey-regular-text">
+                                                            <tspan
+                                                                class="jersey-xp-text"
+                                                                y="285.37598" x="9.281539"  ><tspan style="font-size:5.5px" >{{ player.points_total }}</tspan>
+                                                            </tspan>
+                                                        </text>
+                                                        <!-- <text  y="0" x="0" class="jersey-regular-text jersey-team-text">
+                                                            <tspan v-if="player.multiplier==2"
+                                                                class="jersey-captain-star"
+                                                                y="-15" x="2"  >★</tspan>
+                                                        </text> -->
+                                                        <rect y="0" x="0" height="4" width="19" class="jersey-name-bg" />
+                                                        <rect y="4" x="0" height="3" width="19" class="jersey-team-bg" />
+                                                        <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
+                                                            <tspan
+                                                                class="jersey-player-name"
+                                                                y="3" x="9" style="font-size: 2.2pt;">{{ player.data.web_name }}</tspan>
+                                                        </text>
+                                                        <text y="7" x="9" class="jersey-regular-text" 
+                                                            xml:space="preserve">
+                                                            <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan>
+                                                        </text>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </svg>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Team Average
+                                </div>
+                                <div class="col-6 p-2 value-side">
+                                    {{ scenario_stats.avg_score }} pts
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Confidence Interval
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.conf_interval && scenario_stats.conf_interval[0].toFixed(2)) || "" }} - {{ (scenario_stats.conf_interval && scenario_stats.conf_interval[1].toFixed(2)) || "" }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center title-side">
+                                    Box-and-Whiskers
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span v-if="!_.isEmpty(scenario_stats)">
+                                        <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.avg_score*2, 110) + ' 35'" width="100%">
+                                            <g>
+                                                <line :x1="scenario_stats.quantiles[0]" :x2="scenario_stats.quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
+                                                <circle :cx="scenario_stats.quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <circle :cx="scenario_stats.quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                <rect :x="scenario_stats.quantiles[1]" :width="scenario_stats.quantiles[3]-scenario_stats.quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
+                                                <line :x1="scenario_stats.quantiles[2]" :x2="scenario_stats.quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
+                                                <text :x="scenario_stats.quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[0]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[4]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[1]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[3]*10)/10 }}</text>
+                                                <text :x="scenario_stats.quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[2]*10)/10 }}</text>
+                                            </g>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Most Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Least Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Best Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-3">
+                                <div class="col-6 p-2 title-side">
+                                    Worst Difference to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
+                                </div>
+                                <div class="col-6 p-2 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="display: none">
+        [&#39;data/2021-22/GW8/2021-10-05/output/scenarios.csv&#39;, &#39;data/2021-22/GW8/2021-10-04/output/scenarios.csv&#39;, &#39;data/2021-22/GW8/2021-10-03/output/scenarios.csv&#39;]
+
+        {{ team_data }}
+    </div>
+
+</main>
+
+<script>
+    let sc_files = ["data/2021-22/GW8/2021-10-05/output/scenarios.csv", "data/2021-22/GW8/2021-10-04/output/scenarios.csv", "data/2021-22/GW8/2021-10-03/output/scenarios.csv"]
+</script>
+
+ </div>
+
+<div class="container mb-3">
+    <div class="row gray-bg no-gutters">
+        <div class="banner-link col-12 col-md-6" style="border: 1px solid #343436;">
+            <img src="/static/images/ffhub.png" />Partnered with Fantasy Football Hub
+            <a href="https://fantasyfootballhub.co.uk/" class="stretched-link" target="_blank"></a>
+        </div>
+        <div class="banner-link col-12 col-md-6" style="border: 1px solid #343436;">
+            <img src="/static/images/review.png" />EV data is courtesy of FPL Review
+            <a href="https://fplreview.com/" class="stretched-link" target="_blank"></a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.js" integrity="sha512-M17tsaj3tHw5m/gI+8XjDLTuPZ0cpTofhFLJUT9niFa/DK8WAhsSLW764iSaaXoAoivXEFUP6VxvpiahJPQ4fg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js" integrity="sha512-WNLxfP/8cVYL9sj8Jnp6et0BkubLP31jhTG9vhL/F5uEZmg5wEzKoXp1kJslzPQWwPT1eyMiSxlKCgzHLOTOTQ==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script>
+    Vue.config.performance = true;
+    Vue.prototype.$log = console.log;
+</script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.5/jstat.js" integrity="sha512-D5uf20+sRi7oJxHzrp6LZDaY/IrSFIKmaQ7bOQA6V1Z+Jr9DOFKodR3RyYwdeEoGUZlfz76XQlDy5/TWdyKz9Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-cookies@1.7.4/vue-cookies.js" integrity="sha256-pdSyqKvUOsiAZVUhatSOyW3Wom0l7ABtO8w7LjPA3vU=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+
+<!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.js" integrity="sha512-2ypsPur7qcA+2JjmmIJR1c4GWFqTLIe1naXXplraMg0aWyTOyAMpOk+QL+ULpzwrO/GdwA3qB3FhVyyiR8gdhw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.1/fernetBrowser.js"></script>
+
+<script>
+    let repo_name = ""
+    let season = "";
+    let gw = "";
+    let next_gw = "";
+    let date = "";
+    let lastupdate = "";
+    let listdates = [
+    ];
+    let is_active = false ;
+    let active_gw = -1 ;
+</script>
+
+<script src="/static/js/main.js"></script>
+
+<script src="/static/js/scenarios.js"></script>
+
+
+<script>
+    $('.alert').alert()
+</script>
+
+</body>
+
+<div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: </div>
+
+</html> 

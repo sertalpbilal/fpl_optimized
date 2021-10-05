@@ -1428,3 +1428,22 @@ th.vertical-name {
     padding-left: 0.3em;
     padding-right: 0.3em;
 }
+
+.summary-box {
+    border-radius: 20px;
+    background-color: #343436;
+    border: 1px solid #238381;
+}
+
+.summary-box > .title-side {
+    background-color: #238381;
+}
+
+.summary-box > .value-side {
+    font-size: larger;
+}
+
+.scenario-link {
+    color: #fff292;
+    font-size: smaller;
+}
