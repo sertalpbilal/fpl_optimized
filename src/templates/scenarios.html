@@ -247,6 +247,115 @@
                                 </table>
                             </div>
                         </div>
+                        
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-6">
+                            <div class="red-border-bottom">Probability of Points</div>
+                            <div>
+                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        20+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['20+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        30+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['30+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        40+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['40+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        50+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['50+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        60+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['60+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        70+ Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.probs['70+']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="red-border-bottom">Probability of Difference to Field Avg</div>
+                            <div>
+                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≤ -10 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['m10']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≤ -5 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['m5']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≤ 0 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['m0']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≥ 0 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['p0']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≥ +5 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['p5']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        ≥+10 Pts
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (((scenario_stats.probs && scenario_stats.diff_probs['p10']) || 0)*100).toFixed(0) }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
