@@ -4,7 +4,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Random Scenario Evaluation</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Random Scenario Evaluation: GW{{ current_gw() }}</h5>
                 <div class="scenario_detail">
                     Simulated outcomes based on current projections
                 </div>
@@ -12,7 +12,7 @@
                     <div class="row no-gutters justify-content-center">
                         <div class="col-lg-4 col-8">
                             <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Team ID" v-model="team_id" :disabled="loading" v-on:keyup="submitTeam">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id" :disabled="loading" v-on:keyup="submitTeam">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Fetch</button>
                                 </div>
@@ -256,11 +256,92 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
-                <h6 class="card-header border-complement text-center scenario_title">Distribution and Scenario Details</h6>
+                <h6 class="card-header border-complement text-center scenario_title">Point Distribution and Replications</h6>
                 <div class="card-body text-center p-3" v-cloak>
                     <div class="row no-gutters justify-content-center">
+                        <div class="col-12">
+                            <div id="histogram">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 d-flex justify-content-center">
+                            <div>
+                                <div class="form-group">
+                                    <label for="sc_select">Choose a simulation run</label>
+                                    <select class="form-control" id="sc_select" v-model="active_rep_comp">
+                                        <option v-for="(v,i) in grouped_scenarios" :value="i">{{ v.sim }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 col-md-6">
-                            <b>Histogram</b>
+                            <div class="red-border-bottom mb-2">Top Players of Simulation Run</div>
+                            <div class="table-responsive">
+                                <table class="table table-sm text-white text-small table-striped" id="top_players">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted">ID</th>
+                                            <th>Position</th>
+                                            <th>Name</th>
+                                            <th>Team</th>
+                                            <th>Price</th>
+                                            <th>Own%</th>
+                                            <th>Points</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="p in current_rep_players">
+                                            <td class="text-muted">{{ p.ID }}</td>
+                                            <td>{{ element_type[p.data.element_type].short }}</td>
+                                            <td>{{ p.data.web_name }}</td>
+                                            <td>{{ teams_ordered[p.data.team-1].short }}</td>
+                                            <td>{{ p.data.now_cost / 10 }}</td>
+                                            <td>{{ p.data.selected_by_percent }}%</td>
+                                            <td>{{ p.Points }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="red-border-bottom mb-2">Team Players</div>
+                            <div class="table-responsive">
+                                <table class="table table-sm text-white text-small table-striped" id="team_players">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-muted">ID</th>
+                                            <th>Position</th>
+                                            <th>Name</th>
+                                            <th>Team</th>
+                                            <th>Price</th>
+                                            <th>Own%</th>
+                                            <th>Points</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="p in team_picks" v-if="active_rep != undefined">
+                                            <td class="text-muted">{{ p.element }}</td>
+                                            <td>{{ element_type[p.data.element_type].short }}</td>
+                                            <td>{{ p.data.web_name }}</td>
+                                            <td>{{ teams_ordered[p.data.team-1].short }}</td>
+                                            <td>{{ p.data.now_cost / 10 }}</td>
+                                            <td>{{ p.data.selected_by_percent }}%</td>
+                                            <td>{{ ( current_rep_dict[p.element] && current_rep_dict[p.element].Points) || 0 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td><i>Total</i></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ team_sum }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,6 +359,9 @@
         </div>
     </div>
 
+    <div class="d-none">
+        {{ graph_update_watch }}
+    </div>
 
 </main>
 
