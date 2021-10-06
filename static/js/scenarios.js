@@ -14,7 +14,8 @@ var app = new Vue({
         picked_out: undefined,
         player_filter: undefined,
         swap_out: undefined,
-        trigger: 0
+        trigger: 0,
+        active_rep: undefined
     },
     computed: {
         grouped_sc() {
@@ -28,12 +29,12 @@ var app = new Vue({
             if (_.isEmpty(this.main_data)) { return undefined }
             return this.main_data.elements
         },
-        // elements_dict() {
-        //     if (_.isEmpty(this.elements)) { return {} }
-        //     let els = this.elements
-        //     let el_dict = Object.fromEntries(els.map(i => [i.id, i]))
-        //     return el_dict
-        // },
+        elements_dict() {
+            if (_.isEmpty(this.elements)) { return {} }
+            let els = this.elements
+            let el_dict = Object.fromEntries(els.map(i => [i.id, i]))
+            return el_dict
+        },
         teams() {
             if (_.isEmpty(this.main_data)) { return undefined }
             return this.main_data.teams
@@ -80,7 +81,7 @@ var app = new Vue({
             // let el_dict = this.elements_dict
             // let t = this.trigger
             // console.log(t)
-            grouped_scenarios.forEach(s => {
+            grouped_scenarios.forEach((s,i) => {
                 let score = 0
                 let field = 0
                 picks.forEach(p => {
@@ -95,6 +96,7 @@ var app = new Vue({
                 })
                 s.total_field = field
                 s.diff = score-field
+                s.idx = i
             })
 
             return grouped_scenarios
@@ -135,6 +137,57 @@ var app = new Vue({
         team_ids() {
             if (_.isEmpty(this.team_data)) { return [] }
             return this.team_data.picks.map(i => i.element)
+        },
+        graph_update_watch() {
+            draw_histogram()
+            let t = this.scenario_evals
+            return []
+        },
+        current_rep_dict() {
+            if (_.isEmpty(this.grouped_scenarios)) { return {} }
+            if (this.active_rep == undefined) { return [] }
+            return this.grouped_scenarios[this.active_rep].values
+        },
+        current_rep_players() {
+            if (_.isEmpty(this.grouped_scenarios)) { return [] }
+            if (this.active_rep == undefined) { return [] }
+            let el_dict = this.elements_dict
+            let players = _.cloneDeep(Object.values(this.current_rep_dict))
+            players.forEach(p => {
+                p.data = el_dict[parseInt(p.ID)]
+            })
+            return players
+        },
+        team_sum() {
+            if (_.isEmpty(this.grouped_scenarios)) { return }
+            if (this.active_rep == undefined) { return }
+            if (_.isEmpty(this.team_picks)) { return }
+            let total = 0
+            this.team_picks.forEach(p => {
+                total += parseInt(this.current_rep_dict[p.element] && this.current_rep_dict[p.element].Points || 0) * p.multiplier
+            })
+            return total
+        },
+        active_rep_comp: {
+            get() {
+                return this.active_rep
+            },
+            set(v) {
+                $("#top_players").DataTable().destroy()
+                this.active_rep = v
+                this.$nextTick(() => {
+                    let table = $("#top_players").DataTable({
+                        "order": [6],
+                        "lengthChange": false,
+                        "pageLength": 15,
+                        "searching": true,
+                        "info": false,
+                        "paging": true,
+                        "columnDefs": []
+                    });
+                    table.cells("td").invalidate().draw();
+                })
+            }
         }
     },
     methods: {
@@ -150,7 +203,13 @@ var app = new Vue({
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.team_id, force_last_gw: false }).then((response) => {
                 app.team_data = response.body
+                app.team_data.picks.forEach(p => {
+                    if (p.multiplier > 2) {
+                        p.multiplier = 2 // triple captain fix
+                    }
+                })
                 app.loading = false
+                draw_histogram()
             }).catch(error => {
                 console.error(error)
             })
@@ -288,10 +347,11 @@ var app = new Vue({
                     this.$nextTick(() => {
                         app.trigger = app.trigger + 1
                     })
-
                 }
-                
             }
+        },
+        activate_rep(v) {
+            this.active_rep_comp = v
         }
     }
 })
@@ -303,6 +363,148 @@ function read_scenario(order=0) {
         app.active_sc = order
         app.sc_details = $.csv.toObjects(d)
     })
+}
+
+function draw_histogram() {
+
+    if (_.isEmpty(app.scenario_evals)) { return }
+
+    var margin = { top: 15, bottom: 20, left: 10, right: 10 },
+            width = 400 - margin.left - margin.right,
+            height = 120 - margin.top - margin.bottom
+
+    let is_mobile = window.screen.width < 800
+
+    let font_size = '3pt'
+    let title_size = '4.5pt'
+
+    if (is_mobile) {
+        height = 100 - margin.top - margin.bottom
+        // font_size = '6.5pt'
+        title_size = '7pt'
+    }
+
+    jQuery("#histogram").empty()
+
+    let cnv = d3.select("#histogram")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .style('display', 'block')
+
+    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let content = svg.append('g').attr('id', 'graph-content')
+    let grayrect = content.append('g').attr('class', 'brush');
+    grayrect.append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr('width', width)
+        .attr('height', height)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    let data = app.scenario_evals
+
+    data.forEach((value, index) => {
+        value.y_val = data.slice(0,index).filter(i => i.total_score == value.total_score).length  
+     })
+
+    // Min max values
+    let x_high = Math.max(...data.map(i=>i.total_score))+2
+    let x_low = Math.min(...data.map(i=>i.total_score))-1
+    let x_domain = _.range(x_low, x_high)
+
+    // Axis-x
+    var x = d3.scaleBand()
+        .domain(x_domain)
+        .range([0, width])
+        .paddingInner(0.3)
+        .paddingOuter(0.1);
+    let xAxis = svg.append("g")
+        .attr("opacity", 1)
+        .attr("transform", `translate(0, ${height})`)
+        .call(
+            d3.axisBottom(x)
+            .tickSize(0)
+        )
+
+    // Add X axis label:
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 15)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Points");
+
+    // Axis-y
+    let y_high = Math.max(...data.map(i => i.y_val+1))+1
+    let y_low = 0
+    let y_domain = _.range(y_low, y_high)
+    var y = d3.scaleBand().domain(y_domain).range([height, 0]).paddingInner(0).paddingOuter(0);
+    let yAxis = svg.append('g')
+        .attr("transform", "translate(" + width + ",0)")
+        .call(d3.axisLeft(y).tickSize(width))
+        .call(g => g.selectAll(".tick text"))
+        // .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
+
+    svg.call(g => g.selectAll(".tick text")
+            .attr("fill", "white"))
+        .call(g => g.selectAll(".tick line")
+            .attr("stroke-dasharray", "3,1")
+            .attr("stroke-width", 0.5)
+            .attr("stroke-opacity", 0.1)
+            .style('pointer-events', 'none'))
+        .call(g => g.selectAll(".domain")
+            .attr("opacity", 0))
+        
+    // Add y axis label:
+    svg.append("text")
+        .attr("text-anchor", "left")
+        .attr("x", -margin.left)
+        .attr("y", -5)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Occurence");
+
+    svg.call(g => g.selectAll(".tick")
+            .style("font-size", font_size))
+    svg.call(g => g.selectAll(".domain")
+            .attr("opacity", 0))
+
+    let ev_title = svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", width / 2)
+        .attr("y", -8)
+        .attr("font-size", title_size)
+        .attr("fill", "white")
+        .text("Total Point Occurence")
+
+    // Data plot
+
+    let holder = svg.append('g')
+
+    let clickaction = (d) => {
+        app.activate_rep(d.idx)
+    }
+
+    let bars = holder.selectAll().data(data)
+    
+    bars.enter().append("rect")
+        .attr("class", "occurence-bars")
+        .attr("fill", "red")
+        // .attr("fill", d => colors(d.player_no))
+        // .attr("fill-opacity", 0.5)
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .attr("x", (d) => x(d.total_score))
+        .attr("y", (d) => y(d.y_val))
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("cursor", "pointer")
+        .on('click', (e,d) => clickaction(d))
+
+
 }
 
 

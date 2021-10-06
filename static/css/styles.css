@@ -1455,3 +1455,11 @@ th.vertical-name {
 .player-clickable:hover {
     background-color: steelblue !important;
 }
+
+.occurence-bars {
+    fill: #ff8600;
+    stroke: #ffffff;
+    stroke-width: 0.4px;
+    stroke-opacity: 1;
+}
+
