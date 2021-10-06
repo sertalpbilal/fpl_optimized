@@ -121,6 +121,24 @@ var app = new Vue({
             let diff_quantiles = jStat.quantiles(diff_values, [0, 0.25, 0.5, 0.75, 1])
             let avg_diff = jStat.mean(diff_values)
 
+            let probs = {
+                '20+': sample_values.filter(i => i >= 20).length / sample_values.length,
+                '30+': sample_values.filter(i => i >= 30).length / sample_values.length,
+                '40+': sample_values.filter(i => i >= 40).length / sample_values.length,
+                '50+': sample_values.filter(i => i >= 50).length / sample_values.length,
+                '60+': sample_values.filter(i => i >= 60).length / sample_values.length,
+                '70+': sample_values.filter(i => i >= 70).length / sample_values.length
+            }
+
+            let diff_probs = {
+                'm10': diff_values.filter(i => i <= -10).length / diff_values.length,
+                'm5': diff_values.filter(i => i <= -5).length / diff_values.length,
+                'm0': diff_values.filter(i => i <= 0).length / diff_values.length,
+                'p0': diff_values.filter(i => i >= 0).length / diff_values.length,
+                'p5': diff_values.filter(i => i >= 5).length / diff_values.length,
+                'p10': diff_values.filter(i => i >= 10).length / diff_values.length
+            }
+
             return {
                 avg_score, 
                 best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
@@ -131,7 +149,9 @@ var app = new Vue({
                 quantiles,
                 conf_interval,
                 diff_quantiles,
-                avg_diff
+                avg_diff,
+                probs,
+                diff_probs
             }
         },
         team_ids() {
