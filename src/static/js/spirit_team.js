@@ -124,12 +124,18 @@ var app = new Vue({
         saveFixture(fixture) {
             fixture.forEach((f) => {
                 if (f.finished) {
-                    if (f.team_h_score > f.team_a_score) { f.team_h_pts = 3;
-                        f.team_a_pts = 0; }
-                    if (f.team_h_score == f.team_a_score) { f.team_h_pts = 1;
-                        f.team_a_pts = 1; }
-                    if (f.team_h_score < f.team_a_score) { f.team_h_pts = 0;
-                        f.team_a_pts = 1; }
+                    if (f.team_h_score > f.team_a_score) {
+                        f.team_h_pts = 3;
+                        f.team_a_pts = 0; 
+                    }
+                    if (f.team_h_score == f.team_a_score) { 
+                        f.team_h_pts = 1;
+                        f.team_a_pts = 1; 
+                    }
+                    if (f.team_h_score < f.team_a_score) { 
+                        f.team_h_pts = 0;
+                        f.team_a_pts = 3; 
+                    }
                     f.team_h_goal_diff = f.team_h_score - f.team_a_score;
                     f.team_a_goal_diff = f.team_a_score - f.team_h_score;
                 } else {
