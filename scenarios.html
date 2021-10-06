@@ -136,6 +136,106 @@
         </div>
     </div>
 
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <div class="card-header pt-1 pb-0 click-title collapsed border-complement scenario_title" data-toggle="collapse" data-target="#info-box" aria-expanded="false" aria-controls="info-box">
+                    <h6 class="text-center pt-1">Information - Q/A</h6>
+                    <div class="close text-white close-absolute">
+                        <i class="toggle-button fas fa-caret-up"></i>
+                    </div>
+                </div>
+                <div class="collapse" id="info-box">
+                    <div class="card-body text-small pt-1 pb-2">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <b>What is this page about?</b>
+                                <p class="answer">
+                                    This page shows potential outcomes for next GW (GW{{ current_gw() }}) using simulation replications.
+                                </p>
+                                <b>What is the purpose of it?</b>
+                                <p class="answer">
+                                    We already have great models for optimizing FPL decisions based on expected value (EV) -- projected points.
+                                    Using these models will take you a step ahead of other managers, but for practical reasons, lack some aspects.
+                                    For example, having two or more players on the same team or opposite teams for a game limits how many points you can get this GW.
+                                    Therefore, even for two teams with exactly same EV but with different players, shape of the outcome distribution will be different.
+                                    For example, we know that captaining a differential have a big upside, as well as a risky decision, but have no way to quantify it.
+                                    Unless, we simulate match outcomes and see the distribution itself.
+                                </p>
+                                <b>Who needs this?</b>
+                                <p class="answer">
+                                    If you are interested in optimization for FPL and wondering what the potential outcomes look like for your team.
+                                    Note that, this page shows example outcomes for reference, but I urge you to build your own simulator if you have the means.
+                                </p>
+                                <b>How do you generate simulation replications?</b>
+                                <p class="answer">
+                                    Using the Free Model of the amazing <a href="https://fplreview.com" target="_blank">FPLReview</a>, I collect goal/assist/bonus rates for each player.
+                                    Then, using Monte-Carlo simulation (and a bunch of assumptions), I simulate the GW over and over.
+                                    Similar stats (anytime goalscoring, anytime assist, clean sheet, etc...) are also available on several websites, but not being used here.
+                                </p>
+                                <b>What is included in simulations?</b>
+                                <p class="answer">
+                                    <ul>
+                                        <li>Goal points</li>
+                                        <li>Assist points</li>
+                                        <li>Clean sheet points</li>
+                                        <li>Goals conceded points</li>
+                                        <li>Bonus points</li>
+                                    </ul>
+                                </p>
+                                <b>What are limitations and assumptions?</b>
+                                <p class="answer">
+                                    I am hoping to improve quality of simulations in future, but here are current limitations and assumptions.
+                                    <ul>
+                                        <li>Using expected minute values, I assume a player either plays 90 mins or 0 mins. No subs.</li>
+                                        <li>Bonus point logic is a bit involved, but I assume only 1 player to get 3 points, 1 player to get 2 points and 1 player to get 1 bonus point.</li>
+                                        <li>I exclude events like yellow card / red card / penalty miss / penalty save.</li>
+                                    </ul>
+                                </p>
+                                <b>Why do we need simulation anyway?</b>
+                                <p class="answer">
+                                    If you are serious about optimizing your decisions for FPL, then the next step after the multi-period EV model is to use stochastic optimization.
+                                    It is a better way to calculate probabilities and in general a better way to approach stochastic nature of FPL from a decision making perspective.
+                                    Consider a simple case, where it is last GW of the season and you are in 2nd position OR.
+                                    If you optimize over EV and get the same exact squad as the OR #1 manager, your chance of winning FPL becomes 0%.
+                                    It is obvious that you need to find a player who is not owned by the top ranked manager, but have a solid EV value.
+                                    Simulation, in this case for example, provide obvious benefits and can help you to calculate probability of winning.
+                                    So, you can maximize probability of winning in an optimization model and increase your chance.
+                                </p>
+                                <b>Is 100 replications enough?</b>
+                                <p class="answer">
+                                    No, the more the better. But since this website is hosted on GitHub, I use GitHub actions to produce simulations every 6 hours.
+                                    100 replications is the limit I can have without increasing my webpage build time significantly.
+                                    It is also a good point as mobile devices get really slow during JS calculations.
+                                    If you are doing it yourself, consider having as much replications as you can for the optimization purposes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <!-- <div class="card mt-1 mr-3 m-1 ml-3 bg-gray-3 text-small">
+                        <div class="card-header pt-1 pb-0 click-title collapsed" data-toggle="collapse" data-target="#controls" aria-expanded="false" aria-controls="controls">
+                            <span>Controls</span>
+                            <div class="close text-white">
+                                <i class="toggle-button fas fa-caret-up"></i>
+                            </div>
+                        </div>
+                        <div class="collapse" id="controls">
+                            <div class="card-body pt-1 pb-2 d-flex flex-wrap justify-content-center">
+                                
+                                Explanation goes here.
+    
+                            </div>
+                        </div>
+                    </div> -->
+
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
