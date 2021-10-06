@@ -463,7 +463,7 @@ function draw_histogram() {
         .attr("y", -5)
         .attr("font-size", font_size)
         .attr("fill", "white")
-        .text("Occurence");
+        .text("Occurrence");
 
     svg.call(g => g.selectAll(".tick")
             .style("font-size", font_size))
@@ -478,7 +478,7 @@ function draw_histogram() {
         .attr("y", -8)
         .attr("font-size", title_size)
         .attr("fill", "white")
-        .text("Total Point Occurence")
+        .text("Total Point Occurrence")
 
     // Data plot
 
@@ -518,6 +518,6 @@ $(document).ready(() => {
         app.ready = true
     })
     .catch((error) => {
-        console.error("An error has occured: " + error);
+        console.error("An error has occurred: " + error);
     });
 })
