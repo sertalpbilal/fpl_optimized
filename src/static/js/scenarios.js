@@ -104,7 +104,7 @@ var app = new Vue({
                 let sc_picks = picks.map(i => {return {...i}})
                 let score = 0
                 sc_picks.forEach(p => {
-                    if (p.element in s.values) {
+                    if (p.element in s.values && p.multiplier > 0) {
                         let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
                         score += parseInt(player_score) * p.multiplier
                         p.played = true
@@ -198,7 +198,8 @@ var app = new Vue({
                 })
             }, 100)
 
-            console.log("SC_CALC")
+            let lineup_avg = jStat.mean(evals.map(i => i.lineup_score))
+            let autosub_avg = jStat.mean(evals.map(i => i.autosub_score))
 
             return {
                 avg_score, 
@@ -212,7 +213,9 @@ var app = new Vue({
                 diff_quantiles,
                 avg_diff,
                 probs,
-                diff_probs
+                diff_probs,
+                lineup_avg,
+                autosub_avg
             }
         },
         team_ids() {
