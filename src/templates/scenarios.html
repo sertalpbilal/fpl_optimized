@@ -240,7 +240,7 @@
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span v-if="!_.isEmpty(scenario_stats)">
-                                        <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.avg_score*2, 110) + ' 35'" width="100%">
+                                        <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.quantiles[4]+10, 110) + ' 35'" width="100%">
                                             <g>
                                                 <line :x1="scenario_stats.quantiles[0]" :x2="scenario_stats.quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
                                                 <circle :cx="scenario_stats.quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
@@ -308,7 +308,7 @@
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span v-if="!_.isEmpty(scenario_stats)">
-                                        <svg :view-box.camel=" -Math.max(50, scenario_stats.diff_quantiles[4]*1.1, -scenario_stats.diff_quantiles[0]*1.1) + ' 0 ' + 2*(Math.max(50, scenario_stats.diff_quantiles[4]*1.1, -scenario_stats.diff_quantiles[0]*1.1)) + ' 35'" width="100%">
+                                        <svg :view-box.camel=" -Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2) + ' 0 ' + 2*(Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2)) + ' 35'" width="100%">
                                             <g>
                                                 <line :x1="scenario_stats.diff_quantiles[0]" :x2="scenario_stats.diff_quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
                                                 <circle :cx="scenario_stats.diff_quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />

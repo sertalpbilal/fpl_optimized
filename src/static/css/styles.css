@@ -1464,6 +1464,10 @@ th.vertical-name {
     stroke-opacity: 1;
 }
 
+.active-occ-bar {
+    fill: red;
+}
+
 .close-absolute {
     position: absolute;
     top: 3px;
