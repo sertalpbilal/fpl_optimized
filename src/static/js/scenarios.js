@@ -479,6 +479,20 @@ var app = new Vue({
                     })
             })
             
+        },
+        saveImage(query, filename) {
+            // svg fix
+            var svgElements = document.body.querySelectorAll("svg")
+            svgElements.forEach(function(item) {
+                item.setAttribute("width", item.getBoundingClientRect().width);
+                item.setAttribute("height", item.getBoundingClientRect().height);
+                item.style.width = null;
+                item.style.height= null;
+            });
+            // download
+            html2canvas(document.querySelector(query), {allowTaint: true, logging: true, taintTest: false}).then(function(canvas) {
+                saveAs(canvas.toDataURL(), filename);
+            });
         }
     }
 })

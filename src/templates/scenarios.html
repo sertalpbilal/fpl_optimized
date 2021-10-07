@@ -160,7 +160,7 @@
                                     <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)">
-                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);"></image>
+                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="player.element != 388"></image>
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
                                                     <!-- Select captain -->
                                                     <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
@@ -213,9 +213,12 @@
                             </div>
                         </div>
                         <!-- Right side: data values -->
-                        <div class="col-12 col-md-6" v-show="picked_out == undefined">
+                        <div class="col-12 col-md-6 p-2" v-show="picked_out == undefined" id="data_outcome" style="background-color: #474747;">
                             <div class="red-border-bottom text-center">
                                 <b>Points Analysis</b>
+                                <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_stats)">
+                                    <i class="fas fa-image"></i>
+                                </div>
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                 <div class="col-6 p-1 title-side">
@@ -487,8 +490,12 @@
 
     <div class="row mb-3">
         <div class="col-12">
-            <div class="card border-dark bg-squad-card text-white">
+            <div class="card border-dark bg-squad-card text-white" style="background-color: #474747;" id="results_pane">
+                <div class="close text-white close-absolute" @click="saveImage('#results_pane', 'histogram.png')" v-if="!_.isEmpty(scenario_stats)">
+                    <i class="fas fa-image"></i>
+                </div>
                 <h6 class="card-header border-complement text-center scenario_title">Point Distribution and Replications</h6>
+
                 <div class="card-body text-center p-3" v-cloak>
                     <div class="row no-gutters justify-content-center">
                         <div class="col-12">
