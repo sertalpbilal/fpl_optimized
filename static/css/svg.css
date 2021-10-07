@@ -385,3 +385,7 @@ circle.risk-nodes:hover {
     alignment-baseline: central;
     dominant-baseline: central;
 }
+
+.calculating {
+    pointer-events: none;
+}
