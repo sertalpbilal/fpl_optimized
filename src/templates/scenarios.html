@@ -70,6 +70,7 @@
                                         <li>Clean sheet points</li>
                                         <li>Goals conceded points</li>
                                         <li>Bonus points</li>
+                                        <li>Autosub replacements</li>
                                     </ul>
                                 </p>
                                 <b>What are limitations and assumptions?</b>
@@ -134,7 +135,7 @@
                 <div class="card-body text-center p-3" v-cloak>
                     <div class="row no-gutters justify-content-center">
                         <!-- Left side: field -->
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-6" id="field_portion">
                             <div class="lineup gray-bg">
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
                                     <svg class="field">
@@ -155,22 +156,25 @@
                                             <rect class="field-common" id="bench_box" width="104.4753" height="30" x="4.0935702" y="140.51396" />
                                         </g>
                                     </svg>
-                                    <svg id="player_group" x=0 y=0>
+                                    <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)">
                                                 <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);"></image>
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
                                                     <!-- Select captain -->
-                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}" @click="select_captain(player.element)" />
+                                                    <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
+                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}"  @click="select_captain(player.element)" />
                                                     <text x="18" y="14" class="field_icons captain_text">C</text>
                                                 </g>
                                                 <!-- Transfer Out -->
                                                 <g :class="{'half-opacity': player.element != picked_out}">
+                                                    <rect x="13" y="0" width="8" height="8" style="opacity:0" @click="select_out(player.element)" />
                                                     <rect x="15" y="2" width="4" height="4" :class="{'empty_out': player.element != picked_out, 'selected_out': player.element == picked_out}" @click="select_out(player.element)" />
                                                     <text x="17" y="4" class="field_icons out_text">X</text>
                                                 </g>
                                                 <!-- Swap bench -->
                                                 <g :class="{'half-opacity': player.element != swap_out}" v-show="swap_out == undefined || player.swap_available || player.element == swap_out">
+                                                    <rect x="-1" y="0" width="8" height="8" style="opacity:0" @click="select_swap(player.element)" />
                                                     <rect x="1" y="2" width="4" height="4" :class="{'empty_out': player.element != swap_out, 'selected_out': player.element == swap_out}" @click="select_swap(player.element)" />
                                                     <text x="3" y="4" class="field_icons out_text">⇅</text>
                                                 </g>
@@ -229,8 +233,9 @@
                                 </div>
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center title-side">
-                                    Box-and-Whiskers
+                                <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
+                                    <div>Box Plot</div>
+                                    <div class="text-small">Min-Q1-Median-Q3-Max</div>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span v-if="!_.isEmpty(scenario_stats)">
@@ -253,7 +258,7 @@
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
-                                    Most Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
+                                    Most Points<br/><span class="scenario-link" :data-id="scenario_stats.best_one && scenario_stats.best_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
@@ -261,7 +266,7 @@
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
-                                    Least Points<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
+                                    Least Points<br/><span class="scenario-link" :data-id="scenario_stats.worst_one && scenario_stats.worst_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
@@ -280,8 +285,9 @@
                                 </div>
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center title-side">
-                                    Box-and-Whiskers
+                                <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
+                                    <div>Box Plot</div>
+                                    <div class="text-small">Min-Q1-Median-Q3-Max</div>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span v-if="!_.isEmpty(scenario_stats)">
@@ -305,7 +311,7 @@
                             
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
-                                    Best Diff. to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+                                    Best Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.best_diff && scenario_stats.best_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
@@ -313,20 +319,20 @@
                             </div>
                             <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
-                                    Worst Diff. to Field<br/><span class="scenario-link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
+                                    Worst Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.worst_diff && scenario_stats.worst_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6" v-show="picked_out != undefined">
-                            <div class="red-border-bottom mb-1"><b>Replace Player</b></div>
-                            <div>
+                        <div class="col-12 col-md-6" v-show="picked_out != undefined" id="select_portion">
+                            <div class="red-border-bottom mb-2"><b>Click on a row to replace player</b></div>
+                            <div class="table-responsive">
                                 <table class="table table-sm text-small text-white table-striped" id="replacement_options">
                                     <thead>
                                         <tr>
-                                            <th class="text-muted text-center">ID</th>
+                                            <!-- <th class="text-muted text-center">ID</th> -->
                                             <th>Position</th>
                                             <th>Name</th>
                                             <th>Team</th>
@@ -336,10 +342,10 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="player in elements" v-if="player.element_type == player_filter && !team_ids.includes(player.id)" @click="transfer_in(player.id)" class="player-clickable">
-                                            <td class="text-muted">{{ player.id }}</td>
+                                            <!-- <td class="text-muted">{{ player.id }}</td> -->
                                             <td>{{ element_type[player.element_type].short }}</td>
                                             <td>{{ player.web_name }}</td>
-                                            <td>{{ teams_ordered[player.team-1].name }}</td>
+                                            <td>{{ teams_ordered[player.team-1].short }}</td>
                                             <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
                                             <td>{{ player.selected_by_percent }}%</td>
                                         </tr>
@@ -476,7 +482,7 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 d-flex justify-content-center">
-                            <div>
+                            <div id="sim_portion">
                                 <div class="form-group">
                                     <label for="sc_select">Choose a simulation run</label>
                                     <select class="form-control" id="sc_select" v-model="active_rep_comp">
@@ -485,24 +491,24 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-6 mb-3">
                             <div class="red-border-bottom mb-2">Top Players of Simulation Run</div>
                             <div class="table-responsive">
                                 <table class="table table-sm text-white text-small table-striped" id="top_players">
                                     <thead>
                                         <tr>
-                                            <th class="text-muted">ID</th>
-                                            <th>Position</th>
+                                            <!-- <th class="text-muted">ID</th> -->
+                                            <th>Pos</th>
                                             <th>Name</th>
                                             <th>Team</th>
-                                            <th>Price</th>
+                                            <th>£</th>
                                             <th>Own%</th>
                                             <th>Points</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="p in current_rep_players">
-                                            <td class="text-muted">{{ p.ID }}</td>
+                                            <!-- <td class="text-muted">{{ p.ID }}</td> -->
                                             <td>{{ element_type[p.data.element_type].short }}</td>
                                             <td>{{ p.data.web_name }}</td>
                                             <td>{{ teams_ordered[p.data.team-1].short }}</td>
@@ -520,18 +526,18 @@
                                 <table class="table table-sm text-white text-small table-striped" id="team_players">
                                     <thead>
                                         <tr>
-                                            <th class="text-muted">ID</th>
-                                            <th>Position</th>
+                                            <!-- <th class="text-muted">ID</th> -->
+                                            <th>Pos</th>
                                             <th>Name</th>
                                             <th>Team</th>
-                                            <th>Price</th>
+                                            <th>£</th>
                                             <th>Own%</th>
                                             <th>Points</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="p in team_picks" v-if="active_rep != undefined">
-                                            <td class="text-muted">{{ p.element }}</td>
+                                        <tr v-for="p in current_rep_team" v-if="active_rep != undefined" :class="{'owned-row': p.multiplier > 0, 'bench-row': p.multiplier==0}">
+                                            <!-- <td class="text-muted">{{ p.element }}</td> -->
                                             <td>{{ element_type[p.data.element_type].short }}</td>
                                             <td>{{ p.data.web_name }}</td>
                                             <td>{{ teams_ordered[p.data.team-1].short }}</td>
@@ -540,13 +546,31 @@
                                             <td>{{ ( current_rep_dict[p.element] && current_rep_dict[p.element].Points) || 0 }}</td>
                                         </tr>
                                         <tr>
+                                            <!-- <td></td> -->
                                             <td></td>
+                                            <td><i>Lineup Pts</i></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ current_rep_values.lineup_score }}</td>
+                                        </tr>
+                                        <tr>
+                                            <!-- <td></td> -->
+                                            <td></td>
+                                            <td><i>Autosub Pts</i></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>{{ current_rep_values.autosub_score }}</td>
+                                        </tr>
+                                        <tr>
+                                            <!-- <td></td> -->
                                             <td></td>
                                             <td><i>Total</i></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td>{{ team_sum }}</td>
+                                            <td>{{ current_rep_values.total_score }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -572,6 +596,19 @@
         {{ graph_update_watch }}
     </div>
 
+</main>
+
+<main class="container text-white" v-else>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <div class="p-2 text-center">
+                    Loading data... Please wait...<br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script>

@@ -4,6 +4,7 @@ var app = new Vue({
         ready: false,
         team_id: '',
         loading: false,
+        calculating: false,
         sc_files: sc_files,
         active_sc: 0,
         sc_details: undefined,
@@ -71,34 +72,86 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return {} }
             return _(this.sc_details).groupBy('sim').map((value,key) => {return {'sim': key, 'values': Object.fromEntries(value.map(i => [i.ID, i]))}}).value()
         },
-        scenario_evals() {
-            if (_.isEmpty(this.team_data)) { return [] }
+        grouped_scenario_with_field() {
             if (_.isEmpty(this.sc_details)) { return [] }
-            if (_.isEmpty(this.team_picks)) { return {} }
-            let picks = this.team_picks
+            if (_.isEmpty(this.grouped_scenarios)) { return [] }
             let grouped_scenarios = this.grouped_scenarios
             let elements = this.elements
-            // let el_dict = this.elements_dict
-            // let t = this.trigger
-            // console.log(t)
             grouped_scenarios.forEach((s,i) => {
-                let score = 0
                 let field = 0
-                picks.forEach(p => {
-                    let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
-                    score += parseInt(player_score) * p.multiplier
-                    // field += parseInt(player_score) * p.data.
-                })
-                s.total_score = score
                 elements.forEach(p => {
                     let player_score = (s.values[p.id] && s.values[p.id].Points) || 0
                     field += parseInt(player_score) * (parseFloat(p.selected_by_percent)/100)
                 })
                 s.total_field = field
-                s.diff = score-field
-                s.idx = i
             })
-
+            console.log("CALC")
+            return grouped_scenarios
+        },
+        scenario_evals() {
+            if (_.isEmpty(this.team_data)) { return [] }
+            if (_.isEmpty(this.sc_details)) { return [] }
+            if (_.isEmpty(this.team_picks)) { return {} }
+            let picks = this.team_picks
+            let grouped_scenarios = this.grouped_scenario_with_field
+            let position_bounds = {
+                1: {'min': 1, 'max': 1},
+                2: {'min': 3, 'max': 5},
+                3: {'min': 2, 'max': 5},
+                4: {'min': 1, 'max': 3}
+            }
+            grouped_scenarios.forEach((s,i) => {
+                let sc_picks = picks.map(i => {return {...i}})
+                let score = 0
+                sc_picks.forEach(p => {
+                    if (p.element in s.values) {
+                        let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
+                        score += parseInt(player_score) * p.multiplier
+                        p.played = true
+                    }
+                    else {
+                        if (p.multiplier > 0) {
+                            p.played = false
+                            p.autosub_out = true
+                            p.multiplier = 0
+                        }
+                    }
+                    
+                })
+                s.lineup_score = score + 0
+                // Autosub
+                sc_picks.filter(i => i.autosub_out).forEach(p => {
+                    let pos = p.data.element_type
+                    let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
+                    if (pos_playing < position_bounds[pos].min) {
+                        // can only replace with same type
+                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type == pos && i.element in s.values)
+                        if (match) {
+                            match.multiplier = 1
+                            match.played = true
+                            match.autosub_in = true
+                            let player_score = s.values[match.element].Points
+                            score += parseInt(player_score) * match.multiplier
+                        }
+                    }
+                    else {
+                        // next available bench player
+                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type > 1 && i.element in s.values) // no gk
+                        if (match) {
+                            match.multiplier = 1
+                            match.played = true
+                            match.autosub_in = true
+                            let player_score = s.values[match.element].Points
+                            score += parseInt(player_score) * match.multiplier
+                        }
+                    }
+                })
+                s.total_score = score
+                s.autosub_score = score - s.lineup_score
+                s.diff = score-s.total_field
+                s.idx = i
+                s.picks = sc_picks
+            })
             return grouped_scenarios
         },
         scenario_stats() {
@@ -139,6 +192,14 @@ var app = new Vue({
                 'p10': diff_values.filter(i => i >= 10).length / diff_values.length
             }
 
+            setTimeout(() => {
+                app.$nextTick(() => {
+                    app.calculating = false
+                })
+            }, 100)
+
+            console.log("SC_CALC")
+
             return {
                 avg_score, 
                 best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
@@ -178,15 +239,15 @@ var app = new Vue({
             })
             return players
         },
-        team_sum() {
-            if (_.isEmpty(this.grouped_scenarios)) { return }
-            if (this.active_rep == undefined) { return }
-            if (_.isEmpty(this.team_picks)) { return }
-            let total = 0
-            this.team_picks.forEach(p => {
-                total += parseInt(this.current_rep_dict[p.element] && this.current_rep_dict[p.element].Points || 0) * p.multiplier
-            })
-            return total
+        current_rep_team() {
+            if (_.isEmpty(this.scenario_evals)) { return [] }
+            if (this.active_rep == undefined) { return [] }
+            return this.scenario_evals[this.active_rep].picks
+        },
+        current_rep_values() {
+            if (_.isEmpty(this.scenario_evals)) { return [] }
+            if (this.active_rep == undefined) { return [] }
+            return this.scenario_evals[this.active_rep]
         },
         active_rep_comp: {
             get() {
@@ -197,7 +258,7 @@ var app = new Vue({
                 this.active_rep = v
                 this.$nextTick(() => {
                     let table = $("#top_players").DataTable({
-                        "order": [6],
+                        "order": [5],
                         "lengthChange": false,
                         "pageLength": 15,
                         "searching": true,
@@ -251,15 +312,17 @@ var app = new Vue({
         },
         select_captain(e) {
             console.log(e)
-            let picks = _.cloneDeep(this.team_data.picks)
+            let picks = this.team_data.picks
             let cc = picks.find(i => i.multiplier > 1)
-            cc.multiplier = 1
             let nc = picks.find(i => i.element == e)
+            if (cc.element == nc.element) { return } // same player
+            this.calculating = true
+            cc.multiplier = 1
             nc.multiplier = 2
             this.team_data.picks = picks
-            this.$nextTick(() => {
-                app.trigger = app.trigger + 1
-            })
+            // this.$nextTick(() => {
+            //     app.trigger = app.trigger + 1
+            // })
         },
         select_out(e) {
             if (this.picked_out != undefined) {
@@ -276,7 +339,7 @@ var app = new Vue({
                 // replacement_options
                 this.$nextTick(() => {
                     let table = $("#replacement_options").DataTable({
-                        "order": [5],
+                        "order": [4],
                         "lengthChange": false,
                         "pageLength": 15,
                         "searching": true,
@@ -285,6 +348,14 @@ var app = new Vue({
                         "columnDefs": []
                     });
                     table.cells("td").invalidate().draw();
+
+                    let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
+                    window.scrollBy({
+                        top: table_y,
+                        left: 0,
+                        behavior: 'smooth'
+                      })
+
                 })
             }
         },
@@ -294,9 +365,19 @@ var app = new Vue({
             let out_player_index = this.team_data.picks.findIndex(i => i.element == this.picked_out)
             // let in_player = elements.find(i => i.id == e)
 
+            this.calculating = true
+
             this.team_data.picks[out_player_index].element = e
             this.select_out(this.picked_out) // clear selection
             this.swap_out = undefined // clear bench swap
+
+            let field_pos = jQuery("#field_portion")[0].getBoundingClientRect().top
+            window.scrollBy({
+                top: field_pos,
+                left: 0,
+                behavior: 'smooth'
+              })
+
         },
         select_swap(e) {
             if (this.swap_out == e) { // cancel swap
@@ -342,6 +423,9 @@ var app = new Vue({
                     })
                 }
                 else { // perform swap!
+
+                    this.calculating = true
+
                     let p_out = this.team_data.picks.find(i => i.element == this.swap_out)
                     let p_in = this.team_data.picks.find(i => i.element == e)
                     
@@ -372,6 +456,20 @@ var app = new Vue({
         },
         activate_rep(v) {
             this.active_rep_comp = v
+        },
+        activate_with_link(e) {
+            let sim_no = e.currentTarget.dataset.id
+            if (sim_no == undefined) { return }
+            let idx = this.grouped_scenarios.findIndex(i => i.sim == sim_no)
+            this.active_rep_comp = idx
+
+            // move to sim
+            let por_y = jQuery("#sim_portion")[0].getBoundingClientRect().top
+            window.scrollBy({
+                top: por_y,
+                left: 0,
+                behavior: 'smooth'
+                })
         }
     }
 })
