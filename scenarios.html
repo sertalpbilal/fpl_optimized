@@ -192,6 +192,7 @@
                                         <li>Using expected minute values, I assume a player either plays 90 mins or 0 mins. No subs.</li>
                                         <li>Bonus point logic is a bit involved, but I assume only 1 player to get 3 points, 1 player to get 2 points and 1 player to get 1 bonus point.</li>
                                         <li>I exclude events like yellow card / red card / penalty miss / penalty save.</li>
+                                        <li>Current model does not consider vice-captain switch</li>
                                     </ul>
                                 </p>
                                 <b>Why do we need simulation anyway?</b>
@@ -382,6 +383,22 @@
                                 </div>
                                 <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
                                     <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Avg. Lineup Points
+                                </div>
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.lineup_avg || 0).toFixed(2) }} pts</span>
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                <div class="col-6 p-1 title-side">
+                                    Avg. Autosub Points
+                                </div>
+                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                    <span>{{ (scenario_stats.autosub_avg || 0).toFixed(2) }} pts</span>
                                 </div>
                             </div>
 
@@ -635,7 +652,7 @@
                         <div class="col-12 col-md-6">
                             <div class="red-border-bottom mb-2">Team Players</div>
                             <div class="table-responsive">
-                                <table class="table table-sm text-white text-small table-striped" id="team_players">
+                                <table class="table table-sm text-white text-small" id="team_players">
                                     <thead>
                                         <tr>
                                             <!-- <th class="text-muted">ID</th> -->
