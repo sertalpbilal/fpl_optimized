@@ -459,6 +459,7 @@ var app = new Vue({
         },
         activate_rep(v) {
             this.active_rep_comp = v
+            draw_histogram()
         },
         activate_with_link(e) {
             let sim_no = e.currentTarget.dataset.id
@@ -466,13 +467,18 @@ var app = new Vue({
             let idx = this.grouped_scenarios.findIndex(i => i.sim == sim_no)
             this.active_rep_comp = idx
 
-            // move to sim
-            let por_y = jQuery("#sim_portion")[0].getBoundingClientRect().top
-            window.scrollBy({
-                top: por_y,
-                left: 0,
-                behavior: 'smooth'
-                })
+            draw_histogram()
+
+            this.$nextTick(() => {
+                // move to sim
+                let por_y = jQuery("#sim_portion")[0].getBoundingClientRect().top
+                window.scrollBy({
+                    top: por_y,
+                    left: 0,
+                    behavior: 'smooth'
+                    })
+            })
+            
         }
     }
 })
@@ -500,8 +506,8 @@ function draw_histogram() {
     let title_size = '4.5pt'
 
     if (is_mobile) {
-        height = 100 - margin.top - margin.bottom
-        // font_size = '6.5pt'
+        height = 160 - margin.top - margin.bottom
+        font_size = '6.5pt'
         title_size = '7pt'
     }
 
@@ -539,19 +545,21 @@ function draw_histogram() {
         .range([0, width])
         .paddingInner(0.3)
         .paddingOuter(0.1);
+
     let xAxis = svg.append("g")
         .attr("opacity", 1)
         .attr("transform", `translate(0, ${height})`)
         .call(
             d3.axisBottom(x)
             .tickSize(0)
+            .tickValues(x_domain.length > 50 ? x_domain.filter(i => i%5==0) : x_domain)
         )
 
     // Add X axis label:
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height + 15)
+        .attr("y", height + 18)
         .attr("font-size", font_size)
         .attr("fill", "white")
         .text("Points");
@@ -610,10 +618,11 @@ function draw_histogram() {
     }
 
     let bars = holder.selectAll().data(data)
+
+    let active_rep = app.active_rep
     
     bars.enter().append("rect")
-        .attr("class", "occurence-bars")
-        .attr("fill", "red")
+        .attr("class", (d,i) => "occurence-bars" +  (active_rep == i ? " active-occ-bar" : ""))
         // .attr("fill", d => colors(d.player_no))
         // .attr("fill-opacity", 0.5)
         .attr("stroke", "white")
