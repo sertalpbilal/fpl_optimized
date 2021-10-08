@@ -595,7 +595,7 @@ function draw_histogram() {
     var y = d3.scaleBand().domain(y_domain).range([height, 0]).paddingInner(0).paddingOuter(0);
     let yAxis = svg.append('g')
         .attr("transform", "translate(" + width + ",0)")
-        .call(d3.axisLeft(y).tickSize(width))
+        .call(d3.axisLeft(y).tickSize(width).tickFormat(i => parseInt(i) + 1))
         .call(g => g.selectAll(".tick text"))
         // .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
 
