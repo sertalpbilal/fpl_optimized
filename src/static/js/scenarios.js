@@ -240,6 +240,7 @@ var app = new Vue({
             players.forEach(p => {
                 p.data = el_dict[parseInt(p.ID)]
             })
+            players = players.filter(i => i.data !== undefined)
             return players
         },
         current_rep_team() {
@@ -352,13 +353,16 @@ var app = new Vue({
                     });
                     table.cells("td").invalidate().draw();
 
-                    let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
-                    window.scrollBy({
-                        top: table_y,
-                        left: 0,
-                        behavior: 'smooth'
-                      })
-
+                    let is_mobile = window.screen.width < 800
+                    if (is_mobile) {
+                        let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
+                        window.scrollBy({
+                            top: table_y,
+                            left: 0,
+                            behavior: 'smooth'
+                        })
+                    }
+                    
                 })
             }
         },
@@ -374,12 +378,18 @@ var app = new Vue({
             this.select_out(this.picked_out) // clear selection
             this.swap_out = undefined // clear bench swap
 
-            let field_pos = jQuery("#field_portion")[0].getBoundingClientRect().top
-            window.scrollBy({
-                top: field_pos,
-                left: 0,
-                behavior: 'smooth'
-              })
+            let is_mobile = window.screen.width < 800
+
+            if (is_mobile) {
+                let field_pos = jQuery("#field_portion")[0].getBoundingClientRect().top
+                window.scrollBy({
+                    top: field_pos,
+                    left: 0,
+                    behavior: 'smooth'
+                })
+            }
+
+            
 
         },
         select_swap(e) {
