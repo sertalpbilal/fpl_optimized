@@ -497,7 +497,7 @@
                 <h6 class="card-header border-complement text-center scenario_title">Point Distribution and Replications</h6>
 
                 <div class="card-body text-center p-3" v-cloak>
-                    <div class="row no-gutters justify-content-center">
+                    <div class="row no-gutters justify-content-center" id="sim_portion">
                         <div class="col-12">
                             <div id="histogram">
 
@@ -506,12 +506,44 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 d-flex justify-content-center">
-                            <div id="sim_portion">
+                            <div class="mb-2">
                                 <div class="form-group">
                                     <label for="sc_select">Choose a simulation run</label>
                                     <select class="form-control" id="sc_select" v-model="active_rep_comp">
                                         <option v-for="(v,i) in grouped_scenarios" :value="i">{{ v.sim }}</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 row">
+                            <div class="col-12 col-md-4">
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Field Average
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (current_rep_values.total_field || 0).toFixed(2) }} pts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Team Points
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ (current_rep_values.total_score || 0).toFixed(0) }} pts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Difference
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ getWithSign(current_rep_values.diff || 0) }} pts
+                                    </div>
                                 </div>
                             </div>
                         </div>
