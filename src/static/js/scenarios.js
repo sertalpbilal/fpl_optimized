@@ -16,7 +16,8 @@ var app = new Vue({
         player_filter: undefined,
         swap_out: undefined,
         trigger: 0,
-        active_rep: undefined
+        active_rep: undefined,
+        display_paste: false
     },
     computed: {
         grouped_sc() {
@@ -303,6 +304,32 @@ var app = new Vue({
             if (e.keyCode === 13) {
                 this.fetch_team_picks()
             }
+        },
+        paste_data(e) {
+            this.display_paste = true
+        },
+        save_data() {
+            this.loading = true
+
+            let content = document.getElementById("paste_area")
+            try {
+                let data = JSON.parse(content.value)
+                if ('picks' in data) {
+                    this.team_data = data
+                    this.team_data.picks.forEach(p => {
+                        if (p.multiplier > 2) {
+                            p.multiplier = 2 // triple captain fix
+                        }
+                    })
+                    draw_histogram()
+                }
+            }
+            catch {
+                console.log("error in paste")
+            }
+            
+            this.display_paste = false
+            this.loading = false
         },
         get_lineup_x(list, current, order) {
             let total_pos = list.filter(i => i.data.element_type == current.data.element_type).length

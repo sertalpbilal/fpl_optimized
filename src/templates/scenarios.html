@@ -8,14 +8,33 @@
                 <div class="scenario_detail">
                     Simulated outcomes based on current projections
                 </div>
-                <div class="card-body text-center p-3" v-cloak>
+                <div class="card-body text-center p-3 animate-height" v-cloak>
                     <div class="row no-gutters justify-content-center">
-                        <div class="col-lg-4 col-8">
-                            <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id" :disabled="loading" v-on:keyup="submitTeam">
+                        <div class="col-lg-5 col-8 form-inline justify-content-center">
+                            <div class="input-group mb-1">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model="team_id" :disabled="loading" v-on:keyup="submitTeam">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Fetch</button>
                                 </div>
+                            </div>
+                            <span class="ml-1 mr-1 mb-1"> or </span>
+                            <button class="btn btn-secondary mb-1" type="button" @click="paste_data" :disabled="loading">Paste Data</button>
+                        </div>
+                    </div>
+                    <div class="row no-gutters justify-content-center" v-show="display_paste">
+                        <div class="col-12 col-lg-5">
+                            <div class="form-group">
+                                <label for="paste_area">If you are logged in to FPL: enter your team ID above <span v-show="team_id != ''">and copy contents of <a target="_blank" :href="'https://fantasy.premierleague.com/api/my-team/' + team_id + '/'">this link</a></span></label>
+                                <textarea class="form-control" id="paste_area" rows="3"></textarea>
+                            </div>
+                            <button class="btn btn-primary mb-1" type="button" @click="save_data" :disabled="loading">Save</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3" v-show="loading">
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="p-2 text-center">
+                                Loading data... Please wait...<br/>
+                                <img class="mx-auto d-block" src="static/images/loading.svg">
                             </div>
                         </div>
                     </div>
