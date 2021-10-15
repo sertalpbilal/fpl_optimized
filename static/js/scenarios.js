@@ -174,6 +174,7 @@ var app = new Vue({
             let diff_values = evals.map(i => i.diff)
             let diff_quantiles = jStat.quantiles(diff_values, [0, 0.25, 0.5, 0.75, 1])
             let avg_diff = jStat.mean(diff_values)
+            let avg_field = jStat.mean(evals.map(i => i.total_field))
 
             let probs = {
                 '20+': sample_values.filter(i => i >= 20).length / sample_values.length,
@@ -203,7 +204,8 @@ var app = new Vue({
             let autosub_avg = jStat.mean(evals.map(i => i.autosub_score))
 
             return {
-                avg_score, 
+                avg_score,
+                avg_field,
                 best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
                 worst_one: {'sim': worst_one.sim, 'total_score': worst_one.total_score},
                 best_diff: {'sim': best_diff_field.sim, 'diff': best_diff_field.diff},
@@ -581,12 +583,15 @@ function draw_histogram() {
 
     let data = app.scenario_evals
 
+    let field_avg = app.scenario_stats.avg_field
+    let your_avg = app.scenario_stats.avg_score
+
     data.forEach((value, index) => {
         value.y_val = data.slice(0,index).filter(i => i.total_score == value.total_score).length  
      })
 
     // Min max values
-    let x_high = Math.max(...data.map(i=>i.total_score))+2
+    let x_high = Math.max(Math.ceil(field_avg), Math.max(...data.map(i=>i.total_score)))+2
     let x_low = Math.min(...data.map(i=>i.total_score))-1
     let x_domain = _.range(x_low, x_high)
 
@@ -616,7 +621,7 @@ function draw_histogram() {
         .text("Points");
 
     // Axis-y
-    let y_high = Math.max(...data.map(i => i.y_val+1))+1
+    let y_high = Math.max(...data.map(i => i.y_val+1))+2
     let y_low = 0
     let y_domain = _.range(y_low, y_high)
     var y = d3.scaleBand().domain(y_domain).range([height, 0]).paddingInner(0).paddingOuter(0);
@@ -672,6 +677,49 @@ function draw_histogram() {
 
     let active_rep = app.active_rep
     
+    let find_x = e => x(Math.floor(e)) + x.step()*(e-Math.floor(e)) + x.bandwidth()/2
+
+    holder.append("line")
+        .attr("x1", find_x(field_avg))
+        .attr("x2", find_x(field_avg))
+        .attr("y1", height)
+        .attr("y2", 0)
+        .attr("stroke", "white")
+    holder.append("text")
+        .attr("text-anchor", field_avg <= your_avg ? "end" : "start")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
+        .attr("y", 5)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Field Avg")
+    holder.append("text")
+        .attr("text-anchor", field_avg <= your_avg ? "end" : "start")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
+        .attr("y", 10)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text(field_avg.toFixed(1))
+
+    holder.append("line")
+        .attr("x1", find_x(your_avg))
+        .attr("x2", find_x(your_avg))
+        .attr("y1", height)
+        .attr("y2", 0)
+        .attr("stroke", "#00faff")
+    holder.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", find_x(your_avg))
+        .attr("y", -3)
+        .attr("font-size", font_size)
+        .attr("fill", "#00faff")
+        .text("Team Avg " + your_avg.toFixed(1))
+
     bars.enter().append("rect")
         .attr("class", (d,i) => "occurence-bars" +  (active_rep == i ? " active-occ-bar" : ""))
         // .attr("fill", d => colors(d.player_no))
