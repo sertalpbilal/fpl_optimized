@@ -557,11 +557,13 @@ function draw_histogram() {
 
     let font_size = '3pt'
     let title_size = '4.5pt'
+    let info_size = '3pt'
 
     if (is_mobile) {
         height = 160 - margin.top - margin.bottom
         font_size = '6.5pt'
         title_size = '7pt'
+        info_size = '4pt'
     }
 
     jQuery("#histogram").empty()
@@ -691,7 +693,7 @@ function draw_histogram() {
         .attr("dominant-baseline", "center")
         .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
         .attr("y", 5)
-        .attr("font-size", font_size)
+        .attr("font-size", info_size)
         .attr("fill", "white")
         .text("Field Avg")
     holder.append("text")
@@ -700,7 +702,7 @@ function draw_histogram() {
         .attr("dominant-baseline", "center")
         .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
         .attr("y", 10)
-        .attr("font-size", font_size)
+        .attr("font-size", info_size)
         .attr("fill", "white")
         .text(field_avg.toFixed(1))
 
@@ -716,7 +718,7 @@ function draw_histogram() {
         .attr("dominant-baseline", "center")
         .attr("x", find_x(your_avg))
         .attr("y", -3)
-        .attr("font-size", font_size)
+        .attr("font-size", info_size)
         .attr("fill", "#00faff")
         .text("Team Avg " + your_avg.toFixed(1))
 
