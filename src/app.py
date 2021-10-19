@@ -412,7 +412,16 @@ def scenario_page():
     # Scenario outputs
     files = glob.glob(f"build/data/{global_season}/GW*/*/output/scenarios.csv")
     files = sorted(files, key=os.path.getctime, reverse=True)
-    files = ['/'.join(i.split('/')[1:]) for i in files]
+    files = [i.split('/')[1:] for i in files]
+    file_dict = {}
+    for f in files:
+        if f[2] in file_dict:
+            continue
+        else:
+            file_dict[f[2]] = "/".join(f)
+
+    files = list(file_dict.items())
+    # '/'.join
 
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", page_name="Scenarios", sc_files=files)
