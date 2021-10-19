@@ -116,7 +116,15 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Random Scenario Evaluation: GW{{ current_gw() }}</h5>
+                <h5 class="card-header border-complement text-center scenario_title">
+                    <span><i class="fas fa-dice-d20 mr-1"></i> Simulated Scenarios: </span>
+                    <span class="d-inline-block">
+                        <select class="form-control live-select" v-model="active_sc" @change="update_sim_values()">
+                            <option v-for="(k, i) in sc_files" :value="i">{{ k[0] }}</option>
+                        </select>
+                    </span>
+                    <!-- GW{{ current_gw }} -->
+                </h5>
                 <div class="scenario_detail">
                     Simulated outcomes based on current projections
                 </div>
@@ -171,7 +179,7 @@
                             <div class="col-12 col-md-8">
                                 <b>What is this page about?</b>
                                 <p class="answer">
-                                    This page shows potential outcomes for next GW (GW{{ current_gw() }}) using simulation replications.
+                                    This page shows potential outcomes for next GW (GW{{ current_gw }}) using simulation replications.
                                 </p>
                                 <b>What is the purpose of it?</b>
                                 <p class="answer">
@@ -290,8 +298,8 @@
                                     </svg>
                                     <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
-                                            <g class="g_jersey" style="transform:translate(0,0)">
-                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="player.element != 388"></image>
+                                            <g class="g_jersey" style="transform:translate(0,0)" :data-pid="player.element">
+                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="![388, 601].includes(player.element)"></image>
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
                                                     <!-- Select captain -->
                                                     <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
@@ -799,7 +807,7 @@
 </main>
 
 <script>
-    let sc_files = ["data/2021-22/GW9/2021-10-19/output/scenarios.csv", "data/2021-22/GW9/2021-10-18/output/scenarios.csv", "data/2021-22/GW9/2021-10-17/output/scenarios.csv", "data/2021-22/GW9/2021-10-16/output/scenarios.csv", "data/2021-22/GW8/2021-10-15/output/scenarios.csv", "data/2021-22/GW8/2021-10-14/output/scenarios.csv", "data/2021-22/GW8/2021-10-13/output/scenarios.csv", "data/2021-22/GW8/2021-10-12/output/scenarios.csv", "data/2021-22/GW8/2021-10-11/output/scenarios.csv", "data/2021-22/GW8/2021-10-10/output/scenarios.csv", "data/2021-22/GW8/2021-10-09/output/scenarios.csv", "data/2021-22/GW8/2021-10-08/output/scenarios.csv", "data/2021-22/GW8/2021-10-07/output/scenarios.csv", "data/2021-22/GW8/2021-10-06/output/scenarios.csv", "data/2021-22/GW8/2021-10-05/output/scenarios.csv", "data/2021-22/GW8/2021-10-04/output/scenarios.csv", "data/2021-22/GW8/2021-10-03/output/scenarios.csv"]
+    let sc_files = [["GW9", "data/2021-22/GW9/2021-10-19/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"]]
 </script>
 
  </div>

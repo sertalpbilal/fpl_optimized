@@ -20,6 +20,13 @@ var app = new Vue({
         display_paste: false
     },
     computed: {
+        current_gw() {
+            let name = this.sc_files[this.active_sc]
+            return parseInt(name[0].split("GW")[1])
+        },
+        is_next_gw() {
+            return this.active_sc == 0
+        },
         grouped_sc() {
             if (_.isEmpty(this.sc_details)) { return {}}
         },
@@ -279,20 +286,19 @@ var app = new Vue({
         }
     },
     methods: {
-        current_gw() {
-            let name = this.sc_files[this.active_sc]
-            return parseInt(name.split('/').filter(i => i.includes("GW"))[0].split("GW")[1])
-        },
         fetch_team_picks() {
             this.team_data = undefined
             this.lineup = []
             this.bench = []
-            let target_gw = this.current_gw() - 1
+            let target_gw = this.current_gw
+            if (this.is_next_gw) {
+                target_gw = this.current_gw - 1
+            }
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.team_id, force_last_gw: false }).then((response) => {
                 app.team_data = response.body
                 app.team_data.picks.forEach(p => {
-                    if (p.multiplier > 2) {
+                    if (p.multiplier > 2 && this.is_next_gw) {
                         p.multiplier = 2 // triple captain fix
                     }
                 })
@@ -300,6 +306,7 @@ var app = new Vue({
                 draw_histogram()
             }).catch(error => {
                 console.error(error)
+                app.loading = false
             })
         },
         submitTeam(e) {
@@ -536,9 +543,19 @@ var app = new Vue({
     }
 })
 
+function update_sim_values() {
+    const order = app.active_sc
+    read_scenario(order)
+    if (app.team_id != '') {
+        app.fetch_team_picks()
+    }
+}
+
 
 function read_scenario(order=0) {
-    let file = app.sc_files[order]
+    // 0: gw name
+    // 1: file location
+    let file = app.sc_files[order][1]
     return read_local_file(file).then(d => {
         app.active_sc = order
         app.sc_details = $.csv.toObjects(d)
@@ -555,16 +572,22 @@ function draw_histogram() {
 
     let is_mobile = window.screen.width < 800
 
-    let font_size = '3pt'
-    let title_size = '4.5pt'
-    let info_size = '3pt'
+    // let font_size = '3pt'
+    // let title_size = '4.5pt'
+    // let info_size = '3pt'
+
+    // // 5.4pt
 
     if (is_mobile) {
         height = 160 - margin.top - margin.bottom
-        font_size = '6.5pt'
-        title_size = '7pt'
-        info_size = '4pt'
+    //     font_size = '6.5pt'
+    //     title_size = '7pt'
+    //     info_size = '4pt'
     }
+
+    font_size = '5pt'
+    title_size = '6pt'
+    info_size = '3.8pt'
 
     jQuery("#histogram").empty()
 
@@ -590,10 +613,15 @@ function draw_histogram() {
 
     data.forEach((value, index) => {
         value.y_val = data.slice(0,index).filter(i => i.total_score == value.total_score).length  
-     })
+    })
+
+    let mpts = 0
+    if (!app.is_next_gw) {
+        mpts = app.team_data.entry_history.points
+    }
 
     // Min max values
-    let x_high = Math.max(Math.ceil(field_avg), Math.max(...data.map(i=>i.total_score)))+2
+    let x_high = Math.max(Math.ceil(field_avg), Math.max(...data.map(i=>i.total_score)), mpts)+2
     let x_low = Math.min(...data.map(i=>i.total_score))-1
     let x_domain = _.range(x_low, x_high)
 
@@ -667,6 +695,7 @@ function draw_histogram() {
         .attr("fill", "white")
         .text("Total Point Occurrence")
 
+
     // Data plot
 
     let holder = svg.append('g')
@@ -735,6 +764,39 @@ function draw_histogram() {
         .style("cursor", "pointer")
         .on('click', (e,d) => clickaction(d))
 
+
+    // When plotting old GW: draw a bar!
+    if (!app.is_next_gw) {
+        let pts = app.team_data.entry_history.points
+
+        // holder.append("rect")
+        // .attr("fill", "purple")
+        // .attr("fill-opacity", 0.3)
+        // .attr("stroke", "white")
+        // .attr("stroke-width", 0.5)
+        // .attr("x", (d) => x(pts) - x.paddingInner()*x.step()/2)
+        // .attr("y", 0)
+        // .attr("width", x.step())
+        // .attr("height", height)
+        // .style("pointer-events", "none")
+
+        holder.append("line")
+        .attr("x1", find_x(pts))
+        .attr("x2", find_x(pts))
+        .attr("y1", height+6)
+        .attr("y2", 0)
+        .attr("stroke", "#ff0058")
+        holder.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "center")
+            .attr("dominant-baseline", "center")
+            .attr("x", find_x(pts))
+            .attr("y", height+12)
+            .attr("font-size", info_size)
+            .attr("fill", "#ff669b")
+            .text("Actual: " + pts)
+
+    }
 
 }
 
