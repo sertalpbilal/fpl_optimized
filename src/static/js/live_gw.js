@@ -1172,7 +1172,17 @@ async function load_rp_data() {
 async function load_sample_data() {
     return get_sample_data(app.season, app.gw.slice(2))
         .then((data) => {
-            app.saveSampleData(true, data);
+            if (data[0].status == 'rejected') {
+                app.saveSampleData(false, []);
+            }
+            else {
+                let sample_data = data[0].value
+                if (data[1].status != 'rejected') {
+                    sample_data['Prime'] = data[1].value
+                }
+                app.saveSampleData(true, sample_data);
+            }
+            
         })
         .catch(error => {
             // Delete sample data and force official FPL API values
@@ -1961,7 +1971,13 @@ function update_graph_hover_values(x_raw, gid, reset = false) {
     }
     let x_left = raw_data[id_left];
     let x_right = raw_data[id_right];
-    let ratio = (x_raw - x_left.time) / Math.max(x_right.time - x_left.time, 1);
+    let ratio;
+    try {
+        ratio = (x_raw - x_left.time) / Math.max(x_right.time - x_left.time, 1);
+    }
+    catch {
+        return
+    }
     const find_y = (left_val, right_val) => left_val * (1 - ratio) + right_val * ratio;
     const stat = target_stat[gid];
     if (stat == undefined) {

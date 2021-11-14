@@ -228,7 +228,8 @@ function get_fixture(gw) {
 }
 
 function get_sample_data(season, target_gw) {
-    return new Promise((resolve, reject) => {
+
+    let regular_sample = new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
             url: `sample/${season}/${target_gw}/fpl_sampled.json`,
@@ -242,7 +243,27 @@ function get_sample_data(season, target_gw) {
                 reject("No data");
             }
         });
+    })
+
+    let prime_sample = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `sample/${season}/${target_gw}/top_managers.json`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                console.log("GW" + target_gw + " has no sample data");
+                reject("No data");
+            }
+        });
     });
+
+    let promises = [regular_sample, prime_sample]
+
+    return Promise.allSettled(promises)
 }
 
 function get_cached_element_data({ season, gw, date }) {

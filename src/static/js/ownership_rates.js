@@ -123,6 +123,7 @@ var app = new Vue({
                 this.sample_data = data
                 this.data_options = [
                     { 'name': "Official FPL API" },
+                    { 'name': "Sample - Prime" },
                     { 'name': "Sample - Overall" },
                     { 'name': "Sample - Top 1M" },
                     { 'name': "Sample - Top 100K" },
@@ -177,7 +178,18 @@ async function load_sample_data() {
     let v = listdates[0].split(' / ')
     return get_sample_data(v[0].trim(), v[1].slice(2))
         .then((data) => {
-            app.saveSampleData(true, data);
+            if (data[0].status == 'rejected') {
+                app.saveSampleData(false, []);
+            }
+            else {
+                let sample_data = data[0].value
+                if (data[1].status != 'rejected') {
+                    sample_data['Prime'] = data[1].value
+                }
+                app.saveSampleData(true, sample_data);
+            }
+
+            // app.saveSampleData(true, data);
         })
         .catch(error => {
             // Delete sample data and force official FPL API values
