@@ -62,8 +62,9 @@
     let active_gw = ** active_gw |
         default (-1, false) ** ;
 </script>
+
 "% for item in scripts %"
-<script src="** repo_name **** url_for('static', filename='js/' + item +'.js') **"></script>
+<script src="** repo_name **** url_for('static', filename='js/' + item +'.js') **?ts=** ts **"></script>
 "% endfor %"
 
 <script>
