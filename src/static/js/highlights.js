@@ -369,7 +369,19 @@ var app = new Vue({
             let eo_data = this.eo_data
             let key = this.sample_options[this.sample_selection]
             let gws = Object.keys(eo_data)
-            let values = Object.keys(eo_data).map(gw => Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])).flat()
+            let values = []
+            for (let gw of Object.keys(eo_data)) {
+                if (key in eo_data[gw]) {
+                    let v = Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])
+                    values.push(v)
+                }
+                else {
+                    let v = Object.keys(eo_data[gw]["Overall"]).map(pid => [gw, pid, eo_data[gw]["Overall"][pid].eo])
+                    values.push(v)
+                }
+            }
+            values = values.flat()
+            // let values = Object.keys(eo_data).map(gw => Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])).flat()
             let values_dict = Object.fromEntries(values.map(i => [i[0] + '_' + i[1], i[2]]))
             return {gw: gws, raw_values: values, dict: values_dict}
         },
@@ -2325,7 +2337,6 @@ function draw_tree_map() {
 }
 
 async function get_points() {
-    debugger
     return getSeasonRPData(parseInt(gw)).then((data) => {
         app.points_data = data;
     })
@@ -2353,9 +2364,16 @@ async function get_eo() {
         dataType: "json",
         success: (data) => {
             app.eo_data = data;
-            app.sample_options = Object.keys(data[1])
+            let target_key = Math.max(...Object.keys(data).map(i => parseInt(i)));
+            app.sample_options = Object.keys(data[target_key])
             // default 10K
-            app.sample_selection = 0 //Object.keys(data[1]).length - 1
+            // app.sample_selection = 0 //Object.keys(data[1]).length - 1
+            if (app.sample_options.length > 1) {
+                app.sample_selection = 2;
+            }
+            else {
+                app.sample_selection = 0;
+            }
         },
         error: (xhr, status, error) => {
             console.log(error);
