@@ -14,6 +14,8 @@ function sample_compact_number(value) {
             return "Top 100K";
         case "1000000":
             return "Top 1M";
+        case "Prime":
+            return "Prime";
         default:
             let new_value = compactFormatter.format(value);
             return new_value !== "NaN" ? ("Top " + new_value) : value;
@@ -34,6 +36,8 @@ function reverse_sample_name(value) {
             return 100000;
         case "Sample - Top 1M":
             return 1000000;
+        case "Sample - Prime":
+            return "Prime";
         default:
             return value;
     }
@@ -187,33 +191,11 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
         ownership_source = "Official FPL API";
     }
 
-    switch (ownership_source) {
-        case "Official FPL API":
-            return { data: fpl_data };
-        case "Sample - Overall":
-            teams = sample_data["Overall"].filter(i => i.team != undefined)
-            break;
-        case "Sample - Top 1M":
-            teams = sample_data["1000000"].filter(i => i.team !== undefined);
-            break;
-        case "Sample - Top 100K":
-            teams = sample_data["100000"].filter(i => i.team !== undefined);
-            break;
-        case "Sample - Top 10K":
-            teams = sample_data["10000"].filter(i => i.team !== undefined);
-            break;
-        case "Sample - Top 1K":
-            teams = sample_data["1000"].filter(i => i.team !== undefined);
-            break;
-        case "Sample - Top 100":
-            teams = sample_data["100"].filter(i => i.team !== undefined);
-            break;
-            // case "Sample - Ahead":
-            //     teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
-            //     break;
-        default:
-            break;
+    let tag = reverse_sample_name(ownership_source)
+    if (tag == "Official FPL API") {
+        return {data: fpl_data}
     }
+    teams = sample_data[tag].filter(i => i.team != undefined)
 
     let el_copy = _.cloneDeep(fpl_data);
     let sub_replacements = [];

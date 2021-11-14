@@ -116,7 +116,9 @@ var app = new Vue({
         saveSampleData(success, data) {
             if (success) {
                 this.sample_data = data;
-                this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
+                // this.available_sources = ["Official FPL API", "Sample - Overall", "Sample - Top 1M", "Sample - Top 100K", "Sample - Top 10K", "Sample - Top 1K", "Sample - Top 100"]; //, "Sample - Ahead"];
+                let sample_values = Object.keys(data).reverse().map(i => "Sample - " + sample_compact_number(i));
+                this.available_sources = ["Official FPL API"].concat(sample_values);
                 if (this.ownership_source == this.available_sources[0] && !this.warn_old_data) {
                     this.ownership_source = this.available_sources[1];
                 }
@@ -808,34 +810,11 @@ var app = new Vue({
             return this.active_sample_data.map(i => i.data.picks).flat();
         },
         active_sample_data: function() {
-            switch (this.ownership_source) {
-                case "Official FPL API":
-                    return [];
-                case "Sample - Overall":
-                    teams = this.sample_data["Overall"].filter(i => i.team != undefined)
-                    break;
-                case "Sample - Top 1M":
-                    teams = this.sample_data["1000000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 100K":
-                    teams = this.sample_data["100000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 10K":
-                    teams = this.sample_data["10000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 1K":
-                    teams = this.sample_data["1000"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Top 100":
-                    teams = this.sample_data["100"].filter(i => i.team !== undefined);
-                    break;
-                case "Sample - Ahead":
-                    teams = this.sample_data["Overall"].filter(i => i.team != undefined).filter(i => i.team.summary_overall_rank <= this.team_data.entry_history.overall_rank);
-                    break;
-                default:
-                    break;
+            let key = reverse_sample_name(this.ownership_source)
+            if (key == "Official FPL API") {
+                return []
             }
-            return teams;
+            return this.sample_data[key].filter(i => i.team != undefined)
         },
         ownership_data: function() {
             let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
@@ -1228,12 +1207,33 @@ function load_gw() {
             console.error(error);
         });
 
+    function perform_save(data) {
+        if (data[0].status == 'rejected') {
+            app.saveSampleData(false, []);
+        }
+        else {
+            let sample_data = data[0].value
+            if (data[1].status != 'rejected') {
+                sample_data['Prime'] = data[1].value
+            }
+            app.saveSampleData(true, sample_data);
+        }
+    }
+
 
     target_gw = parseInt((gw).slice(2));
 
     get_sample_data(season, target_gw)
         .then((data) => {
-            app.saveSampleData(true, data);
+            if (data[0].status == 'rejected') {
+                return Promise.reject('No data')
+            }
+            else {
+                return data
+            }
+        })
+        .then((data) => {
+            perform_save(data)
         })
         .catch(error => {
             // Delete sample data and force official FPL API values
@@ -1243,7 +1243,8 @@ function load_gw() {
             }
             get_sample_data(season, target_gw)
                 .then((data) => {
-                    app.saveSampleData(true, data);
+                    perform_save(data)
+                    // app.saveSampleData(true, data);
                 })
                 .catch(error => {
                     // Delete sample data and force official FPL API values
