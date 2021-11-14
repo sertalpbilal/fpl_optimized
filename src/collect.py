@@ -30,6 +30,11 @@ from concurrent.futures import ProcessPoolExecutor
 import glob
 from encrypt import encrypt
 
+import aiohttp
+import asyncio
+import platform
+from asyncio.proactor_events import _ProactorBasePipeTransport
+from functools import wraps
 
 FPL_API = {
     'now': "https://fantasy.premierleague.com/api/bootstrap-static/",
@@ -212,6 +217,93 @@ def get_element_event_expected_minutes(r):
             return 0
 
 
+def get_team_picks(team_ids, gw, info=None):
+
+    async def get_picks(id_list, gw):
+        async with aiohttp.ClientSession() as session:
+            picks = await fetch_all_picks(session, id_list, gw)
+            return picks
+
+    async def fetch_all_picks(session, id_list, gw):
+        urls = [f"https://fantasy.premierleague.com/api/entry/{i}/event/{gw}/picks/" for i in id_list]
+        man_url = [f"https://fantasy.premierleague.com/api/entry/{i}/" for i in id_list]
+
+        chunk_size = 20
+        wait_length = 1.2
+
+        pick_chunks = [urls[i:i+chunk_size] for i in range(len(urls))[::chunk_size]]
+        info_chunks = [man_url[i:i+chunk_size] for i in range(len(man_url))[::chunk_size]]
+
+        pick_data = []
+        info_data = []
+
+        iter_no = 0
+        for pc, ic in zip(pick_chunks, info_chunks):
+            print(f"Chunk: {iter_no+1}/{len(pick_chunks)}", end='')
+            tasks = [fetch(session, url) for url in pc]
+            man_tasks = [fetch(session, url) for url in ic]
+            pick_data.append(await asyncio.gather(*tasks))
+            info_data.append(await asyncio.gather(*man_tasks))
+            print(": Done")
+            iter_no += 1
+            time.sleep(wait_length)
+
+
+        man_data = sum(info_data, [])
+        player_data = sum(pick_data, [])
+        team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
+        combined_data = []
+
+        it = 0
+        for team_info, pick_info in zip(man_data, player_data):
+            try:
+                entry = {'team': {key: team_info[key] for key in team_keys}, 'data': pick_info}
+                if info is not None:
+                    entry['info'] = info[it]
+                combined_data.append(entry)
+            except:
+                pass
+            it = it + 1
+        return combined_data
+
+    async def fetch(session, url):
+        # print(f"Fetching {url}")
+        headers = {"User-Agent": ""}
+        async with session.get(url, headers=headers) as response:
+            if response.status == 200:
+                # print(f"{url} done")
+                return await response.json()
+            else:
+                print(f"Response {response.status} -- {url}")
+                return None
+
+    def silence_event_loop_closed(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except RuntimeError as e:
+                if str(e) != 'Event loop is closed':
+                    raise
+        return wrapper
+
+    if platform.system() == 'Windows':
+        # Silence the exception here.
+        _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(_ProactorBasePipeTransport.__del__)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    all_data = loop.run_until_complete(get_picks(team_ids, gw))
+    
+    try:
+        loop.close()
+    except:
+        pass
+
+    return all_data
+
+
+
 def sample_fpl_teams(gw=None, seed=None):
 
     env = read_static()
@@ -236,28 +328,48 @@ def sample_fpl_teams(gw=None, seed=None):
     input_folder = pathlib.Path(base_folder / f"build/sample/{season}/{gw}/")
     input_folder.mkdir(parents=True, exist_ok=True)
 
+    # Part 0 - FPL Research Top Managers
+    print("Sampling Top 1000 Managers")
+    managers = pd.read_csv(base_folder / 'static/json/top_managers.tsv', sep="\t")
+    team_ids = managers['Team ID']
+
+    manager_info = managers.to_dict(orient='records')
+    top_picks = get_team_picks(team_ids, gw, manager_info)
+
+    print(f"Sampled top managers: {len(top_picks)}")
+
+    with open(input_folder / 'top_managers.json', 'w') as file:
+        json.dump(top_picks, file)
+
+    time.sleep(1)
+
     # Part 1 - 99% Overall sampling
-    print("PART1")
+    print("Sampling 666 teams among overall FPL")
     selected_ids = random.sample(range(1, total_players), 666)
     # selected_ids = random.sample(range(1, total_players), 2000)
-    with ProcessPoolExecutor(max_workers=8) as executor:
-        random_squads = list(executor.map(get_single_team_data, selected_ids, itertools.repeat(gw)))
-    random_squads = [i for i in random_squads if i is not None]
+
+    random_squads = get_team_picks(selected_ids, gw)
+
+    # with ProcessPoolExecutor(max_workers=8) as executor:
+    #     random_squads = list(executor.map(get_single_team_data, selected_ids, itertools.repeat(gw)))
+    # random_squads = [i for i in random_squads if i is not None]
     print("Sampled", len(random_squads), "random teams")
     sample_dict['Overall'] = random_squads
 
+    time.sleep(1)
+
     if int(gw) != 1:
-        print("PART2")
+        # print("PART2")
         # Part 2 - Various Ranges
         pairs = [[100, 80], [1000, 278], [10000, 370], [100000, 383], [1000000, 385]]
-        # pairs = [[100, 100], [1000, 500], [10000, 600], [100000, 800], [1000000, 1000]]
         for target, nsample in pairs:
-            print(f"Sampling inside top {target}")
+            print(f"Sampling {nsample} teams inside top {target}")
             player_targets = random.sample(range(1, target+1), nsample)
-            with ProcessPoolExecutor(max_workers=8) as executor:
-                grabbed_squads = list(executor.map(get_rank_n_player, player_targets, itertools.repeat(gw)))
+            grabbed_squads = get_team_picks_from_rank(player_targets, gw)
             grabbed_squads = [i for i in grabbed_squads if i is not None]
+            print(f"Sampled {len(grabbed_squads)} teams inside top {target}")
             sample_dict[target] = grabbed_squads
+            time.sleep(1)
 
     with open(input_folder / 'fpl_sampled.json', 'w') as file:
         json.dump(sample_dict, file)
@@ -265,36 +377,110 @@ def sample_fpl_teams(gw=None, seed=None):
     print('Took', time.time()-t0, 'seconds')
 
 
-def get_rank_n_player(rank, gw):
-    page = ((rank-1)//50)+1
-    order = (rank-1) % 50
+def get_team_picks_from_rank(ranks, gw):
+    
+    async def fetch_team_ids(ranks):
+        
+
+        async with aiohttp.ClientSession() as session:
+            team_ids = await get_ids(session, ranks)
+            return team_ids
+
+    async def get_ids(session, ranks):
+
+        chunk_size = 20
+        wait_length = 1.2
+
+        URLS = []
+        ORDERS = []
+        for rank in ranks:
+            page = ((rank-1)//50)+1
+            order = (rank-1) % 50
+            URLS.append(f"https://fantasy.premierleague.com/api/leagues-classic/314/standings/?page_standings={page}")
+            ORDERS.append(order)
+
+        url_chunks = [URLS[i:i+chunk_size] for i in range(len(URLS))[::chunk_size]]
+        order_chunks = [ORDERS[i:i+chunk_size] for i in range(len(ORDERS))[::chunk_size]]
+
+        id_data = []
+
+        for url_next, order_next in zip(url_chunks, order_chunks):
+            tasks = [get_team_id_from_standings(session, url, order) for (url,order) in zip(url_next, order_next)]
+            id_data.append(await asyncio.gather(*tasks))
+            time.sleep(wait_length)
+        return id_data
+
+    async def get_team_id_from_standings(session, url, order):
+        headers = {"User-Agent": ""}
+        async with session.get(url, headers=headers) as response:
+            if response.status == 200:
+                page_data = await response.json()
+                tid = page_data['standings']['results'][order]['entry']
+                return tid
+            else:
+                print(f"Response {response.status}")
+                return None
+
+    def silence_event_loop_closed(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except RuntimeError as e:
+                if str(e) != 'Event loop is closed':
+                    raise
+        return wrapper
+
+    if platform.system() == 'Windows':
+        # Silence the exception here.
+        _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(_ProactorBasePipeTransport.__del__)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    team_ids = sum(loop.run_until_complete(fetch_team_ids(ranks)), [])
+    
     try:
-        with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
-            page_data = json.loads(url.read().decode())
-        tid = page_data['standings']['results'][order]['entry']
-        return get_single_team_data(tid, gw)
+        loop.close()
     except:
-        print("Encountered page access error, waiting 5 seconds")
-        time.sleep(5)
-        return None
+        pass
+    
+    print(f"Collected team ids: {team_ids}")
+
+    picks = get_team_picks(team_ids, gw)
+
+    return picks
 
 
-def get_single_team_data(tid, gw=16):
-    "Returns single team data from FPL API"
-    print(f"Getting {tid} for {gw}")
-    time.sleep(0.5)
-    team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
-    try:
-        with urlopen(FPL_API['team_info'].format(PID=tid)) as url:
-            team_data = json.loads(url.read().decode())
-        with urlopen(FPL_API['picks'].format(PID=tid, GW=gw)) as url:
-            pick_data = json.loads(url.read().decode())
-        time.sleep(0.5)
-        return {'team': {key: team_data[key] for key in team_keys}, 'data': pick_data}
-    except Exception as e:
-        print("Encountered error, waiting 3 seconds:", e)
-        time.sleep(3)
-        return None
+# def get_rank_n_player(rank, gw):
+#     page = ((rank-1)//50)+1
+#     order = (rank-1) % 50
+#     try:
+#         with urlopen(FPL_API['overall'].format(LID=314, P=page)) as url:
+#             page_data = json.loads(url.read().decode())
+#         tid = page_data['standings']['results'][order]['entry']
+#         return get_single_team_data(tid, gw)
+#     except:
+#         print("Encountered page access error, waiting 5 seconds")
+#         time.sleep(5)
+#         return None
+
+
+# def get_single_team_data(tid, gw=16):
+#     "Returns single team data from FPL API"
+#     print(f"Getting {tid} for {gw}")
+#     time.sleep(0.5)
+#     team_keys = ['id', 'player_region_name', 'summary_overall_points', 'summary_overall_rank', 'name']
+#     try:
+#         with urlopen(FPL_API['team_info'].format(PID=tid)) as url:
+#             team_data = json.loads(url.read().decode())
+#         with urlopen(FPL_API['picks'].format(PID=tid, GW=gw)) as url:
+#             pick_data = json.loads(url.read().decode())
+#         time.sleep(0.5)
+#         return {'team': {key: team_data[key] for key in team_keys}, 'data': pick_data}
+#     except Exception as e:
+#         print("Encountered error, waiting 3 seconds:", e)
+#         time.sleep(3)
+#         return None
 
 
 def get_fpl_info(info_type, **kwargs):
@@ -500,7 +686,14 @@ if __name__ == "__main__":
     #     sample_fpl_teams(gw)
     #     time.sleep(10)
 
-    input_folder, output_folder, season_folder = create_folders()
-    cache_effective_ownership(season_folder)
+    # input_folder, output_folder, season_folder = create_folders()
+    # cache_effective_ownership(season_folder)
+
+    # read_top_managers(1)
+
+    # for i in range(1,12):
+    #     sample_fpl_teams(i)
+
+    # get_team_picks_from_rank([1,10,50,100], 11)
 
     pass
