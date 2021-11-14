@@ -1,6 +1,6 @@
 FROM sertalpbilal/coin-or-optimization-with-batteries:latest
 
-RUN pip install cryptography pycryptodome
+RUN pip install cryptography pycryptodome aiohttp asyncio
 COPY src /app
 WORKDIR /app
 
