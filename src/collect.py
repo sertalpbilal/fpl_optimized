@@ -640,17 +640,30 @@ def cache_effective_ownership(season_folder):
     for f in files:
         with open(f['file'], 'r') as file:
             data = json.loads(file.read())
-            picks_dict = dict()
-            for key in data.keys():
-                tier_picks = picks_dict[key] = {}
-                for team in data[key]:
-                    for player in team['data']['picks']:
-                        pid = player['element']
-                        tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
-                        tier_picks[pid]['count'] += 1
-                        tier_picks[pid]['multiplier'] += player['multiplier']
-                        tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(data[key]) * 100, 2)
-            season_eo[f['gw']] = picks_dict
+        picks_dict = dict()
+        for key in data.keys():
+            tier_picks = picks_dict[key] = {}
+            for team in data[key]:
+                for player in team['data']['picks']:
+                    pid = player['element']
+                    tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
+                    tier_picks[pid]['count'] += 1
+                    tier_picks[pid]['multiplier'] += player['multiplier']
+                    tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(data[key]) * 100, 2)
+        try:
+            with open(f['file'].replace("fpl_sampled", "top_managers"), 'r') as file2:
+                prime_data = json.loads(file2.read())
+            tier_picks = picks_dict['Prime'] = {}
+            for team in prime_data:
+                for player in team['data']['picks']:
+                    pid = player['element']
+                    tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
+                    tier_picks[pid]['count'] += 1
+                    tier_picks[pid]['multiplier'] += player['multiplier']
+                    tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(prime_data) * 100, 2)
+        except:
+            pass
+        season_eo[f['gw']] = picks_dict
     with open(season_folder / 'eo.json', 'w') as file:
         json.dump(season_eo, file)
     return
@@ -686,8 +699,8 @@ if __name__ == "__main__":
     #     sample_fpl_teams(gw)
     #     time.sleep(10)
 
-    # input_folder, output_folder, season_folder = create_folders()
-    # cache_effective_ownership(season_folder)
+    input_folder, output_folder, season_folder = create_folders()
+    cache_effective_ownership(season_folder)
 
     # read_top_managers(1)
 
