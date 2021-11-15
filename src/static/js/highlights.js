@@ -388,7 +388,7 @@ var app = new Vue({
         user_ownership_gain_loss() {
             let ss = this.sample_selection
             let so = this.sample_options[this.sample_selection]
-            
+
             let gws = this.parsed_eo_data.gw
             let all_pids = Object.keys(this.fpl_element)
             let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'id': pid}])).flat())
@@ -894,6 +894,10 @@ var app = new Vue({
                 table.cells("td").invalidate().draw();
                 table = $("#loss_table").DataTable();
                 table.cells("td").invalidate().draw();
+                table = $("#total_gain_loss_table").DataTable();
+                table.cells("td").invalidate().draw();
+
+                
             })
         }
     }
@@ -2372,7 +2376,7 @@ async function get_eo() {
             // default 10K
             // app.sample_selection = 0 //Object.keys(data[1]).length - 1
             if (app.sample_options.length > 1) {
-                app.sample_selection = 2;
+                app.sample_selection = app.sample_options.length-1;
             }
             else {
                 app.sample_selection = 0;
