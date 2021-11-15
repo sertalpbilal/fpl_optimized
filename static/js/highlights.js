@@ -386,6 +386,9 @@ var app = new Vue({
             return {gw: gws, raw_values: values, dict: values_dict}
         },
         user_ownership_gain_loss() {
+            let ss = this.sample_selection
+            let so = this.sample_options[this.sample_selection]
+            
             let gws = this.parsed_eo_data.gw
             let all_pids = Object.keys(this.fpl_element)
             let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'id': pid}])).flat())
