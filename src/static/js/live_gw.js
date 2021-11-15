@@ -71,6 +71,19 @@ var app = new Vue({
                 })
             }
         },
+        ownership_source_buffer: {
+            get: function() {
+                return this.ownership_source;
+            },
+            set: function(value) {
+                setTimeout(() => {
+                    app.ownership_source = value
+                    app.$nextTick(() => {
+                        refresh_all_graphs()
+                    })
+                }, 50)
+            }
+        },
         is_using_sample() {
             return (this.ownership_source !== "Official FPL API" && !_.isEmpty(this.sample_data));
         },
@@ -179,7 +192,6 @@ var app = new Vue({
         },
         gameweek_games_with_metadata() {
 
-
             if (!this.is_fixture_ready) { return []; }
             if (!this.is_xp_ready) { return []; }
             if (!this.is_ownership_ready) { return []; }
@@ -203,7 +215,6 @@ var app = new Vue({
             }
             let picks_by_id = Object.fromEntries(picks.map(i => [i.element, i]));
             let cloned_fixture = _.cloneDeep(fixture_data);
-
 
             // TODO: Assign expected totals and realized totals to every game
             cloned_fixture.forEach((game) => {
@@ -311,8 +322,6 @@ var app = new Vue({
                 game_info.players = _.groupBy(game_info.player_details, (i) => el_by_id[i.id].team == game_info.team_h ? "home" : "away");
             })
 
-
-
             return cloned_fixture;
         },
         player_counts() {
@@ -327,9 +336,11 @@ var app = new Vue({
             return { your_total, your_played, avg_total, avg_played }
         },
         get_graph_checkpoints() {
-            const gw_info = this.gameweek_info;
-            if (_.isEmpty(gw_info)) { return [] }
+
+            if (this.gw_fixture.length == 0) { return []}
             if (_.isEmpty(this.team_data)) {return []}
+
+            const gw_info = this.gameweek_info;
 
             let cloned_fixture = this.gameweek_games_with_metadata;
 
@@ -2168,29 +2179,31 @@ function refresh_all_graphs() {
 
     if (!app.is_all_ready) { return; }
 
-    $("#waitModal").modal({
+    $("#graphModal").modal({
         backdrop: 'static',
         keyboard: false
     }).modal('show');
     $(".svg-wrapper").empty();
-    app.$nextTick(() => {
-        init_timeline();
-        Promise.all([
-            draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" }),
-            draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" }),
-            draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" }),
-            draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" }),
-            draw_tier_ownership_graph()
-        ]).then((values) => {
-            app.$nextTick(() => {
-                $("#waitModal").modal('hide');
+    setTimeout(() => {
+        app.$nextTick(() => {
+            init_timeline();
+            Promise.all([
+                draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" }),
+                draw_user_graph({ target: "#graph-wrapper-diff", stat: "diff", title: "Difference to Average" }),
+                draw_user_graph({ target: "#graph-wrapper-gain", stat: "gain", title: "Weighted Gain (Owned)" }),
+                draw_user_graph({ target: "#graph-wrapper-loss", stat: "loss", title: "Weighted Loss (Non-owned)" }),
+            ]).then((values) => {
+                app.$nextTick(() => {
+                    $("#graphModal").modal('hide');
+                    draw_tier_ownership_graph()
+                });
+            })
+            .catch((error) => {
+                console.log(error)
             });
-        })
-        .catch((error) => {
-            console.log(error)
-        });
 
-    });
+        })
+    }, 100)
 }
 
 async function app_initialize(refresh_team = false) {
@@ -2219,7 +2232,7 @@ async function app_initialize(refresh_team = false) {
                 $("#updateModal").modal('hide');
                 setTimeout(() => {
                     refresh_all_graphs();
-                }, 50);
+                }, 100);
             })
             
         })
@@ -2244,9 +2257,9 @@ $(document).ready(function() {
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
     });
-    $("#sourceModal").on('hide.bs.modal', (e) => {
-        refresh_all_graphs();
-    });
+    // $("#sourceModal").on('hide.bs.modal', (e) => {
+    //     refresh_all_graphs();
+    // });
     $("#matchReportModal").on('hide.bs.modal', (e) => {
         $("#match_report_all").DataTable().destroy();
         app.modal_selected_game = undefined;

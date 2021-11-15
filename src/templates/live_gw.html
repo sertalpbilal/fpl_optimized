@@ -799,7 +799,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <select class="form-control" v-model="ownership_source" @change="$('#sourceModal').modal('hide');">
+                    <select class="form-control" v-model="ownership_source_buffer" @change="$('#sourceModal').modal('hide');">
                         <option  v-for="i in available_sources">{{ i }}</option>
                     </select>
                 </div>
@@ -863,6 +863,23 @@
         </div>
     </div>
 </div>
+
+<div class="modal" tabindex="-1" role="dialog" id="graphModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Updating plots...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="p-2 wait-modal">
+                    Updating plots. Please wait... <br/>
+                    <img class="mx-auto d-block" src="static/images/loading.svg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal" tabindex="-1" role="dialog" id="waitModal">
     <div class="modal-dialog" role="document">
@@ -1037,7 +1054,15 @@
             </div>
             <div class="modal-body">
                 <div class="p-2 wait-modal">
-                    Loading app. Please wait... <br/>
+                    Fetching all data. Please wait... <br/>
+                    <ul>
+                        <li>Fixture data <span class="success_mark" v-if="!_.isEmpty(gw_fixture)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                        <li>Element data <span class="success_mark" v-if="!_.isEmpty(el_data)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                        <li>Expected value data <span class="success_mark" v-if="!_.isEmpty(xp_data)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                        <li>Realized point data <span class="success_mark" v-if="!_.isEmpty(rp_data)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                        <li>Sample data <span class="success_mark" v-if="!_.isEmpty(sample_data)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                        <li>User data <span class="success_mark" v-if="!_.isEmpty(team_data)">✔</span><span class="wait_mark" v-else>⏳</span></li>
+                    </ul>
                     <img class="mx-auto d-block" src="static/images/loading.svg">
                 </div>
             </div>
