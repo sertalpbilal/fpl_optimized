@@ -2227,8 +2227,7 @@ async function app_initialize(refresh_team = false) {
             load_element_data(),
             load_xp_data(),
             load_rp_data(),
-            load_sample_data(),
-            load_team_data()
+            load_sample_data()
         ]).then((values) => {
             // $(".svg-wrapper").empty();
             load_team_data().then(() => {
