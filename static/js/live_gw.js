@@ -1,3 +1,6 @@
+// non-reactive values
+autosub_stats = {}
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -34,7 +37,7 @@ var app = new Vue({
         show_team_info: false,
         fill_width: false,
         large_graphs: false,
-        autosub_stats: {},
+        // autosub_stats: {},
         marked_dt: undefined,
         show_details: true,
         show_league: false,
@@ -100,8 +103,8 @@ var app = new Vue({
         ownership_data() {
             if (!this.is_using_autosub || !this.is_using_sample) {
                 let own_data = get_ownership_by_type(this.ownership_source, this.el_data, this.sample_data, {});
-                this.autosub_stats['sub'] = [];
-                this.autosub_stats['cap'] = [];
+                autosub_stats['sub'] = [];
+                autosub_stats['cap'] = [];
                 return own_data.data;
             } else {
                 let el_data = _.cloneDeep(this.el_data);
@@ -114,8 +117,8 @@ var app = new Vue({
                     // let autosubs = Object.fromEntries(Object.values(rp_by_id).map(i => [i.id, { autosub: i.autosub, element_type: i.element_type }]))
                 let autosub_dict = Object.fromEntries(autosubs);
                 let own_data = get_ownership_by_type(this.ownership_source, el_data, this.sample_data, autosub_dict);
-                this.autosub_stats['sub'] = own_data.sub_replacement;
-                this.autosub_stats['cap'] = own_data.cap_replacement;
+                autosub_stats['sub'] = own_data.sub_replacement;
+                autosub_stats['cap'] = own_data.cap_replacement;
                 return own_data.data;
             }
         },
@@ -129,7 +132,7 @@ var app = new Vue({
             if (_.isEmpty(this.element_data_combined)) { this.sorted_ownership_cache = []; return [] }
             const all_elements = Object.values(this.element_data_combined)
             let sorted_own = _.orderBy(all_elements, ["ownership", "xp"], ["desc", "desc"])
-            this.sorted_ownership_cache = sorted_own
+            this.sorted_ownership_cache = Object.freeze(sorted_own)
             return 0
         },
         el_by_id() {
@@ -622,7 +625,7 @@ var app = new Vue({
             let el = this.element_data_combined;
             let rp = this.rp_by_id;
             let count = this.current_sample_data.length;
-            let stats = this.autosub_stats.sub;
+            let stats = autosub_stats.sub;
             let top_ones = Object.entries(_.countBy(stats)).sort((a, b) => b[1] - a[1]).slice(0, 15);
             const top_pairs = top_ones.map((s) => {
                 let players = s[0].split(',')
@@ -639,7 +642,7 @@ var app = new Vue({
             let el = this.element_data_combined;
             let rp = this.rp_by_id;
             let count = this.current_sample_data.length;
-            let stats = this.autosub_stats.cap;
+            let stats = autosub_stats.cap;
             let top_ones = Object.entries(_.countBy(stats)).sort((a, b) => b[1] - a[1]).slice(0, 15);
             const top_pairs = top_ones.map((s) => {
                 let players = s[0].split(',')
@@ -677,8 +680,8 @@ var app = new Vue({
             this.modal_selected_game = undefined;
         },
         saveTeamData(data) {
-            this.original_team_data = _.cloneDeep(data);
-            this.team_data = data;
+            this.original_team_data = Object.freeze(_.cloneDeep(data));
+            this.team_data = Object.freeze(data);
             if (this.is_using_autosub) {
                 this.applyAutosubtoTeam()
             }
@@ -728,16 +731,16 @@ var app = new Vue({
             });
         },
         saveTeamInfo(data) {
-            this.team_info = data;
+            this.team_info = Object.freeze(data);
         },
         saveEl(data) {
-            this.el_data = data;
+            this.el_data = Object.freeze(data);
         },
         saveXP(values) {
-            this.xp_data = values;
+            this.xp_data = Object.freeze(values);
         },
         saveRP(values) {
-            this.rp_data = values;
+            this.rp_data = Object.freeze(values);
         },
         saveFixtureData(data) {
 
@@ -765,7 +768,7 @@ var app = new Vue({
                 })
                 game.order = order;
             })
-            this.gw_fixture = data;
+            this.gw_fixture = Object.freeze(data);
 
             let start_dt = data[0].start_dt;
             let end_dt = data[data.length - 1].end_dt;
@@ -779,7 +782,7 @@ var app = new Vue({
         },
         saveSampleData(success, data) {
             if (success) {
-                this.sample_data = data;
+                this.sample_data = Object.freeze(data);
                 let sample_values = Object.keys(data).reverse().map(i => "Sample - " + sample_compact_number(i));
                 this.available_sources = ["Official FPL API"].concat(sample_values);
                 if (this.ownership_source == this.available_sources[0]) {
