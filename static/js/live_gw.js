@@ -1017,8 +1017,9 @@ var app = new Vue({
         },
         selectCaptain(e) {
             let id = e.currentTarget.dataset.id;
-            let current_captain = this.team_data.picks.find(i => i.multiplier > 1);
-            let this_player = this.team_data.picks.find(i => i.element == id);
+            let d = _.cloneDeep(this.team_data)
+            let current_captain = d.picks.find(i => i.multiplier > 1);
+            let this_player = d.picks.find(i => i.element == id);
             if (current_captain !== undefined) {
                 if (current_captain.element == this_player.element) {
                     this_player.multiplier = 5 - this_player.multiplier;
@@ -1032,16 +1033,19 @@ var app = new Vue({
                 this_player.multiplier = 2;
                 this_player.is_captain = true;
             }
+            this.team_data = Object.freeze(d)
         },
         toggleBench(e) {
             let id = e.currentTarget.dataset.id;
-            let this_player = this.team_data.picks.find(i => i.element == id);
+            let d = _.cloneDeep(this.team_data)
+            let this_player = d.picks.find(i => i.element == id);
             if (this_player.multiplier > 0) {
                 this_player.multiplier = 0;
                 this_player.is_captain = false;
             } else {
                 this_player.multiplier = 1;
             }
+            this.team_data = Object.freeze(d)
         },
         tagForTransfer(e) {
             let id = e.currentTarget.dataset.id;
@@ -1077,10 +1081,12 @@ var app = new Vue({
             this.$nextTick(() => {
                 this.target_player = undefined;
             })
-            let current_player = this.team_data.picks.find(i => i.element == this.target_player.id);
+            let d = _.cloneDeep(this.team_data)
+            let current_player = d.picks.find(i => i.element == this.target_player.id);
             if (current_player !== undefined) {
                 current_player.element = parseInt(id);
             }
+            this.team_data = Object.freeze(d)
         },
         applyAutosubtoTeam() {
             if (!this.is_ready) { return; }
