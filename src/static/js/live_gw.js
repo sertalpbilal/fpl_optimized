@@ -45,7 +45,8 @@ var app = new Vue({
         // sortable tables
         sorted_ownership_cache: [],
         sorted_ownership_cache_last_sort: undefined,
-        selected_player: undefined
+        selected_player: undefined,
+        last_gw_data_marker: false
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -1193,13 +1194,29 @@ async function load_sample_data() {
     return get_sample_data(app.season, app.gw.slice(2))
         .then((data) => {
             if (data[0].status == 'rejected') {
-                app.saveSampleData(false, []);
+                app.is_using_autosub = false
+                app.is_using_hits = false
+                get_sample_data(app.season, parseInt(app.gw.slice(2))-1).then((data) => {
+                    if (data[0].status == 'rejected') {
+                        app.saveSampleData(false, []);
+                    }
+                    else {
+                        let sample_data = data[0].value
+                        if (data[1].status != 'rejected') {
+                            sample_data['Prime'] = data[1].value
+                        }
+                        app.last_gw_data_marker = true
+                        app.saveSampleData(true, sample_data);
+                    }
+                })
+                //app.saveSampleData(false, []);
             }
             else {
                 let sample_data = data[0].value
                 if (data[1].status != 'rejected') {
                     sample_data['Prime'] = data[1].value
                 }
+                app.last_gw_data_marker = false
                 app.saveSampleData(true, sample_data);
             }
             

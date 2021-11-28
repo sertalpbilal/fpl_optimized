@@ -24,6 +24,7 @@
                                 <div class="text-center p-0">Ownership Data</div>
                                 <div class="setting-value text-center p-0">
                                     <div class="d-flex flex-row setting-line mb-0 p-0" v-cloak data-toggle="modal" data-target="#sourceModal">
+                                        <span class="mr-1" style="color: salmon;" v-if="last_gw_data_marker && is_using_sample"><b>[Last GW]</b></span>
                                         <span class="dropdown-toggle">{{ ownership_source }} <i class="fas fa-exclamation-triangle" v-if="problem_with_sample_exist"></i></span>
                                     </div>
                                 </div>
