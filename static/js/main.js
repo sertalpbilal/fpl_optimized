@@ -480,7 +480,6 @@ function getSeasonRPData(max_gw=38) {
         }
 
         Promise.allSettled(calls).then((data) => {
-            debugger
             let combined = data.filter(i => i.status == 'fulfilled').map(i => i.value).map(i => [i.gw, i.data])
             let all_rp = Object.fromEntries(combined)
             resolve(all_rp)
