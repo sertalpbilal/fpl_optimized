@@ -436,6 +436,8 @@ var app = new Vue({
             let combined = Object.entries(_.groupBy(all_data, 'gw'))
             for (let gw_entry of combined) {
                 let groups = _.groupBy(gw_entry[1], (entry) => entry.net >0)
+                if (!groups.hasOwnProperty('false')) { groups['false'] = []}
+                if (!groups.hasOwnProperty('true')) { groups['true'] = []}
                 let loss = getSum(groups.false.map(i => i.net))
                 let gain = getSum(groups.true.map(i => i.net))
                 let top_losses = _.orderBy(groups.false, ['net'], ['asc']).slice(0,3)
