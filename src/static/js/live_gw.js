@@ -17,7 +17,7 @@ var app = new Vue({
         team_id: "-1",
         current_team_id: "",
         remember_settings: false,
-        allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_details', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source'],
+        allowed_settings: ['team_id', 'fill_width', 'large_graphs', 'show_details', 'show_team_info', 'is_using_hits', 'is_using_autosub', 'ownership_source', 'no_white_space'],
         team_info: undefined,
         using_last_gw_team: false,
         team_data: undefined,
@@ -46,7 +46,8 @@ var app = new Vue({
         sorted_ownership_cache: [],
         sorted_ownership_cache_last_sort: undefined,
         selected_player: undefined,
-        last_gw_data_marker: false
+        last_gw_data_marker: false,
+        no_white_space: false
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -344,6 +345,9 @@ var app = new Vue({
             if (this.gw_fixture.length == 0) { return []}
             if (_.isEmpty(this.team_data)) {return []}
 
+            let intervals = []
+            let interval_start = undefined
+
             const gw_info = this.gameweek_info;
 
             let cloned_fixture = this.gameweek_games_with_metadata;
@@ -396,9 +400,16 @@ var app = new Vue({
 
                 if (event.type == "start") {
                     target_event.active_events.push(event)
+                    if (interval_start == undefined) {
+                        interval_start = target_event.time
+                    }
                 } else if (event.type == "end") {
                     target_event.active_events = target_event.active_events.filter(i => i.game.id !== event.game.id);
                     target_event.finished_events.push(event);
+                    if (target_event.active_events.length == 0) {
+                        intervals.push([interval_start, target_event.time])
+                        interval_start = undefined
+                    }
                 }
                 let values = this.get_points_for_time(event.type, current_time, target_event.active_events, target_event.finished_events, setoff, now_values);
                 target_event.expected.points = values.xp_total;
@@ -459,7 +470,9 @@ var app = new Vue({
             current_status.discrete_order += 1;
             team_checkpoints.push(_.cloneDeep(current_status));
 
-            return team_checkpoints;
+            console.log("intervals", intervals)
+
+            return {checkpoints: team_checkpoints, intervals: intervals};
 
         },
         selected_game_info() {
@@ -1131,6 +1144,10 @@ var app = new Vue({
         },
         breakpoint() {
             debugger
+        },
+        toggleWhiteSpace() {
+            this.no_white_space = !this.no_white_space
+            refresh_all_graphs()
         }
     },
 })
@@ -1526,6 +1543,7 @@ async function draw_user_graph(options = {}) {
 
         // Min max values
         let data = _.cloneDeep(app.get_graph_checkpoints);
+        data = data.checkpoints;
         if (data.length == 0) { resolve("No data"); }
 
         let x_high = data[data.length - 1].time;
@@ -1554,6 +1572,30 @@ async function draw_user_graph(options = {}) {
 
         // Axis-x
         var x = d3.scaleLinear().domain([x_low, x_high]).range([0, width]);
+
+        // no_white_space
+        if (app.no_white_space == true) {
+            let intervals = _.cloneDeep(app.get_graph_checkpoints.intervals)
+            let sum_intervals = getSum(intervals.map(i => i[1]-i[0]))
+            let c = 0
+            debugger
+            intervals.forEach((i) => {
+                i.start = c
+                i.finish = c + i[1]-i[0]
+                i.start_ratio = i.start/sum_intervals
+                i.finish_ratio = i.finish/sum_intervals
+                c = i.finish
+            })
+            let ratios = intervals.map(i => [i.start_ratio, i.finish_ratio]).flat()
+            let domain = intervals.map(i => [i[0], i[1]]).flat()
+            let range = ratios.map(i => width * i)
+            // let first = intervals[0][0]
+            x = d3.scaleLinear().domain(domain).range(range)
+            x_low = intervals[0][0]
+            x_high = intervals[intervals.length-1][1]
+            data = data.filter(i => i.reason != 'init' && i.reason != 'final');
+        }
+        // var x = d3.scaleLinear().domain([x_low, x_high]).range([0, width]);
         svg.append('g')
             // .attr('transform', 'translate(0,' + height + ')')
             .call(
@@ -1994,7 +2036,7 @@ function reset_graph_values() {
 
 function update_graph_hover_values(x_raw, gid, reset = false) {
 
-    let raw_data = app.get_graph_checkpoints;
+    let raw_data = app.get_graph_checkpoints.checkpoints;
     let x_targets = raw_data.map(i => i.time);
 
     let id_left = d3.bisect(x_targets, x_raw) - 1;

@@ -63,10 +63,12 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleWhiteSpace">Toggle Compact Mode {{ no_white_space ? ": On" : ": Off" }}</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                                 <div class="dropdown-divider"></div>
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember">{{ remember_settings ? "Forget Settings" : "Remember My Settings" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" v-if="remember_settings" @click="toggleRemember(false)">Forget Settings</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember(true)">Remember My Settings</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showSettings').modal('show')" v-if="remember_settings">Show Saved Settings</button>
                                             </div>
                                         </div>
