@@ -175,10 +175,12 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleWhiteSpace">Toggle Compact Mode {{ no_white_space ? ": On" : ": Off" }}</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#autosubModal').modal('show')" :disabled="!is_using_sample || !is_using_autosub">Show Autosub Stats</button>
                                                 <div class="dropdown-divider"></div>
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember">{{ remember_settings ? "Forget Settings" : "Remember My Settings" }}</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" v-if="remember_settings" @click="toggleRemember(false)">Forget Settings</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleRemember(true)">Remember My Settings</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showSettings').modal('show')" v-if="remember_settings">Show Saved Settings</button>
                                             </div>
                                         </div>
@@ -1670,7 +1672,7 @@
     let gw = "GW14";
     let next_gw = "GW15";
     let date = "2021-11-30";
-    let lastupdate = "2021-12-01T16:26:38.963437+00:00";
+    let lastupdate = "2021-12-01T21:00:29.466756+00:00";
     let listdates = [
         "2021-22 / GW15 / 2021-12-01 ", 
         "2021-22 / GW14 / 2021-11-30 ", 
@@ -1693,11 +1695,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20211201162638"></script>
+<script src="/static/js/main.js?ts=20211201210029"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20211201162638"></script>
+<script src="/static/js/sampling_utils.js?ts=20211201210029"></script>
 
-<script src="/static/js/live_gw.js?ts=20211201162638"></script>
+<script src="/static/js/live_gw.js?ts=20211201210029"></script>
 
 
 <script>
@@ -1707,6 +1709,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-12-01T16:26:38.963437+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2021-12-01T21:00:29.466756+00:00</div>
 
 </html> 
