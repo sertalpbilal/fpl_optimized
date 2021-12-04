@@ -117,12 +117,26 @@
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">
-                    <span><i class="fas fa-dice-d20 mr-1"></i> Simulated Scenarios: </span>
-                    <span class="d-inline-block">
-                        <select class="form-control live-select" v-model="active_sc" @change="update_sim_values()">
-                            <option v-for="(k, i) in sc_files" :value="i">{{ k[0] }}</option>
-                        </select>
-                    </span>
+                    <div class="mb-2"><i class="fas fa-dice-d20 mr-1"></i> Simulated Scenarios</div>
+                    <div>
+                        <span class="d-inline-block">
+                            <select class="form-control live-select" v-model="active_sc" @change="update_sim_values()">
+                                <option v-for="(k, i) in sc_files" :value="i">{{ k[0] }}</option>
+                            </select>
+                        </span>
+                        with
+                        <span class="d-inline-block">
+                            <select class="form-control live-select" v-model="active_sample" @change="update_field_values()">
+                                <option v-for="(k, i) in samples" :value="i">{{ k }}</option>
+                            </select>
+                        </span>
+                        <span class="d-inline-block text-small">
+                            <div class="custom-control custom-switch ml-1 mr-1">
+                                <input id="eo-toggle" type="checkbox" data-toggle="toggle" v-model="use_eo" class="custom-control-input mr-1">
+                                <label for="eo-toggle" class="custom-control-label">Use EO</label>
+                            </div>
+                        </span>
+                    </div>
                     <!-- GW{{ current_gw }} -->
                 </h5>
                 <div class="scenario_detail">
@@ -807,7 +821,7 @@
 </main>
 
 <script>
-    let sc_files = [["GW15", "data/2021-22/GW15/2021-12-03/output/scenarios.csv"], ["GW9", "data/2021-22/GW9/2021-10-22/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"], ["GW14", "data/2021-22/GW14/2021-11-30/output/scenarios.csv"], ["GW13", "data/2021-22/GW13/2021-11-27/output/scenarios.csv"], ["GW12", "data/2021-22/GW12/2021-11-20/output/scenarios.csv"], ["GW11", "data/2021-22/GW11/2021-11-05/output/scenarios.csv"], ["GW10", "data/2021-22/GW10/2021-10-29/output/scenarios.csv"]]
+    let sc_files = [["GW15", "data/2021-22/GW15/2021-12-03/output/scenarios.csv"], ["GW14", "data/2021-22/GW14/2021-11-30/output/scenarios.csv"], ["GW13", "data/2021-22/GW13/2021-11-27/output/scenarios.csv"], ["GW12", "data/2021-22/GW12/2021-11-20/output/scenarios.csv"], ["GW11", "data/2021-22/GW11/2021-11-05/output/scenarios.csv"], ["GW10", "data/2021-22/GW10/2021-10-29/output/scenarios.csv"], ["GW9", "data/2021-22/GW9/2021-10-22/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"]]
 </script>
 
  </div>
@@ -861,9 +875,9 @@
 
 <script>
     let repo_name = ""
-    let season = "";
-    let gw = "";
-    let next_gw = "";
+    let season = "2021-22";
+    let gw = "GW15";
+    let next_gw = "GW15";
     let date = "";
     let lastupdate = "";
     let listdates = [
@@ -873,9 +887,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20211203221732"></script>
+<script src="/static/js/main.js?ts=20211204022943"></script>
 
-<script src="/static/js/scenarios.js?ts=20211203221732"></script>
+<script src="/static/js/sampling_utils.js?ts=20211204022943"></script>
+
+<script src="/static/js/scenarios.js?ts=20211204022943"></script>
 
 
 <script>
