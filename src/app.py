@@ -422,12 +422,15 @@ def scenario_page():
             file_dict[f[2]] = "/".join(f)
 
     files = list(file_dict.items())
+    print(files)
+    files = sorted(files, key=lambda k: int(k[0].split('GW')[1]))
+    files.reverse()
     # '/'.join
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Scenarios", sc_files=files)
+        return render_template(page_name, repo_name="/..", ts = timestamp, season=files[0][1].split('/')[1], gw=files[0][0], page_name="Scenarios", sc_files=files)
     else:
-        return render_template(page_name, repo_name="", ts = timestamp, page_name="Scenarios", sc_files=files)
+        return render_template(page_name, repo_name="", ts = timestamp, season=files[0][1].split('/')[1], gw=files[0][0], page_name="Scenarios", sc_files=files)
 
 def list_all_snapshots():
     pass

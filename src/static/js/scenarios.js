@@ -17,7 +17,12 @@ var app = new Vue({
         swap_out: undefined,
         trigger: 0,
         active_rep: undefined,
-        display_paste: false
+        display_paste: false,
+        active_sample: 0,
+        samples: ["FPL Data"],
+        sample_gw: undefined,
+        sample_data: [],
+        use_eo: false
     },
     computed: {
         current_gw() {
@@ -76,6 +81,12 @@ var app = new Vue({
             })
             return picks
         },
+        ownership_rates() {
+            if (_.isEmpty(this.elements)) { return {} }
+            let sample_selection = this.samples[this.active_sample]
+            let own_data = get_ownership_by_type(reverse_sample_name(sample_selection), this.elements, this.sample_data, {})
+            return Object.freeze(own_data.data)
+        },
         grouped_scenarios() {
             if (_.isEmpty(this.sc_details)) { return {} }
             return _(this.sc_details).groupBy('sim').map((value,key) => {return {'sim': key, 'values': Object.fromEntries(value.map(i => [i.ID, i]))}}).value()
@@ -85,11 +96,14 @@ var app = new Vue({
             if (_.isEmpty(this.grouped_scenarios)) { return [] }
             let grouped_scenarios = this.grouped_scenarios
             let elements = this.elements
+            let ownership = this.ownership_rates
+            let use_eo = this.use_eo
+            ownership = Object.fromEntries(ownership.map(i => [i.id, use_eo ? (i.effective_ownership || i.selected_by_percent) : i.selected_by_percent]))
             grouped_scenarios.forEach((s,i) => {
                 let field = 0
                 elements.forEach(p => {
                     let player_score = (s.values[p.id] && s.values[p.id].Points) || 0
-                    field += parseInt(player_score) * (parseFloat(p.selected_by_percent)/100)
+                    field += parseInt(player_score) * (parseFloat(ownership[p.id])/100)
                 })
                 s.total_field = field
             })
@@ -308,6 +322,11 @@ var app = new Vue({
                 console.error(error)
                 app.loading = false
             })
+        },
+        saveSampleData(gw, data) {
+            this.sample_gw = gw
+            this.sample_data = Object.freeze(data)
+            this.samples = ["FPL Data"].concat(Object.keys(app.sample_data).map(i => sample_compact_number(i)))
         },
         submitTeam(e) {
             if (e.keyCode === 13) {
@@ -539,16 +558,28 @@ var app = new Vue({
             html2canvas(document.querySelector(query), {allowTaint: true, logging: true, taintTest: false}).then(function(canvas) {
                 saveAs(canvas.toDataURL(), filename);
             });
+        },
+        update_field_values() {
+
         }
     }
 })
 
 function update_sim_values() {
     const order = app.active_sc
-    read_scenario(order)
-    if (app.team_id != '') {
-        app.fetch_team_picks()
-    }
+    gw = app.sc_files[order][0]
+    tasks = [
+        read_scenario(order),
+        get_latest_sample_data(season, gw)
+    ]
+    Promise.allSettled(tasks).then(() => {
+        if (app.team_id != '') {
+            app.fetch_team_picks()
+        }
+    })
+    .catch((error) => {
+        console.error("An error has occurred: " + error);
+    });
 }
 
 
@@ -801,13 +832,22 @@ function draw_histogram() {
 }
 
 
+
+
+
 $(document).ready(() => {
-    Promise.all([
+
+    calls = [
         read_scenario(),
         get_fpl_main_data().then(d => {
             app.main_data = d
+        }),
+        get_latest_sample_data(season, gw).then(sample => {
+            if (sample != undefined) { app.saveSampleData(sample.gw, sample.data) }
         })
-    ]).then((values) => {
+    ]
+    
+    Promise.allSettled(calls).then(() => {
         app.ready = true
     })
     .catch((error) => {

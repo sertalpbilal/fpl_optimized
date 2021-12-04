@@ -58,7 +58,6 @@ var app = new Vue({
                         e.trend = e.selected_by_percent - e.last_gw_final;
                         e.future_gw_final = e.selected_by_percent;
                     }
-                    
                 }
                 if (e.id in capt_rates) {
                     e.captaincy = parseFloat(capt_rates[e.id]);

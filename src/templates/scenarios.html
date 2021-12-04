@@ -5,12 +5,26 @@
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">
-                    <span><i class="fas fa-dice-d20 mr-1"></i> Simulated Scenarios: </span>
-                    <span class="d-inline-block">
-                        <select class="form-control live-select" v-model="active_sc" @change="update_sim_values()">
-                            <option v-for="(k, i) in sc_files" :value="i">{{ k[0] }}</option>
-                        </select>
-                    </span>
+                    <div class="mb-2"><i class="fas fa-dice-d20 mr-1"></i> Simulated Scenarios</div>
+                    <div>
+                        <span class="d-inline-block">
+                            <select class="form-control live-select" v-model="active_sc" @change="update_sim_values()">
+                                <option v-for="(k, i) in sc_files" :value="i">{{ k[0] }}</option>
+                            </select>
+                        </span>
+                        with
+                        <span class="d-inline-block">
+                            <select class="form-control live-select" v-model="active_sample" @change="update_field_values()">
+                                <option v-for="(k, i) in samples" :value="i">{{ k }}</option>
+                            </select>
+                        </span>
+                        <span class="d-inline-block text-small">
+                            <div class="custom-control custom-switch ml-1 mr-1">
+                                <input id="eo-toggle" type="checkbox" data-toggle="toggle" v-model="use_eo" class="custom-control-input mr-1">
+                                <label for="eo-toggle" class="custom-control-label">Use EO</label>
+                            </div>
+                        </span>
+                    </div>
                     <!-- GW{{ current_gw }} -->
                 </h5>
                 <div class="scenario_detail">
@@ -698,4 +712,4 @@
     let sc_files = ** sc_files | tojson **
 </script>
 
-"% with scripts=["main", "scenarios"] %" "% include 'footer.html' %" "% endwith %"
+"% with scripts=["main", "sampling_utils", "scenarios"] %" "% include 'footer.html' %" "% endwith %"

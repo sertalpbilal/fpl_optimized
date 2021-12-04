@@ -26,17 +26,25 @@ function reverse_sample_name(value) {
     switch (value) {
         case "Sample - Overall":
             return "Overall";
+        case "FPL Data":
+            return "Official FPL API"
         case "Sample - Top 100":
+        case "Top 100":
             return 100;
         case "Sample - Top 1K":
+        case "Top 1K":
             return 1000;
         case "Sample - Top 10K":
+        case "Top 10K":
             return 10000;
         case "Sample - Top 100K":
+        case "Top 100K":
             return 100000;
         case "Sample - Top 1M":
+        case "Top 1M":
             return 1000000;
         case "Sample - Prime":
+        case "Prime":
             return "Prime";
         default:
             return value;
@@ -232,4 +240,32 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
 
     });
     return { data: el_copy, sub_replacement: sub_replacements, cap_replacement: cap_replacements };
+}
+
+async function get_latest_sample_data(season, gw) {
+    return new Promise((resolve, reject) => {
+        get_sample_data(season, gw.slice(2)).then(data => {
+            if (data[0].status == 'rejected') {
+                get_sample_data(season, parseInt(gw.slice(2))-1).then((data) => {
+                    if (data[0].status == 'rejected') {
+                        reject("no data")
+                    }
+                    else {
+                        let sample_data = data[0].value
+                        if (data[1].status != 'rejected') {
+                            sample_data['Prime'] = data[1].value
+                        }
+                        resolve({gw: parseInt(gw.slice(2))-1, data: sample_data})
+                    }
+                })
+            }
+            else {
+                let sample_data = data[0].value
+                if (data[1].status != 'rejected') {
+                    sample_data['Prime'] = data[1].value
+                }
+                resolve({gw: gw.slice(2), data: sample_data})
+            }
+        })
+    })
 }
