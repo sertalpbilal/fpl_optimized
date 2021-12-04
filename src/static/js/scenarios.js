@@ -137,7 +137,6 @@ var app = new Vue({
                     if (p.element in s.values && p.multiplier > 0) {
                         score += parseInt(player_score) * p.multiplier
                         p.played = true
-                        p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
                     }
                     else {
                         if (p.multiplier > 0) {
@@ -145,9 +144,8 @@ var app = new Vue({
                             p.autosub_out = true
                             p.multiplier = 0
                         }
-                        p.eff_points = (-ownership[p.element]/100 * parseInt(player_score)).toFixed(2)
                     }
-                    
+                    p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
                 })
                 s.lineup_score = score + 0
                 // Autosub
@@ -163,6 +161,7 @@ var app = new Vue({
                             match.autosub_in = true
                             let player_score = s.values[match.element].Points
                             score += parseInt(player_score) * match.multiplier
+                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
                         }
                     }
                     else {
@@ -174,6 +173,7 @@ var app = new Vue({
                             match.autosub_in = true
                             let player_score = s.values[match.element].Points
                             score += parseInt(player_score) * match.multiplier
+                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
                         }
                     }
                 })
