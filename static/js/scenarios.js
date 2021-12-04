@@ -82,10 +82,14 @@ var app = new Vue({
             return picks
         },
         ownership_rates() {
-            if (_.isEmpty(this.elements)) { return {} }
+            if (_.isEmpty(this.elements)) { return [] }
             let sample_selection = this.samples[this.active_sample]
             let own_data = get_ownership_by_type(reverse_sample_name(sample_selection), this.elements, this.sample_data, {})
             return Object.freeze(own_data.data)
+        },
+        ownership_rate_dict() {
+            let or = this.ownership_rates
+            return Object.fromEntries(or.map(i => [i.id, this.use_eo ? (i.effective_ownership || i.selected_by_percent) : i.selected_by_percent]))
         },
         grouped_scenarios() {
             if (_.isEmpty(this.sc_details)) { return {} }
@@ -116,6 +120,8 @@ var app = new Vue({
             if (_.isEmpty(this.team_picks)) { return {} }
             let picks = this.team_picks
             let grouped_scenarios = this.grouped_scenario_with_field
+            let ownership = this.ownership_rate_dict
+            let cur_pick = this.current_rep_dict
             let position_bounds = {
                 1: {'min': 1, 'max': 1},
                 2: {'min': 3, 'max': 5},
@@ -124,12 +130,14 @@ var app = new Vue({
             }
             grouped_scenarios.forEach((s,i) => {
                 let sc_picks = picks.map(i => {return {...i}})
+                
                 let score = 0
                 sc_picks.forEach(p => {
+                    let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
                     if (p.element in s.values && p.multiplier > 0) {
-                        let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
                         score += parseInt(player_score) * p.multiplier
                         p.played = true
+                        p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
                     }
                     else {
                         if (p.multiplier > 0) {
@@ -137,6 +145,7 @@ var app = new Vue({
                             p.autosub_out = true
                             p.multiplier = 0
                         }
+                        p.eff_points = (-ownership[p.element]/100 * parseInt(player_score)).toFixed(2)
                     }
                     
                 })
@@ -260,9 +269,13 @@ var app = new Vue({
             if (_.isEmpty(this.grouped_scenarios)) { return [] }
             if (this.active_rep == undefined) { return [] }
             let el_dict = this.elements_dict
+            let my_players = this.current_rep_team
+            let ownership = this.ownership_rate_dict
             let players = _.cloneDeep(Object.values(this.current_rep_dict))
             players.forEach(p => {
                 p.data = el_dict[parseInt(p.ID)]
+                let match = my_players.find(i => i.element == p.ID)
+                p.eff_points = (p.Points * ((match == undefined ? 0 : match.multiplier) - ownership[p.ID]/100)).toFixed(2)
             })
             players = players.filter(i => i.data !== undefined)
             return players
