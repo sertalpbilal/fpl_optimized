@@ -545,7 +545,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-center mt-2">
                         <div class="col-12 d-flex justify-content-center">
                             <div class="mb-2">
                                 <div class="form-group">
@@ -601,6 +601,7 @@
                                             <th>£</th>
                                             <th>Own%</th>
                                             <th>Points</th>
+                                            <th>Gain/Loss</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -610,8 +611,9 @@
                                             <td>{{ p.data.web_name }}</td>
                                             <td>{{ teams_ordered[p.data.team-1].short }}</td>
                                             <td>{{ p.data.now_cost / 10 }}</td>
-                                            <td>{{ p.data.selected_by_percent }}%</td>
+                                            <td>{{ parseFloat(ownership_rate_dict[p.ID] || p.data.selected_by_percent).toFixed(1) }}%</td>
                                             <td>{{ p.Points }}</td>
+                                            <td>{{ p.eff_points }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -630,6 +632,7 @@
                                             <th>£</th>
                                             <th>Own%</th>
                                             <th>Points</th>
+                                            <th>Gain/Loss</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -641,6 +644,7 @@
                                             <td>{{ p.data.now_cost / 10 }}</td>
                                             <td>{{ p.data.selected_by_percent }}%</td>
                                             <td>{{ ( current_rep_dict[p.element] && current_rep_dict[p.element].Points) || 0 }}</td>
+                                            <td>{{ p.eff_points }}</td>
                                         </tr>
                                         <tr>
                                             <!-- <td></td> -->
@@ -650,6 +654,7 @@
                                             <td></td>
                                             <td></td>
                                             <td>{{ current_rep_values.lineup_score }}</td>
+                                            <td></td>
                                         </tr>
                                         <tr>
                                             <!-- <td></td> -->
@@ -659,6 +664,7 @@
                                             <td></td>
                                             <td></td>
                                             <td>{{ current_rep_values.autosub_score }}</td>
+                                            <td></td>
                                         </tr>
                                         <tr>
                                             <!-- <td></td> -->
@@ -668,6 +674,7 @@
                                             <td></td>
                                             <td></td>
                                             <td>{{ current_rep_values.total_score }}</td>
+                                            <td></td>
                                         </tr>
                                     </tbody>
                                 </table>
