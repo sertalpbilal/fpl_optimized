@@ -341,7 +341,6 @@ var app = new Vue({
                 g.home_cs = g.entries.away.filter(i => i == 0).length / g.entries.away.length
                 g.away_cs = g.entries.home.filter(i => i == 0).length / g.entries.home.length
             }
-            debugger
             return game_details
         }
     },
@@ -639,7 +638,7 @@ function read_scenario(order=0) {
     return read_local_file(file).then(d => {
         app.active_sc = order
         app.sc_details = $.csv.toObjects(d)
-        let details_file = file.replace("/scenarios.csv", "/scenario_details.json")
+        let details_file = file.replace("/scenarios.csv", "/scenario_details.json?ts="+ts)
         read_local_file(details_file).then(e => {
             app.sc_game_details = e
         }).catch(e => {
