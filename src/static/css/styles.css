@@ -1482,3 +1482,33 @@ th.vertical-name {
 .success_mark {
     color: darkolivegreen;
 }
+
+.event-title {
+    color:#00e5d9;
+}
+
+.event-score {
+    color: #f88a8a;
+}
+
+.game-title {
+    background-color: #303030;
+}
+
+.game-body {
+    background-color: #3030305b;
+}
+
+.game-footer {
+    background-color: rgba(0, 255, 149, 0.123);
+}
+
+.top-sign {
+    font-size:x-small;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}

@@ -551,12 +551,13 @@
                                 <div class="form-group">
                                     <label for="sc_select">Choose a simulation run</label>
                                     <select class="form-control" id="sc_select" v-model="active_rep_comp">
+                                        <option :value="undefined"></option>
                                         <option v-for="(v,i) in grouped_scenarios" :value="i">{{ v.sim }}</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 row">
+                        <div class="col-12 row mt-2">
                             <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
@@ -680,6 +681,114 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white" style="background-color: #474747;" id="game_details_pane">
+                <h6 class="card-header border-complement text-center scenario_title">Simulation Game Details</h6>
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="col-12 d-flex justify-content-center">
+                        <div class="mb-2">
+                            <div class="form-group">
+                                <label for="sc_select">Choose a simulation run</label>
+                                <select class="form-control" id="sc_select" v-model="active_rep_comp">
+                                    <option :value="undefined">Average</option>
+                                    <option v-for="(v,i) in grouped_scenarios" :value="i">{{ v.sim }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" v-if="sc_game_details != undefined">
+                        <div class="col-12 col-lg-8" v-if="active_rep_comp != undefined" v-for="play in [sc_game_details[active_rep_comp]]">
+                            <div v-for="g in play['details']">
+                                <div class="game-box mt-3">
+                                    <div class="game-title">
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">{{ g.home.name }} <b class="event-score ml-2" >{{ g.score.home }}</b></div>
+                                            <div class="col-2 col-lg-1 ">-</div>
+                                            <div class="col text-left"><b class="event-score mr-2">{{ g.score.away }}</b> {{ g.away.name }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="game-body">
+                                        <div class="row justify-content-center" v-for="event in g.events">
+                                            <div class="col text-right">
+                                                <div v-if="event.side == 'home'">
+                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal].web_name }}</span>
+                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? elements_dict[event.assist].web_name : "-None-" }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-2 col-lg-1 ">{{ event.minute }}'</div>
+                                            <div class="col text-left">
+                                                <div v-if="event.side == 'away'">
+                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal].web_name }}</span>
+                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? elements_dict[event.assist].web_name : "-None-" }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="game-footer">
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">
+                                                <span class="no-wrap d-inline-block mr-1" v-for="p in get_top_three(g.points.home)">
+                                                    {{ p[0].web_name }} ({{ p[1] }})
+                                                </span>
+                                            </div>
+                                            <div class="col-2 col-lg-1 top-sign">Top 3</div>
+                                            <div class="col text-left">
+                                                <span class="no-wrap d-inline-block mr-1" v-for="p in get_top_three(g.points.away)">
+                                                    {{ p[0].web_name }} ({{ p[1] }})
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-8" v-else>
+                            <div v-for="g in sc_game_averages">
+                                <div class="game-box mt-3">
+                                    <div class="game-title">
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">{{ g.home.name }} <b class="event-score ml-2" >{{ g.home_avg }}</b></div>
+                                            <div class="col-1">-</div>
+                                            <div class="col text-left"><b class="event-score mr-2">{{ g.away_avg }}</b> {{ g.away.name }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="game-body">
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">Home Win</div>
+                                            <div class="col-3 col-lg-2">Tie</div>
+                                            <div class="col text-left">Away Win</div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">{{ (g.home_win_avg * 100).toFixed(0) }}%</div>
+                                            <div class="col-3 col-lg-2">{{ (g.tie_avg * 100).toFixed(0) }}%</div>
+                                            <div class="col text-left">{{ (g.away_win_avg * 100).toFixed(0) }}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="game-footer">
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">Home Clean Sheet</div>
+                                            <div class="col-3 col-lg-2 top-sign"></div>
+                                            <div class="col text-left">Away Clean Sheet</div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <div class="col text-right">{{ (g.home_cs * 100).toFixed(0) }}%</div>
+                                            <div class="col-3 col-lg-2 top-sign"></div>
+                                            <div class="col text-left">{{ (g.away_cs * 100).toFixed(0) }}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center" v-else>
+                        <span>- No scenario details available -</span>
                     </div>
                 </div>
             </div>
