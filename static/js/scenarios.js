@@ -8,6 +8,7 @@ var app = new Vue({
         sc_files: sc_files,
         active_sc: 0,
         sc_details: undefined,
+        sc_game_details: undefined,
         main_data: undefined,
         team_data: undefined,
         // lineup: [],
@@ -310,6 +311,38 @@ var app = new Vue({
                     table.cells("td").invalidate().draw();
                 })
             }
+        },
+        sc_game_averages() {
+            let sc = this.sc_game_details
+            if (sc == undefined) { return []}
+
+            let game_details = []
+            for (let scenario of this.sc_game_details) {
+                for (let game of scenario.details) {
+                    let key = game['home'].code + ',' + game['away'].code
+                    let match = game_details.find(i => i.key == key)
+                    if (match == undefined) {
+                        match = {'key': key, 'home': game['home'], 'away': game['away'], entries: {'home': [], 'away': []}}
+                        game_details.push(match)
+                    }
+                    match.entries.home.push(game.score.home)
+                    match.entries.away.push(game.score.away)
+                }
+            }
+            for (let g of game_details) {
+                g.home_avg = _.sum(g.entries.home) / (g.entries.home.length)
+                g.away_avg = _.sum(g.entries.away) / (g.entries.away.length)
+                g.home_win = _.range(g.entries.home.length).map(i => g.entries.home[i] > g.entries.away[i] ? 1 : 0)
+                g.tie = _.range(g.entries.home.length).map(i => g.entries.home[i] == g.entries.away[i] ? 1 : 0)
+                g.away_win = _.range(g.entries.home.length).map(i => g.entries.home[i] < g.entries.away[i] ? 1 : 0)
+                g.home_win_avg = _.sum(g.home_win) / g.entries.home.length
+                g.away_win_avg = _.sum(g.away_win) / g.entries.away.length
+                g.tie_avg = _.sum(g.tie) / g.entries.home.length
+                g.home_cs = g.entries.away.filter(i => i == 0).length / g.entries.away.length
+                g.away_cs = g.entries.home.filter(i => i == 0).length / g.entries.home.length
+            }
+            debugger
+            return game_details
         }
     },
     methods: {
@@ -578,6 +611,10 @@ var app = new Vue({
     }
 })
 
+function get_top_three(v) {
+    return Object.keys(v).map(i => [app.elements_dict[i], v[i]]).sort((a,b) => b[1]-a[1]).slice(0,3)
+}
+
 function update_sim_values() {
     const order = app.active_sc
     gw = app.sc_files[order][0]
@@ -595,7 +632,6 @@ function update_sim_values() {
     });
 }
 
-
 function read_scenario(order=0) {
     // 0: gw name
     // 1: file location
@@ -603,6 +639,13 @@ function read_scenario(order=0) {
     return read_local_file(file).then(d => {
         app.active_sc = order
         app.sc_details = $.csv.toObjects(d)
+        let details_file = file.replace("/scenarios.csv", "/scenario_details.json")
+        read_local_file(details_file).then(e => {
+            app.sc_game_details = e
+        }).catch(e => {
+            console.log("No details")
+            app.sc_game_details = undefined
+        })
     })
 }
 
@@ -629,8 +672,8 @@ function draw_histogram() {
     //     info_size = '4pt'
     }
 
-    font_size = '5pt'
-    title_size = '6pt'
+    font_size = '4.5pt'
+    title_size = '4.5pt'
     info_size = '3.8pt'
 
     jQuery("#histogram").empty()
