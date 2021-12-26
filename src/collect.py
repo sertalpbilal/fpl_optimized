@@ -384,6 +384,7 @@ def get_team_picks_from_rank(ranks, gw):
 
         async with aiohttp.ClientSession() as session:
             team_ids = await get_ids(session, ranks)
+            team_ids = [i for i in team_ids if i is not None]
             return team_ids
 
     async def get_ids(session, ranks):
@@ -406,6 +407,7 @@ def get_team_picks_from_rank(ranks, gw):
 
         for url_next, order_next in zip(url_chunks, order_chunks):
             tasks = [get_team_id_from_standings(session, url, order) for (url,order) in zip(url_next, order_next)]
+            tasks = [i for i in tasks if i is not None]
             id_data.append(await asyncio.gather(*tasks))
             time.sleep(wait_length)
         return id_data
@@ -415,7 +417,10 @@ def get_team_picks_from_rank(ranks, gw):
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 page_data = await response.json()
-                tid = page_data['standings']['results'][order]['entry']
+                try:
+                    tid = page_data['standings']['results'][order]['entry']
+                except:
+                    tid = None
                 return tid
             else:
                 print(f"Response {response.status}")
