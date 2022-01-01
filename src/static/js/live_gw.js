@@ -368,7 +368,9 @@ var app = new Vue({
             }
             if (this.is_using_hits && this.is_using_sample) {
                 let sample_d = this.current_sample_data;
-                initial_avg = -(getSum(sample_d.map(i => i.data.entry_history.event_transfers_cost)) / sample_d.length);
+                let vals = sample_d.map(i => i.data.entry_history.event_transfers_cost)
+                vals = vals.map(i => i > 60 ? 0 : i)
+                initial_avg = -(getSum(vals) / sample_d.length);
             }
             let setoff = { 'team': initial_team, 'avg': initial_avg }
             let current_status = {
