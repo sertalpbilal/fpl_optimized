@@ -1264,7 +1264,7 @@ function load_gw() {
 function call_gw_stats(gw_no) {
     $.ajax({
         type: "GET",
-        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/event/${gw_no}/live/`,
+        url: `https://cors.fploptimized.com/fantasy.premierleague.com/api/event/${gw_no}/live/`,
         contentType: 'text/plain',
         dataType: 'text',
         headers: {
@@ -1292,7 +1292,7 @@ function call_gw_stats(gw_no) {
 
     $.ajax({
         type: "GET",
-        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/`,
+        url: `https://cors.fploptimized.com/fantasy.premierleague.com/api/fixtures/`,
         contentType: 'text/plain',
         dataType: 'text',
         headers: {
@@ -1330,7 +1330,7 @@ function load_team() {
     }).modal('show');
     $.ajax({
         type: "GET",
-        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
+        url: `https://cors.fploptimized.com/fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
         contentType: 'text/plain',
         dataType: 'text',
         // responseType: 'application/json',
@@ -1355,7 +1355,7 @@ function load_team() {
                 gw = "" + (parseInt(gw) - 1);
                 $.ajax({
                     type: "GET",
-                    url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
+                    url: `https://cors.fploptimized.com/fantasy.premierleague.com/api/entry/${app.team_id}/event/${gw}/picks/`,
                     contentType: 'text/plain',
                     dataType: 'text',
                     // responseType: 'application/json',

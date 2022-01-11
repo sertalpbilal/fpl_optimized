@@ -543,13 +543,13 @@ def get_team_season_review(team, debug=False):
     options.add_argument('--log-level=3')
     capa = DesiredCapabilities.CHROME
     capa["pageLoadStrategy"] = "none"
-    if platform == "win32":
+    if platform.system() == "Windows":
         options.add_experimental_option("prefs", {
             "download.default_directory": r"C:\temp",
             "download.prompt_for_download": False,
         })
         chrome = webdriver.Chrome(executable_path=env['win_driver'], options=options, desired_capabilities=capa)
-    elif platform == "linux":
+    elif platform.system() == "Linux":
         options.add_argument('--disable-dev-shm-usage')
         options.add_experimental_option("prefs", {
             "download.default_directory": "/tmp",
@@ -704,8 +704,8 @@ if __name__ == "__main__":
     #     sample_fpl_teams(gw)
     #     time.sleep(10)
 
-    input_folder, output_folder, season_folder = create_folders()
-    cache_effective_ownership(season_folder)
+    # input_folder, output_folder, season_folder = create_folders()
+    # cache_effective_ownership(season_folder)
 
     # read_top_managers(1)
 
@@ -713,5 +713,8 @@ if __name__ == "__main__":
     #     sample_fpl_teams(i)
 
     # get_team_picks_from_rank([1,10,50,100], 11)
+
+    tv = get_team_season_review({'twitter': 'sertalpbilal', 'id': 7331}, True)
+    print(tv)
 
     pass
