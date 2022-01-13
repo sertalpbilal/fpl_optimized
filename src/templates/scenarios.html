@@ -239,11 +239,12 @@
                                                         <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
                                                             <tspan
                                                                 class="jersey-player-name"
-                                                                y="3" x="9" style="font-size: 2.2pt;">{{ player.data.web_name }}</tspan>
+                                                                y="3" x="9.4" style="font-size: 2.2pt;">{{ player.data.web_name }}</tspan>
                                                         </text>
                                                         <text y="7" x="9" class="jersey-regular-text" 
                                                             xml:space="preserve">
-                                                            <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan>
+                                                            <!-- <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan> -->
+                                                            <tspan class="jersey-team-name" y="6.5" x="9.4" style="font-size: 2pt;" >{{ fixture_dict[player.data.team].str }}</tspan>
                                                         </text>
                                                     </g>
                                                 </g>
@@ -718,15 +719,15 @@
                                         <div class="row justify-content-center" v-for="event in g.events">
                                             <div class="col text-right">
                                                 <div v-if="event.side == 'home'">
-                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal].web_name }}</span>
-                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? elements_dict[event.assist].web_name : "-None-" }}</span>
+                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal] ? elements_dict[event.goal].web_name : '-' }}</span>
+                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? (elements_dict[event.assist] ? elements_dict[event.assist].web_name : "-") : "-None-" }}</span>
                                                 </div>
                                             </div>
                                             <div class="col-2 col-lg-1 ">{{ event.minute }}'</div>
                                             <div class="col text-left">
                                                 <div v-if="event.side == 'away'">
-                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal].web_name }}</span>
-                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? elements_dict[event.assist].web_name : "-None-" }}</span>
+                                                    <span class="no-wrap d-inline-block"><b class="event-title">Goal</b> {{ elements_dict[event.goal] ? elements_dict[event.goal].web_name : '-' }}</span>
+                                                    <span v-if="event.assist" class="no-wrap d-inline-block"><b class="event-title" >Assist</b> {{ event.assist ? (elements_dict[event.assist] ? elements_dict[event.assist].web_name : "-") : "-None-" }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -735,13 +736,13 @@
                                         <div class="row justify-content-center">
                                             <div class="col text-right">
                                                 <span class="no-wrap d-inline-block mr-1" v-for="p in get_top_three(g.points.home)">
-                                                    {{ p[0].web_name }} ({{ p[1] }})
+                                                    {{ p[0] ? p[0].web_name : "-" }} ({{ p[1] }})
                                                 </span>
                                             </div>
                                             <div class="col-2 col-lg-1 top-sign">Top 3</div>
                                             <div class="col text-left">
                                                 <span class="no-wrap d-inline-block mr-1" v-for="p in get_top_three(g.points.away)">
-                                                    {{ p[0].web_name }} ({{ p[1] }})
+                                                    {{ p[0] ? p[0].web_name : "-" }} ({{ p[1] }})
                                                 </span>
                                             </div>
                                         </div>
