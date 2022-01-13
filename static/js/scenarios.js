@@ -10,6 +10,7 @@ var app = new Vue({
         sc_details: undefined,
         sc_game_details: undefined,
         main_data: undefined,
+        fixture_data: undefined,
         team_data: undefined,
         // lineup: [],
         // bench: [],
@@ -43,6 +44,23 @@ var app = new Vue({
         elements() {
             if (_.isEmpty(this.main_data)) { return undefined }
             return this.main_data.elements
+        },
+        fixture_dict() {
+            // for active gw: team -> rivals
+            if (_.isEmpty(this.fixture_data)) { return undefined }
+            let gw_fixtures = this.fixture_data.filter(i => i.event == this.current_gw)
+            let teams = this.teams
+            let fix_dict = {}
+            teams.forEach((t) => {
+                fix_dict[t.id] = {}
+                let v = fix_dict[t.id]
+                let team_fix = gw_fixtures.filter(i => i.team_h == t.id || i.team_a == t.id)
+                v.games = team_fix
+                let game_str = team_fix.map(i => i.team_h == t.id ? teams_ordered[i.team_a-1].short.toUpperCase() : teams_ordered[i.team_h-1].short.toLowerCase())
+                v.str = game_str.join(" + ")
+            })
+            
+            return fix_dict
         },
         elements_dict() {
             if (_.isEmpty(this.elements)) { return {} }
@@ -275,6 +293,9 @@ var app = new Vue({
             let players = _.cloneDeep(Object.values(this.current_rep_dict))
             players.forEach(p => {
                 p.data = el_dict[parseInt(p.ID)]
+                if (p.data == undefined) {
+                    debugger
+                }
                 let match = my_players.find(i => i.element == p.ID)
                 p.eff_points = (p.Points * ((match == undefined ? 0 : match.multiplier) - ownership[p.ID]/100)).toFixed(2)
             })
@@ -708,7 +729,7 @@ function draw_histogram() {
 
     // Min max values
     let x_high = Math.max(Math.ceil(field_avg), Math.max(...data.map(i=>i.total_score)), mpts)+2
-    let x_low = Math.min(...data.map(i=>i.total_score))-1
+    let x_low = Math.min(Math.min(...data.map(i=>i.total_score)), Math.floor(field_avg))-1
     let x_domain = _.range(x_low, x_high)
 
     // Axis-x
@@ -886,7 +907,13 @@ function draw_histogram() {
 
 }
 
-
+async function fetch_fpl_fixture() {
+    return get_entire_fixture().then((data) => {
+        app.fixture_data = data
+    }).catch((e) => {
+        console.log("Error", e)
+    })
+}
 
 
 
@@ -899,7 +926,8 @@ $(document).ready(() => {
         }),
         get_latest_sample_data(season, gw).then(sample => {
             if (sample != undefined) { app.saveSampleData(sample.gw, sample.data) }
-        })
+        }),
+        fetch_fpl_fixture()
     ]
     
     Promise.allSettled(calls).then(() => {
