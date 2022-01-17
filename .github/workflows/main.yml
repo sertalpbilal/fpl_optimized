@@ -38,6 +38,8 @@ jobs:
         if: "contains(github.event.commits[0].message, '[skip opt]')"
         run: |
           docker run -t --rm -e LANG=C.UTF-8 -e REVIEW_KEY=$REVIEW_KEY -v $(pwd)/build:/app/build webapp bash -c "python3 run.py skip-opt"
+        env:
+          REVIEW_KEY: ${{ secrets.REVIEW_KEY }}
       - name: Add changes to the branch
         run: |
           cd build
