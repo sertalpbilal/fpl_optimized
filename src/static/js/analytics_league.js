@@ -117,7 +117,7 @@ var app = new Vue({
                 p.obj_per_gw = p.total_gw <= 1 ? 0 : p.obj_sum / p.total_gw
                 p.chip_sep = p.chip_sum.split(" ")
                 p.chip_no = p.chip_gws.split(" ")
-                if (p.chip_sep == undefined) {
+                if (p.chip_sep[0] == '') {
                     p.chip_sep = []
                 }
             })
