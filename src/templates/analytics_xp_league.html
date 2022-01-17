@@ -22,21 +22,21 @@
                     </div>
                     <div>
                         <div class="table-responsive mh-500" v-if="!_.isEmpty(season_data_for_gw)">
-                            <table class="table table-sm text-white table-striped text-small" id="season_table" data-source="season_data_for_gw">
+                            <table class="table table-sm text-white table-striped text-small" id="season_table" data-source="season_data_for_gw_cached">
                                 <thead>
                                     <tr>
                                         <th class="sortable-th" @click="sortData" data-tag="rank">#</th>
-                                        <th class="sortable-th" @click="sortData" data-tag="id">ID</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="entry">ID</th>
                                         <th class="sortable-th" @click="sortData" data-tag="entry_name">Team</th>
                                         <th class="sortable-th" @click="sortData" data-tag="player_name">Manager</th>
                                         <th class="sortable-th" @click="sortData" data-tag="week_sum">Week Pts</th>
                                         <th class="sortable-th" @click="sortData" data-tag="season_sum">Season Pts</th>
-                                        <th class="sortable-th" @click="sortData" data-tag="chip_sum">Chips Used</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="chip_count">Chips Used</th>
                                         <th class="sortable-th" @click="sortData" data-tag="total_gw">GWs</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="entry in season_data_for_gw">
+                                    <tr v-for="entry in season_data_for_gw_cached">
                                         <td>{{ entry.rank }}</td>
                                         <td>{{ entry.entry }}</td>
                                         <td>{{ entry.entry_name }}</td>

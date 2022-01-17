@@ -20,7 +20,9 @@ var app = new Vue({
         highlight_circle: undefined,
         all_data_ready: false,
         season_vals: season_vals,
-        chip_short: {'wildcard': 'WC', 'freehit': 'FH', 'bboost': 'BB', '3xc': 'TC'}
+        chip_short: {'wildcard': 'WC', 'freehit': 'FH', 'bboost': 'BB', '3xc': 'TC'},
+        season_data_for_gw_cached: [],
+        season_data_for_gw_cached_last_sort: undefined
     },
     computed: {
         this_gw_dynamic() {
@@ -111,7 +113,9 @@ var app = new Vue({
             v.forEach((p, index) => {
                 p.rank = index+1
                 p.total_gw = this.season_vals.filter(i => i.entry == p.entry).length
+                p.chip_count = p.chip_sum == '' ? 0 : p.chip_sum.split(' ').length
             })
+            this.season_data_for_gw_cached = Object.freeze(v)
             return v
         }
     },
