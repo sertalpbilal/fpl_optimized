@@ -38,7 +38,7 @@
                                 <tbody>
                                     <tr v-for="entry in season_data_for_gw_cached">
                                         <td>{{ entry.rank }}</td>
-                                        <td>{{ entry.entry }}</td>
+                                        <td><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry.entry+'/history'">{{ entry.entry }}</a></td>
                                         <td>{{ entry.entry_name }}</td>
                                         <td>{{ entry.player_name }}</td>
                                         <td>{{ rounded(entry.week_sum) }}</td>
