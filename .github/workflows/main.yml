@@ -37,7 +37,7 @@ jobs:
       - name: Only populate pages, no optimization
         if: "contains(github.event.commits[0].message, '[skip opt]')"
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -v $(pwd)/build:/app/build webapp bash -c "python3 run.py skip-opt"
+          docker run -t --rm -e LANG=C.UTF-8 -e REVIEW_KEY=$REVIEW_KEY -v $(pwd)/build:/app/build webapp bash -c "python3 run.py skip-opt"
       - name: Add changes to the branch
         run: |
           cd build
