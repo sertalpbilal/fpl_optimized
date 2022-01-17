@@ -1,10 +1,15 @@
 
+from pyexpat.model import XML_CTYPE_MIXED
 import requests
 import json
 from itertools import repeat
 from concurrent.futures import ProcessPoolExecutor
 import time
 import pathlib
+import pandas as pd
+from encrypt import read_encrypted
+import os
+import io
 
 def read_static():
     base_folder = pathlib.Path().resolve()
@@ -74,6 +79,73 @@ def cache_league_picks():
 
     with open(input_folder / 'analytics_league.json', 'w') as file:
         json.dump(combined, file)
+
+
+def calculate_xp_ranks(element_locations):
+
+    gw_dates = reversed(element_locations)
+    data_dict = {}
+    gw_max = None
+    for i in gw_dates:
+        season = i[0]
+        gw = i[1]
+        gw_numeric = int(gw.split("GW")[1])
+        date = i[2]
+
+        if not os.path.exists(f"build/sample/{season}/{gw_numeric}/analytics_league.json"):
+            continue
+
+        gw_max = gw_numeric
+
+        # get elements
+        elements = pd.read_csv(f"build/data/{season}/{gw}/{date}/input/element.csv")
+        raw_data = read_encrypted(f"build/data/{season}/{gw}/{date}/input/fplreview-free-planner.csv", "REVIEW_KEY")
+        player_xp  = pd.read_csv(io.BytesIO(raw_data))
+        with open(f"build/sample/{season}/{gw_numeric}/analytics_league.json", "r") as f:
+            manager_picks = json.load(f)
+        data_dict[gw_numeric] = {'elements': elements, 'xp': player_xp, 'picks': manager_picks}
+
+    # with open(f"build/data/{season}/points.json", "r") as f:
+    #     points_data = json.load(f)
+
+    # points_dict = {}
+    # for week in points_data:
+    #     w = points_dict[week] = {}
+    #     for player in points_data[week]:
+    #         p = 0
+    #         for game in player['e']:
+    #             for stats in game.get('stats', []):
+    #                 p += stats['points']
+    #         w[player['id']] = p
+
+    # Calculate weekly and total xP
+    results = []
+    for gw in range(1, gw_max+1):
+        week_data = data_dict[gw]
+        xp_data = week_data['xp']
+        xp_data.index = xp_data.index + 1
+        xp_dict = xp_data[f"{gw}_Pts"].to_dict()
+        for manager in week_data['picks']:
+            manager_week_sum = 0
+            if manager[1] is None: # Deleted?
+                continue
+            for player in manager[1]['picks']:
+                try:
+                    manager_week_sum += xp_dict[int(player['element'])] * player['multiplier']
+                except KeyError:
+                    # print(f"Player {player['element']} is not in xP data")
+                    pass
+            chip = manager[1]['active_chip']
+            if chip == None:
+                chip = ''
+            results.append({'gw': gw, 'entry': manager[0]['entry'], 'id': manager[0]['id'], 'entry_name': manager[0]['entry_name'], 'player_name': manager[0]['player_name'], 'week_sum': manager_week_sum, 'chip': chip})
+
+    results_df = pd.DataFrame(results)
+    results_df['season_sum'] = results_df.groupby(['entry'])['week_sum'].apply(lambda x: x.cumsum())
+    results_df['chip_sum'] = results_df.groupby(['entry'])['chip'].apply(lambda x: (x.astype(str) + ' ').cumsum().str.split()).apply(lambda x: ' '.join(x))
+    sorted_df = results_df.sort_values(by=['gw', 'season_sum'], ascending=[False, False]).reset_index(drop=True)
+
+    return sorted_df
 
 
 if __name__ == '__main__':

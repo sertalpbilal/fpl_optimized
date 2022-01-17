@@ -37,3 +37,16 @@ def decrypt(filename, key_name='FERNET_KEY'):
     decrypted_data = f.decrypt(encrypted_data)
     with open(filename, "wb") as file:
         file.write(decrypted_data)
+
+
+def read_encrypted(filename, key_name='FERNET_KEY'):
+    try:
+        key = load_key(key_name)
+    except:
+        key = os.environ.get(key_name)
+    f = Fernet(key)
+    with open(filename + "-encrypted", "rb") as file:
+        encrypted_data = file.read()
+    decrypted_data = f.decrypt(encrypted_data)
+    return decrypted_data
+

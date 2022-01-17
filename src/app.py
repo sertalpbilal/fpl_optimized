@@ -11,6 +11,7 @@ import os
 import sys
 import datetime
 from collect import get_fpl_info
+from xp_league import calculate_xp_ranks
 import requests
 
 from flask import Flask, render_template, send_from_directory, jsonify
@@ -96,7 +97,7 @@ def best_gw_squads():
 
 @app.route('/team_summary.html')
 def team_summary():
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()
@@ -147,7 +148,7 @@ def ownership_trend():
 def fpl_analytics():
 
     # gw = get_gw()
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+    target, list_dates, next_gw, is_active_gw, active_gw, all_files = list_one_per_gw(season_filter=global_season)
 
     # if is_active_gw == 'true':
     #     target = list_dates[0].split(' / ')
@@ -156,19 +157,26 @@ def fpl_analytics():
 
     # print(list_dates)
 
+    # Calculate sum until now
+    season_values = calculate_xp_ranks(all_files) #target[1].strip()
+
+    # return {"message": "It works!"}, 200
+
     target = [i.strip() for i in list_dates[1].split('/')]
 
+    season_values_js = season_values.to_dict(orient="records")
+
     if app.config['DEBUG']:
-        return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js)
     else:
-        return render_template('analytics_xp_league.html', repo_name="", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('analytics_xp_league.html', repo_name="", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js)
 
 
 @app.route('/live_gw.html')
 def live_gw_page():
     page_name = 'live_gw.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()
@@ -195,7 +203,7 @@ def live_gw_page():
 def fpl_fixture_page():
     page_name = 'fpl_fixture.html'
 
-    # target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    # target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
     all_dates = glob.glob('build/data/*/*/*/input/fivethirtyeight_spi.csv')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
@@ -289,7 +297,7 @@ def ownership_rates():
     # season = s[2]
     # gw = s[3]
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
     if len(list_dates) > 1:
         dates = [list_dates[1]]
     else:
@@ -316,7 +324,7 @@ def impact_summary_page():
     # season = s[2]
     # gw = s[3]
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw(season_filter=global_season)
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
     if len(list_dates) > 1:
         dates = [list_dates[1]]
     else:
@@ -334,7 +342,7 @@ def impact_summary_page():
 def highlights():
     page_name = 'highlights.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
 
     print(next_gw)
 
@@ -355,7 +363,7 @@ def highlights():
 # def country_stats():
 #     page_name = 'country_stats.html'
 
-#     target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+#     target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
 
 #     print(next_gw)
 #     import pandas as pd
@@ -386,7 +394,7 @@ def calculator_page():
 def who_played():
     page_name = 'who_played.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
 
     r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
     vals = r.json()
@@ -467,7 +475,7 @@ def list_one_per_gw(season_filter='*'):
                 target = i
                 print(f"Active GW {active_gw}")
     list_dates = [' / '.join(i) for i in filtered_dates]
-    return target, list_dates, next_gw, is_active_gw, active_gw
+    return target, list_dates, next_gw, is_active_gw, active_gw, filtered_dates
 
 @app.route('/data/<path:path>')
 def read_data(path):

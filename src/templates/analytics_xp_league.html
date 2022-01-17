@@ -6,9 +6,9 @@
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
-                
+                <h5 class="card-header border-complement text-center scenario_title">FPL Analytics xP League</h5>
                 <div class="card-body text-center p-3">
-                    <div class="text-center mb-1">Analytics xP League</div>
+                    <div class="text-center mb-1">Overall Standings</div>
                     <div class="row no-gutters justify-content-center">
                         <div class="col-1">
                             <button class="btn btn-sm btn-dark" :disabled="active_gw <= 1" @click="active_gw_update(-1)"><i class="fas fa-caret-left"></i></button>
@@ -20,17 +20,59 @@
                             <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
                         </div>
                     </div>
+                    <div>
+                        <div class="table-responsive mh-500" v-if="!_.isEmpty(season_data_for_gw)">
+                            <table class="table table-sm text-white table-striped text-small" id="season_table" data-source="season_data_for_gw">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable-th" @click="sortData" data-tag="rank">#</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="id">ID</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="entry_name">Team</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="player_name">Manager</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="week_sum">Week Pts</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="season_sum">Season Pts</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="chip_sum">Chips Used</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="total_gw">GWs</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="entry in season_data_for_gw">
+                                        <td>{{ entry.rank }}</td>
+                                        <td>{{ entry.entry }}</td>
+                                        <td>{{ entry.entry_name }}</td>
+                                        <td>{{ entry.player_name }}</td>
+                                        <td>{{ rounded(entry.week_sum) }}</td>
+                                        <td>{{ rounded(entry.season_sum) }}</td>
+                                        <td><span class="ml-1 mr-1 p-1" v-for="chip in entry.chip_sum.split(' ')" :class="'chip-' + chip">{{ chip_short[chip] }}</span></td>
+                                        <td>{{entry.total_gw }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
     <div class="row mb-3">
-        <div class="col-12 mb-0-lg">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Standings - GW</h5>
-                <!-- <div class="scenario_detail">Best lineup xP, no team limit, no budget limit, no bench players</div> -->
-                <div class="card-body field-body p-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                
+                <div class="card-body text-center p-3">
+                    <div class="text-center mb-1">Weekly Scores (with Autosub)</div>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw <= 1" @click="active_gw_update(-1)"><i class="fas fa-caret-left"></i></button>
+                        </div>
+                        <div class="col-10 col-lg-2">
+                            {{ 'GW ' + active_gw }}
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
+                        </div>
+                    </div>
                     <div class="table-responsive mh-500" v-if="!_.isEmpty(processed_league_data)">
                         <!-- class="table-responsivex" -->
                         <table class="table table-sm text-white table-striped text-small" id="league_table" data-source="processed_league_data_cached">
@@ -127,5 +169,8 @@
 
 </main>
 
+<script>
+    let season_vals = ** season_vals | safe **;
+</script>
 
 "% with scripts=["main", "sampling_utils", "analytics_league"] %" "% include 'footer.html' %" "% endwith %"

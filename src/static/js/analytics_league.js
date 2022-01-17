@@ -17,11 +17,14 @@ var app = new Vue({
         //
         processed_league_data_cached: [],
         processed_league_data_cached_last_sort: undefined,
-        highlight_circle: undefined
+        highlight_circle: undefined,
+        all_data_ready: false,
+        season_vals: season_vals,
+        chip_short: {'wildcard': 'WC', 'freehit': 'FH', 'bboost': 'BB', '3xc': 'TC'}
     },
     computed: {
         this_gw_dynamic() {
-            if (this.gw !== undefined || _.isEmpty(this.static_data)) { return parseInt(this.gw.slice(2)) }
+            if (this.gw !== undefined || _.isEmpty(this.static_data) || !this.all_data_ready) { return parseInt(this.gw.slice(2)) }
             let events_data = this.static_data['events']
             for (let e of events_data) {
                 if (e['is_current']) {
@@ -46,7 +49,7 @@ var app = new Vue({
             return Object.fromEntries(xp_data)
         },
         processed_league_data() {
-            if (_.isEmpty(this.league_data) || _.isEmpty(this.el_data_by_id) || _.isEmpty(this.xp_data) || _.isEmpty(this.rp_data) || _.isEmpty(this.rp_by_id)) { return []}
+            if (_.isEmpty(this.league_data) || _.isEmpty(this.el_data_by_id) || _.isEmpty(this.xp_data) || _.isEmpty(this.rp_data) || _.isEmpty(this.rp_by_id) || !this.all_data_ready) { return []}
 
             let t = this.league_data
             t = t.filter(i => i[1] != null)
@@ -59,7 +62,7 @@ var app = new Vue({
                 let pre_xp = getSum(picks.map(i => i.multiplier * (parseFloat(this.xp_by_id[i.element].xp) || 0) )) - parseInt(penalty)
                 let post_gw_picks = autosubbed_team(picks, this.autosub_dict).team
                 let post_xp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat(this.xp_by_id[i.element].xp) || 0) )) - parseInt(penalty)
-                let rp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat(this.rp_by_id[i.element].stats.total_points) || 0))) - parseInt(penalty)
+                let rp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat((this.rp_by_id[i.element] && this.rp_by_id[i.element].stats.total_points) || 0) || 0))) - parseInt(penalty)
                 let luck = rp - post_xp
 
                 let team_value = getSum(picks.map(i => this.el_data_by_id[i.element].now_cost))/10
@@ -100,6 +103,16 @@ var app = new Vue({
             if (_.isEmpty(this.processed_league_data_cached)) { return {}}
             if (!this.selected_team) {return {}}
             return this.processed_league_data_cached.find(i => i[0].entry == this.selected_team)
+        },
+        season_data_for_gw() {
+            let v = this.season_vals
+            v = v.filter(i => i.gw == this.active_gw)
+            v = _.orderBy(v, ['season_sum'], ['desc'])
+            v.forEach((p, index) => {
+                p.rank = index+1
+                p.total_gw = this.season_vals.filter(i => i.entry == p.entry).length
+            })
+            return v
         }
     },
     methods: {
@@ -112,12 +125,16 @@ var app = new Vue({
             this.active_gw = this.active_gw + parseInt(val)
 
             let cgw = this.active_gw
+            let gw_s = "GW" + cgw
 
             this.static_data = undefined
             this.league_data = []
             this.fixture_data = []
             this.rp_data = []
             this.xp_data =[]
+
+            let entry = listdates.find(i => i.includes(" " + gw_s + " "))
+            let vals = entry.split(" / ")
 
             Promise.all([
                 get_fpl_main_data().then((data) => {
@@ -132,13 +149,16 @@ var app = new Vue({
                 getRPData(cgw).then((data) => {
                     app.rp_data = data
                 }),
-                getXPData_Fernet({season, gw, date}).then((data) => {
+                getXPData_Fernet({season: vals[0], gw: vals[1], date: vals[2].replace(" ", "")}).then((data) => {
                     app.xp_data = data
                 })
             ]).then(() => {
+                
                 app.rp_by_id = rp_by_id_dict(app.fixture_data, app.rp_data)
                 app.autosub_dict = generate_autosub_dict(app.el_data, app.rp_by_id)
         
+                app.all_data_ready = true
+
                 app.$nextTick(() => {
                     draw_xp_vs_rp()
                     app.refresh_table()
@@ -514,6 +534,8 @@ $(document).ready(() => {
     ]).then(() => {
         app.rp_by_id = rp_by_id_dict(app.fixture_data, app.rp_data)
         app.autosub_dict = generate_autosub_dict(app.el_data, app.rp_by_id)
+
+        app.all_data_ready = true
 
         app.$nextTick(() => {
             draw_xp_vs_rp()
