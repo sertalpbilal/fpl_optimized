@@ -1546,6 +1546,7 @@ th.vertical-name {
     background-color: #474747;
     box-shadow: inset 0px 0px 0 black, inset 0 -1px 0 white;
     color: #ffeba0;
+    z-index: 2;
 }
 
 #season_table thead th::after {
@@ -1561,3 +1562,6 @@ th.vertical-name {
     background-color: #0087ab3d;
 }
 
+.custom-control-label-t {
+    left: 4px;
+}

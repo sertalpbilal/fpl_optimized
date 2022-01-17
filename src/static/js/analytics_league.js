@@ -22,7 +22,8 @@ var app = new Vue({
         season_vals: season_vals,
         chip_short: {'wildcard': 'WC', 'freehit': 'FH', 'bboost': 'BB', '3xc': 'TC'},
         season_data_for_gw_cached: [],
-        season_data_for_gw_cached_last_sort: undefined
+        season_data_for_gw_cached_last_sort: undefined,
+        compareEntries: []
     },
     computed: {
         this_gw_dynamic() {
@@ -123,6 +124,11 @@ var app = new Vue({
             })
             this.season_data_for_gw_cached = Object.freeze(v)
             return v
+        },
+        comparison_data() {
+            if (this.compareEntries.length <= 0) { return }
+            let data = this.season_vals.filter(i => i.gw <= this.active_gw && this.compareEntries.includes(i.entry))
+            return data
         }
     },
     methods: {
@@ -198,6 +204,11 @@ var app = new Vue({
         },
         selectTeam(e) {
             debugger
+        },
+        redraw_bump() {
+            app.$nextTick(() => {
+                draw_bump_chart()
+            });
         }
     }
 });
@@ -522,6 +533,220 @@ function draw_xp_vs_rp() {
 
     });
 }
+
+async function draw_bump_chart() {
+    return new Promise((resolve, reject) => {
+
+        if (_.isEmpty(app.comparison_data)) { resolve("Not ready"); }
+
+        let num_entries = app.compareEntries.length
+
+        if (num_entries <= 1) { return }
+
+        let x_gap = 50 // leave space for name circles
+
+        let margin = { top: 30, bottom: 35, left: 50, right: 20 },
+            width = 700 - margin.left - margin.right,
+            height = 40*num_entries // - margin.top - margin.bottom
+
+        jQuery("#compare-bump").empty()
+
+        let cnv = d3.select("#compare-bump")
+            .append("svg")
+            .attr("id", "compare-bump_svg")
+            .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+            .style('display', 'block')
+            .style('min-width', '300px')
+
+        let bg = cnv.append('g');
+        bg.append('rect').attr('fill', '#5a5d5c')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+
+        let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        
+        let x_max = app.active_gw
+        let x = d3.scaleBand()
+            .domain(_.range(1, x_max+1))
+            .range([x_gap, width-x_gap])
+        let xAxis = svg.append("g")
+            .attr("opacity", 1)
+            .call(d3.axisBottom(x)
+                .tickSize(height)
+            )
+            // .call(g => g.selectAll(".tick line")
+            //     .attr("stroke-opacity", 0.1)
+            //     .attr("stroke-width", 0.5)
+            //     .attr("stroke-dasharray", "3,1")
+            //     .style('pointer-events', 'none')
+            //     )
+
+        let y_max = app.compareEntries.length
+        let y = d3.scaleBand()
+            .domain(_.range(1, y_max+1))
+            .range([0, height])
+
+        let yAxis = svg.append('g')
+            .attr("transform", "translate(" + width + ",0)")
+            .call(d3.axisLeft(y).tickSize(width))
+
+        svg.call(g => g.selectAll(".tick text")
+            .attr("fill", "white"))
+            .call(g => g.selectAll(".tick line")
+                .attr("class", "comparison-xp-lines"))
+            .call(g => g.selectAll(".domain")
+                .attr("class", "comparison-xp-domain"))
+
+        // prepare data
+        let data = app.comparison_data
+        let gameweeks = _.range(1, x_max+1)
+        gameweeks.forEach((gw) => {
+            let gw_data = data.filter(i => i.gw == gw)
+            let sorted = _.orderBy(gw_data, ['obj_sum'], ['desc'])
+            sorted.forEach((p, i) => {
+                p.gw_order = i+1
+            })
+        })
+        data.forEach((p) => {
+            p.next = data.find(i => i.gw == p.gw+1 && i.entry == p.entry)
+        })
+
+        let entries = _.uniq(app.comparison_data.map(i => i.entry))
+        let col = d3.scaleOrdinal(d3.schemeTableau10).domain(entries)
+
+        // lines
+        svg.append("g")
+            .selectAll()
+            .data(data)
+            .enter()
+            .filter((d) => d.next != undefined)
+            .append('line')
+            .attr("x1", d => x(d.gw) + x.bandwidth()/2)
+            .attr("x2", d => x(d.next.gw) + x.bandwidth()/2)
+            .attr("y1", d => y(d.gw_order) + y.bandwidth()/2)
+            .attr("y2", d => y(d.next.gw_order) + y.bandwidth()/2)
+            .attr("stroke-width", "4px")
+            .attr("stroke", (d) => col(d.entry))
+            .attr("class", "allow-mix")
+
+        // circles
+        svg.append("g")
+            .selectAll()
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => x(d.gw) + x.bandwidth()/2)
+            .attr("cy", (d) => y(d.gw_order) + y.bandwidth()/2)
+            .attr("r", 6)
+            .attr("stroke-width", "4px")
+            .attr("stroke", (d) => col(d.entry))
+            // .attr("stroke-opacity", 0.5)
+            
+        // chips
+        svg.append("g")
+            .selectAll()
+            .data(data)
+            .enter()
+            .filter((d) => d.chip != '')
+            .append('text')
+            .attr("class", "chip-text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x(d.gw) + x.bandwidth() / 2)
+            .attr("y", d => y(d.gw_order) + y.bandwidth() / 2)
+            .attr("fill", "white")
+            .text(d => app.chip_short[d.chip])
+        
+        // name circle
+        let w1_data = data.filter(i => i.gw == 1)
+        svg.append("g")
+            .selectAll()
+            .data(w1_data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => x_gap/2)
+            .attr("cy", (d) => y(d.gw_order) + y.bandwidth()/2)
+            .attr("r", 12)
+            .attr("fill", (d) => col(d.entry))
+
+        svg.append("g")
+            .selectAll()
+            .data(w1_data)
+            .enter()
+            .append('text')
+            .attr("class", "comp-name-text")
+            .attr("font-size", "8pt")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x_gap/2)
+            .attr("y", d => y(d.gw_order) + y.bandwidth() / 2)
+            .text(d => d.player_name.split(' ').map(i => i[0]).join(''))
+            
+        let wlast_data = data.filter(i => i.gw == x_max)
+        svg.append("g")
+            .selectAll()
+            .data(wlast_data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => width - x_gap/2)
+            .attr("cy", (d) => y(d.gw_order) + y.bandwidth()/2)
+            .attr("r", 12)
+            .attr("fill", (d) => col(d.entry))
+
+        svg.append("g")
+            .selectAll()
+            .data(wlast_data)
+            .enter()
+            .append('text')
+            .attr("class", "comp-name-text")
+            .attr("font-size", "8pt")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => width - x_gap/2)
+            .attr("y", d => y(d.gw_order) + y.bandwidth() / 2)
+            .text(d => d.player_name.split(' ').map(i => i[0]).join(''))
+
+        // titles
+        // x
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", width/2)
+            .attr("y", height+25)
+            .attr("font-size", "9pt")
+            .attr("fill", "white")
+            .text("Gameweeks");
+
+        // y
+        svg.append("text")
+            .attr("transform", `rotate(-90, ${-25}, ${height/2})`)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", -25)
+            .attr("y", height/2)
+            .attr("font-size", "9pt")
+            .attr("fill", "white")
+            .text("Rank");
+
+        // Title
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", width/2)
+            .attr("y", -15)
+            .attr("font-size", "10pt")
+            .attr("fill", "white")
+            .text("Analytics xP League - Manager Comparison");
+
+    });
+}
+
 
 $(document).ready(() => {
     let cgw = parseInt(gw.slice(2))

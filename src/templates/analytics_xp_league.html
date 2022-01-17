@@ -20,11 +20,12 @@
                             <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
                         </div>
                     </div>
-                    <div>
+                    <div class="mb-2">
                         <div class="table-responsive mh-500" v-if="!_.isEmpty(season_data_for_gw)">
                             <table class="table table-sm text-white table-striped text-small" id="season_table" data-source="season_data_for_gw_cached">
                                 <thead>
                                     <tr>
+                                        <th class="" ><i class="fas fa-check-square"></i></th>
                                         <th class="sortable-th" @click="sortData" data-tag="rank">#</th>
                                         <th class="sortable-th" @click="sortData" data-tag="entry">ID</th>
                                         <th class="sortable-th" @click="sortData" data-tag="entry_name">Team</th>
@@ -43,6 +44,14 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="entry in season_data_for_gw_cached">
+                                        <td>
+                                            <div class="form-group m-0">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" :value="entry.entry" :id="'comp-'+entry.entry" v-model="compareEntries" :disabled="compareEntries.length >= 10 && compareEntries.indexOf(entry.entry)==-1" @change="redraw_bump">
+                                                    <label class="custom-control-label custom-control-label-t text-hide" :for="'comp-'+entry.entry">xx</label>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td>{{ entry.rank }}</td>
                                         <td><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry.entry+'/history'">{{ entry.entry }}</a></td>
                                         <td>{{ entry.entry_name }}</td>
@@ -63,6 +72,14 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div v-if="compareEntries.length > 1">
+                        <div id="compare-bump">
+                            {{ comparison_data }}
+                        </div>
+                    </div>
+                    <div v-else class="text-center text-muted">
+                        Choose 2 or more teams to compare!
                     </div>
                 </div>
             </div>
