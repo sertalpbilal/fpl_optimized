@@ -1513,6 +1513,10 @@ th.vertical-name {
     white-space: nowrap;
 }
 
+.chip-box {
+    font-size: smaller;
+}
+
 .chip-wildcard {
     background-color: #dc3545;
     color: white;
@@ -1551,5 +1555,9 @@ th.vertical-name {
 #season_table tbody td {
     border-bottom: 1px solid #666869;
     border-top: none;
+}
+
+.highlighted-col-type2 {
+    background-color: #0087ab3d;
 }
 

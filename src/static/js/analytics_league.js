@@ -109,11 +109,17 @@ var app = new Vue({
         season_data_for_gw() {
             let v = this.season_vals
             v = v.filter(i => i.gw == this.active_gw)
-            v = _.orderBy(v, ['season_sum'], ['desc'])
+            v = _.orderBy(v, ['obj_sum'], ['desc'])
             v.forEach((p, index) => {
                 p.rank = index+1
                 p.total_gw = this.season_vals.filter(i => i.entry == p.entry).length
                 p.chip_count = p.chip_sum == '' ? 0 : p.chip_sum.split(' ').length
+                p.obj_per_gw = p.total_gw <= 1 ? 0 : p.obj_sum / p.total_gw
+                p.chip_sep = p.chip_sum.split(" ")
+                p.chip_no = p.chip_gws.split(" ")
+                if (p.chip_sep == undefined) {
+                    p.chip_sep = []
+                }
             })
             this.season_data_for_gw_cached = Object.freeze(v)
             return v

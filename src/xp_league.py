@@ -118,6 +118,9 @@ def calculate_xp_ranks(element_locations):
     #                 p += stats['points']
     #         w[player['id']] = p
 
+    fixed_bench_weights = [0.03, 0.21, 0.06, 0.002]
+    fixed_chip_weights = {'freehit': 18, 'wildcard': 20, 'bboost': 12, '3xc': 15}
+
     # Calculate weekly and total xP
     results = []
     for gw in range(1, gw_max+1):
@@ -127,22 +130,45 @@ def calculate_xp_ranks(element_locations):
         xp_dict = xp_data[f"{gw}_Pts"].to_dict()
         for manager in week_data['picks']:
             manager_week_sum = 0
+            manager_week_obj = 0
             if manager[1] is None: # Deleted?
                 continue
             for player in manager[1]['picks']:
                 try:
                     manager_week_sum += xp_dict[int(player['element'])] * player['multiplier']
+                    manager_week_obj += xp_dict[int(player['element'])] * player['multiplier']
+                    if player['multiplier'] == 0 and player['order'] > 11: # bench
+                        manager_week_obj += xp_dict[int(player['element'])] * fixed_bench_weights[player['order']-11-1]
                 except KeyError:
                     # print(f"Player {player['element']} is not in xP data")
                     pass
             chip = manager[1]['active_chip']
             if chip == None:
                 chip = ''
-            results.append({'gw': gw, 'entry': manager[0]['entry'], 'id': manager[0]['id'], 'entry_name': manager[0]['entry_name'], 'player_name': manager[0]['player_name'], 'week_sum': manager_week_sum, 'chip': chip})
+            else:
+                manager_week_obj -= fixed_chip_weights[chip]
+            manager_week_obj += (manager[1]['entry_history']['bank'] / 10) * 0.1
+            manager_week_sum -= manager[1]['entry_history']['event_transfers_cost']
+            manager_week_obj -= manager[1]['entry_history']['event_transfers_cost']
+            results.append({
+                'gw': gw,
+                'entry': manager[0]['entry'],
+                'id': manager[0]['id'],
+                'entry_name': manager[0]['entry_name'],
+                'player_name': manager[0]['player_name'],
+                'week_sum': manager_week_sum,
+                'week_obj': manager_week_obj,
+                'chip': chip,
+                'chip_gw': '' if chip == '' else str(gw),
+                'total_pts': manager[0]['total'],
+                'last_rank': manager[1]['entry_history']['overall_rank']
+                })
 
     results_df = pd.DataFrame(results)
     results_df['season_sum'] = results_df.groupby(['entry'])['week_sum'].apply(lambda x: x.cumsum())
+    results_df['obj_sum'] = results_df.groupby(['entry'])['week_obj'].apply(lambda x: x.cumsum())
     results_df['chip_sum'] = results_df.groupby(['entry'])['chip'].apply(lambda x: (x.astype(str) + ' ').cumsum().str.split()).apply(lambda x: ' '.join(x))
+    results_df['chip_gws'] = results_df.groupby(['entry'])['chip_gw'].apply(lambda x: (x.astype(str) + ' ').cumsum().str.split()).apply(lambda x: ' '.join(x))
     sorted_df = results_df.sort_values(by=['gw', 'season_sum'], ascending=[False, False]).reset_index(drop=True)
 
     return sorted_df
