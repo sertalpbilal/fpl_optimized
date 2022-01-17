@@ -1512,3 +1512,44 @@ th.vertical-name {
 .no-wrap {
     white-space: nowrap;
 }
+
+.chip-wildcard {
+    background-color: #dc3545;
+    color: white;
+}
+
+.chip-freehit {
+    background-color: #252E4F;
+    color: white;
+}
+
+.chip-bboost {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.chip-3xc {
+    background-color: #ffc107;
+    color: black;
+}
+
+
+#season_table thead th {
+    position: sticky;
+    top: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    background-color: #474747;
+    box-shadow: inset 0px 0px 0 black, inset 0 -1px 0 white;
+    color: #ffeba0;
+}
+
+#season_table thead th::after {
+    color: white;
+}
+
+#season_table tbody td {
+    border-bottom: 1px solid #666869;
+    border-top: none;
+}
+

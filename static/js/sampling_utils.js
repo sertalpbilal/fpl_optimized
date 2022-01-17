@@ -161,7 +161,11 @@ function get_provisional_bonus(gw_fixture) {
 function rp_by_id_dict(fixture, rp_data) {
     rp_data.forEach((p) => {
         try {
-            p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
+            p.games_finished = p.explain.map(i => {
+                let f = fixture.find(j => j.id == i.fixture)
+                if (f == undefined) { return true }
+                return f.finished_provisional
+            }).every(i => i);
             if (p.games_finished && p.stats.minutes == 0) {
                 p.autosub = true;
             } else {
