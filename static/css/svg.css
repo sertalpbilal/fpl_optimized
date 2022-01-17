@@ -389,3 +389,28 @@ circle.risk-nodes:hover {
 .calculating {
     pointer-events: none;
 }
+
+.comparison-xp-lines {
+    color: gray;
+    opacity: 0.3;
+}
+
+.comparison-xp-domain {
+    opacity: 0;
+}
+
+.allow-mix {
+    mix-blend-mode: lighten;
+}
+
+.chip-text {
+    font-size: 5pt;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px black;
+}
+
+.comp-name-text {
+    fill: white;
+    font-weight: bold;
+    text-shadow: 0px 0px 2px black, 0px 0px 2px black, 0px 0px 2px black;
+}
