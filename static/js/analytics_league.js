@@ -19,7 +19,7 @@ var app = new Vue({
         processed_league_data_cached_last_sort: undefined,
         highlight_circle: undefined,
         all_data_ready: false,
-        season_vals: season_vals,
+        season_vals: [],
         chip_short: {'wildcard': 'WC', 'freehit': 'FH', 'bboost': 'BB', '3xc': 'TC'},
         season_data_for_gw_cached: [],
         season_data_for_gw_cached_last_sort: undefined,
@@ -54,6 +54,9 @@ var app = new Vue({
         processed_league_data() {
             if (_.isEmpty(this.league_data) || _.isEmpty(this.el_data_by_id) || _.isEmpty(this.xp_data) || _.isEmpty(this.rp_data) || _.isEmpty(this.rp_by_id) || !this.all_data_ready) { return []}
 
+            let xp_dict = this.xp_by_id
+            let rp_dict = this.rp_by_id
+
             let t = this.league_data
             t = t.filter(i => i[1] != null)
             t.forEach((t) => {
@@ -62,10 +65,10 @@ var app = new Vue({
                 let penalty = t[1].entry_history.event_transfers_cost
 
 
-                let pre_xp = getSum(picks.map(i => i.multiplier * (parseFloat(this.xp_by_id[i.element].xp) || 0) )) - parseInt(penalty)
+                let pre_xp = getSum(picks.map(i => i.multiplier * (parseFloat( (xp_dict[i.element] && xp_dict[i.element].xp) || 0) || 0) )) - parseInt(penalty)
                 let post_gw_picks = autosubbed_team(picks, this.autosub_dict).team
-                let post_xp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat(this.xp_by_id[i.element].xp) || 0) )) - parseInt(penalty)
-                let rp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat((this.rp_by_id[i.element] && this.rp_by_id[i.element].stats.total_points) || 0) || 0))) - parseInt(penalty)
+                let post_xp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat((xp_dict[i.element] && xp_dict[i.element].xp) || 0) || 0) )) - parseInt(penalty)
+                let rp = getSum(post_gw_picks.map(i => i.multiplier * (parseFloat((rp_dict[i.element] && rp_dict[i.element].stats.total_points) || 0) || 0))) - parseInt(penalty)
                 let luck = rp - post_xp
 
                 let team_value = getSum(picks.map(i => this.el_data_by_id[i.element].now_cost))/10
@@ -174,6 +177,8 @@ var app = new Vue({
                 app.autosub_dict = generate_autosub_dict(app.el_data, app.rp_by_id)
         
                 app.all_data_ready = true
+
+                draw_bump_chart()
 
                 app.$nextTick(() => {
                     draw_xp_vs_rp()
@@ -748,6 +753,32 @@ async function draw_bump_chart() {
 }
 
 
+async function get_season_ranks() {
+    return new Promise((resolve, reject) => {
+        if (season_vals.length == 0 && season_file != '') {
+            read_local_file(season_file).then((data) => {
+                let vals = $.csv.toObjects(data)
+                vals.forEach((v) => {
+                    v.entry = parseInt(v.entry)
+                    v.gw = parseInt(v.gw)
+                    v.id = parseInt(v.id)
+                    v.last_rank = parseInt(v.last_rank)
+                    v.obj_sum = parseFloat(v.obj_sum)
+                    v.season_sum = parseFloat(v.season_sum)
+                    v.total_pts = parseInt(v.total_pts)
+                    v.week_obj = parseFloat(v.week_obj)
+                    v.week_sum = parseFloat(v.week_sum)
+                })
+                resolve(vals)
+            })
+        }
+        else {
+            return season_vals
+        }
+    })
+}
+
+
 $(document).ready(() => {
     let cgw = parseInt(gw.slice(2))
     Promise.all([
@@ -765,6 +796,9 @@ $(document).ready(() => {
         }),
         getXPData_Fernet({season, gw, date}).then((data) => {
             app.xp_data = data
+        }),
+        get_season_ranks().then((data) => {
+            app.season_vals = data
         })
     ]).then(() => {
         app.rp_by_id = rp_by_id_dict(app.fixture_data, app.rp_data)
