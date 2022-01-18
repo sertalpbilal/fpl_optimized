@@ -158,18 +158,31 @@ def fpl_analytics():
     # print(list_dates)
 
     # Calculate sum until now
-    season_values = calculate_xp_ranks(all_files) #target[1].strip()
+    # season_values = calculate_xp_ranks(all_files) #target[1].strip()
+
+    try:
+        import pandas as pd
+        f = sorted(glob.glob('build/data/' + global_season + '/*/*/output/xp_league_ranks.csv'), key=os.path.getctime, reverse=True)[0]
+        # season_values = pd.read_csv(f, index_col=0)
+        # season_values.fillna('', inplace=True)
+        f = f.replace("build/", "")
+        season_values = ''
+        season_values_js = []
+    except:
+        f = ''
+        season_values = calculate_xp_ranks(all_files)
+        season_values_js = season_values.to_dict(orient="records")
 
     # return {"message": "It works!"}, 200
 
     target = [i.strip() for i in list_dates[1].split('/')]
 
-    season_values_js = season_values.to_dict(orient="records")
+    
 
     if app.config['DEBUG']:
-        return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js)
+        return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js, season_file=f)
     else:
-        return render_template('analytics_xp_league.html', repo_name="", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js)
+        return render_template('analytics_xp_league.html', repo_name="", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js, season_file=f)
 
 
 @app.route('/live_gw.html')

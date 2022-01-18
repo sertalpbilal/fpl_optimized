@@ -62,6 +62,9 @@ def get_all_data():
     get_fivethirtyeight_data(season_folder)
     cache_realized_points_data(season_folder)
 
+    from xp_league import cache_xp_ranks
+    cache_xp_ranks(output_folder)
+
     return input_folder, output_folder
 
 

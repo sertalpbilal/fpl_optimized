@@ -81,6 +81,18 @@ def cache_league_picks():
         json.dump(combined, file)
 
 
+
+def cache_xp_ranks(output_folder):
+    from app import list_one_per_gw
+    env = read_static()
+    season = env['season']
+
+    _, _, _, _, _, all_files = list_one_per_gw(season_filter=season)
+    season_values = calculate_xp_ranks(all_files)
+
+    season_values.to_csv(output_folder / "xp_league_ranks.csv")
+
+
 def calculate_xp_ranks(element_locations):
 
     gw_dates = reversed(element_locations)
