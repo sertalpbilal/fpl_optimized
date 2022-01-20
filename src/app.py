@@ -125,25 +125,6 @@ def ownership_trend():
     else:
         return render_template('ownership_trend.html', repo_name="", ts = timestamp, page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
 
-
-# @app.route('/fpl_analytics_league.html')
-# def fpl_analytics():
-
-#     # First (old) season for archive purposes
-#     all_dates = glob.glob('build/data/*/*/*/input/fpl_analytics_league.csv')
-#     all_dates.sort(key=folder_order, reverse=True)
-#     if sys.platform == 'win32':
-#         all_dates = [i.replace('\\', '/') for i in all_dates]
-#     list_dates = ([i.split('/')[2:5] for i in all_dates])
-#     target = list_dates[0]
-#     list_dates = [' / '.join(i) for i in list_dates]
-
-
-#     if app.config['DEBUG']:
-#         return render_template('fpl_analytics_league.html', repo_name="/..", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
-#     else:
-#         return render_template('fpl_analytics_league.html', repo_name="", page_name="Analytics League", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
-
 @app.route('/analytics_league.html')
 def fpl_analytics():
 
@@ -172,12 +153,11 @@ def fpl_analytics():
         f = ''
         season_values = calculate_xp_ranks(all_files)
         season_values_js = season_values.to_dict(orient="records")
+        # season_values.to_csv("debug.csv")
 
     # return {"message": "It works!"}, 200
 
     target = [i.strip() for i in list_dates[1].split('/')]
-
-    
 
     if app.config['DEBUG']:
         return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js, season_file=f)

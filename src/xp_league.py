@@ -1,12 +1,11 @@
-
-from pyexpat.model import XML_CTYPE_MIXED
 import requests
 import json
 from itertools import repeat
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import time
 import pathlib
 import pandas as pd
+import numpy as np
 from encrypt import read_encrypted
 import os
 import io
@@ -115,7 +114,13 @@ def calculate_xp_ranks(element_locations):
         player_xp  = pd.read_csv(io.BytesIO(raw_data))
         with open(f"build/sample/{season}/{gw_numeric}/analytics_league.json", "r") as f:
             manager_picks = json.load(f)
-        data_dict[gw_numeric] = {'elements': elements, 'xp': player_xp, 'picks': manager_picks}
+
+        try:
+            scenarios = pd.read_csv(f"build/data/{season}/{gw}/{date}/output/scenarios.csv")
+        except:
+            scenarios = None
+
+        data_dict[gw_numeric] = {'elements': elements, 'xp': player_xp, 'picks': manager_picks, 'scenarios': scenarios}
 
     # with open(f"build/data/{season}/points.json", "r") as f:
     #     points_data = json.load(f)
@@ -140,12 +145,19 @@ def calculate_xp_ranks(element_locations):
         xp_data = week_data['xp']
         xp_data.index = xp_data.index + 1
         xp_dict = xp_data[f"{gw}_Pts"].to_dict()
+        sim_data = week_data['scenarios']
+        if sim_data is not None:
+            grouped_sim_data = [y.set_index(['ID'])[['Points', 'Minutes']].to_dict(orient='index') for x,y in sim_data.groupby('sim', as_index=False)]
+        else:
+            grouped_sim_data = None
+        elements = week_data['elements']
         for manager in week_data['picks']:
             manager_week_sum = 0
             manager_week_obj = 0
             if manager[1] is None: # Deleted?
                 continue
-            for player in manager[1]['picks']:
+            p_picks = manager[1]['picks']
+            for player in p_picks:
                 try:
                     manager_week_sum += xp_dict[int(player['element'])] * player['multiplier']
                     manager_week_obj += xp_dict[int(player['element'])] * player['multiplier']
@@ -162,6 +174,15 @@ def calculate_xp_ranks(element_locations):
             manager_week_obj += (manager[1]['entry_history']['bank'] / 10) * 0.1
             manager_week_sum -= manager[1]['entry_history']['event_transfers_cost']
             manager_week_obj -= manager[1]['entry_history']['event_transfers_cost']
+            # Simulate week
+            if grouped_sim_data is not None:
+                print(f"GW{gw} Manager {manager[0]['entry']}")
+                simulation_quartile = simulate(p_picks, grouped_sim_data, elements)
+                for v in simulation_quartile:
+                    simulation_quartile[v] -= manager[1]['entry_history']['event_transfers_cost']
+            else:
+                simulation_quartile = {}
+
             results.append({
                 'gw': gw,
                 'entry': manager[0]['entry'],
@@ -173,7 +194,9 @@ def calculate_xp_ranks(element_locations):
                 'chip': chip,
                 'chip_gw': '' if chip == '' else str(gw),
                 'total_pts': manager[0]['total'],
-                'last_rank': manager[1]['entry_history']['overall_rank']
+                'last_rank': manager[1]['entry_history']['overall_rank'],
+                # 'sim_stats': ' '.join([str(i) for i in simulation_quartile])
+                **simulation_quartile
                 })
 
     results_df = pd.DataFrame(results)
@@ -184,6 +207,96 @@ def calculate_xp_ranks(element_locations):
     sorted_df = results_df.sort_values(by=['gw', 'season_sum'], ascending=[False, False]).reset_index(drop=True)
 
     return sorted_df
+
+
+def simulate(picks, player_dicts, elements):
+    # TODO: effective points?
+    el_types = elements[['id', 'element_type']].set_index('id')['element_type'].to_dict()
+
+    for p in picks:
+        p['pos'] = el_types[p['element']]
+
+    # sim_numbers = data['sim'].unique().tolist()
+    sim_scores = []
+
+    # p_dict = data[data['sim'] == sim].set_index(['ID'])[['Points', 'Minutes']].to_dict(orient='index')
+    # player_dicts = [p_dict.copy() for sim in sim_numbers]
+    # player_dicts = [y.set_index(['ID'])[['Points', 'Minutes']].to_dict(orient='index') for x,y in data.groupby('sim', as_index=False)]
+    # picks_dicts = [picks.copy() for _ in range(len(player_dicts))]
+    
+    # with ThreadPoolExecutor(max_workers=20) as executor:
+    #     sim_scores = list(executor.map(single_sim, player_dicts, picks_dicts))  # sim, data, picks, el_types
+
+    sim_scores = [single_sim(i, picks.copy()) for i in player_dicts]
+
+    quartiles = np.percentile(sim_scores, [25,50,75])
+    
+    return {'sim_min': min(sim_scores), 'sim_q25': quartiles[0], 'sim_q50': quartiles[1], 'sim_q75': quartiles[2], 'sim_max': max(sim_scores), 'sim_mean': np.mean(sim_scores)}
+
+
+def single_sim(player_dict, picks):
+
+    playing_count = {1:0, 2:0, 3:0, 4:0}
+    min_pos = {1:1, 2:3, 3:2, 4:1}
+    max_pos = {1:1, 2:5, 3:5, 4:3}
+
+    # for sim in sim_numbers:
+    sim_score = 0
+
+    for p in picks:
+        if player_dict.get(p['element']) is None and p['multiplier'] > 0: # Not played - autosub!
+            p['played'] = False
+            p['autosub_out'] = True
+            p['lineup'] = False
+            p['f_multiplier'] = 0
+        elif player_dict.get(p['element']) is None and p['multiplier'] == 0:
+            p['played'] = False
+            p['lineup'] = False
+            p['f_multiplier'] = 0
+        elif p['multiplier'] == 0:
+            p['played'] = True
+            p['lineup'] = False
+            p['f_multiplier'] = 0
+        else:
+            p['played'] = True
+            p['lineup'] = True
+            p['f_multiplier'] = p['multiplier']
+            playing_count[p['pos']] += 1
+            
+    players_out = [p for p in picks if p.get('autosub_out')]
+    for p_out in players_out:
+        pos = p_out['pos']
+
+        if playing_count[pos] < min_pos[pos]: # same type
+            def filter1(i):
+                return i['pos'] == pos and i['played'] == True and i['lineup'] == False
+            replacement = next(filter(filter1, picks), None)
+            if replacement:
+                replacement['lineup'] = True
+                replacement['f_multiplier'] = 1
+                playing_count[pos] += 1
+            else: # no replacement
+                continue
+        else: # next player
+            def filter2(i):
+                return i['played'] == True and i['lineup'] == False and playing_count[i['pos']] < max_pos[i['pos']]
+            replacement = next(filter(filter2, picks), None)
+            if replacement:
+                replacement['lineup'] = True
+                replacement['f_multiplier'] = 1
+                playing_count[pos] += 1
+            else: # no replacement
+                continue
+        if p_out['is_captain']:
+            def filter3(i):
+                return i['is_vice_captain'] == True and i['played'] == True
+            vice_captain = next(filter(filter3, picks), None)
+            if vice_captain:
+                vice_captain['f_multiplier'] = p_out['multiplier'] # could be TC!
+    # now we should all players done
+    sim_score = sum([i['f_multiplier'] * player_dict.get(i['element'], {'Points': 0})['Points'] for i in picks])
+    return sim_score # sim_scores.append(sim_score)
+
 
 
 if __name__ == '__main__':
