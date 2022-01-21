@@ -116,7 +116,7 @@ var app = new Vue({
             v = _.orderBy(v, ['obj_sum'], ['desc'])
             v.forEach((p, index) => {
                 p.rank = index+1
-                p.total_gw = this.season_vals.filter(i => i.entry == p.entry).length
+                p.total_gw = this.season_vals.filter(i => i.entry == p.entry && i.gw <= p.gw).length
                 p.chip_count = p.chip_sum == '' ? 0 : p.chip_sum.split(' ').length
                 p.obj_per_gw = p.total_gw <= 1 ? 0 : p.obj_sum / p.total_gw
                 p.chip_sep = p.chip_sum.split(" ")
@@ -179,6 +179,7 @@ var app = new Vue({
                 app.all_data_ready = true
 
                 draw_bump_chart()
+                draw_step_chart()
 
                 app.$nextTick(() => {
                     draw_xp_vs_rp()
@@ -213,6 +214,7 @@ var app = new Vue({
         redraw_bump() {
             app.$nextTick(() => {
                 draw_bump_chart()
+                draw_step_chart()
             });
         }
     }
@@ -747,10 +749,205 @@ async function draw_bump_chart() {
             .attr("y", -15)
             .attr("font-size", "10pt")
             .attr("fill", "white")
-            .text("Analytics xP League - Manager Comparison");
+            .text("Analytics xP League - Rank Race");
 
     });
 }
+
+
+
+async function draw_step_chart() {
+    return new Promise((resolve, reject) => {
+
+        if (_.isEmpty(app.comparison_data)) { resolve("Not ready"); }
+
+        let num_entries = app.compareEntries.length
+
+        if (num_entries <= 1) { return }
+
+        let x_gap = 50
+
+        let margin = { top: 5, bottom: 35, left: 50, right: 20 },
+            width = 700 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom
+
+        jQuery("#step-race").empty()
+
+        let cnv = d3.select("#step-race")
+            .append("svg")
+            .attr("id", "step-race_svg")
+            .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+            .style('display', 'block')
+            .style('min-width', '300px')
+
+        let bg = cnv.append('g');
+        bg.append('rect').attr('fill', '#5a5d5c')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+
+        let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        
+        // data prep
+        let data = _.cloneDeep(app.comparison_data)
+        let x_max = app.active_gw
+
+        let entries = _.uniq(data.map(i => i.entry))
+        let gameweeks = _.range(1, x_max+1)
+        gameweeks.forEach((gw) => {
+            let gw_data = data.filter(i => i.gw == gw)
+            let sorted = _.orderBy(gw_data, ['obj_sum'], ['desc'])
+            sorted.forEach((p, i) => {
+                p.gw_order = i+1
+            })
+        })
+        data.forEach((p) => {
+            p.next = data.find(i => i.gw == p.gw+1 && i.entry == p.entry)
+            let mean = _.mean(data.filter(i => i.gw == p.gw).map(i => i.obj_sum))
+            p.value = p.obj_sum - mean
+        })
+
+
+
+        let x = d3.scaleBand()
+            .domain(_.range(1, x_max+1))
+            .range([x_gap, width-x_gap])
+        let xAxis = svg.append("g")
+            .attr("opacity", 1)
+            .attr("id", "x-axis")
+            .call(d3.axisBottom(x)
+                .tickSize(height)
+            )
+            // .call(g => g.selectAll(".tick line")
+            //     .attr("stroke-opacity", 0.1)
+            //     .attr("stroke-width", 0.5)
+            //     .attr("stroke-dasharray", "3,1")
+            //     .style('pointer-events', 'none')
+            //     )
+
+        
+
+        let y_max = Math.max(...data.map(i => i.value)) + 2
+        let y_min = Math.min(...data.map(i => i.value)) - 2
+        // debugger
+        // let y_min = 0
+        let y = d3.scaleLinear()
+            .domain([y_min, y_max])
+            .range([height-10, 0])
+
+        let yAxis = svg.append('g')
+            .attr("transform", "translate(" + width + ",0)")
+            .attr("id", "y-axis")
+            .call(d3.axisLeft(y).tickSize(width)
+                .tickFormat((d) => d >= 0 ? `+${d}` : `${d}`))
+
+        svg.call(g => g.selectAll(".tick text")
+            .attr("fill", "white"))
+            .call(g => g.selectAll(".tick line")
+                .attr("class", "comparison-xp-lines"))
+            .call(g => g.selectAll(".domain")
+                .attr("class", "comparison-xp-domain"))
+
+        // 0-line
+        svg.append('line')
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", d => y(0))
+            .attr("y2", d => y(0))
+            .attr("stroke-width", "1px")
+            .attr("stroke", "white")
+            .attr("stroke-opacity", 0.5)
+
+        // titles
+        // x
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", width/2)
+            .attr("y", height+25)
+            .attr("font-size", "9pt")
+            .attr("fill", "white")
+            .text("Gameweeks");
+
+        // y
+        svg.append("text")
+            .attr("transform", `rotate(-90, ${-35}, ${height/2})`)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", -35)
+            .attr("y", height/2)
+            .attr("font-size", "8pt")
+            .attr("fill", "white")
+            .text("Total Objective Diff. to Comp. Avg.");
+
+        
+        let col = d3.scaleOrdinal(d3.schemeTableau10).domain(entries)
+
+        
+        // plot
+        
+        
+        holder = svg.append("g")
+
+        holder.append("g")
+            .selectAll()
+            .data(data)
+            .enter()
+            .filter((d) => d.next != undefined)
+            .append('line')
+            .attr("x1", d => x(d.gw) + x.bandwidth()/2)
+            .attr("x2", d => x(d.next.gw) + x.bandwidth()/2)
+            .attr("y1", d => y(d.value))
+            .attr("y2", d => y(d.next.value))
+            .attr("stroke-width", "2px")
+            .attr("stroke", (d) => col(d.entry))
+            .attr("class", "allow-mix")
+        
+        holder.append("g")
+            .selectAll()
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => x(d.gw) + x.bandwidth()/2)
+            .attr("cy", (d) => y(d.value))
+            .attr("r", 4)
+            .attr("stroke-width", "2px")
+            .attr("stroke", (d) => col(d.entry))
+
+
+        let wlast_data = data.filter(i => i.gw == x_max)
+
+        holder.append("g")
+            .selectAll()
+            .data(wlast_data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => width - x_gap/2)
+            .attr("cy", (d) => y(d.value))
+            .attr("r", 12)
+            .attr("fill", (d) => col(d.entry))
+
+        holder.append("g")
+            .selectAll()
+            .data(wlast_data)
+            .enter()
+            .append('text')
+            .attr("class", "comp-name-text")
+            .attr("font-size", "8pt")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => width - x_gap/2)
+            .attr("y", d => y(d.value))
+            .text(d => d.player_name.split(' ').map(i => i[0]).join(''))
+
+    });
+}
+
+
+
+
 
 
 async function get_season_ranks() {
@@ -768,6 +965,12 @@ async function get_season_ranks() {
                     v.total_pts = parseInt(v.total_pts)
                     v.week_obj = parseFloat(v.week_obj)
                     v.week_sum = parseFloat(v.week_sum)
+                    v.sim_min = parseFloat(v.sim_min)
+                    v.sim_max = parseFloat(v.sim_max)
+                    v.sim_mean = parseFloat(v.sim_mean)
+                    v.sim_q25 = parseFloat(v.sim_q25)
+                    v.sim_q50 = parseFloat(v.sim_q50)
+                    v.sim_q75 = parseFloat(v.sim_q75)
                 })
                 resolve(vals)
             })
