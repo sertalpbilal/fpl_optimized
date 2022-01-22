@@ -113,6 +113,12 @@ var app = new Vue({
         season_data_for_gw() {
             let v = this.season_vals
             v = v.filter(i => i.gw == this.active_gw)
+
+            v = _.orderBy(v, ['sim_mean_sum'], ['desc'])
+            v.forEach((p, index) => {
+                p.sim_rank = index+1
+            })
+
             v = _.orderBy(v, ['obj_sum'], ['desc'])
             v.forEach((p, index) => {
                 p.rank = index+1
@@ -125,6 +131,8 @@ var app = new Vue({
                     p.chip_sep = []
                 }
             })
+            
+
             this.season_data_for_gw_cached = Object.freeze(v)
             return v
         },
@@ -945,11 +953,6 @@ async function draw_step_chart() {
     });
 }
 
-
-
-
-
-
 async function get_season_ranks() {
     return new Promise((resolve, reject) => {
         if (season_vals.length == 0 && season_file != '') {
@@ -971,6 +974,7 @@ async function get_season_ranks() {
                     v.sim_q25 = parseFloat(v.sim_q25)
                     v.sim_q50 = parseFloat(v.sim_q50)
                     v.sim_q75 = parseFloat(v.sim_q75)
+                    v.sim_mean_sum = parseFloat(v.sim_mean_sum)
                 })
                 resolve(vals)
             })
