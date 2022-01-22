@@ -26,20 +26,23 @@
                                 <thead>
                                     <tr>
                                         <th class="" ><i class="fas fa-check-square"></i></th>
-                                        <th class="sortable-th" @click="sortData" data-tag="rank">#</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="rank">Obj Rank</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_rank">Sim Rank</th>
                                         <th class="sortable-th" @click="sortData" data-tag="entry">ID</th>
                                         <th class="sortable-th" @click="sortData" data-tag="entry_name">Team</th>
                                         <th class="sortable-th" @click="sortData" data-tag="player_name">Manager</th>
                                         <th class="sortable-th highlighted-col-type2" @click="sortData" data-tag="obj_sum">Obj. Score</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_mean_sum">Sim Sum</th>
 
-                                        <th class="sortable-th" @click="sortData" data-tag="week_sum">Week Pts</th>
-                                        <th class="sortable-th" @click="sortData" data-tag="season_sum">Season Pts</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="week_obj">GW Obj</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_q50">GW Sim Mean</th>
+                                        <!-- <th class="sortable-th" @click="sortData" data-tag="season_sum">Season Pts</th> -->
                                         <th class="sortable-th" @click="sortData" data-tag="total_pts">FPL Pts*</th>
                                         <th class="sortable-th" @click="sortData" data-tag="last_rank">FPL Rank*</th>
                                         
                                         <th class="sortable-th" @click="sortData" data-tag="chip_count">Chips Used</th>
                                         <th class="sortable-th" @click="sortData" data-tag="total_gw">GWs</th>
-                                        <th class="sortable-th" @click="sortData" data-tag="obj_per_gw">Obj.pGW</th>
+                                        <!-- <th class="sortable-th" @click="sortData" data-tag="obj_per_gw">Obj.pGW</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -53,13 +56,17 @@
                                             </div>
                                         </td>
                                         <td>{{ entry.rank }}</td>
+                                        <td>{{ entry.sim_rank }}</td>
                                         <td><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry.entry+'/history'">{{ entry.entry }}</a></td>
                                         <td>{{ entry.entry_name }}</td>
                                         <td>{{ entry.player_name }}</td>
                                         <td class="highlighted-col-type2">{{ rounded(entry.obj_sum) }}</td>
+                                        <td class="">{{ rounded(entry.sim_mean_sum) }}</td>
 
-                                        <td>{{ rounded(entry.week_sum) }}</td>
-                                        <td>{{ rounded(entry.season_sum) }}</td>
+                                        <td>{{ rounded(entry.week_obj) }}</td>
+                                        <td>{{ rounded(entry.sim_q50) }}</td>
+                                        <!-- <td>{{ rounded(entry.week_sum) }}</td> -->
+                                        <!-- <td>{{ rounded(entry.season_sum) }}</td> -->
                                         <td>{{ rounded(entry.total_pts, 0) }}</td>
                                         <td>{{ rounded(entry.last_rank, 0) }}</td>
                                         
@@ -67,7 +74,7 @@
                                             <span class="ml-1 mr-1 p-1 chip-box" v-for="(chip,i) in entry.chip_sep" :class="'chip-' + chip">{{ chip_short[chip] + entry.chip_no[i] }}</span>
                                         </td>
                                         <td>{{entry.total_gw }}</td>
-                                        <td>{{ rounded(entry.obj_per_gw) }}</td>
+                                        <!-- <td>{{ rounded(entry.obj_per_gw) }}</td> -->
                                     </tr>
                                 </tbody>
                             </table>
@@ -78,6 +85,9 @@
                             {{ comparison_data }}
                         </div>
                         <div id="step-race">
+                            
+                        </div>
+                        <div id="sim-results">
                             
                         </div>
                     </div>

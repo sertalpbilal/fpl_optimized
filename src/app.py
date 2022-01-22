@@ -414,6 +414,8 @@ def scenario_page():
     # Scenario outputs
     files = glob.glob(f"build/data/{global_season}/GW*/*/output/scenarios.csv")
     files = sorted(files, key=os.path.getctime, reverse=True)
+    if sys.platform == 'win32':
+        files = [i.replace('\\', '/') for i in files]
     files = [i.split('/')[1:] for i in files]
     file_dict = {}
     for f in files:
