@@ -202,6 +202,7 @@ def calculate_xp_ranks(element_locations):
     results_df = pd.DataFrame(results)
     results_df['season_sum'] = results_df.groupby(['entry'])['week_sum'].apply(lambda x: x.cumsum())
     results_df['obj_sum'] = results_df.groupby(['entry'])['week_obj'].apply(lambda x: x.cumsum())
+    results_df['sim_mean_sum'] = results_df.groupby(['entry'])['sim_mean'].apply(lambda x: x.cumsum())
     results_df['chip_sum'] = results_df.groupby(['entry'])['chip'].apply(lambda x: (x.astype(str) + ' ').cumsum().str.split()).apply(lambda x: ' '.join(x))
     results_df['chip_gws'] = results_df.groupby(['entry'])['chip_gw'].apply(lambda x: (x.astype(str) + ' ').cumsum().str.split()).apply(lambda x: ' '.join(x))
     sorted_df = results_df.sort_values(by=['gw', 'season_sum'], ascending=[False, False]).reset_index(drop=True)
@@ -231,7 +232,7 @@ def simulate(picks, player_dicts, elements):
 
     quartiles = np.percentile(sim_scores, [25,50,75])
     
-    return {'sim_min': min(sim_scores), 'sim_q25': quartiles[0], 'sim_q50': quartiles[1], 'sim_q75': quartiles[2], 'sim_max': max(sim_scores), 'sim_mean': np.mean(sim_scores)}
+    return {'sim_min': min(sim_scores), 'sim_q25': round(quartiles[0],2), 'sim_q50': round(quartiles[1],2), 'sim_q75': round(quartiles[2],2), 'sim_max': max(sim_scores), 'sim_mean': round(np.mean(sim_scores),2)}
 
 
 def single_sim(player_dict, picks):
