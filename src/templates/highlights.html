@@ -915,7 +915,7 @@
                     </div>
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-log-8">
-                            <span class="d-block border-below-orange">Point Distribution Treemap</span>
+                            <span class="d-block border-below-orange">Point Distribution Treemap (Gain)</span>
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
                                     <input type="checkbox" class="custom-control-input" id="actual_gain_switch" @change="refresh_point_dist()">
@@ -928,6 +928,17 @@
                         </div>
                         <div class="text-xs text-center">
                             Gain is equal to points multiplied with your ownership rate (Multiplier * 100 - EO), which shows you the relative gain compared to field average.
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-log-8">
+                            <span class="d-block border-below-orange">Point Distribution Treemap (Effective Loss)</span>
+                            <div id="points_tree_map_loss">
+
+                            </div>
+                        </div>
+                        <div class="text-xs text-center">
+                            Loss is equal to points against multiplied with effective ownership rate, which shows you the relative loss compared to field average.
                         </div>
                     </div>
                 </div>
