@@ -365,73 +365,80 @@
                                         </tr>
                                         <tr>
                                             <td>Home</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.team_h_name }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.team_h_name }}</td>
                                         </tr>
                                         <tr>
                                             <td>Away</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.team_a_name }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.team_a_name }}</td>
                                         </tr>
                                         <tr>
                                             <td>Kickoff</td>
-                                            <td v-for="game in gameweek_games_with_metadata">
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">
                                                 {{ new Date(game.node_info.start).toLocaleDateString() }} <br/> {{ new Date(game.node_info.start).toLocaleTimeString() }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Started</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? "Yes" : "No" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.started ? "Yes" : "No" }}</td>
                                         </tr>
                                         <tr>
                                             <td>Finished</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.finished_provisional ? "Yes" : "No" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.finished_provisional ? "Yes" : "No" }}</td>
                                         </tr>
                                         <tr>
                                             <td>xP Sum</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.xp_sum).toFixed(1) }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ (game.xp_sum).toFixed(1) }}</td>
                                         </tr>
                                         <tr>
                                             <td>rP Sum</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? game.rp_sum : "-" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.started ? game.rp_sum : "-" }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Players (Owned)</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.players_owned }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.players_owned }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Players (Non-owned)</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.players_nonowned }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.players_nonowned }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>EO (Owned)</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.players_owned_eo * 100).toFixed(1) }}%</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ (game.players_owned_eo * 100).toFixed(1) }}%</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>EO (Non-owned)</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ (game.players_nonowned_eo * 100).toFixed(1) }}%</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ (game.players_nonowned_eo * 100).toFixed(1) }}%</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Expected Gain</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_gain) }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_gain) }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Realized Gain</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_gain) : "-" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_gain) : "-" }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Expected Loss</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_loss) }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_loss) }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Realized Loss</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_loss) : "-" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_loss) : "-" }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Expected Net</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_net) }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ getWithSign(game.xp_team_net) }}</td>
                                         </tr>
                                         <tr v-if="is_ready">
                                             <td>Realized Net</td>
-                                            <td v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_net) : "-" }}</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">{{ game.started ? getWithSign(game.rp_team_net) : "-" }}</td>
+                                        </tr>
+                                        <tr v-if="is_ready">
+                                            <td>Outcome ▲/▼</td>
+                                            <td class="text-center" v-for="game in gameweek_games_with_metadata">
+                                                <span>{{ game.started ? getWithSign(game.final_team_net)  : "-" }}</span>
+                                                <span :class="{'green-arrow': game.final_team_net > 0, 'red-arrow': game.final_team_net < 0}" v-if="game.started">{{ game.final_team_net > 0 ? "▲" : "▼" }}</span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1672,7 +1679,7 @@
     let gw = "GW26";
     let next_gw = "GW26";
     let date = "2022-02-16";
-    let lastupdate = "2022-02-16T16:23:04.058842+00:00";
+    let lastupdate = "2022-02-16T19:33:51.681535+00:00";
     let listdates = [
         "2021-22 / GW26 / 2022-02-16 ", 
         "2021-22 / GW25 / 2022-02-12 ", 
@@ -1706,11 +1713,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220216162304"></script>
+<script src="/static/js/main.js?ts=20220216193351"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220216162304"></script>
+<script src="/static/js/sampling_utils.js?ts=20220216193351"></script>
 
-<script src="/static/js/live_gw.js?ts=20220216162304"></script>
+<script src="/static/js/live_gw.js?ts=20220216193351"></script>
 
 
 <script>
@@ -1720,6 +1727,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-02-16T16:23:04.058842+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-02-16T19:33:51.681535+00:00</div>
 
 </html> 

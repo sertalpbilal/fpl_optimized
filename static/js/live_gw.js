@@ -310,6 +310,7 @@ var app = new Vue({
 
                 game.xp_team_net = game.xp_team_gain + game.xp_team_loss;
                 game.rp_team_net = game.rp_team_gain + game.rp_team_loss;
+                game.final_team_net = game.rp_team_net - game.xp_team_net;
 
             })
 
