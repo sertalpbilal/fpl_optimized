@@ -145,6 +145,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="flex-column metric mw-10 ml-1">
+                                    <div class="text-center p-0">&nbsp;</div>
+                                    <div class="text-center p-0">
+                                        <div class="d-flex flex-row mb-0">
+                                            <button class="button btn btn-sm btn-secondary setting-line-button" @click='$("#pasteModal").modal("show")'>Paste Captain Rates</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <b><span v-if="is_using_sample">Predicted</span> Ownership Rates</b>
@@ -296,6 +304,30 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="pasteModal">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Paste Captaincy Poll</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-small text-black">
+                Select and paste captaincy poll results from <a href="fantasyfootballscout.co.uk" target="_blank">FFScout</a> homepage.
+                <div class="form-group">
+                    <textarea id="paste_area" rows="3" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @click="parsePasteAndClose">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" @click="resetCaptaincy">Reset</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click='$("#pasteModal").modal("hide")'>Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous"></script>
 
@@ -354,7 +386,7 @@
     let gw = "GW26";
     let next_gw = "GW27";
     let date = "";
-    let lastupdate = "2022-02-22T10:20:04.125209+00:00";
+    let lastupdate = "2022-02-22T16:23:34.872397+00:00";
     let listdates = [
         "2021-22 / GW26 / 2022-02-19 ", 
     ];
@@ -363,11 +395,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220222102004"></script>
+<script src="/static/js/main.js?ts=20220222162334"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220222102004"></script>
+<script src="/static/js/sampling_utils.js?ts=20220222162334"></script>
 
-<script src="/static/js/ownership_rates.js?ts=20220222102004"></script>
+<script src="/static/js/ownership_rates.js?ts=20220222162334"></script>
 
 
 <script>
@@ -377,6 +409,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-02-22T10:20:04.125209+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-02-22T16:23:34.872397+00:00</div>
 
 </html> 

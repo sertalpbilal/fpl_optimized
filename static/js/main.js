@@ -7,6 +7,9 @@ Object.fromEntries = Object.fromEntries || function(arr) {
     }, {});
 };
 
+let proxy = "https://cors.alpscode.com"
+// let proxy = "https://cors.fploptimized.com"
+
 if (!Array.prototype.flat) {
     Object.defineProperty(Array.prototype, 'flat', {
         value: function(depth = 1, stack = []) {
@@ -176,7 +179,7 @@ function get_fpl_main_data() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/bootstrap-static/`,
+            url: `${proxy}/fantasy.premierleague.com/api/bootstrap-static/`,
             dataType: "json",
             async: true,
             success: function(data) {
@@ -194,7 +197,7 @@ function get_entire_fixture() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/`,
+            url: `${proxy}/fantasy.premierleague.com/api/fixtures/`,
             dataType: "json",
             async: true,
             success: function(data) {
@@ -212,7 +215,7 @@ function get_fixture(gw) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/fixtures/?event=${gw}`,
+            url: `${proxy}/fantasy.premierleague.com/api/fixtures/?event=${gw}`,
             dataType: "json",
             async: true,
             success: function(data) {
@@ -294,7 +297,7 @@ function get_team_info(team_id) {
         if (team_id == "-1") { reject("Invalid team ID"); }
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/`,
+            url: `${proxy}/fantasy.premierleague.com/api/entry/${team_id}/`,
             dataType: 'json',
             async: true,
             headers: {
@@ -319,7 +322,7 @@ function get_team_history(team_id) {
         if (team_id == "-1") { reject("Invalid team ID"); }
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/history/`,
+            url: `${proxy}/fantasy.premierleague.com/api/entry/${team_id}/history/`,
             dataType: 'json',
             async: true,
             headers: {
@@ -344,7 +347,7 @@ function get_team_picks({ gw, team_id, force_last_gw }) {
         if (team_id == "-1") { reject("Team ID not valid"); }
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${gw}/picks/`,
+            url: `${proxy}/fantasy.premierleague.com/api/entry/${team_id}/event/${gw}/picks/`,
             dataType: 'json',
             async: true,
             headers: {
@@ -363,7 +366,7 @@ function get_team_picks({ gw, team_id, force_last_gw }) {
 
                     $.ajax({
                         type: "GET",
-                        url: `https://cors.alpscode.com/fantasy.premierleague.com/api/entry/${team_id}/event/${last_gw}/picks/`,
+                        url: `${proxy}/fantasy.premierleague.com/api/entry/${team_id}/event/${last_gw}/picks/`,
                         dataType: 'json',
                         async: true,
                         headers: {
@@ -455,7 +458,7 @@ function getRPData(gw) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
-            url: `https://cors.alpscode.com/fantasy.premierleague.com/api/event/${gw}/live/`,
+            url: `${proxy}/fantasy.premierleague.com/api/event/${gw}/live/`,
             dataType: "json",
             async: true,
             headers: {

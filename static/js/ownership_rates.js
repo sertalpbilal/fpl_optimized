@@ -148,9 +148,28 @@ var app = new Vue({
         },
         resetCaptaincy() {
             this.custom_captaincy = {};
+            jQuery("#captaincyModal").modal('hide')
+            jQuery("#pasteModal").modal('hide')
         },
         updateValues() {
 
+        },
+        parsePasteAndClose() {
+            this.custom_captaincy = {};
+            let values = jQuery("#paste_area").val()
+            let clean_vals = values.replace(/\n/g, " ").split(" ").filter(i => i!='' && !i.includes('(') && !i.includes(')'))
+            clean_vals.forEach((e,j) => {
+                let match = this.elements.find(i => i.web_name == e)
+                if (match == undefined) {
+                    return
+                }
+                else {
+                    let perc = parseFloat(clean_vals[j+1])
+                    this.$set(this.custom_captaincy, parseInt(match.id), perc)
+                }
+            })
+            $("#paste_area").val('')
+            jQuery("#pasteModal").modal('hide')
         }
     }
 });
