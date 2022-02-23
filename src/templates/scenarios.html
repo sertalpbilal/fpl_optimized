@@ -16,6 +16,7 @@
                         <span class="d-inline-block">
                             <select class="form-control live-select" v-model="active_sample" @change="update_field_values()">
                                 <option v-for="(k, i) in samples" :value="i">{{ k }}</option>
+                                <option value="custom">Custom</option>
                             </select>
                         </span>
                         <span class="d-inline-block text-small">
@@ -24,6 +25,8 @@
                                 <label for="eo-toggle" class="custom-control-label">Use EO</label>
                             </div>
                         </span>
+                        or
+                        <button class="btn btn-secondary mb-1" type="button" @click="jQuery('#ownershipModal').modal('show')">Paste Ownership</button>
                     </div>
                     <!-- GW{{ current_gw }} -->
                 </h5>
@@ -808,6 +811,30 @@
 
     <div class="d-none">
         {{ graph_update_watch }}
+    </div>
+
+    <div class="modal fade" id="ownershipModal" tabindex="-1" role="dialog" aria-labelledby="ownershipModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ownershipModalLabel">Ownership Data Paste</h5>
+                </div>
+                <form v-on:submit.prevent>
+                    <div class="modal-body">
+                        <h5 class="mb-3"></h5>
+                        <div class="form-group text-black">
+                            <span class="text-left">Paste values from <a target="_blank" href="https://fploptimized.com/ownership_rates.html">https://fploptimized.com/ownership_rates.html</a></span>
+                            <label for="team_data_input">Ownership Rates</label>
+                            <textarea id="ownership_paste" rows="3" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="saveOwnershipAndClose">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 </main>
