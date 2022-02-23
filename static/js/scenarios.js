@@ -103,7 +103,7 @@ var app = new Vue({
         },
         ownership_rates() {
             if (_.isEmpty(this.elements)) { return [] }
-            if (!_.isEmpty(this.custom_ownership)) {
+            if (!_.isEmpty(this.custom_ownership) && this.active_sample == 'custom') {
                 return this.custom_ownership
             }
             else {
