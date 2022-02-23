@@ -24,7 +24,8 @@ var app = new Vue({
         samples: ["FPL Data"],
         sample_gw: undefined,
         sample_data: [],
-        use_eo: false
+        use_eo: false,
+        custom_ownership: []
     },
     computed: {
         current_gw() {
@@ -102,9 +103,15 @@ var app = new Vue({
         },
         ownership_rates() {
             if (_.isEmpty(this.elements)) { return [] }
-            let sample_selection = this.samples[this.active_sample]
-            let own_data = get_ownership_by_type(reverse_sample_name(sample_selection), this.elements, this.sample_data, {})
-            return Object.freeze(own_data.data)
+            if (!_.isEmpty(this.custom_ownership)) {
+                return this.custom_ownership
+            }
+            else {
+                let sample_selection = this.samples[this.active_sample]
+                let own_data = get_ownership_by_type(reverse_sample_name(sample_selection), this.elements, this.sample_data, {})
+                return Object.freeze(own_data.data)
+            }
+            
         },
         ownership_rate_dict() {
             let or = this.ownership_rates
@@ -627,6 +634,13 @@ var app = new Vue({
         },
         update_field_values() {
 
+        },
+        saveOwnershipAndClose() {
+            let values = jQuery("#ownership_paste").val()
+            let val_dict = values.split("\n").slice(3).map(i => i.split('\t')).map(i => [parseInt(i[0]), parseFloat(i[4])])
+            this.custom_ownership = val_dict.map(i => {return {'id': i[0], 'effective_ownership': i[1], 'selected_by_percent': i[1]}})
+            this.active_sample = 'custom'
+            jQuery("#ownershipModal").modal('hide')
         }
     }
 })
