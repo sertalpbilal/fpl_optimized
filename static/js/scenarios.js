@@ -748,7 +748,7 @@ var app = new Vue({
 
                     this.calculating = true
 
-                    let p_out = data.picks.find(i => i.element == this.swap_out)
+                    let p_out = data.picks.find(i => i.element == this[target])
                     let p_in = data.picks.find(i => i.element == e)
                     
                     let c = p_out.multiplier * 1
@@ -761,7 +761,7 @@ var app = new Vue({
                       }
 
                     // position swap
-                    let o1 = data.picks.findIndex(i => i.element == this.swap_out)
+                    let o1 = data.picks.findIndex(i => i.element == this[target])
                     let o2 = data.picks.findIndex(i => i.element == e)
                     swapArrayLocs(data.picks, o1, o2)
 
