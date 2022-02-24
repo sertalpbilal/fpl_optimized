@@ -311,13 +311,13 @@
                                                     <text x="18" y="14" class="field_icons captain_text">C</text>
                                                 </g>
                                                 <!-- Transfer Out -->
-                                                <g :class="{'half-opacity': player.element != picked_out}">
+                                                <g :class="{'half-opacity': player.element != picked_out_rival}">
                                                     <rect x="13" y="0" width="8" height="8" style="opacity:0" @click="select_out_rival(player.element)" />
                                                     <rect x="15" y="2" width="4" height="4" :class="{'empty_out': player.element != picked_out_rival, 'selected_out': player.element == picked_out_rival}" @click="select_out_rival(player.element)" />
                                                     <text x="17" y="4" class="field_icons out_text">X</text>
                                                 </g>
                                                 <!-- Swap bench -->
-                                                <g :class="{'half-opacity': player.element != swap_out}" v-show="swap_out == undefined || player.swap_available || player.element == swap_out">
+                                                <g :class="{'half-opacity': player.element != swap_out_rival}" v-show="swap_out_rival == undefined || player.swap_available || player.element == swap_out_rival">
                                                     <rect x="-1" y="0" width="8" height="8" style="opacity:0" @click="select_swap_rival(player.element)" />
                                                     <rect x="1" y="2" width="4" height="4" :class="{'empty_out': player.element != swap_out_rival, 'selected_out': player.element == swap_out_rival}" @click="select_swap_rival(player.element)" />
                                                     <text x="3" y="4" class="field_icons out_text">⇅</text>
@@ -400,7 +400,7 @@
                             <div class="col-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
-                                        Max Diff to Rival
+                                        Best Diff to Rival
                                     </div>
                                     <div class="col-6 p-1 value-side">
                                         {{ scenario_head_2_head.max }}
@@ -422,7 +422,7 @@
                             <div class="col-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
-                                        Min Diff to Rival
+                                        Worst Diff to Rival
                                     </div>
                                     <div class="col-6 p-1 value-side">
                                         {{ scenario_head_2_head.min }}
@@ -680,7 +680,7 @@
                                 </div>
     
                                 <div class="red-border-bottom text-center mt-1">
-                                    <b>Difference to Field Average Analysis</b>
+                                    <b><span style="color: darkkhaki">Rival</span> Difference to Field Average Analysis</b>
                                 </div>
                                 <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                     <div class="col-6 p-1 title-side">
@@ -770,7 +770,7 @@
 
                     <div class="row justify-content-center">
                         <div class="col-12 col-md-6">
-                            <div class="red-border-bottom">Probability of Points</div>
+                            <div class="red-border-bottom"><b>Probability of Points</b></div>
                             <div>
                                 <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                     <div class="col-6 p-1 title-side">
@@ -825,7 +825,7 @@
 
 
                         <div class="col-12 col-md-6" v-if="rival_mode">
-                            <div class="red-border-bottom"><span style="color: darkkhaki">Rival</span> Probability of Points</div>
+                            <div class="red-border-bottom"><b><span style="color: darkkhaki">Rival</span> Probability of Points</b></div>
                             <div>
                                 <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                     <div class="col-6 p-1 title-side">
@@ -880,7 +880,7 @@
 
 
                         <div class="col-12 col-md-6">
-                            <div class="red-border-bottom">Probability of Difference to Field Avg</div>
+                            <div class="red-border-bottom"><b>Probability of Difference to Field Avg</b></div>
                             <div>
                                 <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                     <div class="col-6 p-1 title-side">
@@ -935,7 +935,7 @@
 
 
                         <div class="col-12 col-md-6" v-if="rival_mode">
-                            <div class="red-border-bottom"><span style="color: darkkhaki">Rival</span> Probability of Difference to Field Avg</div>
+                            <div class="red-border-bottom"><b><span style="color: darkkhaki">Rival</span> Probability of Difference to Field Avg</b></div>
                             <div>
                                 <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
                                     <div class="col-6 p-1 title-side">
