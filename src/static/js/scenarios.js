@@ -15,8 +15,11 @@ var app = new Vue({
         // lineup: [],
         // bench: [],
         picked_out: undefined,
+        picked_out_rival: undefined,
         player_filter: undefined,
+        player_filter_rival: undefined,
         swap_out: undefined,
+        swap_out_rival: undefined,
         trigger: 0,
         active_rep: undefined,
         display_paste: false,
@@ -27,7 +30,9 @@ var app = new Vue({
         use_eo: false,
         custom_ownership: [],
         rival_mode: false,
-        rival_ownership: [],
+        rival_id: '',
+        rival_data: []
+
     },
     computed: {
         current_gw() {
@@ -104,7 +109,25 @@ var app = new Vue({
             return picks
         },
         rival_picks() {
-            return []
+            if (_.isEmpty(this.rival_data)) { return [] }
+            if (_.isEmpty(this.sc_details)) { return [] }
+            let td = this.rival_data
+            let picks = td.picks
+            picks.forEach(p => {
+                p.data = app.elements.find(i => i.id == p.element)
+                p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
+            })
+            let lineup = picks.filter(i => i.multiplier > 0)
+            let bench = picks.filter(i => i.multiplier == 0)
+            lineup.forEach((p,idx) => {
+                p.x = this.get_lineup_x(lineup, p, idx)
+                p.y = (p.data.element_type - 1) * 34 + 5
+            })
+            bench.forEach((p,idx) => {
+                p.x = this.get_bench_x(idx)
+                p.y = 4 * 35 + 2
+            })
+            return picks
         },
         ownership_rates() {
             if (_.isEmpty(this.elements)) { return [] }
@@ -151,142 +174,62 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return [] }
             if (_.isEmpty(this.team_picks)) { return {} }
             let picks = this.team_picks
-            let grouped_scenarios = this.grouped_scenario_with_field
-            let ownership = this.ownership_rate_dict
-            if (_.isEmpty(ownership)) { return []}
-            let cur_pick = this.current_rep_dict
-            let position_bounds = {
-                1: {'min': 1, 'max': 1},
-                2: {'min': 3, 'max': 5},
-                3: {'min': 2, 'max': 5},
-                4: {'min': 1, 'max': 3}
-            }
-            grouped_scenarios.forEach((s,i) => {
-                let sc_picks = picks.map(i => {return {...i}})
-                
-                let score = 0
-                sc_picks.forEach(p => {
-                    let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
-                    if (p.element in s.values && p.multiplier > 0) {
-                        score += parseInt(player_score) * p.multiplier
-                        p.played = true
-                    }
-                    else {
-                        if (p.multiplier > 0) {
-                            p.played = false
-                            p.autosub_out = true
-                            p.multiplier = 0
-                        }
-                    }
-                    p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
-                })
-                s.lineup_score = score + 0
-                // Autosub
-                sc_picks.filter(i => i.autosub_out).forEach(p => {
-                    let pos = p.data.element_type
-                    let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
-                    if (pos_playing < position_bounds[pos].min) {
-                        // can only replace with same type
-                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type == pos && i.element in s.values)
-                        if (match) {
-                            match.multiplier = 1
-                            match.played = true
-                            match.autosub_in = true
-                            let player_score = s.values[match.element].Points
-                            score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
-                        }
-                    }
-                    else {
-                        // next available bench player
-                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type > 1 && i.element in s.values) // no gk
-                        if (match) {
-                            match.multiplier = 1
-                            match.played = true
-                            match.autosub_in = true
-                            let player_score = s.values[match.element].Points
-                            score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
-                        }
-                    }
-                })
-                s.total_score = score
-                s.autosub_score = score - s.lineup_score
-                s.diff = score-s.total_field
-                s.idx = i
-                s.picks = sc_picks
-            })
+            
+            grouped_scenarios = this.evaluate_scenarios(picks)
+
             return grouped_scenarios
+        },
+        scenario_evals_rival() {
+            if (_.isEmpty(this.rival_data)) { return [] }
+            if (_.isEmpty(this.sc_details)) { return [] }
+            if (_.isEmpty(this.rival_picks)) { return {} }
+            let picks = this.rival_picks
+            
+            grouped_scenarios = this.evaluate_scenarios(picks)
+
+            return grouped_scenarios
+        },
+        scenario_head_2_head() {
+            if (_.isEmpty(this.scenario_evals)) { return {} }
+            if (_.isEmpty(this.scenario_evals_rival)) { return {} }
+            let t1 = _.cloneDeep(this.scenario_evals)
+            let t2 = _.cloneDeep(this.scenario_evals_rival)
+
+            let h2h = _.range(t1.length).map(i => [t1[i].total_score, t2[i].total_score])
+            
+
+            return {
+                'win': h2h.filter(i => i[0]>i[1]).length,
+                'tie': h2h.filter(i => i[0]==i[1]).length,
+                'loss': h2h.filter(i => i[0]<i[1]).length,
+                'mean': _.mean(h2h.map(i => i[0]-i[1])),
+                'max': _.max(h2h.map(i => i[0]-i[1])),
+                'min': _.min(h2h.map(i => i[0]-i[1]))
+            }
         },
         scenario_stats() {
             if (_.isEmpty(this.team_picks)) { return {} }
             if (_.isEmpty(this.scenario_evals)) { return {} }
             let evals = this.scenario_evals
-            let sample_values = evals.map(i => i.total_score)
-            let avg_score = sample_values.reduce((a,b) => a+b, 0) / evals.length
-            let best_one = _.maxBy(evals, 'total_score')
-            let worst_one = _.minBy(evals, 'total_score')
-            let best_diff_field = _.maxBy(evals, 'diff')
-            let worst_diff_field = _.minBy(evals, 'diff')
             
-            let variance = jStat.variance(sample_values)
-            let step = jStat.studentt.inv((1-(1-0.95)/2),sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
-            let conf_interval = [avg_score - step, avg_score + step]
-            let quantiles = jStat.quantiles(sample_values, [0, 0.25, 0.5, 0.75, 1])
-
-            let diff_values = evals.map(i => i.diff)
-            let diff_quantiles = jStat.quantiles(diff_values, [0, 0.25, 0.5, 0.75, 1])
-            let avg_diff = jStat.mean(diff_values)
-            let avg_field = jStat.mean(evals.map(i => i.total_field))
-
-            let probs = {
-                '20+': sample_values.filter(i => i >= 20).length / sample_values.length,
-                '30+': sample_values.filter(i => i >= 30).length / sample_values.length,
-                '40+': sample_values.filter(i => i >= 40).length / sample_values.length,
-                '50+': sample_values.filter(i => i >= 50).length / sample_values.length,
-                '60+': sample_values.filter(i => i >= 60).length / sample_values.length,
-                '70+': sample_values.filter(i => i >= 70).length / sample_values.length
-            }
-
-            let diff_probs = {
-                'm10': diff_values.filter(i => i <= -10).length / diff_values.length,
-                'm5': diff_values.filter(i => i <= -5).length / diff_values.length,
-                'm0': diff_values.filter(i => i <= 0).length / diff_values.length,
-                'p0': diff_values.filter(i => i >= 0).length / diff_values.length,
-                'p5': diff_values.filter(i => i >= 5).length / diff_values.length,
-                'p10': diff_values.filter(i => i >= 10).length / diff_values.length
-            }
-
-            setTimeout(() => {
-                app.$nextTick(() => {
-                    app.calculating = false
-                })
-            }, 100)
-
-            let lineup_avg = jStat.mean(evals.map(i => i.lineup_score))
-            let autosub_avg = jStat.mean(evals.map(i => i.autosub_score))
-
-            return {
-                avg_score,
-                avg_field,
-                best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
-                worst_one: {'sim': worst_one.sim, 'total_score': worst_one.total_score},
-                best_diff: {'sim': best_diff_field.sim, 'diff': best_diff_field.diff},
-                worst_diff: {'sim': worst_diff_field.sim, 'diff': worst_diff_field.diff},
-                total_scores: sample_values,
-                quantiles,
-                conf_interval,
-                diff_quantiles,
-                avg_diff,
-                probs,
-                diff_probs,
-                lineup_avg,
-                autosub_avg
-            }
+            let stats = this.get_eval_stats(evals)
+            return stats
+        },
+        scenario_stats_rival() {
+            if (_.isEmpty(this.team_picks)) { return {} }
+            if (_.isEmpty(this.scenario_evals_rival)) { return {} }
+            let evals = this.scenario_evals_rival
+            
+            let stats = this.get_eval_stats(evals)
+            return stats
         },
         team_ids() {
             if (_.isEmpty(this.team_data)) { return [] }
             return this.team_data.picks.map(i => i.element)
+        },
+        rival_ids() {
+            if (_.isEmpty(this.rival_data)) { return [] }
+            return this.rival_data.picks.map(i => i.element)
         },
         graph_update_watch() {
             draw_histogram()
@@ -425,6 +368,163 @@ var app = new Vue({
                 app.loading = false
             })
         },
+        fetch_rival_picks() {
+            if (!this.rival_mode) { return }
+            this.rival_data = undefined
+            this.lineup = []
+            this.bench = []
+            let target_gw = this.current_gw
+            if (this.is_next_gw) {
+                target_gw = this.current_gw - 1
+            }
+            this.loading = true
+            get_team_picks({ gw: target_gw, team_id: this.rival_id, force_last_gw: false }).then((response) => {
+                app.rival_data = response.body
+                app.rival_data.picks.forEach(p => {
+                    if (p.multiplier > 2 && this.is_next_gw) {
+                        p.multiplier = 2 // triple captain fix
+                    }
+                })
+                app.loading = false
+                draw_histogram()
+            }).catch(error => {
+                console.error(error)
+                app.loading = false
+            })
+        },
+        evaluate_scenarios(picks) {
+
+            let grouped_scenarios = _.cloneDeep(this.grouped_scenario_with_field)
+            let ownership = this.ownership_rate_dict
+            if (_.isEmpty(ownership)) { return []}
+            let cur_pick = this.current_rep_dict
+            let position_bounds = {
+                1: {'min': 1, 'max': 1},
+                2: {'min': 3, 'max': 5},
+                3: {'min': 2, 'max': 5},
+                4: {'min': 1, 'max': 3}
+            }
+            grouped_scenarios.forEach((s,i) => {
+                let sc_picks = _.cloneDeep(picks.map(i => {return {...i}}))
+                
+                let score = 0
+                sc_picks.forEach(p => {
+                    let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
+                    if (p.element in s.values && p.multiplier > 0) {
+                        score += parseInt(player_score) * p.multiplier
+                        p.played = true
+                    }
+                    else {
+                        if (p.multiplier > 0) {
+                            p.played = false
+                            p.autosub_out = true
+                            p.multiplier = 0
+                        }
+                    }
+                    p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
+                })
+                s.lineup_score = score + 0
+                // Autosub
+                sc_picks.filter(i => i.autosub_out).forEach(p => {
+                    let pos = p.data.element_type
+                    let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
+                    if (pos_playing < position_bounds[pos].min) {
+                        // can only replace with same type
+                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type == pos && i.element in s.values)
+                        if (match) {
+                            match.multiplier = 1
+                            match.played = true
+                            match.autosub_in = true
+                            let player_score = s.values[match.element].Points
+                            score += parseInt(player_score) * match.multiplier
+                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
+                        }
+                    }
+                    else {
+                        // next available bench player
+                        let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type > 1 && i.element in s.values) // no gk
+                        if (match) {
+                            match.multiplier = 1
+                            match.played = true
+                            match.autosub_in = true
+                            let player_score = s.values[match.element].Points
+                            score += parseInt(player_score) * match.multiplier
+                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
+                        }
+                    }
+                })
+                s.total_score = score
+                s.autosub_score = score - s.lineup_score
+                s.diff = score-s.total_field
+                s.idx = i
+                s.picks = sc_picks
+            })
+
+            return grouped_scenarios
+        },
+        get_eval_stats(evals) {
+            let sample_values = evals.map(i => i.total_score)
+            let avg_score = sample_values.reduce((a,b) => a+b, 0) / evals.length
+            let best_one = _.maxBy(evals, 'total_score')
+            let worst_one = _.minBy(evals, 'total_score')
+            let best_diff_field = _.maxBy(evals, 'diff')
+            let worst_diff_field = _.minBy(evals, 'diff')
+            
+            let variance = jStat.variance(sample_values)
+            let step = jStat.studentt.inv((1-(1-0.95)/2),sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
+            let conf_interval = [avg_score - step, avg_score + step]
+            let quantiles = jStat.quantiles(sample_values, [0, 0.25, 0.5, 0.75, 1])
+
+            let diff_values = evals.map(i => i.diff)
+            let diff_quantiles = jStat.quantiles(diff_values, [0, 0.25, 0.5, 0.75, 1])
+            let avg_diff = jStat.mean(diff_values)
+            let avg_field = jStat.mean(evals.map(i => i.total_field))
+
+            let probs = {
+                '20+': sample_values.filter(i => i >= 20).length / sample_values.length,
+                '30+': sample_values.filter(i => i >= 30).length / sample_values.length,
+                '40+': sample_values.filter(i => i >= 40).length / sample_values.length,
+                '50+': sample_values.filter(i => i >= 50).length / sample_values.length,
+                '60+': sample_values.filter(i => i >= 60).length / sample_values.length,
+                '70+': sample_values.filter(i => i >= 70).length / sample_values.length
+            }
+
+            let diff_probs = {
+                'm10': diff_values.filter(i => i <= -10).length / diff_values.length,
+                'm5': diff_values.filter(i => i <= -5).length / diff_values.length,
+                'm0': diff_values.filter(i => i <= 0).length / diff_values.length,
+                'p0': diff_values.filter(i => i >= 0).length / diff_values.length,
+                'p5': diff_values.filter(i => i >= 5).length / diff_values.length,
+                'p10': diff_values.filter(i => i >= 10).length / diff_values.length
+            }
+
+            setTimeout(() => {
+                app.$nextTick(() => {
+                    app.calculating = false
+                })
+            }, 100)
+
+            let lineup_avg = jStat.mean(evals.map(i => i.lineup_score))
+            let autosub_avg = jStat.mean(evals.map(i => i.autosub_score))
+
+            return {
+                avg_score,
+                avg_field,
+                best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
+                worst_one: {'sim': worst_one.sim, 'total_score': worst_one.total_score},
+                best_diff: {'sim': best_diff_field.sim, 'diff': best_diff_field.diff},
+                worst_diff: {'sim': worst_diff_field.sim, 'diff': worst_diff_field.diff},
+                total_scores: sample_values,
+                quantiles,
+                conf_interval,
+                diff_quantiles,
+                avg_diff,
+                probs,
+                diff_probs,
+                lineup_avg,
+                autosub_avg
+            }
+        },
         saveSampleData(gw, data) {
             this.sample_gw = gw
             this.sample_data = Object.freeze(data)
@@ -433,6 +533,11 @@ var app = new Vue({
         submitTeam(e) {
             if (e.keyCode === 13) {
                 this.fetch_team_picks()
+            }
+        },
+        submitRival(e) {
+            if (e.keyCode === 13) {
+                this.fetch_rival_picks()
             }
         },
         paste_data(e) {
@@ -481,9 +586,17 @@ var app = new Vue({
             cc.multiplier = 1
             nc.multiplier = 2
             this.team_data.picks = picks
-            // this.$nextTick(() => {
-            //     app.trigger = app.trigger + 1
-            // })
+        },
+        select_captain_rival(e) {
+            console.log(e)
+            let picks = this.rival_data.picks
+            let cc = picks.find(i => i.multiplier > 1)
+            let nc = picks.find(i => i.element == e)
+            if (cc.element == nc.element) { return } // same player
+            this.calculating = true
+            cc.multiplier = 1
+            nc.multiplier = 2
+            this.rival_data.picks = picks
         },
         select_out(e) {
             if (this.picked_out != undefined) {
@@ -496,30 +609,44 @@ var app = new Vue({
             else {
                 this.picked_out = e
                 this.player_filter = this.elements.find(i => i.id == e).element_type
-
                 // replacement_options
                 this.$nextTick(() => {
                     let table = $("#replacement_options").DataTable({
-                        "order": [4],
-                        "lengthChange": false,
-                        "pageLength": 15,
-                        "searching": true,
-                        "info": false,
-                        "paging": true,
-                        "columnDefs": []
+                        "order": [4], "lengthChange": false, "pageLength": 15, "searching": true, "info": false,
+                        "paging": true,"columnDefs": []
                     });
                     table.cells("td").invalidate().draw();
-
                     let is_mobile = window.screen.width < 800
                     if (is_mobile) {
                         let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
-                        window.scrollBy({
-                            top: table_y,
-                            left: 0,
-                            behavior: 'smooth'
-                        })
+                        window.scrollBy({top: table_y, left: 0, behavior: 'smooth'})
                     }
-                    
+                })
+            }
+        },
+        select_out_rival(e) {
+            if (this.picked_out_rival != undefined) {
+                $("#replacement_options_rival").DataTable().destroy();
+            }
+            if (this.picked_out_rival == e) {
+                this.picked_out_rival = undefined
+                this.player_filter_rival = undefined
+            }
+            else {
+                this.picked_out_rival = e
+                this.player_filter_rival = this.elements.find(i => i.id == e).element_type
+                // replacement_options
+                this.$nextTick(() => {
+                    let table = $("#replacement_options_rival").DataTable({
+                        "order": [4], "lengthChange": false, "pageLength": 15, "searching": true, "info": false,
+                        "paging": true,"columnDefs": []
+                    });
+                    table.cells("td").invalidate().draw();
+                    let is_mobile = window.screen.width < 800
+                    if (is_mobile) {
+                        let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
+                        window.scrollBy({top: table_y, left: 0, behavior: 'smooth'})
+                    }
                 })
             }
         },
@@ -545,22 +672,47 @@ var app = new Vue({
                     behavior: 'smooth'
                 })
             }
+        },
+        transfer_in_rival(e) {
+            if (this.picked_out_rival == undefined) { return }
+            let out_player_index = this.rival_data.picks.findIndex(i => i.element == this.picked_out_rival)
+            // let in_player = elements.find(i => i.id == e)
 
-            
+            this.calculating = true
 
+            this.rival_data.picks[out_player_index].element = e
+            this.select_out_rival(this.picked_out_rival) // clear selection
+            this.swap_out_rival = undefined // clear bench swap
+
+            let is_mobile = window.screen.width < 800
+
+            if (is_mobile) {
+                let field_pos = jQuery("#field_portion")[0].getBoundingClientRect().top
+                window.scrollBy({
+                    top: field_pos,
+                    left: 0,
+                    behavior: 'smooth'
+                })
+            }
         },
         select_swap(e) {
-            if (this.swap_out == e) { // cancel swap
-                this.swap_out = undefined
-                this.team_data.picks.forEach(p => {
+            this.swap_operation(e, 'swap_out', this.team_data)
+        },
+        select_swap_rival(e) {
+            this.swap_operation(e, 'swap_out_rival', this.rival_data)
+        },
+        swap_operation(e, target, data) {
+            if (this[target] == e) { // cancel swap
+                this[target] = undefined
+                data.picks.forEach(p => {
                     p.swap_available = undefined
                 })
             }
             else {
-                if (this.swap_out == undefined) {
-                    this.swap_out = e
-                    let picks = this.team_data.picks
-                    let tp = this.team_data.picks.find(i => i.element == e)
+                if (this[target] == undefined) {
+                    this[target] = e
+                    let picks = data.picks
+                    let tp = data.picks.find(i => i.element == e)
                     // TODO check formation legality here!
                     let is_lineup = tp.multiplier > 0
                     let el_type = tp.data.element_type
@@ -596,8 +748,8 @@ var app = new Vue({
 
                     this.calculating = true
 
-                    let p_out = this.team_data.picks.find(i => i.element == this.swap_out)
-                    let p_in = this.team_data.picks.find(i => i.element == e)
+                    let p_out = data.picks.find(i => i.element == this.swap_out)
+                    let p_in = data.picks.find(i => i.element == e)
                     
                     let c = p_out.multiplier * 1
                     p_out.multiplier = 999
@@ -609,12 +761,12 @@ var app = new Vue({
                       }
 
                     // position swap
-                    let o1 = this.team_data.picks.findIndex(i => i.element == this.swap_out)
-                    let o2 = this.team_data.picks.findIndex(i => i.element == e)
-                    swapArrayLocs(this.team_data.picks, o1, o2)
+                    let o1 = data.picks.findIndex(i => i.element == this.swap_out)
+                    let o2 = data.picks.findIndex(i => i.element == e)
+                    swapArrayLocs(data.picks, o1, o2)
 
-                    this.swap_out = undefined
-                    this.team_data.picks.forEach(p => {
+                    this[target] = undefined
+                    data.picks.forEach(p => {
                         p.swap_available = undefined
                     })
                     
@@ -690,6 +842,7 @@ function update_sim_values() {
     Promise.allSettled(tasks).then(() => {
         if (app.team_id != '') {
             app.fetch_team_picks()
+            app.fetch_rival_picks()
         }
     })
     .catch((error) => {
