@@ -1457,6 +1457,10 @@ th.vertical-name {
     background-color: steelblue !important;
 }
 
+.player-disabled {
+    background-color: gray;
+}
+
 .occurence-bars {
     fill: #ff8600;
     stroke: #ffffff;
@@ -1572,4 +1576,12 @@ th.vertical-name {
 
 .red-arrow {
     color: #ff3b69;
+}
+
+.rival_lineup {
+    background-color: rgb(63, 43, 43)
+}
+
+.rival_bench {
+    background-color: dimgrey;
 }

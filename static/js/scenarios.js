@@ -25,7 +25,9 @@ var app = new Vue({
         sample_gw: undefined,
         sample_data: [],
         use_eo: false,
-        custom_ownership: []
+        custom_ownership: [],
+        rival_mode: false,
+        rival_ownership: [],
     },
     computed: {
         current_gw() {
@@ -101,8 +103,12 @@ var app = new Vue({
             })
             return picks
         },
+        rival_picks() {
+            return []
+        },
         ownership_rates() {
             if (_.isEmpty(this.elements)) { return [] }
+            if (this.active_sample == 'custom' && _.isEmpty(this.custom_ownership)) { return [] }
             if (!_.isEmpty(this.custom_ownership) && this.active_sample == 'custom') {
                 return this.custom_ownership
             }
@@ -147,6 +153,7 @@ var app = new Vue({
             let picks = this.team_picks
             let grouped_scenarios = this.grouped_scenario_with_field
             let ownership = this.ownership_rate_dict
+            if (_.isEmpty(ownership)) { return []}
             let cur_pick = this.current_rep_dict
             let position_bounds = {
                 1: {'min': 1, 'max': 1},
@@ -370,6 +377,28 @@ var app = new Vue({
                 g.away_cs = g.entries.home.filter(i => i == 0).length / g.entries.home.length
             }
             return game_details
+        },
+        sorted_player_list() {
+            if (this.elements == []){ return []}
+            let e = _.cloneDeep(this.elements)
+            e.forEach((v) => {v.selected_by_percent = parseFloat(v.selected_by_percent)})
+            return _.orderBy(e, 'selected_by_percent', 'desc')
+        },
+        sc_player_averages() {
+            if (_.isEmpty(this.sc_game_details)) { return {}}
+
+            let sc = this.sc_game_details
+            let sums = []
+
+            sc.forEach((e) => {
+                let players = _.mapValues(_.groupBy(e.details.map(i => Object.entries(_.merge(i.points.away, i.points.home))).flat(), '0'), v => v.map(j => j[1]))
+                let player_sum = _.mapValues(players, v => _.sum(v))
+                sums.push(Object.entries(player_sum))
+            })
+
+            let total_avg = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/sc.length)
+            let total_pps = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/v.length)
+            return {avg: total_avg, pps: total_pps}
         }
     },
     methods: {
@@ -633,7 +662,9 @@ var app = new Vue({
             });
         },
         update_field_values() {
-
+            if (this.active_sample == 'custom') {
+                jQuery('#ownershipModal').modal('show')
+            }
         },
         saveOwnershipAndClose() {
             let values = jQuery("#ownership_paste").val()

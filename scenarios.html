@@ -125,23 +125,32 @@
                             </select>
                         </span>
                         with
-                        <span class="d-inline-block">
-                            <select class="form-control live-select" v-model="active_sample" @change="update_field_values()">
-                                <option v-for="(k, i) in samples" :value="i">{{ k }}</option>
-                                <option value="custom">Custom</option>
-                            </select>
+                        <span v-if="!rival_mode">
+                            <span class="d-inline-block">
+                                <select class="form-control live-select" v-model="active_sample" @change="update_field_values()">
+                                    <option v-for="(k, i) in samples" :value="i">{{ k }}</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </span>
+                            <span class="d-inline-block text-small">
+                                <div class="custom-control custom-switch ml-1 mr-1">
+                                    <input id="eo-toggle" type="checkbox" data-toggle="toggle" v-model="use_eo" class="custom-control-input mr-1">
+                                    <label for="eo-toggle" class="custom-control-label">Use EO</label>
+                                </div>
+                            </span>
                         </span>
-                        <span class="d-inline-block text-small">
-                            <div class="custom-control custom-switch ml-1 mr-1">
-                                <input id="eo-toggle" type="checkbox" data-toggle="toggle" v-model="use_eo" class="custom-control-input mr-1">
-                                <label for="eo-toggle" class="custom-control-label">Use EO</label>
-                            </div>
+                        <span v-else>
+                            Rival
                         </span>
-                        or
-                        <button class="btn btn-secondary mb-1" type="button" @click="jQuery('#ownershipModal').modal('show')">Paste Ownership</button>
                     </div>
                     <!-- GW{{ current_gw }} -->
                 </h5>
+                <!-- <div class="border-complement card-header text-center">
+                    <div class="custom-control custom-switch ml-1 mr-1">
+                        <input id="rival-toggle" type="checkbox" data-toggle="toggle" v-model="rival_mode" class="custom-control-input mr-1">
+                        <label for="rival-toggle" class="custom-control-label">Rival Mode</label>
+                    </div>
+                </div> -->
                 <div class="scenario_detail">
                     Simulated outcomes based on current projections
                 </div>
@@ -287,12 +296,14 @@
             <div class="card border-dark bg-squad-card text-white">
                 <h6 class="card-header border-complement text-center scenario_title">Overview</h6>
                 <div class="scenario_detail">
-                    This tool uses 100 randomly generated simulations to evaluate your team selections for the next GW
+                    This tool uses 100 randomly generated simulations to evaluate your team selections for the next GW.<br />
+                    These values are approximations based on EV values. For constructing a team, try <a href="https://fplreview.com/free-planner">FPLReview Planner</a>.
                 </div>
                 <div class="card-body text-center p-3" v-cloak>
                     <div class="row no-gutters justify-content-center">
                         <!-- Left side: field -->
-                        <div class="col-12 col-md-6" id="field_portion">
+                        <div class="col-12 col-md-6" id="field_portion">  
+                            <!-- v-for="pick_list in [team_picks, rival_picks]"> -->
                             <div class="lineup gray-bg">
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
                                     <svg class="field">
@@ -369,167 +380,176 @@
                                 </svg>
                             </div>
                         </div>
-                        <!-- Right side: data values -->
-                        <div class="col-12 col-md-6 p-2" v-show="picked_out == undefined" id="data_outcome" style="background-color: #474747;">
-                            <div class="red-border-bottom text-center">
-                                <b>Points Analysis</b>
-                                <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_stats)">
-                                    <i class="fas fa-image"></i>
+                        <template v-if="!rival_mode">
+                            <!-- Right side: data values -->
+                            <div class="col-12 col-md-6 p-2" v-show="picked_out == undefined" id="data_outcome" style="background-color: #474747;">
+                                <div class="red-border-bottom text-center">
+                                    <b>Points Analysis</b>
+                                    <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_stats)">
+                                        <i class="fas fa-image"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Average
+                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Average
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ scenario_stats.avg_score }} pts
+                                    </div>
                                 </div>
-                                <div class="col-6 p-1 value-side">
-                                    {{ scenario_stats.avg_score }} pts
+                                <!-- <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Confidence Interval
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ (scenario_stats.conf_interval && scenario_stats.conf_interval[0].toFixed(2)) || "" }} - {{ (scenario_stats.conf_interval && scenario_stats.conf_interval[1].toFixed(2)) || "" }} pts</span>
+                                    </div>
+                                </div> -->
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
+                                        <div>Box Plot</div>
+                                        <div class="text-small">Min-Q1-Median-Q3-Max</div>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span v-if="!_.isEmpty(scenario_stats)">
+                                            <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.quantiles[4]+10, 110) + ' 35'" width="100%">
+                                                <g>
+                                                    <line :x1="scenario_stats.quantiles[0]" :x2="scenario_stats.quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
+                                                    <circle :cx="scenario_stats.quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <circle :cx="scenario_stats.quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <rect :x="scenario_stats.quantiles[1]" :width="scenario_stats.quantiles[3]-scenario_stats.quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <line :x1="scenario_stats.quantiles[2]" :x2="scenario_stats.quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
+                                                    <text :x="scenario_stats.quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[0]*10)/10 }}</text>
+                                                    <text :x="scenario_stats.quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[4]*10)/10 }}</text>
+                                                    <text :x="scenario_stats.quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[1]*10)/10 }}</text>
+                                                    <text :x="scenario_stats.quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[3]*10)/10 }}</text>
+                                                    <text :x="scenario_stats.quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[2]*10)/10 }}</text>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <!-- <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Confidence Interval
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Most Points<br/><span class="scenario-link" :data-id="scenario_stats.best_one && scenario_stats.best_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
+                                    </div>
                                 </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ (scenario_stats.conf_interval && scenario_stats.conf_interval[0].toFixed(2)) || "" }} - {{ (scenario_stats.conf_interval && scenario_stats.conf_interval[1].toFixed(2)) || "" }} pts</span>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Least Points<br/><span class="scenario-link" :data-id="scenario_stats.worst_one && scenario_stats.worst_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
+                                    </div>
                                 </div>
-                            </div> -->
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
-                                    <div>Box Plot</div>
-                                    <div class="text-small">Min-Q1-Median-Q3-Max</div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Avg. Lineup Points
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ (scenario_stats.lineup_avg || 0).toFixed(2) }} pts</span>
+                                    </div>
                                 </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span v-if="!_.isEmpty(scenario_stats)">
-                                        <svg :view-box.camel="'0 0 ' + Math.max(scenario_stats.quantiles[4]+10, 110) + ' 35'" width="100%">
-                                            <g>
-                                                <line :x1="scenario_stats.quantiles[0]" :x2="scenario_stats.quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
-                                                <circle :cx="scenario_stats.quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
-                                                <circle :cx="scenario_stats.quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
-                                                <rect :x="scenario_stats.quantiles[1]" :width="scenario_stats.quantiles[3]-scenario_stats.quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
-                                                <line :x1="scenario_stats.quantiles[2]" :x2="scenario_stats.quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
-                                                <text :x="scenario_stats.quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[0]*10)/10 }}</text>
-                                                <text :x="scenario_stats.quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[4]*10)/10 }}</text>
-                                                <text :x="scenario_stats.quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[1]*10)/10 }}</text>
-                                                <text :x="scenario_stats.quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[3]*10)/10 }}</text>
-                                                <text :x="scenario_stats.quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.quantiles[2]*10)/10 }}</text>
-                                            </g>
-                                        </svg>
-                                    </span>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Avg. Autosub Points
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ (scenario_stats.autosub_avg || 0).toFixed(2) }} pts</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Most Points<br/><span class="scenario-link" :data-id="scenario_stats.best_one && scenario_stats.best_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_one && scenario_stats.best_one.sim) || '' }}</span>
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ (scenario_stats.best_one && scenario_stats.best_one.total_score) || 0 }} pts</span>
-                                </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Least Points<br/><span class="scenario-link" :data-id="scenario_stats.worst_one && scenario_stats.worst_one.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_one && scenario_stats.worst_one.sim) || '' }}</span>
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ (scenario_stats.worst_one && scenario_stats.worst_one.total_score) || 0 }} pts</span>
-                                </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Avg. Lineup Points
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ (scenario_stats.lineup_avg || 0).toFixed(2) }} pts</span>
-                                </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Avg. Autosub Points
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ (scenario_stats.autosub_avg || 0).toFixed(2) }} pts</span>
-                                </div>
-                            </div>
 
-                            <div class="red-border-bottom text-center mt-1">
-                                <b>Difference to Field Average Analysis</b>
+                                <div class="red-border-bottom text-center mt-1">
+                                    <b>Difference to Field Average Analysis</b>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Average
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ getWithSign(scenario_stats.avg_diff) }} pts
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
+                                        <div>Box Plot</div>
+                                        <div class="text-small">Min-Q1-Median-Q3-Max</div>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span v-if="!_.isEmpty(scenario_stats)">
+                                            <svg :view-box.camel=" -Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2) + ' 0 ' + 2*(Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2)) + ' 35'" width="100%">
+                                                <g>
+                                                    <line :x1="scenario_stats.diff_quantiles[0]" :x2="scenario_stats.diff_quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
+                                                    <circle :cx="scenario_stats.diff_quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <circle :cx="scenario_stats.diff_quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <rect :x="scenario_stats.diff_quantiles[1]" :width="scenario_stats.diff_quantiles[3]-scenario_stats.diff_quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
+                                                    <line :x1="scenario_stats.diff_quantiles[2]" :x2="scenario_stats.diff_quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
+                                                    <text :x="scenario_stats.diff_quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[0]*100)/100 }}</text>
+                                                    <text :x="scenario_stats.diff_quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[4]*100)/100 }}</text>
+                                                    <text :x="scenario_stats.diff_quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[1]*100)/100 }}</text>
+                                                    <text :x="scenario_stats.diff_quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[3]*100)/100 }}</text>
+                                                    <text :x="scenario_stats.diff_quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[2]*100)/100 }}</text>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Best Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.best_diff && scenario_stats.best_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
+                                    <div class="col-6 p-1 title-side">
+                                        Worst Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.worst_diff && scenario_stats.worst_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
+                                    </div>
+                                    <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
+                                        <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Average
-                                </div>
-                                <div class="col-6 p-1 value-side">
-                                    {{ getWithSign(scenario_stats.avg_diff) }} pts
-                                </div>
-                            </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side d-flex flex-column justify-content-center">
-                                    <div>Box Plot</div>
-                                    <div class="text-small">Min-Q1-Median-Q3-Max</div>
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span v-if="!_.isEmpty(scenario_stats)">
-                                        <svg :view-box.camel=" -Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2) + ' 0 ' + 2*(Math.max(50, scenario_stats.diff_quantiles[4]*1.2, -scenario_stats.diff_quantiles[0]*1.2)) + ' 35'" width="100%">
-                                            <g>
-                                                <line :x1="scenario_stats.diff_quantiles[0]" :x2="scenario_stats.diff_quantiles[4]" y1="10" y2="10" stroke-width="1" stroke="#ffffff"  fill="none"></line>
-                                                <circle :cx="scenario_stats.diff_quantiles[0]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
-                                                <circle :cx="scenario_stats.diff_quantiles[4]" cy="10" r="2" fill="#238381" stroke="white" stroke-width="1" />
-                                                <rect :x="scenario_stats.diff_quantiles[1]" :width="scenario_stats.diff_quantiles[3]-scenario_stats.diff_quantiles[1]" y="0" height="20" fill="#238381" stroke="white" stroke-width="1" />
-                                                <line :x1="scenario_stats.diff_quantiles[2]" :x2="scenario_stats.diff_quantiles[2]" y1="0" y2="20" stroke-width="1" stroke="#ffffff" fill="none"></line>
-                                                <text :x="scenario_stats.diff_quantiles[0]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[0]*100)/100 }}</text>
-                                                <text :x="scenario_stats.diff_quantiles[4]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[4]*100)/100 }}</text>
-                                                <text :x="scenario_stats.diff_quantiles[1]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[1]*100)/100 }}</text>
-                                                <text :x="scenario_stats.diff_quantiles[3]" y="30" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[3]*100)/100 }}</text>
-                                                <text :x="scenario_stats.diff_quantiles[2]" y="25" text-anchor="middle" alignment-baseline="central" dominant-baseline="central" font-size="3.5pt" fill="white">{{ Math.floor(scenario_stats.diff_quantiles[2]*100)/100 }}</text>
-                                            </g>
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Best Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.best_diff && scenario_stats.best_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.best_diff && scenario_stats.best_diff.sim) || '' }}</span>
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ getWithSign((scenario_stats.best_diff && scenario_stats.best_diff.diff) || 0) }} pts</span>
+                            <div class="col-12 col-md-6" v-show="picked_out != undefined" id="select_portion">
+                                <div class="red-border-bottom mb-2"><b>Click on a row to replace player</b></div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm text-small text-white" id="replacement_options">
+                                        <thead>
+                                            <tr>
+                                                <!-- <th class="text-muted text-center">ID</th> -->
+                                                <th>Position</th>
+                                                <th>Name</th>
+                                                <th>Team</th>
+                                                <th>Price</th>
+                                                <th>Own%</th>
+                                                <th>Avg.Pts</th>
+                                                <th>Pts per App.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="player in elements" v-if="player.element_type == player_filter" @click="team_ids.includes(player.id) ? {} : transfer_in(player.id)" :class="{'player-clickable': !team_ids.includes(player.id), 'player-disabled': team_ids.includes(player.id)}">
+                                                <!-- <td class="text-muted">{{ player.id }}</td> -->
+                                                <td>{{ element_type[player.element_type].short }}</td>
+                                                <td>{{ player.web_name }}</td>
+                                                <td>{{ teams_ordered[player.team-1].short }}</td>
+                                                <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
+                                                <td>{{ player.selected_by_percent }}%</td>
+                                                <td>{{ sc_player_averages.avg[player.id] ? _.round(sc_player_averages.avg[player.id],1) : "-" }}</td>
+                                                <td>{{ sc_player_averages.pps[player.id] ? _.round(sc_player_averages.pps[player.id],1) : "-" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mb-2">
-                                <div class="col-6 p-1 title-side">
-                                    Worst Diff. to Field<br/><span class="scenario-link" :data-id="scenario_stats.worst_diff && scenario_stats.worst_diff.sim" @click="activate_with_link">Scenario #{{ (scenario_stats.worst_diff && scenario_stats.worst_diff.sim) || '' }}</span>
-                                </div>
-                                <div class="col-6 p-1 d-flex align-items-center justify-content-center value-side">
-                                    <span>{{ getWithSign((scenario_stats.worst_diff && scenario_stats.worst_diff.diff) || 0) }} pts</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6" v-show="picked_out != undefined" id="select_portion">
-                            <div class="red-border-bottom mb-2"><b>Click on a row to replace player</b></div>
-                            <div class="table-responsive">
-                                <table class="table table-sm text-small text-white table-striped" id="replacement_options">
-                                    <thead>
-                                        <tr>
-                                            <!-- <th class="text-muted text-center">ID</th> -->
-                                            <th>Position</th>
-                                            <th>Name</th>
-                                            <th>Team</th>
-                                            <th>Price</th>
-                                            <th>Own%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="player in elements" v-if="player.element_type == player_filter && !team_ids.includes(player.id)" @click="transfer_in(player.id)" class="player-clickable">
-                                            <!-- <td class="text-muted">{{ player.id }}</td> -->
-                                            <td>{{ element_type[player.element_type].short }}</td>
-                                            <td>{{ player.web_name }}</td>
-                                            <td>{{ teams_ordered[player.team-1].short }}</td>
-                                            <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
-                                            <td>{{ player.selected_by_percent }}%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        </template>
+                        <template v-else>
+
+                        </template>
                         
                     </div>
                     <div class="row justify-content-center">
@@ -966,7 +986,7 @@
 
 <script>
     let sc_files = [["GW27", "data/2021-22/GW27/2022-02-23/output/scenarios.csv"], ["GW26", "data/2021-22/GW26/2022-02-19/output/scenarios.csv"], ["GW25", "data/2021-22/GW25/2022-02-12/output/scenarios.csv"], ["GW24", "data/2021-22/GW24/2022-02-08/output/scenarios.csv"], ["GW23", "data/2021-22/GW23/2022-01-21/output/scenarios.csv"], ["GW22", "data/2021-22/GW22/2022-01-14/output/scenarios.csv"], ["GW21", "data/2021-22/GW21/2022-01-01/output/scenarios.csv"], ["GW20", "data/2021-22/GW20/2021-12-28/output/scenarios.csv"], ["GW19", "data/2021-22/GW19/2021-12-26/output/scenarios.csv"], ["GW18", "data/2021-22/GW18/2021-12-18/output/scenarios.csv"], ["GW17", "data/2021-22/GW17/2021-12-14/output/scenarios.csv"], ["GW16", "data/2021-22/GW16/2021-12-10/output/scenarios.csv"], ["GW15", "data/2021-22/GW15/2021-12-04/output/scenarios.csv"], ["GW14", "data/2021-22/GW14/2021-11-30/output/scenarios.csv"], ["GW13", "data/2021-22/GW13/2021-11-27/output/scenarios.csv"], ["GW12", "data/2021-22/GW12/2021-11-20/output/scenarios.csv"], ["GW11", "data/2021-22/GW11/2021-11-05/output/scenarios.csv"], ["GW10", "data/2021-22/GW10/2021-10-29/output/scenarios.csv"], ["GW9", "data/2021-22/GW9/2021-10-22/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"]]
-    let ts = 20220223221830
+    let ts = 20220224020312
 </script>
 
  </div>
@@ -1032,11 +1052,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220223221830"></script>
+<script src="/static/js/main.js?ts=20220224020312"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220223221830"></script>
+<script src="/static/js/sampling_utils.js?ts=20220224020312"></script>
 
-<script src="/static/js/scenarios.js?ts=20220223221830"></script>
+<script src="/static/js/scenarios.js?ts=20220224020312"></script>
 
 
 <script>
