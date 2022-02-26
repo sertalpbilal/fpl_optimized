@@ -90,7 +90,7 @@ var app = new Vue({
             if (_.isEmpty(this.team_data)) { return [] }
             if (_.isEmpty(this.sc_details)) { return [] }
             let td = this.team_data
-            let picks = _.cloneDeep(td.picks)
+            let picks = td.picks
             picks.forEach(p => {
                 p.data = app.elements.find(i => i.id == p.element)
                 p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
@@ -360,6 +360,7 @@ var app = new Vue({
                     if (p.multiplier > 2 && this.is_next_gw) {
                         p.multiplier = 2 // triple captain fix
                     }
+                    p.swap_available = undefined
                 })
                 app.loading = false
                 draw_histogram()
