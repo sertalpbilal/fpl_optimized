@@ -216,7 +216,7 @@ var app = new Vue({
             return stats
         },
         scenario_stats_rival() {
-            if (_.isEmpty(this.team_picks)) { return {} }
+            if (_.isEmpty(this.rival_picks)) { return {} }
             if (_.isEmpty(this.scenario_evals_rival)) { return {} }
             let evals = this.scenario_evals_rival
             
@@ -856,10 +856,10 @@ function read_scenario(order=0) {
     let file = app.sc_files[order][1]
     return read_local_file(file).then(d => {
         app.active_sc = order
-        app.sc_details = $.csv.toObjects(d)
+        app.sc_details = Object.freeze($.csv.toObjects(d))
         let details_file = file.replace("/scenarios.csv", "/scenario_details.json?ts="+ts)
         read_local_file(details_file).then(e => {
-            app.sc_game_details = e
+            app.sc_game_details = Object.freeze(e)
         }).catch(e => {
             console.log("No details")
             app.sc_game_details = undefined
@@ -1107,7 +1107,7 @@ function draw_histogram() {
 
 async function fetch_fpl_fixture() {
     return get_entire_fixture().then((data) => {
-        app.fixture_data = data
+        app.fixture_data = Object.freeze(data)
     }).catch((e) => {
         console.log("Error", e)
     })
@@ -1120,7 +1120,7 @@ $(document).ready(() => {
     calls = [
         read_scenario(),
         get_fpl_main_data().then(d => {
-            app.main_data = d
+            app.main_data = Object.freeze(d)
         }),
         get_latest_sample_data(season, gw).then(sample => {
             if (sample != undefined) { app.saveSampleData(sample.gw, sample.data) }
