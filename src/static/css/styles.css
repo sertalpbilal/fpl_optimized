@@ -1585,3 +1585,13 @@ th.vertical-name {
 .rival_bench {
     background-color: dimgrey;
 }
+
+
+@media screen and (min-width: 768px) {
+    .copy_button {
+        position: absolute;
+        top: 280px;
+        z-index: 2;
+    }    
+}
+

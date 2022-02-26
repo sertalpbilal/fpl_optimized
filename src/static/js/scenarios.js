@@ -31,7 +31,7 @@ var app = new Vue({
         custom_ownership: [],
         rival_mode: false,
         rival_id: '',
-        rival_data: []
+        rival_data: undefined
 
     },
     computed: {
@@ -90,7 +90,7 @@ var app = new Vue({
             if (_.isEmpty(this.team_data)) { return [] }
             if (_.isEmpty(this.sc_details)) { return [] }
             let td = this.team_data
-            let picks = td.picks
+            let picks = _.cloneDeep(td.picks)
             picks.forEach(p => {
                 p.data = app.elements.find(i => i.id == p.element)
                 p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
@@ -644,7 +644,7 @@ var app = new Vue({
                     table.cells("td").invalidate().draw();
                     let is_mobile = window.screen.width < 800
                     if (is_mobile) {
-                        let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
+                        let table_y = jQuery("#select_portion_rival")[0].getBoundingClientRect().top
                         window.scrollBy({top: table_y, left: 0, behavior: 'smooth'})
                     }
                 })
@@ -687,7 +687,7 @@ var app = new Vue({
             let is_mobile = window.screen.width < 800
 
             if (is_mobile) {
-                let field_pos = jQuery("#field_portion")[0].getBoundingClientRect().top
+                let field_pos = jQuery("#field_portion_rival")[0].getBoundingClientRect().top
                 window.scrollBy({
                     top: field_pos,
                     left: 0,
@@ -824,6 +824,56 @@ var app = new Vue({
             this.custom_ownership = val_dict.map(i => {return {'id': i[0], 'effective_ownership': i[1], 'selected_by_percent': i[1]}})
             this.active_sample = 'custom'
             jQuery("#ownershipModal").modal('hide')
+        },
+        copy_left_to_right() {
+            this.rival_data = _.cloneDeep(this.team_data)
+        },
+        copy_right_to_left() {
+            this.team_data = _.cloneDeep(this.rival_data)
+        },
+        saveMyTeam() {
+            let obj = _.cloneDeep(app.team_data)
+            downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
+        },
+        loadMyTeam(e) {
+            if (!e.target.files) { return }
+            let file = e.target.files[0]
+            let reader = new FileReader()
+            reader.onload = (evt) => {
+                try {
+                    debugger
+                    let content = evt.target.result
+                    let v = JSON.parse(decodeURIComponent(escape(content)))
+                    app.team_data = v
+                }
+                catch {
+
+                }
+            }
+            reader.readAsText(file)
+            e.target.value = null
+        },
+        saveRivalTeam() {
+            let obj = _.cloneDeep(app.rival_data)
+            downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
+        },
+        loadRivalTeam(e) {
+            if (!e.target.files) { return }
+            let file = e.target.files[0]
+            let reader = new FileReader()
+            reader.onload = (evt) => {
+                try {
+                    debugger
+                    let content = evt.target.result
+                    let v = JSON.parse(decodeURIComponent(escape(content)))
+                    app.rival_data = v
+                }
+                catch {
+
+                }
+            }
+            reader.readAsText(file)
+            e.target.value = null
         }
     }
 })

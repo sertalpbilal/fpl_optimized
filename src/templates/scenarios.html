@@ -203,6 +203,7 @@
                         <div class="col-12 col-md-6" id="field_portion">  
                             <!-- v-for="pick_list in [team_picks, rival_picks]"> -->
                             <div class="lineup gray-bg">
+                                <h5 v-if="rival_mode">Your Team</h5>
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
                                     <svg class="field">
                                         <g class="g_field">
@@ -276,11 +277,24 @@
                                         </svg>
                                     </svg>
                                 </svg>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-sm btn-secondary m-1" @click="saveMyTeam"><i class="fas fa-save"></i> Save</button>
+                                    <label class="btn btn-sm btn-secondary m-1" for="load_my_team_selector">
+                                        <input id="load_my_team_selector" type="file" class="d-none" accept=".json" @change="loadMyTeam">
+                                        <i class="fas fa-folder-open"></i> Load
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6" id="rival_field_portion" v-if="rival_mode">  
+                        <div class="col-12 col-md-1 text-center copy_button text-small d-flex flex-column" v-if="rival_mode">
+                            <button @click="copy_left_to_right" class="btn btn-sm btn-secondary text-small"><i class="fas fa-angle-double-right"></i> Copy</button>
+                            <button @click="copy_right_to_left" class="btn btn-sm btn-secondary mt-2 mb-2 text-small"><i class="fas fa-angle-double-left"></i> Copy</button>
+                        </div>
+
+                        <div class="col-12 col-md-6" id="field_portion_rival" v-if="rival_mode">  
                             <div class="lineup gray-bg">
+                                <h5 v-if="rival_mode"><span style="color:darkkhaki">Rival</span> Team</h5>
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 174.72709" style="max-height: 700px">
                                     <svg class="field">
                                         <g class="g_field">
@@ -354,13 +368,21 @@
                                         </svg>
                                     </svg>
                                 </svg>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-sm btn-secondary m-1" @click="saveRivalTeam"><i class="fas fa-save"></i> Save</button>
+                                    <label class="btn btn-sm btn-secondary m-1" for="load_rival_team_selector">
+                                        <input id="load_rival_team_selector" type="file" class="d-none" accept=".json" @change="loadRivalTeam">
+                                        <i class="fas fa-folder-open"></i> Load
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
                         
+                        
                         <div class="col-12 row" v-if="rival_mode">
                             
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Win
@@ -371,7 +393,7 @@
                                 </div>    
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Tie
@@ -382,7 +404,7 @@
                                 </div>    
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Loss
@@ -397,7 +419,7 @@
 
                         <div class="col-12 row" v-if="rival_mode">
                             
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Best Diff to Rival
@@ -408,7 +430,7 @@
                                 </div>    
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Mean Diff to Rival
@@ -419,7 +441,7 @@
                                 </div>    
                             </div>
 
-                            <div class="col-4">
+                            <div class="col-12 col-md-4">
                                 <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Worst Diff to Rival
