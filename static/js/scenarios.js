@@ -360,7 +360,6 @@ var app = new Vue({
                     if (p.multiplier > 2 && this.is_next_gw) {
                         p.multiplier = 2 // triple captain fix
                     }
-                    p.swap_available = undefined
                 })
                 app.loading = false
                 draw_histogram()
@@ -834,6 +833,7 @@ var app = new Vue({
         },
         saveMyTeam() {
             let obj = _.cloneDeep(app.team_data)
+            obj.picks.forEach((v) => {delete v.data})
             downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
         },
         loadMyTeam(e) {
@@ -856,6 +856,7 @@ var app = new Vue({
         },
         saveRivalTeam() {
             let obj = _.cloneDeep(app.rival_data)
+            obj.picks.forEach((v) => {delete v.data})
             downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
         },
         loadRivalTeam(e) {
