@@ -341,7 +341,8 @@ var app = new Vue({
 
             let total_avg = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/sc.length)
             let total_pps = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/v.length)
-            return {avg: total_avg, pps: total_pps}
+            let total_app = _.mapValues(_.groupBy(sums.flat(), '0'), v => v.length)
+            return {avg: total_avg, pps: total_pps, app: total_app}
         }
     },
     methods: {
@@ -366,8 +367,9 @@ var app = new Vue({
             else {
                 let team = {}
                 team['picks'] = []
-                let picks_with_xp = picks.map(i => [i, this.elements_dict[i].element_type, this.sc_player_averages.avg[i] || 0, this.elements_dict[i].web_name])
-                let ordered_picks = _.orderBy(picks_with_xp, '2', 'desc')
+                let picks_with_xp = picks.map(i => [i, this.elements_dict[i].element_type, this.sc_player_averages.avg[i] || 0, this.elements_dict[i].web_name, (this.sc_player_averages.app[i] || 0) > 70 ? 1 : 0, this.sc_player_averages.pps[i] || 0])
+                let ordered_picks = _.orderBy(picks_with_xp, ['4', '5'], ['desc', 'desc'])
+                // 1) sort by if played over 60 + points per scenario
                 let position_bounds = {
                     // 1: {'min': 1, 'max': 1},
                     2: {'min': 3, 'max': 5},
@@ -388,6 +390,7 @@ var app = new Vue({
                     let picked = ordered_picks.filter(i => i[1] == pos).slice(0, position_bounds[pos].min)
                     picked.forEach((i) => lineup.push(i[0]))
                 }
+                // 2) then use averages for remaining players
                 let remaining = _.orderBy(ordered_picks.filter(i => !lineup.includes(i[0]) && i[1] != 1), '2', 'desc')
                 for (let i=lineup.length; i<10; i++) {
                     lineup.push(remaining.shift()[0])
