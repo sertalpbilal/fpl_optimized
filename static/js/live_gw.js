@@ -846,6 +846,24 @@ var app = new Vue({
                 this.remember_me_button = false
             }
         },
+        set_team_with_url(sorted, picks, cap, vice_cap) {
+            $("#waitModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
+            let pids = this.el_data.map(i => i.id)
+            let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
+            data = createTeamFromList(sorted, picks, cap, vice_cap, this.element_data_combined, xp_data)
+
+            this.saveTeamData(data)
+
+            this.$nextTick(() => {
+                refresh_all_graphs();
+                $("#waitModal").modal('hide');
+            })
+
+            this.team_id = 0
+        },
         loadAutoSettings() {
             $("#waitModal").modal({
                 backdrop: 'static',
@@ -2257,6 +2275,7 @@ function refresh_all_graphs() {
     $(".svg-wrapper").empty();
     setTimeout(() => {
         app.$nextTick(() => {
+            $(".svg-wrapper").empty();
             init_timeline();
             Promise.all([
                 draw_user_graph({ target: "#graph-wrapper-points", stat: "points", title: "Points" }),
@@ -2315,13 +2334,26 @@ async function app_initialize(refresh_team = false) {
 
 $(document).ready(function() {
 
+    let url = window.location.search
+    const params = new URLSearchParams(url)
+
     Vue.$cookies.config('120d')
     app_initialize().then(() => {
-        let cached_team = Vue.$cookies.get('team_id');
-        if (cached_team !== null) {
-            app.loadAutoSettings();
-        } else {
-            $("#teamModal").modal('show');
+
+        if (params.get('team') != null) {
+            let sorted = params.get('sorted')==1
+            let picks = params.get('team').split(',').map(i => parseInt(i))
+            let captain = params.get('cap')
+            let vice_cap = params.get('vc')
+            app.set_team_with_url(sorted, picks, captain, vice_cap)
+        }
+        else {
+            let cached_team = Vue.$cookies.get('team_id');
+            if (cached_team !== null) {
+                app.loadAutoSettings();
+            } else {
+                $("#teamModal").modal('show');
+            }
         }
     });
     $("#editTeamModal").on('hide.bs.modal', (e) => {
