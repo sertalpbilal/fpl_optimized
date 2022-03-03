@@ -657,3 +657,74 @@ function saveAs(uri, filename) {
     }
 }
 
+
+function createTeamFromList(sorted, picks, cap, vice_cap, el_dict, xp_data) {
+    if (sorted) {
+        let team = {}
+        team['picks'] = []
+        picks.forEach((v,i) => {
+            team.picks.push({
+                'element': v,
+                'multiplier': v == cap ? 2 : i <= 10 ? 1 : 0,
+                'is_captain': v == cap,
+                'is_vice_captain': v == vice_cap,
+                'position': i+1
+            })
+        })
+
+        return _.cloneDeep(team)
+    }
+    else {
+        let team = {}
+        debugger
+        team['picks'] = []
+        let picks_with_xp = picks.map(i => [i, el_dict[i].element_type, el_dict[i].web_name, xp_data[i] && xp_data[i][0] || 0, xp_data[i] && xp_data[i][1] || 0, xp_data[i] && xp_data[i][2] || 0])
+        let ordered_picks = _.orderBy(picks_with_xp, ['4', '5'], ['desc', 'desc'])
+        // 1) sort by if played over 60 + points per scenario
+        let position_bounds = {
+            // 1: {'min': 1, 'max': 1},
+            2: {'min': 3, 'max': 5},
+            3: {'min': 2, 'max': 5},
+            4: {'min': 1, 'max': 3}
+        }
+
+        let main_gk;
+        let bench_gk;
+        let lineup = [];
+        let bench = [];
+
+        main_gk = ordered_picks.filter(i => i[1] == 1)[0][0]
+        bench_gk = ordered_picks.filter(i => i[1] == 1)[1][0]
+
+        for (let pos in position_bounds) {
+            if (pos == 1) { continue }
+            let picked = ordered_picks.filter(i => i[1] == pos).slice(0, position_bounds[pos].min)
+            picked.forEach((i) => lineup.push(i[0]))
+        }
+        // 2) then use averages for remaining players
+        let remaining = _.orderBy(ordered_picks.filter(i => !lineup.includes(i[0]) && i[1] != 1), '3', 'desc')
+        for (let i=lineup.length; i<10; i++) {
+            lineup.push(remaining.shift()[0])
+        }
+        bench = remaining.map(i => i[0])
+
+        cap = ordered_picks[0][0]
+        vice_cap = ordered_picks[0][1] == 1 && ordered_picks[1][1] == 1 ? ordered_picks[2][0] : ordered_picks[1][0]
+        let squad = [main_gk].concat(lineup).concat([bench_gk]).concat(bench)
+
+        squad.forEach((v,i) => {
+            team.picks.push({
+                'element': v,
+                'multiplier': v == cap ? 2 : i <= 10 ? 1 : 0,
+                'is_captain': v == cap,
+                'is_vice_captain': v == vice_cap,
+                'position': i+1
+            })
+        })
+
+        return _.cloneDeep(team)
+    }
+}
+
+
+
