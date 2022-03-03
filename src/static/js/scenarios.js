@@ -345,6 +345,21 @@ var app = new Vue({
         }
     },
     methods: {
+        set_team_with_url(sorted, picks, cap, vice_cap) {
+            if (sorted) {
+                let team = app.team_data = {}
+                team['picks'] = []
+                picks.forEach((v,i) => {
+                    team.picks.push({
+                        'element': v,
+                        'multiplier': v == cap ? 2 : i <= 10 ? 1 : 0,
+                        'is_captain': v == cap,
+                        'is_vice_captain': v == vice_cap,
+                        'position': i+1
+                    })
+                })
+            }
+        },
         fetch_team_picks() {
             this.team_data = undefined
             this.lineup = []
@@ -1169,6 +1184,9 @@ async function fetch_fpl_fixture() {
 
 $(document).ready(() => {
 
+    let url = window.location.search
+    const params = new URLSearchParams(url)
+
     calls = [
         read_scenario(),
         get_fpl_main_data().then(d => {
@@ -1181,6 +1199,13 @@ $(document).ready(() => {
     ]
     
     Promise.allSettled(calls).then(() => {
+        if (params.get('team') != null) {
+            let sorted = params.get('sorted')==1
+            let picks = params.get('team').split(',').map(i => parseInt(i))
+            let captain = params.get('cap')
+            let vice_cap = params.get('vc')
+            app.set_team_with_url(sorted, picks, captain, vice_cap)
+        }
         app.ready = true
     })
     .catch((error) => {
