@@ -283,6 +283,7 @@
                                         <input id="load_my_team_selector" type="file" class="d-none" accept=".json" @change="loadMyTeam">
                                         <i class="fas fa-folder-open"></i> Load
                                     </label>
+                                    <button class="btn btn-sm btn-secondary m-1" @click="suggestTeam('team_data')"><i class="fas fa-exchange-alt"></i> Suggest Order</button>
                                 </div>
                             </div>
                         </div>
@@ -374,6 +375,7 @@
                                         <input id="load_rival_team_selector" type="file" class="d-none" accept=".json" @change="loadRivalTeam">
                                         <i class="fas fa-folder-open"></i> Load
                                     </label>
+                                    <button class="btn btn-sm btn-secondary m-1" @click="suggestTeam('rival_data')"><i class="fas fa-exchange-alt"></i> Suggest Order</button>
                                 </div>
                             </div>
                         </div>
