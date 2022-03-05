@@ -346,6 +346,14 @@ var app = new Vue({
         }
     },
     methods: {
+        suggestTeam(key) {
+            if (_.isEmpty(this[key])) { return }
+            let pids = this[key].picks.map(i => i.element)
+            let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
+            this[key] = createTeamFromList(false, pids, undefined, undefined, this.elements_dict, xp_data)
+            this.loading = false
+            draw_histogram()
+        },
         set_team_with_url(sorted, picks, cap, vice_cap) {
             let pids = this.elements.map(i => i.id)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
@@ -363,14 +371,30 @@ var app = new Vue({
             }
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.team_id, force_last_gw: false }).then((response) => {
-                app.team_data = response.body
-                app.team_data.picks.forEach(p => {
-                    if (p.multiplier > 2 && this.is_next_gw) {
-                        p.multiplier = 2 // triple captain fix
-                    }
-                })
-                app.loading = false
-                draw_histogram()
+                if (app.is_next_gw && response.body.active_chip !== undefined && response.body.active_chip == 'freehit') {
+                    get_team_picks({ gw: target_gw-1, team_id: this.team_id, force_last_gw: false }).then((response) => {
+                        app.team_data = response.body
+                        app.team_data.picks.forEach(p => {
+                            if (p.multiplier > 2 && this.is_next_gw) {
+                                p.multiplier = 2 // triple captain fix
+                            }
+                        })
+                        app.loading = false
+                        draw_histogram()
+                    })
+                }
+                else {
+                    app.team_data = response.body
+                    app.team_data.picks.forEach(p => {
+                        if (p.multiplier > 2 && this.is_next_gw) {
+                            p.multiplier = 2 // triple captain fix
+                        }
+                    })
+                    app.loading = false
+                    draw_histogram()
+                }
+
+                
             }).catch(error => {
                 console.error(error)
                 app.loading = false
@@ -387,14 +411,29 @@ var app = new Vue({
             }
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.rival_id, force_last_gw: false }).then((response) => {
-                app.rival_data = response.body
-                app.rival_data.picks.forEach(p => {
-                    if (p.multiplier > 2 && this.is_next_gw) {
-                        p.multiplier = 2 // triple captain fix
-                    }
-                })
-                app.loading = false
-                draw_histogram()
+                if (app.is_next_gw && response.body.active_chip !== undefined && response.body.active_chip == 'freehit') {
+                    get_team_picks({ gw: target_gw-1, team_id: this.team_id, force_last_gw: false }).then((response) => {
+                        app.rival_data = response.body
+                        app.rival_data.picks.forEach(p => {
+                            if (p.multiplier > 2 && this.is_next_gw) {
+                                p.multiplier = 2 // triple captain fix
+                            }
+                        })
+                        app.loading = false
+                        draw_histogram()
+                    })
+                }
+                else {
+                    app.rival_data = response.body
+                    app.rival_data.picks.forEach(p => {
+                        if (p.multiplier > 2 && this.is_next_gw) {
+                            p.multiplier = 2 // triple captain fix
+                        }
+                    })
+                    app.loading = false
+                    draw_histogram()
+                }
+                
             }).catch(error => {
                 console.error(error)
                 app.loading = false
