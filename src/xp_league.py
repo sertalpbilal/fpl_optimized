@@ -39,7 +39,11 @@ def get_team_picks(team_info, gw):
     time.sleep(0.5)
     tid = team_info['entry']
     print(f"Requesting {team_info['player_name']} {gw}")
-    r = requests.get(f"https://fantasy.premierleague.com/api/entry/{tid}/event/{gw}/picks/")
+    try:
+        r = requests.get(f"https://fantasy.premierleague.com/api/entry/{tid}/event/{gw}/picks/")
+    except:
+        print("Connection error")
+        return None
     if r.status_code == 200:
         print(f"Completed {team_info['player_name']} {gw}")
         return r.json()
