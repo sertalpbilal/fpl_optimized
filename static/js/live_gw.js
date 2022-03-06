@@ -365,7 +365,7 @@ var app = new Vue({
             let initial_team = 0;
             let initial_avg = 0;
             if (this.is_using_hits) {
-                initial_team = -(this.team_data.entry_history.event_transfers_cost || 0);
+                initial_team = -((this.team_data.entry_history && this.team_data.entry_history.event_transfers_cost) || 0);
             }
             if (this.is_using_hits && this.is_using_sample) {
                 let sample_d = this.current_sample_data;
