@@ -53,7 +53,7 @@ var app = new Vue({
         this.initEmptyData();
     },
     computed: {
-        valid_team_id() { return this.team_id == -1 ? "Click to enter" : (this.show_team_info ? this.team_id : "Hidden") },
+        valid_team_id() { return (this.team_id == -1 || this.team_id == -2) ? "Click to enter" : (this.show_team_info ? this.team_id : "Hidden") },
         is_all_ready() { return this.is_xp_ready && this.is_fixture_ready && this.is_el_ready && this.is_ownership_ready },
         is_ready() { return this.team_id == -1 || this.team_data == undefined || this.team_data.length == 0 ? false : true },
         is_team_info_ready() { return this.team_info !== undefined && !_.isEmpty(this.team_info); },
@@ -72,7 +72,7 @@ var app = new Vue({
                 this.gw = v[1];
                 this.date = v[2];
                 this.$nextTick(() => {
-                    app_initialize();
+                    app_initialize(this.team_id != -2);
                 })
             }
         },
@@ -283,7 +283,7 @@ var app = new Vue({
                     }
 
                     let player_match = picks_by_id[e.id];
-                    e.ownership = this.is_using_sample ? ownership_vals[e.id].effective_ownership / 100 : ownership_vals[e.id].selected_by_percent / 100;
+                    e.ownership = this.is_using_sample ? ((ownership_vals[e.id] && ownership_vals[e.id].effective_ownership) || 0) / 100 : ((ownership_vals[e.id] && ownership_vals[e.id].selected_by_percent) || 0) / 100;
                     e.multiplier = player_match ? player_match.multiplier : 0;
                     e.xp_net = (e.multiplier - e.ownership) * e.xp;
                     e.rp_net = (e.multiplier - e.ownership) * e.rp;
@@ -846,33 +846,46 @@ var app = new Vue({
                 this.remember_me_button = false
             }
         },
-        set_team_with_url(sorted, picks, cap, vice_cap, gw) {
+        set_team_with_url(sorted, picks, cap, vice_cap, tc, gw) {
+            debugger
             $("#waitModal").modal({
                 backdrop: 'static',
                 keyboard: false
             }).modal('show');
 
+            this.team_id = -2
+
+            let past_gw = false
             if (gw) {
                 for (const i in this.listdates){
+                    let value = this.listdates[i]
                     let this_gw = this.listdates[i].split('/')[1].split('GW')[1].trim()
                     if (this_gw == gw) {
-                        this.seasongwdate = this.listdates[i].trim()
+                        if (gw != app.gw) {
+                            past_gw = true
+                        }
+                        this.seasongwdate = value.trim()
                     }
                 }
             }
 
             let pids = this.el_data.map(i => i.id)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
-            data = createTeamFromList(sorted, picks, cap, vice_cap, this.element_data_combined, xp_data)
+            data = createTeamFromList(sorted, picks, cap, vice_cap, tc, this.element_data_combined, xp_data)
 
             this.saveTeamData(data)
+            if (past_gw) {
+                if (this.is_using_autosub) {
+                    setTimeout(() => {this.applyAutosubtoTeam()}, 500)
+                }
+            }
 
             this.$nextTick(() => {
                 refresh_all_graphs();
                 $("#waitModal").modal('hide');
             })
 
-            this.team_id = 0
+            
         },
         loadAutoSettings() {
             $("#waitModal").modal({
@@ -1185,7 +1198,7 @@ var app = new Vue({
 
 async function load_team_data(graph_refresh = false) {
 
-    if (app.team_id == -1) { return; }
+    if (app.team_id == -1 || app.team_id == -2) { return; }
 
     await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
@@ -2306,7 +2319,7 @@ function refresh_all_graphs() {
     }, 100)
 }
 
-async function app_initialize(refresh_team = false) {
+async function app_initialize(clear=true) {
 
     // if (!is_active) {
     //     app.gw = `GW${parseInt(app.gw.slice(2))+1}`
@@ -2317,8 +2330,10 @@ async function app_initialize(refresh_team = false) {
         keyboard: false
     }).modal('show');
 
-    app.initEmptyData();
-
+    if (clear) {
+        app.initEmptyData();
+    }
+    
     return Promise.all([
             load_fixture_data(),
             load_element_data(),
@@ -2333,7 +2348,6 @@ async function app_initialize(refresh_team = false) {
                     refresh_all_graphs();
                 }, 100);
             })
-            
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
@@ -2355,8 +2369,9 @@ $(document).ready(function() {
             let picks = params.get('team').split(',').map(i => parseInt(i))
             let captain = params.get('cap')
             let vice_cap = params.get('vc')
+            let tc = params.get('tc')
             let gw = params.get('gw')
-            app.set_team_with_url(sorted, picks, captain, vice_cap, gw)
+            app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
         }
         else {
             let cached_team = Vue.$cookies.get('team_id');

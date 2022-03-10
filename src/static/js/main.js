@@ -658,14 +658,15 @@ function saveAs(uri, filename) {
 }
 
 
-function createTeamFromList(sorted, picks, cap, vice_cap, el_dict, xp_data) {
+function createTeamFromList(sorted, picks, cap, vice_cap, tc, el_dict, xp_data) {
     if (sorted) {
+        debugger
         let team = {}
         team['picks'] = []
         picks.forEach((v,i) => {
             team.picks.push({
                 'element': v,
-                'multiplier': v == cap ? 2 : i <= 10 ? 1 : 0,
+                'multiplier': v == cap ? (tc == 1 ? 3 : 2) : i <= 10 ? 1 : 0,
                 'is_captain': v == cap,
                 'is_vice_captain': v == vice_cap,
                 'position': i+1

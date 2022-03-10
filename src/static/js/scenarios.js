@@ -350,11 +350,11 @@ var app = new Vue({
             if (_.isEmpty(this[key])) { return }
             let pids = this[key].picks.map(i => i.element)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
-            this[key] = createTeamFromList(false, pids, undefined, undefined, this.elements_dict, xp_data)
+            this[key] = createTeamFromList(false, pids, undefined, undefined, undefined, this.elements_dict, xp_data)
             this.loading = false
             draw_histogram()
         },
-        set_team_with_url(sorted, picks, cap, vice_cap, gw) {
+        set_team_with_url(sorted, picks, cap, vice_cap, tc, gw) {
             if (gw) {
                 for (const i in sc_files){
                     if (sc_files[i][0].split('GW')[1] == gw) {
@@ -364,7 +364,7 @@ var app = new Vue({
             }
             let pids = this.elements.map(i => i.id)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
-            this.team_data = createTeamFromList(sorted, picks, cap, vice_cap, this.elements_dict, xp_data)
+            this.team_data = createTeamFromList(sorted, picks, cap, vice_cap, tc, this.elements_dict, xp_data)
             this.loading = false
             draw_histogram()
         },
@@ -1243,8 +1243,9 @@ $(document).ready(() => {
             let picks = params.get('team').split(',').map(i => parseInt(i))
             let captain = params.get('cap')
             let vice_cap = params.get('vc')
+            let tc = params.get('tc')
             let gw = params.get('gw')
-            app.set_team_with_url(sorted, picks, captain, vice_cap, gw)
+            app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
             // app.team_id = 1
         }
         app.ready = true
