@@ -846,11 +846,21 @@ var app = new Vue({
                 this.remember_me_button = false
             }
         },
-        set_team_with_url(sorted, picks, cap, vice_cap) {
+        set_team_with_url(sorted, picks, cap, vice_cap, gw) {
             $("#waitModal").modal({
                 backdrop: 'static',
                 keyboard: false
             }).modal('show');
+
+            if (gw) {
+                for (const i in this.listdates){
+                    let this_gw = this.listdates[i].split('/')[1].split('GW')[1].trim()
+                    if (this_gw == gw) {
+                        this.seasongwdate = this.listdates[i].trim()
+                    }
+                }
+            }
+
             let pids = this.el_data.map(i => i.id)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
             data = createTeamFromList(sorted, picks, cap, vice_cap, this.element_data_combined, xp_data)
@@ -2345,7 +2355,8 @@ $(document).ready(function() {
             let picks = params.get('team').split(',').map(i => parseInt(i))
             let captain = params.get('cap')
             let vice_cap = params.get('vc')
-            app.set_team_with_url(sorted, picks, captain, vice_cap)
+            let gw = params.get('gw')
+            app.set_team_with_url(sorted, picks, captain, vice_cap, gw)
         }
         else {
             let cached_team = Vue.$cookies.get('team_id');
