@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: engine
-  # schedule:
-  #   - cron: '0 4,10,16,22 * * *'
+  schedule:
+    - cron: '0 4,10,16,22 * * *'
 
 jobs:
   build-and-run:
