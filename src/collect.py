@@ -157,7 +157,8 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     combined_games = pd.concat([home_games, away_games], sort=False)
 
     element_df = pd.merge(element_df, team_df.rename(columns={'id': 'team_id', 'name': 'team_name'}), how='left', left_on=['team'], right_on=['team_id'])
-    element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
+    # element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
+    element_df = pd.merge(element_df, prediction_df, how='left', left_on=['id'], right_on=['ID'])
     full_element_gameweek_df = pd.merge(left=element_df.rename(columns={'id': 'player_id'}).assign(key=1), right=pd.DataFrame(weeks, columns=['event']).assign(key=1), on='key', how='inner').drop(["key"], axis=1)
 
     full_element_gameweek_df['event'] = full_element_gameweek_df['event'].astype(int)
@@ -680,7 +681,8 @@ def cache_effective_ownership(season_folder):
 # TODO: fbref?
 
 if __name__ == "__main__":
-    # input_folder, output_folder = create_folders()
+    input_folder, output_folder, season_folder = create_folders()
+    generate_intermediate_layer(input_folder, page='free-planner')
     # get_fpl_analytics_league(input_folder)
     # get_all_data()
     # r = get_single_team_data(2221044, 16)
@@ -717,7 +719,7 @@ if __name__ == "__main__":
 
     # get_team_picks_from_rank([1,10,50,100], 11)
 
-    tv = get_team_season_review({'twitter': 'sertalpbilal', 'id': 7331}, True)
-    print(tv)
+    # tv = get_team_season_review({'twitter': 'sertalpbilal', 'id': 7331}, True)
+    # print(tv)
 
     pass
