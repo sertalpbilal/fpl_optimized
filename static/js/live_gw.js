@@ -1213,6 +1213,9 @@ async function load_team_data(graph_refresh = false) {
 
     await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
+        if (app.gw == app.next_gw) {
+            app.findIdealPicks()
+        }
         app.using_last_gw_team = response.is_last_gw;
         if (graph_refresh) {
             refresh_all_graphs();
