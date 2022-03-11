@@ -896,7 +896,6 @@ var app = new Vue({
             let reader = new FileReader()
             reader.onload = (evt) => {
                 try {
-                    debugger
                     let content = evt.target.result
                     let v = JSON.parse(decodeURIComponent(escape(content)))
                     app.team_data = v
@@ -919,7 +918,6 @@ var app = new Vue({
             let reader = new FileReader()
             reader.onload = (evt) => {
                 try {
-                    debugger
                     let content = evt.target.result
                     let v = JSON.parse(decodeURIComponent(escape(content)))
                     app.rival_data = v

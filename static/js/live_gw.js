@@ -491,6 +491,7 @@ var app = new Vue({
 
             const xp_by_id = Object.fromEntries(this.grouped_xp_data.map(i => [i.player_id, i]));
             const el_by_id = this.el_by_id;
+            if (_.isEmpty(el_by_id)) { return {}}
             const rp_by_id = this.rp_by_id;
             const own_by_id = this.ownership_by_id;
             const team_data = this.team_data;
@@ -846,8 +847,7 @@ var app = new Vue({
                 this.remember_me_button = false
             }
         },
-        set_team_with_url(sorted, picks, cap, vice_cap, tc, gw) {
-            debugger
+        setTeamWithURL(sorted, picks, cap, vice_cap, tc, gw) {
             $("#waitModal").modal({
                 backdrop: 'static',
                 keyboard: false
@@ -886,6 +886,17 @@ var app = new Vue({
             })
 
             
+        },
+        findIdealPicks() {
+            let pids = this.team_data.picks.map(i => i.element)
+            let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
+            data = createTeamFromList(0, pids, undefined, undefined, undefined, this.el_by_id, xp_data)
+            let d = _.cloneDeep(this.team_data)
+            d.picks = data.picks
+            this.saveTeamData(d)
+            setTimeout(() => {
+                refresh_all_graphs()
+            }, 500)
         },
         loadAutoSettings() {
             $("#waitModal").modal({
@@ -1622,7 +1633,6 @@ async function draw_user_graph(options = {}) {
             let intervals = _.cloneDeep(app.get_graph_checkpoints.intervals)
             let sum_intervals = getSum(intervals.map(i => i[1]-i[0]))
             let c = 0
-            debugger
             intervals.forEach((i) => {
                 i.start = c
                 i.finish = c + i[1]-i[0]
@@ -2330,7 +2340,7 @@ async function app_initialize(clear=true) {
         keyboard: false
     }).modal('show');
 
-    if (clear) {
+    if (clear && app.team_id != -2) {
         app.initEmptyData();
     }
     
@@ -2343,6 +2353,10 @@ async function app_initialize(clear=true) {
         ]).then((values) => {
             // $(".svg-wrapper").empty();
             load_team_data().then(() => {
+                if (app.gw == app.next_gw) {
+                    app.findIdealPicks()
+                }
+
                 $("#updateModal").modal('hide');
                 setTimeout(() => {
                     refresh_all_graphs();
@@ -2371,7 +2385,7 @@ $(document).ready(function() {
             let vice_cap = params.get('vc')
             let tc = params.get('tc')
             let gw = params.get('gw')
-            app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
+            app.setTeamWithURL(sorted, picks, captain, vice_cap, tc, gw)
         }
         else {
             let cached_team = Vue.$cookies.get('team_id');

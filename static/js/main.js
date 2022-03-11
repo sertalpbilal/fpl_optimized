@@ -660,7 +660,6 @@ function saveAs(uri, filename) {
 
 function createTeamFromList(sorted, picks, cap, vice_cap, tc, el_dict, xp_data) {
     if (sorted) {
-        debugger
         let team = {}
         team['picks'] = []
         picks.forEach((v,i) => {
@@ -677,9 +676,9 @@ function createTeamFromList(sorted, picks, cap, vice_cap, tc, el_dict, xp_data) 
     }
     else {
         let team = {}
-        debugger
         team['picks'] = []
-        let picks_with_xp = picks.map(i => [i, el_dict[i].element_type, el_dict[i].web_name, xp_data[i] && xp_data[i][0] || 0, xp_data[i] && xp_data[i][1] || 0, xp_data[i] && xp_data[i][2] || 0])
+        // id, element_type, name, xp, xmin_threshold, xp_if_plays
+        let picks_with_xp = picks.map(i => [i, el_dict[i].element_type, el_dict[i].web_name, parseFloat( xp_data[i] && xp_data[i][0] || 0 ), parseFloat( xp_data[i] && xp_data[i][1] || 0 ), parseFloat( xp_data[i] && xp_data[i][2] || 0 )])
         let ordered_picks = _.orderBy(picks_with_xp, ['4', '5'], ['desc', 'desc'])
         // 1) sort by if played over 60 + points per scenario
         let position_bounds = {
