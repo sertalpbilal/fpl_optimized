@@ -888,6 +888,7 @@ var app = new Vue({
             
         },
         findIdealPicks() {
+            if (_.isEmpty(this.team_data)) { return }
             let pids = this.team_data.picks.map(i => i.element)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
             data = createTeamFromList(0, pids, undefined, undefined, undefined, this.el_by_id, xp_data)
