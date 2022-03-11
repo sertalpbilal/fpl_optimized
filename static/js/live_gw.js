@@ -871,7 +871,7 @@ var app = new Vue({
 
             let pids = this.el_data.map(i => i.id)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.xp_by_id[i] && this.xp_by_id[i].points_md || 0, 1, this.xp_by_id[i] && this.xp_by_id[i].points_md || 0]]))
-            data = createTeamFromList(sorted, picks, cap, vice_cap, tc, this.element_data_combined, xp_data)
+            data = createTeamFromList(sorted, picks, cap, vice_cap, tc, this.el_by_id, xp_data)
 
             this.saveTeamData(data)
             if (past_gw) {
