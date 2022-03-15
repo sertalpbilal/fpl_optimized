@@ -284,6 +284,11 @@
                                         <i class="fas fa-folder-open"></i> Load
                                     </label>
                                     <button class="btn btn-sm btn-secondary m-1" @click="suggestTeam('team_data')"><i class="fas fa-exchange-alt"></i> Suggest Order</button>
+                                    <button class="btn btn-sm btn-info m-1" @click="shareLink"  v-if="!_.isEmpty(team_data)"><i class="fas fa-share"></i> Share</button>
+                                </div>
+                                <div class="alert alert-success m-1" id="link-box" v-if="page_link != ''">
+                                    <button type="button" class="close" @click="page_link=''">&times;</button>
+                                    Link: <a :href="page_link" target="_blank">{{ page_link }}</a>
                                 </div>
                             </div>
                         </div>
