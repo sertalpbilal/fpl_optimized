@@ -31,8 +31,8 @@ var app = new Vue({
         custom_ownership: [],
         rival_mode: false,
         rival_id: '',
-        rival_data: undefined
-
+        rival_data: undefined,
+        page_link: ''
     },
     computed: {
         current_gw() {
@@ -638,7 +638,9 @@ var app = new Vue({
             if (cc.element == nc.element) { return } // same player
             this.calculating = true
             cc.multiplier = 1
+            cc.is_captain = false
             nc.multiplier = 2
+            nc.is_captain = true
             this.team_data.picks = picks
         },
         select_captain_rival(e) {
@@ -928,6 +930,15 @@ var app = new Vue({
             }
             reader.readAsText(file)
             e.target.value = null
+        },
+        shareLink(){
+            if (_.isEmpty(this.team_data)) { return }
+            let team_ids = this.team_data.picks.map(i => i.element).join(',')
+            let cap = this.team_data.picks.find(i => i.is_captain==1 || i.multiplier > 1)
+            if (cap !== undefined){ cap = cap.element }
+            let vicecap = this.team_data.picks.find(i => i.is_vice_captain==1)
+            if (vicecap !== undefined){ vicecap = vicecap.element }
+            this.page_link = window.location.origin + window.location.pathname + '?sorted=1&team=' + team_ids + '&cap=' + cap + (vicecap ? '&vicecap=' + vicecap : '') + '&gw=' + this.current_gw
         }
     }
 })
