@@ -1037,7 +1037,9 @@ function draw_histogram() {
 
     let mpts = 0
     if (!app.is_next_gw && app.team_id != '') {
-        mpts = app.team_data.entry_history.points
+        if (app.team_data.entry_history && app.team_data.entry_history.points) {
+            mpts = app.team_data.entry_history.points
+        }
     }
 
     // Min max values
@@ -1186,8 +1188,8 @@ function draw_histogram() {
 
 
     // When plotting old GW: draw a bar!
-    if (!app.is_next_gw && app.team_id != '') {
-        let pts = app.team_data.entry_history.points
+    if (mpts != 0) {
+        let pts = mpts
 
         // holder.append("rect")
         // .attr("fill", "purple")
