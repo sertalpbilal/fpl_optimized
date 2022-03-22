@@ -1462,14 +1462,40 @@ th.vertical-name {
 }
 
 .occurence-bars {
-    fill: #ff8600;
+    /* fill: #ff8600; */
+    fill: #d1d1d1;
     stroke: #ffffff;
     stroke-width: 0.4px;
     stroke-opacity: 1;
 }
 
+.field-occurence-circles {
+    fill: #d1d1d1;
+    fill-opacity: 1;
+    stroke: #ffffff;
+    stroke-width: 0;
+    stroke-opacity: 1;
+}
+
+.simcircle {
+    fill: #c1c1c1;
+    stroke: black;
+    stroke-width: 1 !important;
+    stroke-opacity: 1;
+}
+
 .active-occ-bar {
-    fill: red;
+    fill: #ff8600;
+}
+
+.diagline {
+    stroke-opacity: 1;
+    stroke: #999999;
+    stroke-dasharray: 3 6;
+}
+
+.diagtext {
+    text-shadow: 0 0 1px black;
 }
 
 .close-absolute {
