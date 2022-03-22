@@ -1029,14 +1029,37 @@
                 <div class="close text-white close-absolute" @click="saveImage('#results_pane', 'histogram.png')" v-if="!_.isEmpty(scenario_stats)">
                     <i class="fas fa-image"></i>
                 </div>
-                <h6 class="card-header border-complement text-center scenario_title">Point Distribution and Replications</h6>
+                <h6 class="card-header border-complement text-center scenario_title">Simulations</h6>
 
                 <div class="card-body text-center p-3" v-cloak>
+                    <div id="controls" class="d-flex justify-content-center">
+                        <div class="custom-control custom-switch ml-2 mr-2">
+                            <input id="outcome_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_outcomes" @change="refresh_histogram">
+                            <label for="outcome_switch" class="custom-control-label">Team Point Distribution</label>
+                        </div>
+                        <div class="custom-control custom-switch ml-2 mr-2">
+                            <input id="field_dist_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_field" @change="refresh_histogram">
+                            <label for="field_dist_switch" class="custom-control-label">Field Distribution</label>
+                        </div>
+                        <div class="custom-control custom-switch ml-2 mr-2">
+                            <input id="diff_dist_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_diff" @change="refresh_histogram">
+                            <label for="diff_dist_switch" class="custom-control-label">Team vs Field Comparison</label>
+                        </div>
+                    </div>
+
+
                     <div class="row no-gutters justify-content-center" id="sim_portion">
                         <div class="col-12">
-                            <div id="histogram">
+                            <div id="histogram" v-show="show_outcomes" class="mt-2 mb-1">
 
                             </div>
+                            <div id="field_histogram" v-show="show_field" class="mt-2 mb-1">
+
+                            </div>
+                            <div id="diff_histogram" v-show="show_diff" class="mt-2 mb-1 col-9 mx-auto">
+
+                            </div>
+
                         </div>
                     </div>
                     <div class="row justify-content-center mt-2">

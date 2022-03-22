@@ -32,7 +32,12 @@ var app = new Vue({
         rival_mode: false,
         rival_id: '',
         rival_data: undefined,
-        page_link: ''
+        page_link: '',
+        // options
+        show_outcomes: true,
+        show_field: false,
+        show_diff: false,
+        tick: 300
     },
     computed: {
         current_gw() {
@@ -43,10 +48,10 @@ var app = new Vue({
             return this.active_sc == 0
         },
         grouped_sc() {
-            if (_.isEmpty(this.sc_details)) { return {}}
+            if (_.isEmpty(this.sc_details)) { return {} }
         },
         picks() {
-            if (_.isEmpty(this.team_data)) { return []}
+            if (_.isEmpty(this.team_data)) { return [] }
             return this.team_data.picks
         },
         elements() {
@@ -64,10 +69,10 @@ var app = new Vue({
                 let v = fix_dict[t.id]
                 let team_fix = gw_fixtures.filter(i => i.team_h == t.id || i.team_a == t.id)
                 v.games = team_fix
-                let game_str = team_fix.map(i => i.team_h == t.id ? teams_ordered[i.team_a-1].short.toUpperCase() : teams_ordered[i.team_h-1].short.toLowerCase())
+                let game_str = team_fix.map(i => i.team_h == t.id ? teams_ordered[i.team_a - 1].short.toUpperCase() : teams_ordered[i.team_h - 1].short.toLowerCase())
                 v.str = game_str.join(" + ")
             })
-            
+
             return fix_dict
         },
         elements_dict() {
@@ -97,12 +102,12 @@ var app = new Vue({
             })
             let lineup = picks.filter(i => i.multiplier > 0)
             let bench = picks.filter(i => i.multiplier == 0)
-            lineup.forEach((p,idx) => {
+            lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
                 p.y = (p.data.element_type - 1) * 34 + 5
-                
+
             })
-            bench.forEach((p,idx) => {
+            bench.forEach((p, idx) => {
                 p.x = this.get_bench_x(idx)
                 p.y = 4 * 35 + 2
             })
@@ -119,11 +124,11 @@ var app = new Vue({
             })
             let lineup = picks.filter(i => i.multiplier > 0)
             let bench = picks.filter(i => i.multiplier == 0)
-            lineup.forEach((p,idx) => {
+            lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
                 p.y = (p.data.element_type - 1) * 34 + 5
             })
-            bench.forEach((p,idx) => {
+            bench.forEach((p, idx) => {
                 p.x = this.get_bench_x(idx)
                 p.y = 4 * 35 + 2
             })
@@ -134,13 +139,12 @@ var app = new Vue({
             if (this.active_sample == 'custom' && _.isEmpty(this.custom_ownership)) { return [] }
             if (!_.isEmpty(this.custom_ownership) && this.active_sample == 'custom') {
                 return this.custom_ownership
-            }
-            else {
+            } else {
                 let sample_selection = this.samples[this.active_sample]
                 let own_data = get_ownership_by_type(reverse_sample_name(sample_selection), this.elements, this.sample_data, {})
                 return Object.freeze(own_data.data)
             }
-            
+
         },
         ownership_rate_dict() {
             let or = this.ownership_rates
@@ -148,7 +152,7 @@ var app = new Vue({
         },
         grouped_scenarios() {
             if (_.isEmpty(this.sc_details)) { return {} }
-            return _(this.sc_details).groupBy('sim').map((value,key) => {return {'sim': key, 'values': Object.fromEntries(value.map(i => [i.ID, i]))}}).value()
+            return _(this.sc_details).groupBy('sim').map((value, key) => { return { 'sim': key, 'values': Object.fromEntries(value.map(i => [i.ID, i])) } }).value()
         },
         grouped_scenario_with_field() {
             if (_.isEmpty(this.sc_details)) { return [] }
@@ -158,11 +162,11 @@ var app = new Vue({
             let ownership = this.ownership_rates
             let use_eo = this.use_eo
             ownership = Object.fromEntries(ownership.map(i => [i.id, use_eo ? (i.effective_ownership || i.selected_by_percent) : i.selected_by_percent]))
-            grouped_scenarios.forEach((s,i) => {
+            grouped_scenarios.forEach((s, i) => {
                 let field = 0
                 elements.forEach(p => {
                     let player_score = (s.values[p.id] && s.values[p.id].Points) || 0
-                    field += parseInt(player_score) * (parseFloat(ownership[p.id])/100)
+                    field += parseInt(player_score) * (parseFloat(ownership[p.id]) / 100)
                 })
                 s.total_field = field
             })
@@ -174,7 +178,7 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return [] }
             if (_.isEmpty(this.team_picks)) { return {} }
             let picks = this.team_picks
-            
+
             grouped_scenarios = this.evaluate_scenarios(picks)
 
             return grouped_scenarios
@@ -184,7 +188,7 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return [] }
             if (_.isEmpty(this.rival_picks)) { return {} }
             let picks = this.rival_picks
-            
+
             grouped_scenarios = this.evaluate_scenarios(picks)
 
             return grouped_scenarios
@@ -196,22 +200,22 @@ var app = new Vue({
             let t2 = _.cloneDeep(this.scenario_evals_rival)
 
             let h2h = _.range(t1.length).map(i => [t1[i].total_score, t2[i].total_score])
-            
+
 
             return {
-                'win': h2h.filter(i => i[0]>i[1]).length,
-                'tie': h2h.filter(i => i[0]==i[1]).length,
-                'loss': h2h.filter(i => i[0]<i[1]).length,
-                'mean': _.mean(h2h.map(i => i[0]-i[1])),
-                'max': _.max(h2h.map(i => i[0]-i[1])),
-                'min': _.min(h2h.map(i => i[0]-i[1]))
+                'win': h2h.filter(i => i[0] > i[1]).length,
+                'tie': h2h.filter(i => i[0] == i[1]).length,
+                'loss': h2h.filter(i => i[0] < i[1]).length,
+                'mean': _.mean(h2h.map(i => i[0] - i[1])),
+                'max': _.max(h2h.map(i => i[0] - i[1])),
+                'min': _.min(h2h.map(i => i[0] - i[1]))
             }
         },
         scenario_stats() {
             if (_.isEmpty(this.team_picks)) { return {} }
             if (_.isEmpty(this.scenario_evals)) { return {} }
             let evals = this.scenario_evals
-            
+
             let stats = this.get_eval_stats(evals)
             return stats
         },
@@ -219,7 +223,7 @@ var app = new Vue({
             if (_.isEmpty(this.rival_picks)) { return {} }
             if (_.isEmpty(this.scenario_evals_rival)) { return {} }
             let evals = this.scenario_evals_rival
-            
+
             let stats = this.get_eval_stats(evals)
             return stats
         },
@@ -232,7 +236,7 @@ var app = new Vue({
             return this.rival_data.picks.map(i => i.element)
         },
         graph_update_watch() {
-            draw_histogram()
+            this.refresh_histogram()
             let t = this.scenario_evals
             return []
         },
@@ -254,7 +258,7 @@ var app = new Vue({
                     debugger
                 }
                 let match = my_players.find(i => i.element == p.ID)
-                p.eff_points = (p.Points * ((match == undefined ? 0 : match.multiplier) - ownership[p.ID]/100)).toFixed(2)
+                p.eff_points = (p.Points * ((match == undefined ? 0 : match.multiplier) - ownership[p.ID] / 100)).toFixed(2)
             })
             players = players.filter(i => i.data !== undefined)
             return players
@@ -292,7 +296,7 @@ var app = new Vue({
         },
         sc_game_averages() {
             let sc = this.sc_game_details
-            if (sc == undefined) { return []}
+            if (sc == undefined) { return [] }
 
             let game_details = []
             for (let scenario of this.sc_game_details) {
@@ -300,7 +304,7 @@ var app = new Vue({
                     let key = game['home'].code + ',' + game['away'].code
                     let match = game_details.find(i => i.key == key)
                     if (match == undefined) {
-                        match = {'key': key, 'home': game['home'], 'away': game['away'], entries: {'home': [], 'away': []}}
+                        match = { 'key': key, 'home': game['home'], 'away': game['away'], entries: { 'home': [], 'away': [] } }
                         game_details.push(match)
                     }
                     match.entries.home.push(game.score.home)
@@ -322,13 +326,13 @@ var app = new Vue({
             return game_details
         },
         sorted_player_list() {
-            if (this.elements == []){ return []}
+            if (this.elements == []) { return [] }
             let e = _.cloneDeep(this.elements)
-            e.forEach((v) => {v.selected_by_percent = parseFloat(v.selected_by_percent)})
+            e.forEach((v) => { v.selected_by_percent = parseFloat(v.selected_by_percent) })
             return _.orderBy(e, 'selected_by_percent', 'desc')
         },
         sc_player_averages() {
-            if (_.isEmpty(this.sc_game_details)) { return {}}
+            if (_.isEmpty(this.sc_game_details)) { return {} }
 
             let sc = this.sc_game_details
             let sums = []
@@ -339,24 +343,33 @@ var app = new Vue({
                 sums.push(Object.entries(player_sum))
             })
 
-            let total_avg = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/sc.length)
-            let total_pps = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1]))/v.length)
+            let total_avg = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1])) / sc.length)
+            let total_pps = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1])) / v.length)
             let total_app = _.mapValues(_.groupBy(sums.flat(), '0'), v => v.length)
-            return {avg: total_avg, pps: total_pps, app: total_app}
+            return { avg: total_avg, pps: total_pps, app: total_app }
         }
     },
     methods: {
+        activate_gw(gw) {
+            if (gw) {
+                for (const i in sc_files) {
+                    if (sc_files[i][0].split('GW')[1] == gw) {
+                        this.active_sc = i
+                    }
+                }
+            }
+        },
         suggestTeam(key) {
             if (_.isEmpty(this[key])) { return }
             let pids = this[key].picks.map(i => i.element)
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
             this[key] = createTeamFromList(false, pids, undefined, undefined, undefined, this.elements_dict, xp_data)
             this.loading = false
-            draw_histogram()
+            this.refresh_histogram()
         },
         set_team_with_url(sorted, picks, cap, vice_cap, tc, gw) {
             if (gw) {
-                for (const i in sc_files){
+                for (const i in sc_files) {
                     if (sc_files[i][0].split('GW')[1] == gw) {
                         this.active_sc = i
                     }
@@ -366,7 +379,7 @@ var app = new Vue({
             let xp_data = Object.fromEntries(pids.map(i => [i, [this.sc_player_averages.avg[i] || 0, (this.sc_player_averages.app[i] > 70 || 0) ? 1 : 0, this.sc_player_averages.pps[i] || 0]]))
             this.team_data = createTeamFromList(sorted, picks, cap, vice_cap, tc, this.elements_dict, xp_data)
             this.loading = false
-            draw_histogram()
+            this.refresh_histogram()
         },
         fetch_team_picks() {
             this.team_data = undefined
@@ -379,7 +392,7 @@ var app = new Vue({
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.team_id, force_last_gw: false }).then((response) => {
                 if (app.is_next_gw && response.body.active_chip !== undefined && response.body.active_chip == 'freehit') {
-                    get_team_picks({ gw: target_gw-1, team_id: this.team_id, force_last_gw: false }).then((response) => {
+                    get_team_picks({ gw: target_gw - 1, team_id: this.team_id, force_last_gw: false }).then((response) => {
                         app.team_data = response.body
                         app.team_data.picks.forEach(p => {
                             if (p.multiplier > 2 && this.is_next_gw) {
@@ -387,10 +400,9 @@ var app = new Vue({
                             }
                         })
                         app.loading = false
-                        draw_histogram()
+                        app.refresh_histogram()
                     })
-                }
-                else {
+                } else {
                     app.team_data = response.body
                     app.team_data.picks.forEach(p => {
                         if (p.multiplier > 2 && this.is_next_gw) {
@@ -398,10 +410,10 @@ var app = new Vue({
                         }
                     })
                     app.loading = false
-                    draw_histogram()
+                    app.refresh_histogram()
                 }
 
-                
+
             }).catch(error => {
                 console.error(error)
                 app.loading = false
@@ -419,7 +431,7 @@ var app = new Vue({
             this.loading = true
             get_team_picks({ gw: target_gw, team_id: this.rival_id, force_last_gw: false }).then((response) => {
                 if (app.is_next_gw && response.body.active_chip !== undefined && response.body.active_chip == 'freehit') {
-                    get_team_picks({ gw: target_gw-1, team_id: this.team_id, force_last_gw: false }).then((response) => {
+                    get_team_picks({ gw: target_gw - 1, team_id: this.team_id, force_last_gw: false }).then((response) => {
                         app.rival_data = response.body
                         app.rival_data.picks.forEach(p => {
                             if (p.multiplier > 2 && this.is_next_gw) {
@@ -427,10 +439,9 @@ var app = new Vue({
                             }
                         })
                         app.loading = false
-                        draw_histogram()
+                        app.refresh_histogram()
                     })
-                }
-                else {
+                } else {
                     app.rival_data = response.body
                     app.rival_data.picks.forEach(p => {
                         if (p.multiplier > 2 && this.is_next_gw) {
@@ -438,9 +449,9 @@ var app = new Vue({
                         }
                     })
                     app.loading = false
-                    draw_histogram()
+                    app.refresh_histogram()
                 }
-                
+
             }).catch(error => {
                 console.error(error)
                 app.loading = false
@@ -450,35 +461,34 @@ var app = new Vue({
 
             let grouped_scenarios = _.cloneDeep(this.grouped_scenario_with_field)
             let ownership = this.ownership_rate_dict
-            if (_.isEmpty(ownership)) { return []}
+            if (_.isEmpty(ownership)) { return [] }
             let cur_pick = this.current_rep_dict
             let position_bounds = {
-                1: {'min': 1, 'max': 1},
-                2: {'min': 3, 'max': 5},
-                3: {'min': 2, 'max': 5},
-                4: {'min': 1, 'max': 3}
+                1: { 'min': 1, 'max': 1 },
+                2: { 'min': 3, 'max': 5 },
+                3: { 'min': 2, 'max': 5 },
+                4: { 'min': 1, 'max': 3 }
             }
-            grouped_scenarios.forEach((s,i) => {
-                let sc_picks = _.cloneDeep(picks.map(i => {return {...i}}))
-                
+            grouped_scenarios.forEach((s, i) => {
+                let sc_picks = _.cloneDeep(picks.map(i => { return {...i } }))
+
                 let score = 0
                 sc_picks.forEach(p => {
                     let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
                     if (p.element in s.values && p.multiplier > 0) {
                         score += parseInt(player_score) * p.multiplier
                         p.played = true
-                    }
-                    else {
+                    } else {
                         if (p.multiplier > 0) {
                             p.played = false
                             p.autosub_out = true
                             p.multiplier = 0
                         }
                     }
-                    p.eff_points = ((p.multiplier - ownership[p.element]/100) * parseInt(player_score)).toFixed(2)
+                    p.eff_points = ((p.multiplier - ownership[p.element] / 100) * parseInt(player_score)).toFixed(2)
                 })
                 s.lineup_score = score + 0
-                // Autosub
+                    // Autosub
                 sc_picks.filter(i => i.autosub_out).forEach(p => {
                     let pos = p.data.element_type
                     let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
@@ -491,10 +501,9 @@ var app = new Vue({
                             match.autosub_in = true
                             let player_score = s.values[match.element].Points
                             score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
+                            match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
                         }
-                    }
-                    else {
+                    } else {
                         // next available bench player
                         let match = sc_picks.find(i => i.multiplier == 0 && i.data.element_type > 1 && i.element in s.values) // no gk
                         if (match) {
@@ -503,13 +512,13 @@ var app = new Vue({
                             match.autosub_in = true
                             let player_score = s.values[match.element].Points
                             score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element]/100) * parseInt(player_score)).toFixed(2)
+                            match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
                         }
                     }
                 })
                 s.total_score = score
                 s.autosub_score = score - s.lineup_score
-                s.diff = score-s.total_field
+                s.diff = score - s.total_field
                 s.idx = i
                 s.picks = sc_picks
             })
@@ -518,14 +527,14 @@ var app = new Vue({
         },
         get_eval_stats(evals) {
             let sample_values = evals.map(i => i.total_score)
-            let avg_score = sample_values.reduce((a,b) => a+b, 0) / evals.length
+            let avg_score = sample_values.reduce((a, b) => a + b, 0) / evals.length
             let best_one = _.maxBy(evals, 'total_score')
             let worst_one = _.minBy(evals, 'total_score')
             let best_diff_field = _.maxBy(evals, 'diff')
             let worst_diff_field = _.minBy(evals, 'diff')
-            
+
             let variance = jStat.variance(sample_values)
-            let step = jStat.studentt.inv((1-(1-0.95)/2),sample_values.length-1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
+            let step = jStat.studentt.inv((1 - (1 - 0.95) / 2), sample_values.length - 1) * Math.sqrt(variance) / Math.sqrt(sample_values.length)
             let conf_interval = [avg_score - step, avg_score + step]
             let quantiles = jStat.quantiles(sample_values, [0, 0.25, 0.5, 0.75, 1])
 
@@ -564,10 +573,10 @@ var app = new Vue({
             return {
                 avg_score,
                 avg_field,
-                best_one: {'sim': best_one.sim, 'total_score': best_one.total_score}, 
-                worst_one: {'sim': worst_one.sim, 'total_score': worst_one.total_score},
-                best_diff: {'sim': best_diff_field.sim, 'diff': best_diff_field.diff},
-                worst_diff: {'sim': worst_diff_field.sim, 'diff': worst_diff_field.diff},
+                best_one: { 'sim': best_one.sim, 'total_score': best_one.total_score },
+                worst_one: { 'sim': worst_one.sim, 'total_score': worst_one.total_score },
+                best_diff: { 'sim': best_diff_field.sim, 'diff': best_diff_field.diff },
+                worst_diff: { 'sim': worst_diff_field.sim, 'diff': worst_diff_field.diff },
                 total_scores: sample_values,
                 quantiles,
                 conf_interval,
@@ -583,6 +592,10 @@ var app = new Vue({
             this.sample_gw = gw
             this.sample_data = Object.freeze(data)
             this.samples = ["FPL Data"].concat(Object.keys(app.sample_data).map(i => sample_compact_number(i)))
+            if (this.samples.includes("Prime")) {
+                this.active_sample = 7 // prime sample
+                this.use_eo = true
+            }
         },
         submitTeam(e) {
             if (e.keyCode === 13) {
@@ -610,13 +623,12 @@ var app = new Vue({
                             p.multiplier = 2 // triple captain fix
                         }
                     })
-                    draw_histogram()
+                    app.refresh_histogram()
                 }
-            }
-            catch {
+            } catch {
                 console.log("error in paste")
             }
-            
+
             this.display_paste = false
             this.loading = false
         },
@@ -661,21 +673,25 @@ var app = new Vue({
             if (this.picked_out == e) {
                 this.picked_out = undefined
                 this.player_filter = undefined
-            }
-            else {
+            } else {
                 this.picked_out = e
                 this.player_filter = this.elements.find(i => i.id == e).element_type
-                // replacement_options
+                    // replacement_options
                 this.$nextTick(() => {
                     let table = $("#replacement_options").DataTable({
-                        "order": [4], "lengthChange": false, "pageLength": 15, "searching": true, "info": false,
-                        "paging": true,"columnDefs": []
+                        "order": [4],
+                        "lengthChange": false,
+                        "pageLength": 15,
+                        "searching": true,
+                        "info": false,
+                        "paging": true,
+                        "columnDefs": []
                     });
                     table.cells("td").invalidate().draw();
                     let is_mobile = window.screen.width < 800
                     if (is_mobile) {
                         let table_y = jQuery("#select_portion")[0].getBoundingClientRect().top
-                        window.scrollBy({top: table_y, left: 0, behavior: 'smooth'})
+                        window.scrollBy({ top: table_y, left: 0, behavior: 'smooth' })
                     }
                 })
             }
@@ -687,21 +703,25 @@ var app = new Vue({
             if (this.picked_out_rival == e) {
                 this.picked_out_rival = undefined
                 this.player_filter_rival = undefined
-            }
-            else {
+            } else {
                 this.picked_out_rival = e
                 this.player_filter_rival = this.elements.find(i => i.id == e).element_type
-                // replacement_options
+                    // replacement_options
                 this.$nextTick(() => {
                     let table = $("#replacement_options_rival").DataTable({
-                        "order": [4], "lengthChange": false, "pageLength": 15, "searching": true, "info": false,
-                        "paging": true,"columnDefs": []
+                        "order": [4],
+                        "lengthChange": false,
+                        "pageLength": 15,
+                        "searching": true,
+                        "info": false,
+                        "paging": true,
+                        "columnDefs": []
                     });
                     table.cells("td").invalidate().draw();
                     let is_mobile = window.screen.width < 800
                     if (is_mobile) {
                         let table_y = jQuery("#select_portion_rival")[0].getBoundingClientRect().top
-                        window.scrollBy({top: table_y, left: 0, behavior: 'smooth'})
+                        window.scrollBy({ top: table_y, left: 0, behavior: 'smooth' })
                     }
                 })
             }
@@ -710,7 +730,7 @@ var app = new Vue({
             if (this.picked_out == undefined) { return }
             // let out_player = this.team_data.picks.find(i => i.element == this.picked_out)
             let out_player_index = this.team_data.picks.findIndex(i => i.element == this.picked_out)
-            // let in_player = elements.find(i => i.id == e)
+                // let in_player = elements.find(i => i.id == e)
 
             this.calculating = true
 
@@ -732,7 +752,7 @@ var app = new Vue({
         transfer_in_rival(e) {
             if (this.picked_out_rival == undefined) { return }
             let out_player_index = this.rival_data.picks.findIndex(i => i.element == this.picked_out_rival)
-            // let in_player = elements.find(i => i.id == e)
+                // let in_player = elements.find(i => i.id == e)
 
             this.calculating = true
 
@@ -763,34 +783,31 @@ var app = new Vue({
                 data.picks.forEach(p => {
                     p.swap_available = undefined
                 })
-            }
-            else {
+            } else {
                 if (this[target] == undefined) {
                     this[target] = e
                     let picks = data.picks
                     let tp = data.picks.find(i => i.element == e)
-                    // TODO check formation legality here!
+                        // TODO check formation legality here!
                     let is_lineup = tp.multiplier > 0
                     let el_type = tp.data.element_type
 
                     let condition
 
                     let current_vals = {
-                        1: {'count': picks.filter(i => i.data.element_type == 1 && i.multiplier > 0).length, 'max': 1, 'min': 1},
-                        2: {'count': picks.filter(i => i.data.element_type == 2 && i.multiplier > 0).length, 'max': 5, 'min': 3},
-                        3: {'count': picks.filter(i => i.data.element_type == 3 && i.multiplier > 0).length, 'max': 5, 'min': 2},
-                        4: {'count': picks.filter(i => i.data.element_type == 4 && i.multiplier > 0).length, 'max': 3, 'min': 1}
+                        1: { 'count': picks.filter(i => i.data.element_type == 1 && i.multiplier > 0).length, 'max': 1, 'min': 1 },
+                        2: { 'count': picks.filter(i => i.data.element_type == 2 && i.multiplier > 0).length, 'max': 5, 'min': 3 },
+                        3: { 'count': picks.filter(i => i.data.element_type == 3 && i.multiplier > 0).length, 'max': 5, 'min': 2 },
+                        4: { 'count': picks.filter(i => i.data.element_type == 4 && i.multiplier > 0).length, 'max': 3, 'min': 1 }
                     }
 
                     if (el_type == 1) {
                         condition = e => Boolean(e.multiplier) != Boolean(tp.multiplier) && e.data.element_type == 1
-                    }
-                    else {
+                    } else {
                         if (is_lineup) {
                             let is_out_at_min = current_vals[el_type].count <= current_vals[el_type].min
                             condition = e => { return e.multiplier == 0 && (e.data.element_type == el_type || (!is_out_at_min && current_vals[e.data.element_type].count < current_vals[e.data.element_type].max)) }
-                        }
-                        else {
+                        } else {
                             let is_in_at_max = current_vals[el_type].count >= current_vals[el_type].max
                             condition = e => { return (e.multiplier > 0 && (e.data.element_type == el_type || (!is_in_at_max && current_vals[e.data.element_type].count > current_vals[e.data.element_type].min))) || (e.multiplier == 0 && e.data.element_type != 1) }
                         }
@@ -799,14 +816,13 @@ var app = new Vue({
                     picks.forEach(p => {
                         p.swap_available = condition(p)
                     })
-                }
-                else { // perform swap!
+                } else { // perform swap!
 
                     this.calculating = true
 
                     let p_out = data.picks.find(i => i.element == this[target])
                     let p_in = data.picks.find(i => i.element == e)
-                    
+
                     let c = p_out.multiplier * 1
                     p_out.multiplier = 999
                     p_out.multiplier = p_in.multiplier * 1
@@ -814,7 +830,7 @@ var app = new Vue({
 
                     const swapArrayLocs = (arr, index1, index2) => {
                         [arr[index1], arr[index2]] = [arr[index2], arr[index1]]
-                      }
+                    }
 
                     // position swap
                     let o1 = data.picks.findIndex(i => i.element == this[target])
@@ -825,7 +841,7 @@ var app = new Vue({
                     data.picks.forEach(p => {
                         p.swap_available = undefined
                     })
-                    
+
                     this.$nextTick(() => {
                         app.trigger = app.trigger + 1
                     })
@@ -834,7 +850,7 @@ var app = new Vue({
         },
         activate_rep(v) {
             this.active_rep_comp = v
-            draw_histogram()
+            this.refresh_histogram()
         },
         activate_with_link(e) {
             let sim_no = e.currentTarget.dataset.id
@@ -842,7 +858,7 @@ var app = new Vue({
             let idx = this.grouped_scenarios.findIndex(i => i.sim == sim_no)
             this.active_rep_comp = idx
 
-            draw_histogram()
+            this.refresh_histogram()
 
             this.$nextTick(() => {
                 // move to sim
@@ -851,9 +867,9 @@ var app = new Vue({
                     top: por_y,
                     left: 0,
                     behavior: 'smooth'
-                    })
+                })
             })
-            
+
         },
         saveImage(query, filename) {
             // svg fix
@@ -862,10 +878,10 @@ var app = new Vue({
                 item.setAttribute("width", item.getBoundingClientRect().width);
                 item.setAttribute("height", item.getBoundingClientRect().height);
                 item.style.width = null;
-                item.style.height= null;
+                item.style.height = null;
             });
             // download
-            html2canvas(document.querySelector(query), {allowTaint: true, logging: true, taintTest: false}).then(function(canvas) {
+            html2canvas(document.querySelector(query), { allowTaint: true, logging: true, taintTest: false }).then(function(canvas) {
                 saveAs(canvas.toDataURL(), filename);
             });
         },
@@ -877,7 +893,7 @@ var app = new Vue({
         saveOwnershipAndClose() {
             let values = jQuery("#ownership_paste").val()
             let val_dict = values.split("\n").slice(3).map(i => i.split('\t')).map(i => [parseInt(i[0]), parseFloat(i[4])])
-            this.custom_ownership = val_dict.map(i => {return {'id': i[0], 'effective_ownership': i[1], 'selected_by_percent': i[1]}})
+            this.custom_ownership = val_dict.map(i => { return { 'id': i[0], 'effective_ownership': i[1], 'selected_by_percent': i[1] } })
             this.active_sample = 'custom'
             jQuery("#ownershipModal").modal('hide')
         },
@@ -889,7 +905,7 @@ var app = new Vue({
         },
         saveMyTeam() {
             let obj = _.cloneDeep(app.team_data)
-            obj.picks.forEach((v) => {delete v.data})
+            obj.picks.forEach((v) => { delete v.data })
             downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
         },
         loadMyTeam(e) {
@@ -901,8 +917,7 @@ var app = new Vue({
                     let content = evt.target.result
                     let v = JSON.parse(decodeURIComponent(escape(content)))
                     app.team_data = v
-                }
-                catch {
+                } catch {
 
                 }
             }
@@ -911,7 +926,7 @@ var app = new Vue({
         },
         saveRivalTeam() {
             let obj = _.cloneDeep(app.rival_data)
-            obj.picks.forEach((v) => {delete v.data})
+            obj.picks.forEach((v) => { delete v.data })
             downloadToFile(JSON.stringify(obj, undefined, 2), 'plan.json', 'application/json')
         },
         loadRivalTeam(e) {
@@ -923,28 +938,32 @@ var app = new Vue({
                     let content = evt.target.result
                     let v = JSON.parse(decodeURIComponent(escape(content)))
                     app.rival_data = v
-                }
-                catch {
+                } catch {
 
                 }
             }
             reader.readAsText(file)
             e.target.value = null
         },
-        shareLink(){
+        shareLink() {
             if (_.isEmpty(this.team_data)) { return }
             let team_ids = this.team_data.picks.map(i => i.element).join(',')
-            let cap = this.team_data.picks.find(i => i.is_captain==1 || i.multiplier > 1)
-            if (cap !== undefined){ cap = cap.element }
-            let vicecap = this.team_data.picks.find(i => i.is_vice_captain==1)
-            if (vicecap !== undefined){ vicecap = vicecap.element }
+            let cap = this.team_data.picks.find(i => i.is_captain == 1 || i.multiplier > 1)
+            if (cap !== undefined) { cap = cap.element }
+            let vicecap = this.team_data.picks.find(i => i.is_vice_captain == 1)
+            if (vicecap !== undefined) { vicecap = vicecap.element }
             this.page_link = window.location.origin + window.location.pathname + '?sorted=1&team=' + team_ids + '&cap=' + cap + (vicecap ? '&vicecap=' + vicecap : '') + '&gw=' + this.current_gw
+        },
+        refresh_histogram() {
+            draw_histogram()
+            draw_field_graph()
+            draw_diff_graph()
         }
     }
 })
 
 function get_top_three(v) {
-    return Object.keys(v).map(i => [app.elements_dict[i], v[i]]).sort((a,b) => b[1]-a[1]).slice(0,3)
+    return Object.keys(v).map(i => [app.elements_dict[i], v[i]]).sort((a, b) => b[1] - a[1]).slice(0, 3)
 }
 
 function update_sim_values() {
@@ -955,24 +974,24 @@ function update_sim_values() {
         get_latest_sample_data(season, gw)
     ]
     Promise.allSettled(tasks).then(() => {
-        if (app.team_id != '') {
-            app.fetch_team_picks()
-            app.fetch_rival_picks()
-        }
-    })
-    .catch((error) => {
-        console.error("An error has occurred: " + error);
-    });
+            if (app.team_id != '') {
+                app.fetch_team_picks()
+                app.fetch_rival_picks()
+            }
+        })
+        .catch((error) => {
+            console.error("An error has occurred: " + error);
+        });
 }
 
-function read_scenario(order=0) {
+function read_scenario(order = 0) {
     // 0: gw name
     // 1: file location
     let file = app.sc_files[order][1]
     return read_local_file(file).then(d => {
         app.active_sc = order
         app.sc_details = Object.freeze($.csv.toObjects(d))
-        let details_file = file.replace("/scenarios.csv", "/scenario_details.json?ts="+ts)
+        let details_file = file.replace("/scenarios.csv", "/scenario_details.json?ts=" + ts)
         read_local_file(details_file).then(e => {
             app.sc_game_details = Object.freeze(e)
         }).catch(e => {
@@ -987,22 +1006,13 @@ function draw_histogram() {
     if (_.isEmpty(app.scenario_evals)) { return }
 
     var margin = { top: 15, bottom: 20, left: 10, right: 10 },
-            width = 400 - margin.left - margin.right,
-            height = 120 - margin.top - margin.bottom
+        width = 400 - margin.left - margin.right,
+        height = 120 - margin.top - margin.bottom
 
     let is_mobile = window.screen.width < 800
 
-    // let font_size = '3pt'
-    // let title_size = '4.5pt'
-    // let info_size = '3pt'
-
-    // // 5.4pt
-
     if (is_mobile) {
         height = 160 - margin.top - margin.bottom
-    //     font_size = '6.5pt'
-    //     title_size = '7pt'
-    //     info_size = '4pt'
     }
 
     font_size = '4.5pt'
@@ -1032,7 +1042,7 @@ function draw_histogram() {
     let your_avg = app.scenario_stats.avg_score
 
     data.forEach((value, index) => {
-        value.y_val = data.slice(0,index).filter(i => i.total_score == value.total_score).length  
+        value.y_val = data.slice(0, index).filter(i => i.total_score == value.total_score).length
     })
 
     let mpts = 0
@@ -1043,8 +1053,9 @@ function draw_histogram() {
     }
 
     // Min max values
-    let x_high = Math.max(Math.ceil(field_avg), Math.max(...data.map(i=>i.total_score)), mpts)+2
-    let x_low = Math.min(Math.min(...data.map(i=>i.total_score)), Math.floor(field_avg))-1
+    let pure_values = data.map(i => [i.total_field, i.total_score]).flat()
+    let x_high = Math.ceil(Math.max(Math.max(...pure_values), mpts)) + 5
+    let x_low = Math.floor(Math.min(Math.min(...pure_values), Math.floor(field_avg))) - 5
     let x_domain = _.range(x_low, x_high)
 
     // Axis-x
@@ -1060,7 +1071,7 @@ function draw_histogram() {
         .call(
             d3.axisBottom(x)
             .tickSize(0)
-            .tickValues(x_domain.length > 50 ? x_domain.filter(i => i%5==0) : x_domain)
+            .tickValues(x_domain.length > 50 ? x_domain.filter(i => i % 5 == 0) : x_domain)
         )
 
     // Add X axis label:
@@ -1073,7 +1084,7 @@ function draw_histogram() {
         .text("Points");
 
     // Axis-y
-    let y_high = Math.max(...data.map(i => i.y_val+1))+2
+    let y_high = Math.max(...data.map(i => i.y_val + 1)) + 2
     let y_low = 0
     let y_domain = _.range(y_low, y_high)
     var y = d3.scaleBand().domain(y_domain).range([height, 0]).paddingInner(0).paddingOuter(0);
@@ -1092,7 +1103,7 @@ function draw_histogram() {
             .style('pointer-events', 'none'))
         .call(g => g.selectAll(".domain")
             .attr("opacity", 0))
-        
+
     // Add y axis label:
     svg.append("text")
         .attr("text-anchor", "left")
@@ -1103,9 +1114,9 @@ function draw_histogram() {
         .text("Occurrence");
 
     svg.call(g => g.selectAll(".tick")
-            .style("font-size", font_size))
+        .style("font-size", font_size))
     svg.call(g => g.selectAll(".domain")
-            .attr("opacity", 0))
+        .attr("opacity", 0))
 
     let ev_title = svg.append("text")
         .attr("text-anchor", "middle")
@@ -1115,7 +1126,7 @@ function draw_histogram() {
         .attr("y", -8)
         .attr("font-size", title_size)
         .attr("fill", "white")
-        .text("Total Point Occurrence")
+        .text("Simulated Total Points")
 
 
     // Data plot
@@ -1129,8 +1140,8 @@ function draw_histogram() {
     let bars = holder.selectAll().data(data)
 
     let active_rep = app.active_rep
-    
-    let find_x = e => x(Math.floor(e)) + x.step()*(e-Math.floor(e)) + x.bandwidth()/2
+
+    let find_x = e => x(Math.floor(e)) + x.step() * (e - Math.floor(e)) + x.bandwidth() / 2
 
     holder.append("line")
         .attr("x1", find_x(field_avg))
@@ -1142,7 +1153,7 @@ function draw_histogram() {
         .attr("text-anchor", field_avg <= your_avg ? "end" : "start")
         .attr("alignment-baseline", "center")
         .attr("dominant-baseline", "center")
-        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
+        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2))
         .attr("y", 5)
         .attr("font-size", info_size)
         .attr("fill", "white")
@@ -1151,7 +1162,7 @@ function draw_histogram() {
         .attr("text-anchor", field_avg <= your_avg ? "end" : "start")
         .attr("alignment-baseline", "center")
         .attr("dominant-baseline", "center")
-        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2 ))
+        .attr("x", find_x(field_avg) + (field_avg <= your_avg ? -2 : 2))
         .attr("y", 10)
         .attr("font-size", info_size)
         .attr("fill", "white")
@@ -1174,7 +1185,7 @@ function draw_histogram() {
         .text("Team Avg " + your_avg.toFixed(1))
 
     bars.enter().append("rect")
-        .attr("class", (d,i) => "occurence-bars" +  (active_rep == i ? " active-occ-bar" : ""))
+        .attr("class", (d, i) => "occurence-bars" + (active_rep == i ? " active-occ-bar" : ""))
         // .attr("fill", d => colors(d.player_no))
         // .attr("fill-opacity", 0.5)
         .attr("stroke", "white")
@@ -1184,7 +1195,7 @@ function draw_histogram() {
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("cursor", "pointer")
-        .on('click', (e,d) => clickaction(d))
+        .on('click', (e, d) => clickaction(d))
 
 
     // When plotting old GW: draw a bar!
@@ -1203,22 +1214,553 @@ function draw_histogram() {
         // .style("pointer-events", "none")
 
         holder.append("line")
-        .attr("x1", find_x(pts))
-        .attr("x2", find_x(pts))
-        .attr("y1", height+6)
-        .attr("y2", 0)
-        .attr("stroke", "#ff0058")
+            .attr("x1", find_x(pts))
+            .attr("x2", find_x(pts))
+            .attr("y1", height + 6)
+            .attr("y2", 0)
+            .attr("stroke", "#ff0058")
         holder.append("text")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "center")
             .attr("dominant-baseline", "center")
             .attr("x", find_x(pts))
-            .attr("y", height+12)
+            .attr("y", height + 12)
             .attr("font-size", info_size)
             .attr("fill", "#ff669b")
             .text("Actual: " + pts)
 
     }
+
+}
+
+function draw_field_graph() {
+    // initial checks and clear
+    if (_.isEmpty(app.scenario_evals)) { return }
+    jQuery("#field_histogram").empty()
+    if (!app.show_field) { return }
+
+    // beeswarm plot
+    var margin = { top: 15, bottom: 20, left: 10, right: 10 },
+        width = 400 - margin.left - margin.right,
+        height = 120 - margin.top - margin.bottom
+
+    let is_mobile = window.screen.width < 800
+
+    if (is_mobile) {
+        height = 160 - margin.top - margin.bottom
+    }
+
+    font_size = '4.5pt'
+    title_size = '4.5pt'
+    info_size = '3.8pt'
+
+    let cnv = d3.select("#field_histogram")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .style('display', 'block')
+
+    let svg = cnv.append('g').attr('class', 'svg-actual')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let content = svg.append('g')
+        .attr('id', 'graph-content-beeswarm')
+    let grayrect = content.append('g')
+        .attr('class', 'brush');
+    grayrect.append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr('width', width)
+        .attr('height', height)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    // data prep
+    let data = app.scenario_evals
+
+    let field_data = data.map(i => _.round(i.total_field, 2))
+        // let field_min = Math.min(...field_data)
+        // let field_max = Math.max(...field_data)
+
+    let mpts = 0
+    if (!app.is_next_gw && app.team_id != '') {
+        if (app.team_data.entry_history && app.team_data.entry_history.points) {
+            mpts = app.team_data.entry_history.points
+        }
+    }
+
+    let pure_values = data.map(i => [i.total_field, i.total_score]).flat()
+    let x_high = Math.ceil(Math.max(Math.max(...pure_values), mpts)) + 5
+    let x_low = Math.floor(Math.min(...pure_values)) - 5
+    let x_domain = _.range(x_low, x_high)
+    let x_range = [x_low, x_high]
+
+    // x-axis
+    let x = d3.scaleLinear()
+        .domain(x_range)
+        .range([0, width])
+
+    let xAxis = svg.append("g")
+        .attr("opacity", 1)
+        .attr("transform", `translate(0, ${height})`)
+        .call(
+            d3.axisBottom(x)
+            .tickSize(0)
+            .tickValues(x_domain.length > 50 ? x_domain.filter(i => i % 5 == 0) : x_domain)
+        )
+
+
+    // single y draw
+    let holder = svg.append('g')
+
+    holder.append('line')
+        .attr("x1", x(x_low))
+        .attr("x2", x(x_high))
+        .attr("y1", height / 2)
+        .attr("y2", height / 2)
+        .attr("stroke", "gray")
+
+    // y-axis
+    let y = d3.scaleLinear().domain([0, 100]).range([height, 0])
+    let yAxis = svg.append('g')
+        .call(d3.axisLeft(y).tickSize(0).tickFormat(i => ""))
+        .call(g => g.selectAll(".tick text").style("display", "none"))
+
+
+    // plot general properties
+    svg.call(g => g.selectAll(".tick")
+        .style("font-size", font_size))
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+
+
+    data.forEach((d) => {
+        d.x = x(d.total_field)
+        d.fx = x(d.total_field)
+    })
+
+    // simulation
+    const r = 3
+    const simulation = d3.forceSimulation(data)
+        .force('x', d3.forceX(d => x(d.total_field)).strength(1))
+        .force('y', d3.forceY(height / 2))
+        .force('collide', d3.forceCollide().radius(d => r * 1.1))
+        .stop()
+        .tick(200)
+
+    // Run the simulation real quick now
+    // for(var i = 0; i < 1000; i++){
+    //   simulation.tick()
+    // }
+
+    let clickaction = (d) => {
+        app.activate_rep(d.idx)
+    }
+
+    let active_rep = app.active_rep
+
+    holder.selectAll('circle')
+        .data(simulation.nodes()).enter()
+        .append('circle')
+        // .attr('cx', d => x(d.total_field))
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y)
+        .attr('r', r)
+        .attr("class", (d, i) => "field-occurence-circles" + (active_rep == i ? " active-occ-bar" : ""))
+        .style("stroke-width", 0)
+        .style("cursor", "pointer")
+        .on('click', (e, d) => clickaction(d))
+
+    // title
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", width / 2)
+        .attr("y", -3)
+        .attr("font-size", title_size)
+        .attr("fill", "white")
+        .text("Simulated Field Average")
+
+    // x-title
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 18)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Points")
+
+}
+
+function draw_diff_graph() {
+    // initial checks and clear
+    if (_.isEmpty(app.scenario_evals)) { return }
+    jQuery("#diff_histogram").empty()
+    if (!app.show_diff) { return }
+
+    // scatter plot + dist
+    var margin = { top: 25, bottom: 30, left: 35, right: 15 },
+        width = 680 - margin.left - margin.right,
+        height = 685 - margin.top - margin.bottom
+
+    // let is_mobile = window.screen.width < 800
+
+    // if (is_mobile) {
+    //     height = 160 - margin.top - margin.bottom
+    // }
+
+    font_size = '8pt'
+    title_size = '10pt'
+    info_size = '7pt'
+    axis_size = '10pt'
+
+    let cnv = d3.select("#diff_histogram")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .style('display', 'block')
+
+    let svg = cnv.append('g').attr('class', 'svg-actual')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let content = svg.append('g')
+        .attr('id', 'graph-content-scatter')
+
+    let top_height = 150
+    let top_gap = 30
+    let main_size = 450
+    let right_width = 150
+    let right_gap = 30
+
+    let grayrect = content.append('g')
+        .attr('class', 'brush');
+    // main part
+    grayrect
+        .append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr("x", 0)
+        .attr("y", top_height + top_gap)
+        .attr('width', main_size)
+        .attr('height', main_size)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    // top part
+    grayrect
+        .append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr('width', main_size)
+        .attr('height', top_height)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    // right part
+    grayrect
+        .append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr("x", main_size + right_gap)
+        .attr("y", top_height + top_gap)
+        .attr('width', right_width)
+        .attr('height', main_size)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    // data prep
+    let data = app.scenario_evals
+
+
+    // part 1: main data
+    let main_part = svg.append('g')
+        .attr('transform', 'translate(' + 0 + ',' + (top_height + top_gap) + ')')
+
+    let team_points = data.map(i => i.total_score)
+    let field_points = data.map(i => i.total_field)
+    let all_points = data.map(i => [i.total_score, i.total_field]).flat()
+
+    let padded = (e, p) => { return [e[0] - p, e[1] + p] }
+
+    x_main = d3.scaleLinear()
+        .domain(padded(d3.extent(field_points), 5))
+        .range([0, main_size])
+
+    let xAxis = main_part.append("g")
+        .attr("opacity", 1)
+        .call(
+            d3.axisBottom(x_main)
+            .tickSize(main_size)
+            // .tickValues(x_domain.length > 50 ? x_domain.filter(i => i % 5 == 0) : x_domain)
+        )
+
+    y_main = d3.scaleLinear()
+        .domain(padded(d3.extent(team_points), 5))
+        .range([main_size, 0])
+
+    let yAxis = main_part.append("g")
+        .attr('transform', 'translate(' + main_size + ', 0)')
+        .attr("opacity", 1)
+        .call(
+            d3.axisLeft(y_main)
+            .tickSize(main_size)
+            // .tickValues(x_domain.length > 50 ? x_domain.filter(i => i % 5 == 0) : x_domain)
+        )
+
+    const r = 5
+
+    let active_rep = app.active_rep
+
+    let clickaction = (d) => {
+        app.activate_rep(d.idx)
+    }
+
+    // diagonal line
+    let min_diag = Math.max(Math.min(...field_points), Math.min(...team_points))
+    let max_diag = Math.min(Math.max(...field_points), Math.max(...team_points))
+
+    let diff_ranges = _.concat(
+        _.range(-10, Math.min(...team_points) - Math.max(...field_points), -10),
+        // [0],
+        _.range(10, Math.max(...team_points) - Math.min(...field_points), 10)).map(i => { return { val: i } })
+
+    const min_team = _.min(team_points)
+    const max_team = _.max(team_points)
+    const min_field = _.min(field_points)
+    const max_field = _.max(field_points)
+
+    let bounds = (change) => {
+        let left
+        let right
+        if (min_team + change > min_field) {
+            left = [min_field, min_field + change]
+        } else {
+            left = [min_team - change, min_team]
+        }
+
+        if (max_team - change < max_field) {
+            right = [max_team - change, max_team]
+        } else {
+            right = [max_field, max_field + change]
+        }
+        return { 1: left, 2: right }
+    }
+
+    diff_ranges.forEach((d) => {
+        d.point = bounds(d.val)
+    })
+
+    main_part
+        .append("line")
+        .attr("x1", x_main(min_diag - 5))
+        .attr("x2", x_main(max_diag + 5))
+        .attr("y1", y_main(min_diag - 5))
+        .attr("y2", y_main(max_diag + 5))
+        .attr("stroke", "white")
+
+    // other diagonals
+    main_part.selectAll(".diagline")
+        .data(diff_ranges)
+        .enter()
+        .append("line")
+        .attr("class", "diagline")
+        .attr("x1", d => x_main(d.point[1][0] - 5))
+        .attr("x2", d => x_main(d.point[2][0] + 5))
+        .attr("y1", d => y_main(d.point[1][1] - 5))
+        .attr("y2", d => y_main(d.point[2][1] + 5))
+        .attr("stroke", "gray")
+
+    let range_min = _.min(diff_ranges.map(i => i.val))
+    let range_max = _.max(diff_ranges.map(i => i.val))
+
+    let tcolor = d3.scaleLinear().domain([range_min, 0, range_max])
+        .range(['#ffb5b5', '#ffffff', '#21ffda'])
+
+
+    main_part.selectAll(".diagtext")
+        .data(diff_ranges)
+        .enter()
+        .append("text")
+        .attr("class", "diagtext")
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
+        .attr("x", d => x_main(d.point[2][0] + 4))
+        .attr("y", d => y_main(d.point[2][1] + 4))
+        .attr("font-size", info_size)
+        .attr("fill", d => tcolor(d.val))
+        .text(d => d.val > 0 ? "+" + _.round(d.val, 0) : _.round(d.val, 0))
+
+    main_part.selectAll(".simcircle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr('cx', d => x_main(d.total_field))
+        .attr('cy', d => y_main(d.total_score))
+        .attr('r', r)
+        .attr("class", (d, i) => "simcircle" + (active_rep == i ? " active-occ-bar" : ""))
+        .style("cursor", "pointer")
+        .on('click', (e, d) => clickaction(d))
+
+    // top plot
+
+    let top_part = svg.append('g')
+        .attr('transform', 'translate(0,0)')
+
+    let x_top = d3.scaleLinear()
+        .domain(padded(d3.extent(field_points), 5))
+        .range([0, main_size])
+
+    top_part.append("g")
+        .attr("opacity", 1)
+        .call(
+            d3.axisBottom(x_top)
+            .tickSize(top_height)
+        )
+
+    var kde = kernelDensityEstimator(kernelEpanechnikov(7), x_top.ticks(60))
+    var density =  kde( data.map(d => d.total_field) )
+    let d1_closed = fill_density(density)
+
+    let top_y_max = _.max(density.map(i => i[1])) * 1.1
+
+    let y_top = d3.scaleLinear()
+        .range([top_height, 0])
+        .domain([0, top_y_max]);
+
+    top_part.append("g")
+        // .attr('transform', 'translate(' + main_size + ', 0)')
+        .attr("opacity", 1)
+        .call(
+            d3.axisLeft(y_top)
+            .ticks(0)
+            // .tickSize(main_size)
+            // .tickValues(x_domain.length > 50 ? x_domain.filter(i => i % 5 == 0) : x_domain)
+        )
+
+    top_part.append("path")
+        .datum(d1_closed)
+        .attr("fill", "#ff7777")
+        .attr("fill-opacity", "0.5")
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1)
+        .attr("stroke-linejoin", "round")
+        .attr("d",  d3.line()
+        .curve(d3.curveBasis)
+            .x(function(d) { return x_top(d[0]); })
+            .y(function(d) { return y_top(d[1]); })
+        );
+
+    // right part
+
+    let right_part = svg.append('g')
+        .attr('transform', 'translate(' + (main_size+right_gap) + ',' + (top_height + top_gap) + ')')
+
+    let y_right = d3.scaleLinear()
+        .domain(padded(d3.extent(team_points), 5))
+        .range([main_size, 0])
+
+    right_part.append("g")
+        .attr('transform', 'translate(' + right_width + ', 0)')
+        .attr("opacity", 1)
+        .call(
+            d3.axisLeft(y_right)
+            .tickSize(right_width)
+        )
+
+    let kde2 = kernelDensityEstimator(kernelEpanechnikov(7), y_right.ticks(60))
+    let density2 =  kde2( data.map(d => d.total_score) )
+    let d2closed = fill_density(density2)
+    let right_x_max = _.max(d2closed.map(i => i[1])) * 1.1
+
+    let x_right = d3.scaleLinear()
+    .domain([0, right_x_max])
+    .range([0, right_width])
+
+    right_part.append("g")
+        .attr("opacity", 1)
+        .call(
+            d3.axisTop(x_right).ticks(0)
+        )
+
+    right_part.append("path")
+        .datum(d2closed)
+        .attr("fill", "#21ffda")
+        .attr("fill-opacity", "0.5")
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1)
+        .attr("stroke-linejoin", "round")
+        .attr("d",  d3.line()
+        .curve(d3.curveBasis)
+            .x(function(d) { return x_right(d[1]); })
+            .y(function(d) { return y_right(d[0]); })
+        );
+
+
+
+
+    // final fix
+    svg.call(g => g.selectAll(".tick line")
+        .attr("stroke-dasharray", "3,1")
+        .attr("stroke-width", 0.5)
+        .attr("stroke-opacity", 0.2)
+        .style('pointer-events', 'none'))
+
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+
+
+    // titles
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", width / 2)
+        .attr("y", -9)
+        .attr("font-size", title_size)
+        .attr("fill", "white")
+        .text("Team Points vs Field Average Difference")
+
+    // top title
+    svg.append("text")
+        .attr("text-anchor", "start")
+        .attr("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
+        .attr("x", 2)
+        .attr("y", 2)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Field Average Density")
+
+    // x-title
+    main_part.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", main_size/2)
+        .attr("y", main_size+25)
+        .attr("font-size", axis_size)
+        .attr("fill", "white")
+        .text("Field Average (Points)")
+
+    // right title
+    svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
+        .attr("x", main_size + right_gap + right_width - 2)
+        .attr("y", top_height + top_gap + 2)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Team Points Density")
+
+    // y-title
+    main_part.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("transform", `rotate(-90, ${-22}, ${main_size/2})`)
+        .attr("x", -22)
+        .attr("y", main_size/2)
+        .attr("font-size", axis_size)
+        .attr("fill", "white")
+        .text("Team Score (Points)")
+
 
 }
 
@@ -1230,6 +1772,27 @@ async function fetch_fpl_fixture() {
     })
 }
 
+
+// Function to compute density
+function kernelDensityEstimator(kernel, X) {
+    return function(V) {
+        return X.map(function(x) {
+            return [x, d3.mean(V, function(v) { return kernel(x - v); })];
+        });
+    };
+}
+
+function kernelEpanechnikov(k) {
+    return function(v) {
+        return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    };
+}
+
+function fill_density(d) {
+    let first = [[d[0][0], 0]]
+    let last = [[d[d.length-1][0], 0]]
+    return _.concat(first, d, last)
+}
 
 
 $(document).ready(() => {
@@ -1247,21 +1810,24 @@ $(document).ready(() => {
         }),
         fetch_fpl_fixture()
     ]
-    
+
     Promise.allSettled(calls).then(() => {
-        if (params.get('team') != null) {
-            let sorted = params.get('sorted')==1
-            let picks = params.get('team').split(',').map(i => parseInt(i))
-            let captain = params.get('cap')
-            let vice_cap = params.get('vc')
-            let tc = params.get('tc')
-            let gw = params.get('gw')
-            app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
-            // app.team_id = 1
-        }
-        app.ready = true
-    })
-    .catch((error) => {
-        console.error("An error has occurred: " + error);
-    });
+            if (params.get('team') != null) {
+                let sorted = params.get('sorted') == 1
+                let picks = params.get('team').split(',').map(i => parseInt(i))
+                let captain = params.get('cap')
+                let vice_cap = params.get('vc')
+                let tc = params.get('tc')
+                let gw = params.get('gw')
+                app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
+                    // app.team_id = 1
+            }
+            if (params.get('gw') != null) {
+                app.activate_gw(parseInt(params.get('gw')))
+            }
+            app.ready = true
+        })
+        .catch((error) => {
+            console.error("An error has occurred: " + error);
+        });
 })
