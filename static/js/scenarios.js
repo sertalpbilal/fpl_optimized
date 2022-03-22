@@ -358,6 +358,10 @@ var app = new Vue({
                     }
                 }
             }
+            setTimeout(() => {
+                update_sim_values()
+            }, 200)
+            
         },
         suggestTeam(key) {
             if (_.isEmpty(this[key])) { return }
