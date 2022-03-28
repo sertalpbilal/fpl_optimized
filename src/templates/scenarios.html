@@ -290,6 +290,14 @@
                                     <button type="button" class="close" @click="page_link=''">&times;</button>
                                     Link: <a :href="page_link" target="_blank">{{ page_link }}</a>
                                 </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="input-group mb-3 w-auto">
+                                        <input type="text" class="form-control" placeholder="Penalty/Lead" aria-label="Penalty/Lead" aria-describedby="basic-addon2" id="my-penalty">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="button" @click="savePenalty">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -382,6 +390,14 @@
                                     </label>
                                     <button class="btn btn-sm btn-secondary m-1" @click="suggestTeam('rival_data')"><i class="fas fa-exchange-alt"></i> Suggest Order</button>
                                 </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="input-group mb-3 w-auto">
+                                        <input type="text" class="form-control" placeholder="Penalty/Lead" aria-label="Penalty/Lead" aria-describedby="basic-addon2" id="rival-penalty">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="button" @click="saveRivalPenalty">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -463,13 +479,21 @@
 
                         <!-- Right side: data values -->
                         <div class="col-12 col-md-6 p-2" v-show="picked_out == undefined" id="data_outcome" style="background-color: #474747;">
-                            <div class="red-border-bottom text-center">
+                            <div class="red-border-bottom text-center mb-3">
                                 <b>Points Analysis</b>
                                 <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_stats)">
                                     <i class="fas fa-image"></i>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2" v-if="my_penalty != 0">
+                                <div class="col-6 p-1 title-side">
+                                    Penalty/Lead
+                                </div>
+                                <div class="col-6 p-1 value-side">
+                                    {{ my_penalty }} pts
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
                                     Average
                                 </div>
@@ -629,13 +653,21 @@
                         
                         <template v-if="rival_mode">
                             <div class="col-12 col-md-6 p-2" v-show="picked_out_rival == undefined" id="data_outcome_rival" style="background-color: #474747;">
-                                <div class="red-border-bottom text-center">
+                                <div class="red-border-bottom text-center mb-3">
                                     <b><span style="color: darkkhaki">Rival</span> Points Analysis</b>
                                     <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_evals_rival)">
                                         <i class="fas fa-image"></i>
                                     </div>
                                 </div>
-                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                <div class="summary-box row no-gutters overflow-hidden mb-2" v-if="rival_penalty != 0">
+                                    <div class="col-6 p-1 title-side">
+                                        Penalty/Lead
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ rival_penalty }} pts
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Average
                                     </div>
