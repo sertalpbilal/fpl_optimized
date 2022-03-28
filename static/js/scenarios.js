@@ -36,8 +36,10 @@ var app = new Vue({
         // options
         show_outcomes: true,
         show_field: false,
-        show_diff: false,
-        tick: 300
+        show_diff: true,
+        tick: 300,
+        my_penalty: 0,
+        rival_penalty: 0
     },
     computed: {
         current_gw() {
@@ -178,8 +180,9 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return [] }
             if (_.isEmpty(this.team_picks)) { return {} }
             let picks = this.team_picks
+            let pen = this.my_penalty
 
-            grouped_scenarios = this.evaluate_scenarios(picks)
+            grouped_scenarios = this.evaluate_scenarios(picks, pen)
 
             return grouped_scenarios
         },
@@ -188,8 +191,9 @@ var app = new Vue({
             if (_.isEmpty(this.sc_details)) { return [] }
             if (_.isEmpty(this.rival_picks)) { return {} }
             let picks = this.rival_picks
+            let pen = this.rival_penalty
 
-            grouped_scenarios = this.evaluate_scenarios(picks)
+            grouped_scenarios = this.evaluate_scenarios(picks, pen)
 
             return grouped_scenarios
         },
@@ -461,7 +465,7 @@ var app = new Vue({
                 app.loading = false
             })
         },
-        evaluate_scenarios(picks) {
+        evaluate_scenarios(picks, pen) {
 
             let grouped_scenarios = _.cloneDeep(this.grouped_scenario_with_field)
             let ownership = this.ownership_rate_dict
@@ -520,9 +524,9 @@ var app = new Vue({
                         }
                     }
                 })
-                s.total_score = score
+                s.total_score = score + pen
                 s.autosub_score = score - s.lineup_score
-                s.diff = score - s.total_field
+                s.diff = score + pen - s.total_field
                 s.idx = i
                 s.picks = sc_picks
             })
@@ -962,6 +966,14 @@ var app = new Vue({
             draw_histogram()
             draw_field_graph()
             draw_diff_graph()
+        },
+        savePenalty() {
+            let val = parseInt(jQuery("#my-penalty").val())
+            this.my_penalty = (val || 0)
+        },
+        saveRivalPenalty() {
+            let val = parseInt(jQuery("#rival-penalty").val())
+            this.rival_penalty = (val || 0)
         }
     }
 })

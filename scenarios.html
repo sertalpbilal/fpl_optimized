@@ -402,6 +402,14 @@
                                     <button type="button" class="close" @click="page_link=''">&times;</button>
                                     Link: <a :href="page_link" target="_blank">{{ page_link }}</a>
                                 </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="input-group mb-3 w-auto">
+                                        <input type="text" class="form-control" placeholder="Penalty/Lead" aria-label="Penalty/Lead" aria-describedby="basic-addon2" id="my-penalty">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="button" @click="savePenalty">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -494,6 +502,14 @@
                                     </label>
                                     <button class="btn btn-sm btn-secondary m-1" @click="suggestTeam('rival_data')"><i class="fas fa-exchange-alt"></i> Suggest Order</button>
                                 </div>
+                                <div class="d-flex justify-content-center">
+                                    <div class="input-group mb-3 w-auto">
+                                        <input type="text" class="form-control" placeholder="Penalty/Lead" aria-label="Penalty/Lead" aria-describedby="basic-addon2" id="rival-penalty">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="button" @click="saveRivalPenalty">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -575,13 +591,21 @@
 
                         <!-- Right side: data values -->
                         <div class="col-12 col-md-6 p-2" v-show="picked_out == undefined" id="data_outcome" style="background-color: #474747;">
-                            <div class="red-border-bottom text-center">
+                            <div class="red-border-bottom text-center mb-3">
                                 <b>Points Analysis</b>
                                 <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_stats)">
                                     <i class="fas fa-image"></i>
                                 </div>
                             </div>
-                            <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                            <div class="summary-box row no-gutters overflow-hidden mb-2" v-if="my_penalty != 0">
+                                <div class="col-6 p-1 title-side">
+                                    Penalty/Lead
+                                </div>
+                                <div class="col-6 p-1 value-side">
+                                    {{ my_penalty }} pts
+                                </div>
+                            </div>
+                            <div class="summary-box row no-gutters overflow-hidden mb-2">
                                 <div class="col-6 p-1 title-side">
                                     Average
                                 </div>
@@ -741,13 +765,21 @@
                         
                         <template v-if="rival_mode">
                             <div class="col-12 col-md-6 p-2" v-show="picked_out_rival == undefined" id="data_outcome_rival" style="background-color: #474747;">
-                                <div class="red-border-bottom text-center">
+                                <div class="red-border-bottom text-center mb-3">
                                     <b><span style="color: darkkhaki">Rival</span> Points Analysis</b>
                                     <div class="close text-white close-absolute" @click="saveImage('#data_outcome', 'results.png')" v-if="!_.isEmpty(scenario_evals_rival)">
                                         <i class="fas fa-image"></i>
                                     </div>
                                 </div>
-                                <div class="summary-box row no-gutters overflow-hidden mt-3 mb-2">
+                                <div class="summary-box row no-gutters overflow-hidden mb-2" v-if="rival_penalty != 0">
+                                    <div class="col-6 p-1 title-side">
+                                        Penalty/Lead
+                                    </div>
+                                    <div class="col-6 p-1 value-side">
+                                        {{ rival_penalty }} pts
+                                    </div>
+                                </div>
+                                <div class="summary-box row no-gutters overflow-hidden mb-2">
                                     <div class="col-6 p-1 title-side">
                                         Average
                                     </div>
@@ -1479,7 +1511,7 @@
 
 <script>
     let sc_files = [["GW31", "data/2021-22/GW31/2022-03-28/output/scenarios.csv"], ["GW30", "data/2021-22/GW30/2022-03-18/output/scenarios.csv"], ["GW29", "data/2021-22/GW29/2022-03-12/output/scenarios.csv"], ["GW28", "data/2021-22/GW28/2022-03-05/output/scenarios.csv"], ["GW27", "data/2021-22/GW27/2022-02-25/output/scenarios.csv"], ["GW26", "data/2021-22/GW26/2022-02-19/output/scenarios.csv"], ["GW25", "data/2021-22/GW25/2022-02-12/output/scenarios.csv"], ["GW24", "data/2021-22/GW24/2022-02-08/output/scenarios.csv"], ["GW23", "data/2021-22/GW23/2022-01-21/output/scenarios.csv"], ["GW22", "data/2021-22/GW22/2022-01-14/output/scenarios.csv"], ["GW21", "data/2021-22/GW21/2022-01-01/output/scenarios.csv"], ["GW20", "data/2021-22/GW20/2021-12-28/output/scenarios.csv"], ["GW19", "data/2021-22/GW19/2021-12-26/output/scenarios.csv"], ["GW18", "data/2021-22/GW18/2021-12-18/output/scenarios.csv"], ["GW17", "data/2021-22/GW17/2021-12-14/output/scenarios.csv"], ["GW16", "data/2021-22/GW16/2021-12-10/output/scenarios.csv"], ["GW15", "data/2021-22/GW15/2021-12-04/output/scenarios.csv"], ["GW14", "data/2021-22/GW14/2021-11-30/output/scenarios.csv"], ["GW13", "data/2021-22/GW13/2021-11-27/output/scenarios.csv"], ["GW12", "data/2021-22/GW12/2021-11-20/output/scenarios.csv"], ["GW11", "data/2021-22/GW11/2021-11-05/output/scenarios.csv"], ["GW10", "data/2021-22/GW10/2021-10-29/output/scenarios.csv"], ["GW9", "data/2021-22/GW9/2021-10-22/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"]]
-    let ts = 20220328163058
+    let ts = 20220328190427
 </script>
 
  </div>
@@ -1545,11 +1577,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220328163058"></script>
+<script src="/static/js/main.js?ts=20220328190427"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220328163058"></script>
+<script src="/static/js/sampling_utils.js?ts=20220328190427"></script>
 
-<script src="/static/js/scenarios.js?ts=20220328163058"></script>
+<script src="/static/js/scenarios.js?ts=20220328190427"></script>
 
 
 <script>
