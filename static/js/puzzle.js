@@ -17,7 +17,8 @@ var app = new Vue({
         tries: [],
         errormessage: '',
         submitting: false,
-        round_limit: 6
+        round_limit: 6,
+        solved: false
     },
     computed: {
         data_ready() {
@@ -275,6 +276,7 @@ var app = new Vue({
 
             if (solved) {
                 // show popup!
+                this.solved = true
                 return
             }
 

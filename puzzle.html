@@ -157,7 +157,7 @@
                         </div>
 
 
-                        <div class="row mb-3" v-if="tries.length < round_limit">
+                        <div class="row mb-3" v-if="tries.length < round_limit && !solved">
                             <div class="col">
                                 <button class="btn btn-sm btn-secondary" @click="submitTry" :disabled="submitting">Submit</button>
                             </div>
@@ -355,7 +355,7 @@
     let gw = "";
     let next_gw = "";
     let date = "";
-    let lastupdate = "2022-03-29T20:01:05.539596+00:00";
+    let lastupdate = "2022-03-29T20:28:32.328504+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -363,9 +363,9 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220329200105"></script>
+<script src="/static/js/main.js?ts=20220329202832"></script>
 
-<script src="/static/js/puzzle.js?ts=20220329200105"></script>
+<script src="/static/js/puzzle.js?ts=20220329202832"></script>
 
 
 <script>
@@ -375,6 +375,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-29T20:01:05.539596+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-29T20:28:32.328504+00:00</div>
 
 </html> 
