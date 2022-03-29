@@ -132,9 +132,9 @@
                                                     <th>Team</th>
                                                     <th>Pos</th>
                                                     <th>Value</th>
-                                                    <th>Total Pts</th>
+                                                    <th @click="sortOrder=undefined" class="clickable">Total Pts <i class="fas fa-sort"></i></th>
                                                     <!-- <th>Initial</th> -->
-                                                    <th v-for="gw in plan_gws">GW{{gw}}</th>
+                                                    <th v-for="gw in plan_gws" @click="sortOrder=gw" class="clickable">GW{{gw}} <i class="fas fa-sort"></i></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
