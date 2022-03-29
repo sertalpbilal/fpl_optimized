@@ -221,7 +221,8 @@ var app = new Vue({
             let plan = Object.entries(this.generated_plan)
             
             for (const e of plan) {
-                if (!this.plan_gws.includes(e[0])) { continue }
+                let gw = parseInt(e[0])
+                if (!this.plan_gws.includes(gw)) { continue }
                 // ITB check
                 if (e[1].itb < -0.05) {
                     this.errormessage = `Negative ITB on GW ${e[0]}`
