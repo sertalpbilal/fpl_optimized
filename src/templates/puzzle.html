@@ -123,49 +123,51 @@
                                          Total Budget: <span class="puzzle-sell-text">{{ _.round(player_dict[out_selected].now_cost/10+generated_plan[out_gw].itb,1) }}</span>.
                                          <button class="ml-2 btn btn-sm btn-info l100" @click="cancelSell">Cancel</button>
                                     </div>
-                                    <table class="table table-sm text-white text-small">
-                                        <thead>
-                                            <tr>
-                                                <!-- <th>ID</th> -->
-                                                <th>Player</th>
-                                                <th>Team</th>
-                                                <th>Pos</th>
-                                                <th>Value</th>
-                                                <th>Total Pts</th>
-                                                <!-- <th>Initial</th> -->
-                                                <th v-for="gw in plan_gws">GW{{gw}}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-if="out_selected" class="single_height puzzle-sell-player-row" v-for="player in [player_dict[out_selected]]">
-                                                <td>(Sell) {{ player.web_name }} <button class="btn btn-sm p-0 m-0 l100 text-white" @click="cancelSell"><i class="fas fa-times-circle"></i></button></td>
-                                                <td>{{ player.team_name }}</td>
-                                                <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
-                                                <td>{{ player.now_cost / 10 }}</td>
-                                                <td>{{ player.sum_pts }}</td>
-                                                <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
-                                                <td v-for="gw in plan_gws" :class="{'puzzle-sell-gw': gw >= out_gw && generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}">
-                                                    {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
-                                                </td>
-                                            </tr> 
-                                            <tr class="single_height" :class="{'puzzle-can-transfer': out_gw && !generated_plan[out_gw].squad_ids.includes(player.element)}" 
-                                                @click.stop="out_gw && !generated_plan[out_gw].squad_ids.includes(player.element) ? makeTransfer(player.element) : () => {}" 
-                                                v-for="player in (out_selected ? filtered_players : player_list)" v-if="player.element != out_selected">
-                                                <!-- <td>{{ player.element }}</td> -->
-                                                <td>{{ player.web_name }}</td>
-                                                <td>{{ player.team_name }}</td>
-                                                <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
-                                                <td>{{ player.now_cost / 10 }}</td>
-                                                <td>{{ player.sum_pts }}</td>
-                                                <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
-                                                <td v-for="gw in plan_gws" 
-                                                    :class="{'clickable': generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}"
-                                                    @click.stop="generated_plan[gw].squad_ids.includes(player.element) ? markSell(player.element, gw) : () => {}">
-                                                    {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive mh-500">
+                                        <table class="table table-sm text-white text-small first-row-fixed">
+                                            <thead>
+                                                <tr>
+                                                    <!-- <th>ID</th> -->
+                                                    <th>Player</th>
+                                                    <th>Team</th>
+                                                    <th>Pos</th>
+                                                    <th>Value</th>
+                                                    <th>Total Pts</th>
+                                                    <!-- <th>Initial</th> -->
+                                                    <th v-for="gw in plan_gws">GW{{gw}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="out_selected" class="single_height puzzle-sell-player-row" v-for="player in [player_dict[out_selected]]">
+                                                    <td>(Sell) {{ player.web_name }} <button class="btn btn-sm p-0 m-0 l100 text-white" @click="cancelSell"><i class="fas fa-times-circle"></i></button></td>
+                                                    <td>{{ player.team_name }}</td>
+                                                    <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
+                                                    <td>{{ player.now_cost / 10 }}</td>
+                                                    <td>{{ player.sum_pts }}</td>
+                                                    <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
+                                                    <td v-for="gw in plan_gws" :class="{'puzzle-sell-gw': gw >= out_gw && generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}">
+                                                        {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
+                                                    </td>
+                                                </tr> 
+                                                <tr class="single_height" :class="{'puzzle-can-transfer': out_gw && !generated_plan[out_gw].squad_ids.includes(player.element)}" 
+                                                    @click.stop="out_gw && !generated_plan[out_gw].squad_ids.includes(player.element) ? makeTransfer(player.element) : () => {}" 
+                                                    v-for="player in (out_selected ? filtered_players : player_list)" v-if="player.element != out_selected">
+                                                    <!-- <td>{{ player.element }}</td> -->
+                                                    <td>{{ player.web_name }}</td>
+                                                    <td>{{ player.team_name }}</td>
+                                                    <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
+                                                    <td>{{ player.now_cost / 10 }}</td>
+                                                    <td>{{ player.sum_pts }}</td>
+                                                    <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
+                                                    <td v-for="gw in plan_gws" 
+                                                        :class="{'clickable': generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}"
+                                                        @click="(e) => { if(generated_plan[gw].squad_ids.includes(player.element)) {markSell(player.element, gw); e.stopPropagation();}}">
+                                                        {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                             <!-- <div class="tab-pane fade p-2" id="lineup" role="tabpanel" aria-labelledby="lineup-tab">
