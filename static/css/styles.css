@@ -1621,3 +1621,187 @@ th.vertical-name {
     }    
 }
 
+.gray-top {
+    border-top: 1px solid #666666;
+}
+
+.gray-bottom {
+    border-bottom: 1px solid #666666;
+}
+
+.modern-label {
+    font-size: small;
+    color: #a5a5a5;
+}
+
+.modern-value {
+    font-size: large;
+}
+
+.puzzle-tabs .nav-item button {
+    margin-left: 1px;
+    margin-right: 1px;
+    background-color: #b1b1b1;
+}
+
+.player-border {
+    border-width: 0 0 0 6px;
+    border-radius: 6px;
+    border-style: solid;
+    background-color: #6c757d;
+    margin-bottom: 1px;
+}
+
+.player-pos-1 {
+    border-color: #ff8811;
+}
+
+.player-pos-2 {
+    border-color: #E1A1A7;
+}
+
+.player-pos-3 {
+    border-color: #CBC5EA;
+}
+
+.player-pos-4 {
+    border-color: #87B37A;
+}
+
+.l80 {
+    line-height: 80%;
+}
+
+.l90 {
+    line-height: 90%;
+}
+
+.l100 {
+    line-height: 100%;
+}
+
+.bisque {
+    color: bisque;
+}
+
+.bench-sep{
+    border-style: dashed;
+    border-color: beige;
+}
+
+.bench-sep:after {
+    content: 'Bench';
+    background-color: #474747;
+    display: block;
+    margin-top: -11px;
+    overflow: auto;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.sold-sep{
+    border-style: dashed;
+    border-color: beige;
+}
+
+.sold-sep:after {
+    content: 'Transfers';
+    background-color: #474747;
+    display: block;
+    margin-top: -11px;
+    overflow: auto;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.puzzle-transfer-button {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    line-height: 100%;
+    color: lightpink;
+}
+
+.puzzle-transfer-button:hover {
+    color: white;
+}
+
+.puzzle_total_point_display {
+    font-weight: bold;
+    color: springgreen;
+}
+
+tr.single_height {
+    line-height: 100%;
+}
+
+td.puzzle-in-lineup {
+    background-color: cadetblue;
+}
+
+td.puzzle-in-bench {
+    background-color: gray;
+}
+
+tr.puzzle-sell-player-row {
+    background-color: indianred !important;
+}
+
+td.puzzle-sell-gw {
+    border: 3px solid #e34a4a;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+tr.puzzle-can-transfer {
+    background-color: #48ff5224;
+    cursor: pointer;
+}
+
+.captain-c {
+    color: yellowgreen;
+}
+
+.puzzle-error {
+    color: #ffa4a4;
+    font-weight: bold;
+    text-shadow: 0px 0px 4px #ff0e0e;
+}
+
+.puzzle-highlight {
+    outline: 2px solid gold;
+}
+
+.puzzle-score-box {
+    width: 30px;
+    height: 30px;
+}
+
+.score-empty {
+    outline: 3px dashed white;
+}
+
+.score-exist {
+    outline: 2px solid black;
+    color: black;
+}
+
+.correct-color {
+    background-color: #17c60d;
+}
+
+.below-color {
+    background-color: #fff101;
+}
+
+.above-color {
+    background-color: #886de4;
+}
