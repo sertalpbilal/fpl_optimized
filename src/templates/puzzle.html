@@ -37,7 +37,7 @@
                         <div class="row mb-3" v-for="(t,i) in tries">
                             <div class="col">
                                 <!-- <button class="btn btn-sm btn-secondary" @click="submitTry">Submit</button> -->
-                                Try {{ i+1 }}
+                                Try {{ i+1 }}: {{ t.final_points }} pts
                             </div>
                             <div class="col d-flex justify-content-center" v-for="gw in plan_gws">
                                 <div class="puzzle-score-box score-exist " :class="t.squares[gw] + '-color'">{{ t.points[gw] }}</div>
@@ -92,6 +92,9 @@
                                             </div>
                                             <player-bar v-for="player in initial_sorted" :data="player"></player-bar>
                                         </div>
+                                        <div class="text-center mt-2">
+                                            <button class="btn btn-sm btn-info" @click="resetAll">Reset</button>
+                                        </div>
                                     </div>
                                     <div class="col-12 col-sm-6 col-md-3 col-lg" :id="'gw_' + gw" v-for="gw in plan_gws">
                                         <div class="text-center">GW{{ gw }}</div>
@@ -112,7 +115,14 @@
                             </div>
                             <div class="tab-pane fade p-2" id="player" role="tabpanel" aria-labelledby="player-tab">
                                 <div class="">
-
+                                    <div class="text-center mb-1" v-if="out_selected != undefined">
+                                        Selling <span class="puzzle-sell-text">{{ player_dict[out_selected].web_name }}</span>
+                                         on <span class="puzzle-sell-text">GW{{ out_gw }}</span>. 
+                                         Sell Price: <span class="puzzle-sell-text">{{ player_dict[out_selected].now_cost/10 }}</span>, 
+                                         ITB: <span class="puzzle-sell-text">{{ generated_plan[out_gw].itb }}</span>,
+                                         Total Budget: <span class="puzzle-sell-text">{{ _.round(player_dict[out_selected].now_cost/10+generated_plan[out_gw].itb,1) }}</span>.
+                                         <button class="ml-2 btn btn-sm btn-info l100" @click="cancelSell">Cancel</button>
+                                    </div>
                                     <table class="table table-sm text-white text-small">
                                         <thead>
                                             <tr>
@@ -122,7 +132,7 @@
                                                 <th>Pos</th>
                                                 <th>Value</th>
                                                 <th>Total Pts</th>
-                                                <th>Initial</th>
+                                                <!-- <th>Initial</th> -->
                                                 <th v-for="gw in plan_gws">GW{{gw}}</th>
                                             </tr>
                                         </thead>
@@ -133,7 +143,7 @@
                                                 <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
                                                 <td>{{ player.now_cost / 10 }}</td>
                                                 <td>{{ player.sum_pts }}</td>
-                                                <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td>
+                                                <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
                                                 <td v-for="gw in plan_gws" :class="{'puzzle-sell-gw': gw >= out_gw && generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}">
                                                     {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
                                                 </td>
@@ -147,7 +157,7 @@
                                                 <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
                                                 <td>{{ player.now_cost / 10 }}</td>
                                                 <td>{{ player.sum_pts }}</td>
-                                                <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td>
+                                                <!-- <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td> -->
                                                 <td v-for="gw in plan_gws" 
                                                     :class="{'clickable': generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}"
                                                     @click.stop="generated_plan[gw].squad_ids.includes(player.element) ? markSell(player.element, gw) : () => {}">

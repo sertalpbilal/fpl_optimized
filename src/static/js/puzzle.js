@@ -137,7 +137,7 @@ var app = new Vue({
         },
         optimal_total() {
             if (!this.data_ready) { return }
-            let pts = Object.entries(this.optimal_scores).filter(i => this.plan_gws.includes(i[0])).map(i => i[1])
+            let pts = Object.entries(this.optimal_scores).filter(i => this.plan_gws.includes(parseInt(i[0]))).map(i => i[1])
             return _.sum(pts)
         },
         optimal_in_text() {
@@ -262,7 +262,7 @@ var app = new Vue({
 
             let final_points = _.sum(points.filter(i => this.plan_gws.includes(i[0])).map(i => i[1]))
             let optimal_points = this.optimal_total
-            let solved = final_points == optimal_points
+            let solved = _.round(final_points) >= _.round(optimal_points)
 
             this.tries.push({
                 // 'plan': _.cloneDeep(plan),
@@ -287,6 +287,9 @@ var app = new Vue({
                 app.submitting = false
             }, 500)
 
+        },
+        resetAll() {
+            this.choice = []
         }
     }
 });
@@ -344,6 +347,11 @@ Vue.component('transfer-bar', {
     methods: {
         deleteSell() {
             app.choice = app.choice.filter(i => !(i.sell == this.data.sell && i.buy == this.data.buy && i.gw == this.data.gw))
+            // replace in future sells
+            let match = app.choice.find(i => i.gw > this.data.gw && i.sell == this.data.buy)
+            if (match) {
+                match.sell = this.data.sell
+            }
         }
     },
     template: 
