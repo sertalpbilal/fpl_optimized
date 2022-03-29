@@ -1818,3 +1818,16 @@ tr.puzzle-can-transfer:hover {
     color: #f8ff89;
     font-weight: bold;
 }
+
+
+.first-row-fixed thead th {
+    position: sticky;
+    top: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    background-color: #474747;
+    box-shadow: inset 0px 0px 0 black, inset 0 -1px 0 white;
+    color: #ffeba0;
+    z-index: 2;
+}
+

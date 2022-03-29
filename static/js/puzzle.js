@@ -18,7 +18,8 @@ var app = new Vue({
         errormessage: '',
         submitting: false,
         round_limit: 6,
-        solved: false
+        solved: false,
+        sortOrder: undefined
     },
     computed: {
         data_ready() {
@@ -49,7 +50,13 @@ var app = new Vue({
         player_list() {
             if (_.isEmpty(this.player_dict)) { return [] }
             let players = Object.values(this.player_dict)
-            return _.orderBy(players, ['sum_pts'], ['desc'])
+            if (this.sortOrder) {
+                return _.orderBy(players, (v) => (v.dict[this.sortOrder] && v.dict[this.sortOrder].total_points) || 0, 'desc')
+            }
+            else {
+                return _.orderBy(players, ['sum_pts'], ['desc'])
+            }
+            
         },
         filtered_players() {
             if (!this.data_ready) { return [] }
