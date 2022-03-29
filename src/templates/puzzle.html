@@ -1,0 +1,181 @@
+"% include 'header.html' %"
+
+<main class="container">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">
+                    <div class="mb-2"><i class="fas fa-puzzle-piece mr-1"></i> FPL Puzzle (Test: {{ puzzle_id }})</div>
+                    <!-- date -->
+                </h5>
+                <div class="scenario_detail">
+                    Daily FPL puzzle to practice your decision making skills
+                </div>
+                <div class="card-body text-center p-3 animate-height" v-cloak v-if="data_ready">
+                    Hello world! 👋 🟩🟨🟪⬜️
+
+                    <div id="info-bar" class="gray-top gray-bottom">
+                        <div class="row">
+                            <div class="col d-flex flex-column">
+                                <span class="modern-label">Season</span>
+                                <span class="modern-value">{{ sol_data.info.season }}</span>
+                            </div>
+                            <div class="col d-flex flex-column">
+                                <span class="modern-label">GW</span>
+                                <span class="modern-value">{{ plan_gws[0] }}-{{ plan_gws[plan_gws.length-1] }}</span>
+                            </div>
+                            <div class="col d-flex flex-column">
+                                <span class="modern-label">Date</span>
+                                <span class="modern-value">2022-03-27</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="play-bar" class="mt-2 mb-3">
+                        
+                        <!-- Play bar -->
+
+                        <div class="row mb-3" v-for="(t,i) in tries">
+                            <div class="col">
+                                <!-- <button class="btn btn-sm btn-secondary" @click="submitTry">Submit</button> -->
+                                Try {{ i+1 }}
+                            </div>
+                            <div class="col d-flex justify-content-center" v-for="gw in plan_gws">
+                                <div class="puzzle-score-box score-exist " :class="t.squares[gw] + '-color'">{{ t.points[gw] }}</div>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3" v-if="tries.length < round_limit">
+                            <div class="col">
+                                <button class="btn btn-sm btn-secondary" @click="submitTry" :disabled="submitting">Submit</button>
+                            </div>
+                            <div class="col d-flex justify-content-center" v-for="gw in plan_gws">
+                                <div class="puzzle-score-box score-empty"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2" v-if="errormessage != ''">
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <strong>Error: </strong> {{ errormessage }}
+                                <button type="button" class="close" @click="errormessage = ''" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                    <div id="plan-bar" class="mt-2">
+                        <ul class="nav nav-tabs puzzle-tabs" id="play-tab-title" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active btn-sm" id="horizon-tab" data-toggle="tab" data-target="#horizon" type="button" role="tab" aria-controls="horizon" aria-selected="true">Horizon View</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link btn-sm" id="player-tab" data-toggle="tab" data-target="#player" type="button" role="tab" aria-controls="player" aria-selected="false">Player List</button>
+                            </li>
+                            <!-- <li class="nav-item" role="presentation">
+                                <button class="nav-link btn-sm" id="lineup-tab" data-toggle="tab" data-target="#lineup" type="button" role="tab" aria-controls="lineup" aria-selected="false">Lineup View</button>
+                            </li> -->
+                        </ul>
+                        <div class="tab-content" id="play-tab-content">
+                            <div class="tab-pane fade show active p-2" id="horizon" role="tabpanel" aria-labelledby="horizon-tab">
+                                <div class="row text-small" id="plan-area">
+                                    <div class="col-12 col-lg" id="gw_initial">
+                                        <div class="text-center">Initial</div>
+                                        <div>
+                                            <div class="player-border d-flex flex-column">
+                                                <span class="puzzle_total_point_display">Points: {{ generated_plan.overall.total_plan_points }}</span>
+                                                <span>ITB: {{ generated_plan[gws[0]].itb }}</span>
+                                                <span>FT: -</span>
+                                            </div>
+                                            <player-bar v-for="player in initial_sorted" :data="player"></player-bar>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-3 col-lg" :id="'gw_' + gw" v-for="gw in plan_gws">
+                                        <div class="text-center">GW{{ gw }}</div>
+                                        <div>
+                                            <div class="player-border d-flex flex-column">
+                                                <span style="font-weight: bold">Points: {{ generated_plan[gw].gw_pts }}</span>
+                                                <span :class="{'puzzle-error': generated_plan[gw].itb < -0.05}">ITB: {{ generated_plan[gw].itb }}</span>
+                                                <span>FT: {{ generated_plan[gw].ft_from }} / <span :class="{'puzzle-error': generated_plan[gw].out.length > generated_plan[gw].ft_from}">TR: {{ generated_plan[gw].out.length }}</span></span>
+                                            </div>
+                                            <player-bar v-for="player in generated_plan[gw].lineup" :data="player" :highlight="player.element == highlight" :teamerror="generated_plan[gw].team_errors.includes(player.team_name)"></player-bar>
+                                            <hr class="bench-sep">
+                                            <player-bar v-for="player in generated_plan[gw].bench" :data="player" :highlight="player.element == highlight" :teamerror="generated_plan[gw].team_errors.includes(player.team_name)"></player-bar>
+                                            <hr class="sold-sep" v-if="!_.isEmpty(generated_plan[gw].transfers)">
+                                            <transfer-bar v-for="info in generated_plan[gw].transfers" :data="info"></transfer-bar>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade p-2" id="player" role="tabpanel" aria-labelledby="player-tab">
+                                <div class="">
+
+                                    <table class="table table-sm text-white text-small">
+                                        <thead>
+                                            <tr>
+                                                <!-- <th>ID</th> -->
+                                                <th>Player</th>
+                                                <th>Team</th>
+                                                <th>Pos</th>
+                                                <th>Value</th>
+                                                <th>Total Pts</th>
+                                                <th>Initial</th>
+                                                <th v-for="gw in plan_gws">GW{{gw}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="out_selected" class="single_height puzzle-sell-player-row" v-for="player in [player_dict[out_selected]]">
+                                                <td>(Sell) {{ player.web_name }} <button class="btn btn-sm p-0 m-0 l100 text-white" @click="cancelSell"><i class="fas fa-times-circle"></i></button></td>
+                                                <td>{{ player.team_name }}</td>
+                                                <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
+                                                <td>{{ player.now_cost / 10 }}</td>
+                                                <td>{{ player.sum_pts }}</td>
+                                                <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td>
+                                                <td v-for="gw in plan_gws" :class="{'puzzle-sell-gw': gw >= out_gw && generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}">
+                                                    {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
+                                                </td>
+                                            </tr> 
+                                            <tr class="single_height" :class="{'puzzle-can-transfer': out_gw && !generated_plan[out_gw].squad_ids.includes(player.element)}" 
+                                                @click.stop="out_gw && !generated_plan[out_gw].squad_ids.includes(player.element) ? makeTransfer(player.element) : () => {}" 
+                                                v-for="player in (out_selected ? filtered_players : player_list)" v-if="player.element != out_selected">
+                                                <!-- <td>{{ player.element }}</td> -->
+                                                <td>{{ player.web_name }}</td>
+                                                <td>{{ player.team_name }}</td>
+                                                <td :style="{'border-left': '6px solid ' + type_colors[player.element_type]}">{{ element_type[player.element_type].short }}</td>
+                                                <td>{{ player.now_cost / 10 }}</td>
+                                                <td>{{ player.sum_pts }}</td>
+                                                <td>{{ initial_ids.includes(parseInt(player.element)) ? "Y" : "N" }}</td>
+                                                <td v-for="gw in plan_gws" 
+                                                    :class="{'clickable': generated_plan[gw].squad_ids.includes(player.element), 'puzzle-in-lineup': generated_plan[gw].lineup_ids.includes(player.element), 'puzzle-in-bench': generated_plan[gw].bench_ids.includes(player.element)}"
+                                                    @click.stop="generated_plan[gw].squad_ids.includes(player.element) ? markSell(player.element, gw) : () => {}">
+                                                    {{ (player.dict[gw] && player.dict[gw].total_points) || 0 }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- <div class="tab-pane fade p-2" id="lineup" role="tabpanel" aria-labelledby="lineup-tab">
+                                lineup
+                            </div> -->
+                        </div>
+                    </div>
+                    <div id="desc-bar">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</main>
+
+
+
+"% with scripts=["main", "puzzle"] %" "% include 'footer.html' %" "% endwith %"

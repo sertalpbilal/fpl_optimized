@@ -83,6 +83,13 @@ def best_gw_squads():
     else:
         return render_template('week.html', repo_name="", ts = timestamp, page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
 
+@app.route('/puzzle.html')
+def puzzle_page():
+    if app.config['DEBUG']:
+        return render_template('puzzle.html', repo_name="/..", ts=timestamp, page_name="FPL Puzzle", last_update=current_time)
+    else:
+        return render_template('puzzle.html', repo_name="", ts=timestamp, page_name="FPL Puzzle", last_update=current_time)
+
 # @app.route('/top_squads.html')
 # def top_squads():
 #     all_dates = glob.glob('build/data/*/*/*/output/iterative_model.json')
