@@ -45,7 +45,7 @@
                         </div>
 
 
-                        <div class="row mb-3" v-if="tries.length < round_limit">
+                        <div class="row mb-3" v-if="tries.length < round_limit && !solved">
                             <div class="col">
                                 <button class="btn btn-sm btn-secondary" @click="submitTry" :disabled="submitting">Submit</button>
                             </div>

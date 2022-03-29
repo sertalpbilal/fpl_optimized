@@ -1749,12 +1749,16 @@ td.puzzle-in-bench {
     background-color: gray;
 }
 
+td.puzzle-in-lineup:hover, td.puzzle-in-bench:hover {
+    outline: 2px solid gold;
+}
+
 tr.puzzle-sell-player-row {
     background-color: indianred !important;
 }
 
 td.puzzle-sell-gw {
-    border: 3px solid #e34a4a;
+    outline: 3px solid #e34a4a;
 }
 
 .clickable {
@@ -1764,6 +1768,10 @@ td.puzzle-sell-gw {
 tr.puzzle-can-transfer {
     background-color: #48ff5224;
     cursor: pointer;
+}
+
+tr.puzzle-can-transfer:hover {
+    outline: 2px solid #f9ff43;
 }
 
 .captain-c {
