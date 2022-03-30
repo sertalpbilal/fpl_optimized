@@ -23,7 +23,9 @@ var app = new Vue({
         solved: false,
         sortOrder: undefined,
         resultText: 'Stats',
-        stats: undefined
+        stats: undefined,
+        result: undefined,
+        show_share_box: false
     },
     computed: {
         data_ready() {
@@ -167,6 +169,57 @@ var app = new Vue({
                         'out': i.tr_out.map(j => app.player_dict[j].web_name).join(',')
                     }
                 })
+        },
+        current_status() {
+            return {'puzzle_id': this.puzzle_id, 'order': this.puzzle_order, 'status': this.solved, 'tries': this.tries, 'result': this.result}
+        },
+        stat_summary() {
+            if (!this.data_ready) { return {} }
+            let stats = this.stats
+            if (stats == undefined) {
+                return {
+                    'played': 0,
+                    'won': 0,
+                    'won_ratio': 0,
+                    'streak': 0,
+                    'max_streak': 0,
+                    'result_counts': {},
+                    'score_ratios': {}
+                }
+            }
+            let played = stats.scores.length
+            let won = stats.scores.filter(i => i.result == 'solved').length
+            let score_counts = stats.scores.map(i => i.result == 'failed' ? -1 : i.result == 'solved' ? i.tries.length : undefined).filter(i => i !== undefined)
+            score_counts = _.countBy(score_counts)
+            let score_ratios = _(score_counts).mapValues(i => _.round(i / played * 100,0)).value()
+            return {
+                'played': played,
+                'won': won,
+                'won_ratio': _.round(won/played*100, 1),
+                'streak': 0,
+                'max_streak': 0,
+                'result_counts': score_counts,
+                'score_ratios': score_ratios
+            }
+        },
+        tries_text() {
+            let tries = this.tries
+
+            text = ''
+            tries.forEach((t) => {
+                text += Object.values(t.squares).map(i => i=='correct' ? "🟩" : i=="below" ? "🟨" : "🟪").join('') + '\n'
+            })
+
+            return text
+        },
+        share_text() {
+            let text = `FPL Puzzle #${ this.puzzle_order }: ${ this.result == 'failed' ? "X" : this.tries.length }/6` + '\n\n'
+            text += this.tries_text + '\n'
+            text += this.url
+            return text
+        },
+        url() {
+            return 'fploptimized.com/puzzle.html'
         }
     },
     methods: {
@@ -288,14 +341,27 @@ var app = new Vue({
                 // show popup!
                 this.solved = true
                 this.resultText = 'You found the optimal!'
+                this.result = 'solved'
+                this.addResult()
+                setTimeout(() => {
+                    $('#results-modal').modal('show')
+                }, 200)
                 return
             }
-
-            if (this.tries.length >= this.round_limit) {
+            else if (this.tries.length >= this.round_limit) {
                 // failed: show popup
                 this.solved = false
                 this.resultText = 'You used all your tries!'
+                this.result = 'failed'
+                this.addResult()
+                setTimeout(() => {
+                    $('#results-modal').modal('show')
+                }, 200)
                 return
+            }
+            else {
+                // save the move
+                this.saveMove()
             }
 
             setTimeout(() => {
@@ -305,6 +371,33 @@ var app = new Vue({
         },
         resetAll() {
             this.choice = []
+        },
+        addResult() {
+            let stats = this.stats
+            let r = this.current_status
+            if (stats == undefined) {
+                stats = {
+                    'scores': [r],
+                    'today': r
+                }
+            }
+            else {
+                stats.scores.push(r)
+                stats.today = r
+            }
+            localStorage.setItem("puzzle_stats", JSON.stringify(stats))
+        },
+        saveMove() {
+            let stats = this.stats
+            let r = this.current_status
+            if (stats == undefined) {
+                stats = {
+                    'scores': [],
+                    'today': null
+                }
+            }
+            stats['today'] = r
+            localStorage.setItem("puzzle_stats", JSON.stringify(stats))
         },
         restoreGame(v) {
 
@@ -418,11 +511,17 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
     Promise.allSettled(calls).then(() => {
             app.puzzle_id = puzzle_id
                 // check storage
-            let stats = localStorage.getItem("puzzle_stats")
-            let state = JSON.parse(localStorage.getItem("puzzle_state"))
+            let stats = JSON.parse(localStorage.getItem("puzzle_stats"))
             app.stats = stats
-            if (state) {
-                app.restoreGame(state)
+            let solved_before = stats.scores.find(i => i.order == app.puzzle_order && i.puzzle_id == app.puzzle_id)
+
+            if (stats.today && stats.today.puzzle_id == app.puzzle_id) {
+                app.tries = _.cloneDeep(stats.today.tries)
+                app.result = stats.today.result
+            }
+            else if (solved_before)  {
+                app.tries = _.cloneDeep(solved_before.tries)
+                app.result = solved_before.result
             }
             app.puzzle_order = puzzle_order
             app.puzzle_date = puzzle_date
@@ -434,7 +533,7 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
 
 $(document).ready(() => {
 
-    let first_day = new Date("2022-03-30 00:00")
+    let first_day = new Date("2022-03-31 12:00")
     let demo_mode = false
     let puzzle_id
 
