@@ -69,7 +69,7 @@
                                 <button class="btn btn-sm btn-primary" @click="submitTry" :disabled="submitting">Submit</button>
                             </div>
                             <div class="col d-flex justify-content-center" v-for="gw in plan_gws">
-                                <div class="puzzle-score-box score-empty"></div>
+                                <div class="puzzle-score-box score-empty">{{ generated_plan[gw].gw_pts }}</div>
                             </div>
                         </div>
                         
