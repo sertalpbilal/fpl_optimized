@@ -373,7 +373,7 @@
 
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="results-modal">
+<div class="modal fade" tabindex="-1" role="dialog" id="results-modal" v-if="data_ready">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -384,10 +384,10 @@
             </div>
             <div class="modal-body modal-responsive text-black">
                 <div class="d-flex flex-column">
-                    <div class="row"><div class="col-6 text-right">Played</div><div class="col-6">1</div></div>
-                    <div class="row"><div class="col-6 text-right">Won</div><div class="col-6">100%</div></div>
-                    <div class="row"><div class="col-6 text-right">Streak</div><div class="col-6">5</div></div>
-                    <div class="row"><div class="col-6 text-right">Max Streak</div><div class="col-6">20</div></div>
+                    <div class="row"><div class="col-6 text-right">Played</div><div class="col-6">{{ stat_summary.played }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Won</div><div class="col-6">{{ stat_summary.won_ratio }}%</div></div>
+                    <!-- <div class="row"><div class="col-6 text-right">Streak</div><div class="col-6">{{ stat_summary.streak }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Max Streak</div><div class="col-6">{{ stat_summary.max_streak }}</div></div> -->
                 </div>
                 <div>
                     <b>Results</b>
@@ -395,9 +395,18 @@
                         <div class="row mb-2">
                             <div class="col-1">{{ p == -1 ? "X" : p }}</div>
                             <div class="col-11">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': p*10 + '%'}" v-bind:aria-valuenow="p * 10" aria-valuemin="0" aria-valuemax="100">{{ p }}</div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': (stat_summary.score_ratios[p] || 1) + '%'}" v-bind:aria-valuenow="stat_summary.score_ratios[p] || 0" aria-valuemin="0" aria-valuemax="100">{{ stat_summary.result_counts[p] > 0 ? stat_summary.result_counts[p] : "&nbsp;" }}</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center" v-if="result !== undefined">
+                    <button class="btn btn-primary" @click="show_share_box = true">Share</button>
+                </div>
+                <div v-if="show_share_box">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Copy content below</label>
+                        <textarea class="form-control" id="result_box" rows="10" readonly>{{ share_text }}</textarea>
                     </div>
                 </div>
             </div>
@@ -461,7 +470,7 @@
     let gw = "";
     let next_gw = "";
     let date = "";
-    let lastupdate = "2022-03-30T18:34:26.532138+00:00";
+    let lastupdate = "2022-03-30T21:21:13.221464+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -469,9 +478,9 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220330183426"></script>
+<script src="/static/js/main.js?ts=20220330212113"></script>
 
-<script src="/static/js/puzzle.js?ts=20220330183426"></script>
+<script src="/static/js/puzzle.js?ts=20220330212113"></script>
 
 
 <script>
@@ -481,6 +490,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-30T18:34:26.532138+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-30T21:21:13.221464+00:00</div>
 
 </html> 
