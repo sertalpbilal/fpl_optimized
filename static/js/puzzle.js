@@ -1,6 +1,8 @@
 var app = new Vue({
     el: '#app',
     data: {
+        puzzle_order: 0,
+        puzzle_date: undefined,
         puzzle_id: undefined,
         raw_data: undefined,
         sol_data: undefined,
@@ -19,7 +21,9 @@ var app = new Vue({
         submitting: false,
         round_limit: 6,
         solved: false,
-        sortOrder: undefined
+        sortOrder: undefined,
+        resultText: 'Stats',
+        stats: undefined
     },
     computed: {
         data_ready() {
@@ -39,6 +43,10 @@ var app = new Vue({
             }
             return []
         },
+        date_str() {
+            if (this.puzzle_date == undefined) { return '' }
+            return new Intl.DateTimeFormat().format(this.puzzle_date)
+        },
         // player_dict() {
         //     if (!this.data_ready) { return {} }
         //     return Object.fromEntries(_.uniqBy(app.raw_data.map(i => [i.element, {...i}]), 0))
@@ -52,11 +60,10 @@ var app = new Vue({
             let players = Object.values(this.player_dict)
             if (this.sortOrder) {
                 return _.orderBy(players, (v) => (v.dict[this.sortOrder] && v.dict[this.sortOrder].total_points) || 0, 'desc')
-            }
-            else {
+            } else {
                 return _.orderBy(players, ['sum_pts'], ['desc'])
             }
-            
+
         },
         filtered_players() {
             if (!this.data_ready) { return [] }
@@ -75,7 +82,7 @@ var app = new Vue({
             return _.orderBy(players, ['element_type', 'sum_pts'], ['asc', 'desc'])
         },
         generated_plan() {
-            if (!this.data_ready) { return []}
+            if (!this.data_ready) { return [] }
             let team = _.cloneDeep(this.initial_ids)
             let gameweeks = this.gws
             let itb = 100
@@ -83,11 +90,11 @@ var app = new Vue({
             let ft = 1
             let current_team = _.cloneDeep(team)
             let values = gameweeks.map(gw => {
-                let this_gw_moves = _.cloneDeep(this.choice.filter(j => j.gw==gw))
+                let this_gw_moves = _.cloneDeep(this.choice.filter(j => j.gw == gw))
                 this_gw_moves.forEach((e) => {
                     e.player_in = this.getPlayerDetail(e.buy, gw)
                     e.player_out = this.getPlayerDetail(e.sell, gw)
-                    e.value_diff = (e.player_out.now_cost/10 - e.player_in.now_cost/10)
+                    e.value_diff = (e.player_out.now_cost / 10 - e.player_in.now_cost / 10)
                 })
                 let tr_in = this_gw_moves.map(i => i.buy)
                 let tr_out = this_gw_moves.map(i => i.sell)
@@ -98,7 +105,7 @@ var app = new Vue({
                         p.transfer_in = true
                     }
                 })
-                itb = _.round(100 - _.sum(current_team.map(i => this.player_dict[i].now_cost/10)),1)
+                itb = _.round(100 - _.sum(current_team.map(i => this.player_dict[i].now_cost / 10)), 1)
                 let picks = this.best11(team_details)
                 let lineup = picks.lineup
                 let bench = picks.bench
@@ -120,9 +127,9 @@ var app = new Vue({
                     lineup_ids: lineup.map(i => i.element),
                     bench: bench,
                     bench_ids: bench.map(i => i.element),
-                    itb:itb,
-                    in:tr_in,
-                    out:tr_out,
+                    itb: itb,
+                    in: tr_in,
+                    out: tr_out,
                     gw_pts: picks.gw_pts,
                     ft_from: ft,
                     ft_to: ft_to,
@@ -134,7 +141,7 @@ var app = new Vue({
                 return [gw, gw_details]
             })
             let val_dict = Object.fromEntries(values)
-            val_dict['overall'] = {'total_plan_points': plan_pts}
+            val_dict['overall'] = { 'total_plan_points': plan_pts }
 
             return val_dict
         },
@@ -151,16 +158,17 @@ var app = new Vue({
         optimal_in_text() {
             if (!this.data_ready) { return }
             return this.sol_data.output.solution.map(
-                i => { 
+                i => {
                     return {
                         'in': i.tr_in.map(j => app.player_dict[j].web_name).join(','),
                         'out': i.tr_out.map(j => app.player_dict[j].web_name).join(',')
-                    }})
+                    }
+                })
         }
     },
     methods: {
         best11(team) {
-            team.forEach((p) => {p.is_captain = false})
+            team.forEach((p) => { p.is_captain = false })
             let lineup = []
             let grouped = _(team).groupBy('element_type').mapValues((i) => _.orderBy(i, 'total_points', 'desc')).value()
             Object.keys(element_type).forEach((t) => {
@@ -170,7 +178,7 @@ var app = new Vue({
             })
             let remaining = _.orderBy(Object.values(grouped).flat(), 'total_points', 'desc')
             remaining.forEach((r) => {
-                if (lineup.length == 11) {return}
+                if (lineup.length == 11) { return }
                 let type_total = lineup.filter(i => i.element_type == r.element_type).length
                 if (type_total + 1 > element_type[r.element_type].max) { return }
                 lineup = _.concat(lineup, [r])
@@ -180,8 +188,8 @@ var app = new Vue({
             lineup = _.orderBy(lineup, ['element_type', 'total_points'], ['asc', 'desc'])
             let bench = team.filter(i => !lineup.map(j => j.element).includes(i.element))
             bench = _.orderBy(bench, ['element_type', 'total_points'], ['asc', 'desc'])
-            let gw_pts = _.sum(lineup.map(i => i.is_captain ? 2*i.total_points : i.total_points))
-            return {'lineup': lineup, 'bench': bench, 'sorted_details': _.orderBy(team, ['total_points'], ['desc']), 'gw_pts': gw_pts}
+            let gw_pts = _.sum(lineup.map(i => i.is_captain ? 2 * i.total_points : i.total_points))
+            return { 'lineup': lineup, 'bench': bench, 'sorted_details': _.orderBy(team, ['total_points'], ['desc']), 'gw_pts': gw_pts }
         },
         cancelSell() {
             this.out_selected = null
@@ -193,14 +201,16 @@ var app = new Vue({
             $('#player-tab').tab('show')
         },
         makeTransfer(element) {
-            if (!this.out_selected) { this.cancelSell(); return}
+            if (!this.out_selected) { this.cancelSell(); return }
             let in_player = element
             let out_player = this.out_selected
             let tr_gw = this.out_gw
             this.choice.push({
-                'gw': tr_gw, 'sell': out_player, 'buy': in_player
+                'gw': tr_gw,
+                'sell': out_player,
+                'buy': in_player
             })
-            
+
             // check if existing player is sold in future
             let future_sell = this.choice.find(i => i.gw > tr_gw && i.sell == out_player)
             if (future_sell) {
@@ -221,13 +231,13 @@ var app = new Vue({
             $('#horizon-tab').tab('show')
         },
         getPlayerDetail(element, gw) {
-            return this.player_dict[element].dict[gw] || {...this.player_dict[element], 'sum_pts': null, 'total_points': 0, 'GW': gw}
+            return this.player_dict[element].dict[gw] || {...this.player_dict[element], 'sum_pts': null, 'total_points': 0, 'GW': gw }
         },
         submitTry() {
             this.submitting = true
             this.errormessage = ''
             let plan = Object.entries(this.generated_plan)
-            
+
             for (const e of plan) {
                 let gw = parseInt(e[0])
                 if (!this.plan_gws.includes(gw)) { continue }
@@ -259,11 +269,9 @@ var app = new Vue({
                 if (!app.plan_gws.includes(e[0])) { return }
                 if (app.optimal_scores[e[0]] > e[1]) {
                     squares[e[0]] = "below"
-                }
-                else if (app.optimal_scores[e[0]] == e[1]) {
+                } else if (app.optimal_scores[e[0]] == e[1]) {
                     squares[e[0]] = "correct"
-                }
-                else {
+                } else {
                     squares[e[0]] = "above"
                 }
             })
@@ -284,11 +292,14 @@ var app = new Vue({
             if (solved) {
                 // show popup!
                 this.solved = true
+                this.resultText = 'You found the optimal!'
                 return
             }
 
             if (this.tries.length >= this.round_limit) {
                 // failed: show popup
+                this.solved = false
+                this.resultText = 'You used all your tries!'
                 return
             }
 
@@ -299,6 +310,9 @@ var app = new Vue({
         },
         resetAll() {
             this.choice = []
+        },
+        restoreGame(v) {
+
         }
     }
 });
@@ -323,7 +337,7 @@ async function read_challenge_input(name) {
 
 Vue.component('player-bar', {
     props: {
-        data: {type: Object},
+        data: { type: Object },
         highlight: false,
         teamerror: false
     },
@@ -334,8 +348,7 @@ Vue.component('player-bar', {
             $('#player-tab').tab('show')
         }
     },
-    template: 
-    `<div :class="['player-border player-pos-' + data.element_type, {'puzzle-highlight': highlight}]" @mouseover="app.highlight=data.element" @mouseleave="app.highlight=undefined">
+    template: `<div :class="['player-border player-pos-' + data.element_type, {'puzzle-highlight': highlight}]" @mouseover="app.highlight=data.element" @mouseleave="app.highlight=undefined">
         <div class="d-flex flex-column p-1 text-small" style="position: relative;">
             <div class="text-left font-weight-bold l100">{{ data.web_name }} <i class="fas fa-copyright captain-c" v-if="data.is_captain"></i> {{ data.transfer_in ? "✨" : "" }}</div>
             <div class="row l100 no-wrap bisque">
@@ -343,7 +356,7 @@ Vue.component('player-bar', {
                 <div class="col-3 text-left">£{{ data.now_cost/10 }}</div>
                 <div class="col-3 text-left">{{ data.sum_pts || data.total_points }}</div>
             </div>
-            <button v-if="data.GW != ''" class="m-0 p-0 btn btn-sm text-small puzzle-transfer-button" @click="markSell(data.element, data.GW)"><i class="fas fa-times"></i></button>
+            <button v-if="data.GW != '' && !data.transfer_in" class="m-0 p-0 btn btn-sm text-small puzzle-transfer-button" @click="markSell(data.element, data.GW)"><i class="fas fa-times"></i></button>
         </div>
         
     </div>`
@@ -351,20 +364,19 @@ Vue.component('player-bar', {
 
 Vue.component('transfer-bar', {
     props: {
-        data: {type: Object}
+        data: { type: Object }
     },
     methods: {
         deleteSell() {
             app.choice = app.choice.filter(i => !(i.sell == this.data.sell && i.buy == this.data.buy && i.gw == this.data.gw))
-            // replace in future sells
+                // replace in future sells
             let match = app.choice.find(i => i.gw > this.data.gw && i.sell == this.data.buy)
             if (match) {
                 match.sell = this.data.sell
             }
         }
     },
-    template: 
-    `<div :class="'player-border player-pos-' + data.player_in.element_type">
+    template: `<div :class="'player-border player-pos-' + data.player_in.element_type">
         <div class="d-flex flex-column p-1 text-small" style="position: relative;">
             <div class="text-left font-weight-bold l100">{{ data.player_out.web_name }} → {{ data.player_in.web_name }} <i class="fas fa-copyright captain-c" v-if="data.is_captain"></i> {{ data.transfer_in ? "✨" : "" }}</div>
             <div class="row l100 no-wrap bisque">
@@ -378,13 +390,13 @@ Vue.component('transfer-bar', {
     </div>`
 })
 
-$(document).ready(() => {
+function days_between(date1, date2) {
+    const oneDay = 24 * 60 * 60 * 1000
+    return Math.round(Math.abs((date2 - date1) / oneDay))
+}
 
-    let puzzle_id = 'n7yMv'
-
-    let url = window.location.search
-    const params = new URLSearchParams(url)
-
+function initialize(puzzle_id, puzzle_order, puzzle_date) {
+    
     calls = [
         read_challenge_sol(puzzle_id),
         read_challenge_input(puzzle_id)
@@ -392,8 +404,54 @@ $(document).ready(() => {
 
     Promise.allSettled(calls).then(() => {
             app.puzzle_id = puzzle_id
+                // check storage
+            let stats = localStorage.getItem("puzzle_stats")
+            let state = JSON.parse(localStorage.getItem("puzzle_state"))
+            app.stats = stats
+            if (state) {
+                app.restoreGame(state)
+            }
+            app.puzzle_order = puzzle_order
+            app.puzzle_date = puzzle_date
         })
         .catch((error) => {
             console.error("An error has occurred: " + error);
         });
+}
+
+$(document).ready(() => {
+
+    let first_day = new Date("2022-03-30 00:00")
+    let demo_mode = false
+    let puzzle_id
+
+    let url = window.location.search
+    const params = new URLSearchParams(url)
+
+    if (demo_mode || params.get('demo') == 1) {
+        puzzle_id = 'n7yMv'
+        initialize(puzzle_id, -1, new Date())
+    } else {
+        
+        if (params.get('id')) {
+            read_local_file(`data/puzzle/order.json`).then((d) => {
+                let order = parseInt(params.get('id')) % d.length
+                puzzle_id = d[order]
+                let date = new Date(first_day.getTime() + order * 24 * 60 * 60 * 1000)
+                debugger
+                initialize(puzzle_id, order, date)
+            })
+        }
+        else {
+            let today = new Date()
+            
+            let btw = days_between(first_day, today)
+            if (btw < 0) { btw = 0 }
+            read_local_file(`data/puzzle/order.json`).then((d) => {
+                let order = btw % d.length
+                puzzle_id = d[order]
+                initialize(puzzle_id, order, today)
+            })
+        }
+    }
 })
