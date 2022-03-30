@@ -513,16 +513,20 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
                 // check storage
             let stats = JSON.parse(localStorage.getItem("puzzle_stats"))
             app.stats = stats
-            let solved_before = stats.scores.find(i => i.order == app.puzzle_order && i.puzzle_id == app.puzzle_id)
-
-            if (stats.today && stats.today.puzzle_id == app.puzzle_id) {
-                app.tries = _.cloneDeep(stats.today.tries)
-                app.result = stats.today.result
+            
+            let solved_before 
+            if (stats !== null) {
+                solved_before = stats.scores.find(i => i.order == app.puzzle_order && i.puzzle_id == app.puzzle_id)
+                if (stats.today && stats.today.puzzle_id == app.puzzle_id) {
+                    app.tries = _.cloneDeep(stats.today.tries)
+                    app.result = stats.today.result
+                }
+                else if (solved_before)  {
+                    app.tries = _.cloneDeep(solved_before.tries)
+                    app.result = solved_before.result
+                }
             }
-            else if (solved_before)  {
-                app.tries = _.cloneDeep(solved_before.tries)
-                app.result = solved_before.result
-            }
+            
             app.puzzle_order = puzzle_order
             app.puzzle_date = puzzle_date
         })
