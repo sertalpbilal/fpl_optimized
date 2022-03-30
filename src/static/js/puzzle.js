@@ -104,6 +104,9 @@ var app = new Vue({
                     if (tr_in.includes(p.element)) {
                         p.transfer_in = true
                     }
+                    else {
+                        p.transfer_in = false
+                    }
                 })
                 itb = _.round(100 - _.sum(current_team.map(i => this.player_dict[i].now_cost / 10)), 1)
                 let picks = this.best11(team_details)
@@ -216,17 +219,9 @@ var app = new Vue({
             if (future_sell) {
                 future_sell.sell = in_player
             }
-            // check if bought/sold in same gw
-            // cancel = []
-            // this.choice.forEach((entry) => {
-            //     let opposite = this.choice.find(i => i.gw == entry.gw && i.element == entry.element)
-            //     if (opposite) {
-            //         cancel.push([entry.element, entry.gw])
-            //     }
-            // })
-            // this.choice = this.choice.filter(i => !cancel.find(j => j[0] == i.element && j[1] == i.gw))
 
-            // clear
+            this.checkTransfers()
+
             this.cancelSell()
             $('#horizon-tab').tab('show')
         },
@@ -313,6 +308,23 @@ var app = new Vue({
         },
         restoreGame(v) {
 
+        },
+        checkTransfers() {
+            let choice = _.cloneDeep(this.choice)
+            // same player buy/sell
+            choice = choice.filter(i => !(i.buy == i.sell))
+            // check if each player is in team during transfer
+            let team = _.cloneDeep(this.initial_ids)
+            for (const gw of this.plan_gws) {
+                choice = choice.filter(i => i.gw != gw || (team.includes(i.sell) && !team.includes(i.buy)))
+                gw_tr = choice.filter(i => i.gw == gw)
+                team = _.concat(team.filter(i => !gw_tr.map(i => i.sell).includes(i)), gw_tr.map(i => i.buy))
+            }
+
+            this.$nextTick(() => {
+                this.choice = _.cloneDeep(choice)
+            })
+            
         }
     }
 });
@@ -374,6 +386,7 @@ Vue.component('transfer-bar', {
             if (match) {
                 match.sell = this.data.sell
             }
+            app.checkTransfers()
         }
     },
     template: `<div :class="'player-border player-pos-' + data.player_in.element_type">
@@ -438,7 +451,6 @@ $(document).ready(() => {
                 let order = parseInt(params.get('id')) % d.length
                 puzzle_id = d[order]
                 let date = new Date(first_day.getTime() + order * 24 * 60 * 60 * 1000)
-                debugger
                 initialize(puzzle_id, order, date)
             })
         }
@@ -455,3 +467,4 @@ $(document).ready(() => {
         }
     }
 })
+
