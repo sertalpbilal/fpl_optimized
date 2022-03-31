@@ -198,7 +198,7 @@ var app = new Vue({
             return {
                 'played': played,
                 'won': won,
-                'won_ratio': _.round(won/played*100, 1),
+                'won_ratio': played == 0 ? 0 : _.round(won/played*100, 1),
                 'streak': 0,
                 'max_streak': 0,
                 'result_counts': score_counts,
