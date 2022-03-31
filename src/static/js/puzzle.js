@@ -222,7 +222,7 @@ var app = new Vue({
             return text
         },
         url() {
-            return 'fploptimized.com/puzzle.html'
+            return 'https://fploptimized.com/puzzle.html'
         }
     },
     methods: {
