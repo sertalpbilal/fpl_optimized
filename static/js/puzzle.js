@@ -25,7 +25,8 @@ var app = new Vue({
         resultText: 'Stats',
         stats: undefined,
         result: undefined,
-        show_share_box: false
+        show_share_box: false,
+        coming_soon: undefined
     },
     computed: {
         data_ready() {
@@ -505,7 +506,7 @@ Vue.component('transfer-bar', {
 
 function days_between(date1, date2) {
     const oneDay = 24 * 60 * 60 * 1000
-    return Math.round(Math.abs((date2 - date1) / oneDay))
+    return Math.round((date2 - date1) / oneDay)
 }
 
 function initialize(puzzle_id, puzzle_order, puzzle_date) {
@@ -556,7 +557,7 @@ $(document).ready(() => {
         initialize(puzzle_id, -1, new Date())
     } else {
         
-        if (params.get('id')) {
+        if (params.get('id') && params.get('unlock') == 1) {
             read_local_file(`data/puzzle/order.json`).then((d) => {
                 let order = parseInt(params.get('id')) % d.length
                 puzzle_id = d[order]
@@ -568,7 +569,7 @@ $(document).ready(() => {
             let today = new Date()
             
             let btw = days_between(first_day, today)
-            if (btw < 0) { btw = 0 }
+            if (btw < 0) { app.coming_soon = 1; return }
             read_local_file(`data/puzzle/order.json`).then((d) => {
                 let order = btw % d.length
                 puzzle_id = d[order]

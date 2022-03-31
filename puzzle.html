@@ -123,6 +123,9 @@
                 <div class="scenario_detail">
                     Daily FPL puzzle to practice your decision making skills
                 </div>
+                <div class="card-body text-center p-3 animate-height" v-cloak v-if="coming_soon">
+                    First puzzle is coming on March 31st!
+                </div>
                 <div class="card-body text-center p-3 animate-height" v-cloak v-if="data_ready">
                     <div class="mb-3">
                         <button class="btn btn-info btn-sm" @click="$('#instructions-modal').modal('show')">Show Instructions</button>
@@ -471,7 +474,7 @@
     let gw = "";
     let next_gw = "";
     let date = "";
-    let lastupdate = "2022-03-31T00:47:00.080093+00:00";
+    let lastupdate = "2022-03-31T00:55:37.587936+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -479,9 +482,9 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220331004700"></script>
+<script src="/static/js/main.js?ts=20220331005537"></script>
 
-<script src="/static/js/puzzle.js?ts=20220331004700"></script>
+<script src="/static/js/puzzle.js?ts=20220331005537"></script>
 
 
 <script>
@@ -491,6 +494,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-31T00:47:00.080093+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-03-31T00:55:37.587936+00:00</div>
 
 </html> 
