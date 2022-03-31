@@ -216,13 +216,13 @@ var app = new Vue({
             return text
         },
         share_text() {
-            let text = `FPL Puzzle #${ this.puzzle_order }: ${ this.result == 'failed' ? "X" : this.tries.length }/6` + '\n\n'
+            let text = `#FPLPuzzle #${ this.puzzle_order+1 }: ${ this.result == 'failed' ? "X" : this.tries.length }/6` + '\n\n'
             text += this.tries_text + '\n'
             text += this.url
             return text
         },
         url() {
-            return 'fploptimized.com/puzzle.html'
+            return 'https://fploptimized.com/puzzle.html'
         }
     },
     methods: {
