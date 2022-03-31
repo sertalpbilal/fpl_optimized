@@ -26,7 +26,9 @@ var app = new Vue({
         stats: undefined,
         result: undefined,
         show_share_box: false,
-        coming_soon: undefined
+        coming_soon: undefined,
+        is_mobile: false,
+        mobile_show_gw: 0
     },
     computed: {
         data_ready() {
@@ -426,6 +428,28 @@ var app = new Vue({
             let sol = this.sol_data.output.solution.map(i => i.tr_in.map((j,k) => {return {'gw': i.gw, 'buy': j, 'sell': i.tr_out[k]}})).flat()
             this.choice = sol
             $('#results-modal').modal('hide')
+        },
+        decreaseGW() {
+            if (this.mobile_show_gw == 0) {
+                this.mobile_show_gw = this.plan_gws[this.plan_gws.length-1]
+            }
+            else if (this.plan_gws.includes(this.mobile_show_gw - 1)) {
+                this.mobile_show_gw = this.mobile_show_gw - 1
+            }
+            else {
+                this.mobile_show_gw = 0
+            }
+        },
+        increaseGW() {
+            if (this.mobile_show_gw == 0) {
+                this.mobile_show_gw = this.plan_gws[0]
+            }
+            else if (this.plan_gws.includes(this.mobile_show_gw + 1)) {
+                this.mobile_show_gw = this.mobile_show_gw + 1
+            }
+            else {
+                this.mobile_show_gw = 0
+            }
         }
     }
 });
@@ -548,6 +572,12 @@ $(document).ready(() => {
     let first_day = new Date("2022-03-31 12:00")
     let demo_mode = false
     let puzzle_id
+
+    if (window.screen.width < 700) {
+        app.is_mobile = true
+    } else {
+        app.is_mobile = false
+    }
 
     let url = window.location.search
     const params = new URLSearchParams(url)

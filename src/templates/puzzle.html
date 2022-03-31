@@ -104,8 +104,12 @@
                         <div class="tab-content" id="play-tab-content">
                             <div class="tab-pane fade show active p-2" id="horizon" role="tabpanel" aria-labelledby="horizon-tab">
                                 <div class="row text-small" id="plan-area">
-                                    <div class="col-12 col-lg" id="gw_initial">
-                                        <div class="text-center">Initial</div>
+                                    <div class="col-12 col-lg" id="gw_initial" v-if="!is_mobile || (is_mobile && mobile_show_gw == 0)">
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-sm btn-secondary mr-2" @click="decreaseGW" v-if="is_mobile"><i class="fas fa-arrow-left"></i></button>
+                                            <span>Initial</span>
+                                            <button class="btn btn-sm btn-secondary ml-2" @click="increaseGW" v-if="is_mobile"><i class="fas fa-arrow-right"></i></button>
+                                        </div>
                                         <div>
                                             <div class="player-border d-flex flex-column">
                                                 <span class="puzzle_total_point_display">Points: {{ generated_plan.overall.total_plan_points }}</span>
@@ -118,8 +122,14 @@
                                             <button class="btn btn-sm btn-warning" @click="resetAll">Reset</button>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-sm-6 col-md-3 col-lg" :id="'gw_' + gw" v-for="gw in plan_gws">
-                                        <div class="text-center">GW{{ gw }}</div>
+                                    <div class="col-12 col-sm-6 col-md-3 col-lg" :id="'gw_' + gw" v-for="gw in plan_gws" v-if="!is_mobile || (is_mobile && mobile_show_gw == gw)">
+                                        <div class="text-center mb-2">
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-sm btn-secondary mr-2" @click="decreaseGW" v-if="is_mobile"><i class="fas fa-arrow-left"></i></button>
+                                                <span>GW{{ gw }}</span>
+                                                <button class="btn btn-sm btn-secondary ml-2" @click="increaseGW" v-if="is_mobile"><i class="fas fa-arrow-right"></i></button>
+                                            </div>
+                                        </div>
                                         <div>
                                             <div class="player-border d-flex flex-column">
                                                 <span style="font-weight: bold">Points: {{ generated_plan[gw].gw_pts }}</span>
