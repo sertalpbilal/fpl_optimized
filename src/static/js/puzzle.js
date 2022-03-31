@@ -385,6 +385,7 @@ var app = new Vue({
                 stats.scores.push(r)
                 stats.today = r
             }
+            this.stats = stats
             localStorage.setItem("puzzle_stats", JSON.stringify(stats))
         },
         saveMove() {
@@ -418,6 +419,12 @@ var app = new Vue({
                 this.choice = _.cloneDeep(choice)
             })
             
+        },
+        showSolution() {
+            if (!this.data_ready) { return }
+            let sol = this.sol_data.output.solution.map(i => i.tr_in.map((j,k) => {return {'gw': i.gw, 'buy': j, 'sell': i.tr_out[k]}})).flat()
+            this.choice = sol
+            $('#results-modal').modal('hide')
         }
     }
 });
