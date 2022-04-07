@@ -569,7 +569,8 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
 
 $(document).ready(() => {
 
-    let first_day = new Date("2022-03-31 12:00")
+    let first_day = new Date(2022, 2, 31, 12, 0, 0)
+    //"2022-03-31 12:00")
     let demo_mode = false
     let puzzle_id
 
