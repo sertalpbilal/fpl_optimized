@@ -287,7 +287,7 @@
                                     <td class="text-center text-with-shadow" v-for="gw in gameweeks" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
                                         {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_as_list(rivals[id+1][gw.no], true) }}
                                     </td>
-                                    <td :data-order="team_average[id+1]" class="text-center">{{ team_average[id+1].toFixed(2) }}</td>
+                                    <td :data-order="team_actual_average[id+1]" class="text-center">({{ fixture_count[id+1] }}) {{ team_average[id+1].toFixed(2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -310,11 +310,11 @@
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Timeline</h5>
                 <div class="scenario_detail">
-                    FPL Deadline and Games on Timeline
+                    FPL Deadlines
                 </div>
                 <div class="card-body">
 
-                    <div id="timeline-controls" class="d-flex justify-content-center mb-3">
+                    <div id="timeline-controls" class="d-flex justify-content-center mb-3" v-if="show_time_chart">
                         <button class="btn btn-secondary btn-sm" data-action="goToday" @click="timelineInteract">Today</button>
                         <button class="btn btn-secondary btn-sm ml-2" data-action="zoomOut" @click="timelineInteract">Zoom Out</button>
                         <button class="btn btn-secondary btn-sm ml-2" data-action="zoomIn" @click="timelineInteract">Zoom In</button>
@@ -324,7 +324,7 @@
                         <button class="btn btn-secondary btn-sm ml-2" data-action="goNextGW" @click="timelineInteract">Next GW</button> -->
                     </div>
 
-                    <div id="visualization" class="white-theme mb-3">
+                    <div id="visualization" class="white-theme mb-3" v-if="show_time_chart">
 
                     </div>
 
@@ -332,6 +332,27 @@
                         Loading data... Please wait...
                         <img class="mx-auto d-block" src="static/images/loading.svg">
                     </div> -->
+
+                    <div class="d-flex justify-content-center">
+                        <div>
+                            <table class="text-small table table-sm text-white">
+                                <thead>
+                                    <tr>
+                                        <th>GW</th>
+                                        <th>Deadline</th>
+                                        <th>Time Until / Between</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="gw in future_deadlines">
+                                        <td>{{ gw.name }}</td>
+                                        <td>{{ gw.dt }}</td>
+                                        <td>{{ gw.diff }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <div class="mb-3 text-center p-3 bg-light-gray">
                         Time to next deadline: {{ time_left }}
@@ -479,6 +500,13 @@
                     </select>
                 </div>
 
+                <div class="input-group mt-2 mb-2">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Exclude</label>
+                    </div>
+                    <input type="text" class="form-control" v-model.lazy="gws_exclude" @change="invalidate_cache" placeholder="Comma separated GWs">
+                </div>
+
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" v-model="include_postponed" @change="invalidate_cache">
                     <label class="form-check-label">Include unscheduled / postponed games</label>
@@ -589,7 +617,7 @@
     let gw = "GW32";
     let next_gw = "GW32";
     let date = "2022-04-07";
-    let lastupdate = "2022-04-07T18:11:48.923154+00:00";
+    let lastupdate = "2022-04-07T18:55:17.851687+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -597,11 +625,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220407181148"></script>
+<script src="/static/js/main.js?ts=20220407185517"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220407181148"></script>
+<script src="/static/js/sampling_utils.js?ts=20220407185517"></script>
 
-<script src="/static/js/fpl_fixture.js?ts=20220407181148"></script>
+<script src="/static/js/fpl_fixture.js?ts=20220407185517"></script>
 
 
 <script>
@@ -611,6 +639,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-04-07T18:11:48.923154+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-04-07T18:55:17.851687+00:00</div>
 
 </html> 
