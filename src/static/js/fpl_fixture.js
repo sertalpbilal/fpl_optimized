@@ -37,9 +37,11 @@ var app = new Vue({
         time_left: "",
         range_from: 1,
         range_to: 38,
-        include_postponed: true,
+        include_postponed: false,
         color_scheme: ["#6a0606", "#ffffff", "#105c0a"],
-        color_choice: 0
+        color_choice: 0,
+        gws_exclude: '',
+        show_time_chart: false
     },
     computed: {
         is_all_ready() { return this.is_fixture_ready && this.is_main_ready },
@@ -160,12 +162,67 @@ var app = new Vue({
             let team_avg = {};
             let rivals = this.rivals;
             let rival_list = Object.entries(rivals);
+            let exc = []
+            try {
+                exc = this.gws_exclude.split(',').map(i => parseInt(i))
+            }
+            catch {
+                exc = []
+            }
             rival_list.forEach((team) => {
-                let keys = Object.keys(team[1]).filter(i => ((i >= start && i <= end) || (i == "null" && with_postponed)));
+                let keys = Object.keys(team[1]).filter(i => ((i >= start && i <= end) && (exc.length == 0 || !exc.includes(parseInt(i))) || (i == "null" && with_postponed)));
                 let vals = keys.reduce((arr, key) => {
                     return arr.concat(Object.values(team[1][key].map(i => i[this.fdr_attribute])))
                 }, [])
                 team_avg[team[0]] = getAvg(vals);
+            })
+            return team_avg;
+        },
+        team_actual_average() {
+            let start = this.range_from;
+            let end = this.range_to;
+            let with_postponed = this.include_postponed;
+            if (!this.is_main_ready) { return {} }
+            let team_avg = {};
+            let rivals = this.rivals;
+            let rival_list = Object.entries(rivals);
+            let exc = []
+            try {
+                exc = this.gws_exclude.split(',').map(i => parseInt(i))
+            }
+            catch {
+                exc = []
+            }
+            rival_list.forEach((team) => {
+                let keys = Object.keys(team[1]).filter(i => ((i >= start && i <= end) && (exc.length == 0 || !exc.includes(parseInt(i))) || (i == "null" && with_postponed)));
+                let vals = keys.reduce((arr, key) => {
+                    return arr.concat(Object.values(team[1][key].map(i => i[this.fdr_attribute])))
+                }, [])
+                team_avg[team[0]] = getAvg(vals) - 100 * vals.length;
+            })
+            return team_avg;
+        },
+        fixture_count() {
+            let start = this.range_from;
+            let end = this.range_to;
+            let with_postponed = this.include_postponed;
+            if (!this.is_main_ready) { return {} }
+            let team_avg = {};
+            let rivals = this.rivals;
+            let rival_list = Object.entries(rivals);
+            let exc = []
+            try {
+                exc = this.gws_exclude.split(',').map(i => parseInt(i))
+            }
+            catch {
+                exc = []
+            }
+            rival_list.forEach((team) => {
+                let keys = Object.keys(team[1]).filter(i => ((i >= start && i <= end) && (exc.length == 0 || !exc.includes(parseInt(i))) || (i == "null" && with_postponed)));
+                let vals = keys.reduce((arr, key) => {
+                    return arr.concat(Object.values(team[1][key].map(i => i[this.fdr_attribute])))
+                }, [])
+                team_avg[team[0]] = vals.length;
             })
             return team_avg;
         },
@@ -224,6 +281,25 @@ var app = new Vue({
                 }
             }
             return undefined;
+        },
+        future_deadlines() {
+            let g = _.cloneDeep(this.gameweek_deadlines)
+            g = g.filter(i => i.id >= this.this_gw)
+            let prev = undefined
+            g.forEach((e) => {
+                let d = new Date(e.start)
+                e.dt_obj = d
+                e.dt = d.toLocaleDateString() + ' ' + d.toLocaleDateString(undefined,{'weekday': 'long'}) + ' ' + d.toLocaleTimeString()
+                if (prev == undefined) {
+                    e.diff = millisecondsToStr(e.dt_obj.getTime() - (new Date()).getTime())
+                }
+                else {
+                    e.diff = millisecondsToStr(e.dt_obj.getTime() - prev)
+                }
+                prev = e.dt_obj.getTime()
+            })
+
+            return g
         },
         range_from_input: {
             get: function() { return this.range_from },
@@ -339,6 +415,8 @@ var app = new Vue({
             }
         },
         load_calendar() {
+
+            return
 
             var container = document.getElementById('visualization');
             var timeline = new vis.Timeline(container);
