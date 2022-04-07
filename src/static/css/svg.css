@@ -368,6 +368,14 @@ circle.risk-nodes:hover {
     stroke-width: 0.4pt !important;
 }
 
+.current_vcaptain {
+    fill: #830000 !important;
+    fill-opacity: 1 !important;
+    cursor: pointer;
+    stroke: #fb9898 !important;
+    stroke-width: 0.4pt !important;
+}
+
 .captain_text {
     stroke-width: 0 !important;
     font-size: 2.4pt;

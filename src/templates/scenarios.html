@@ -227,11 +227,17 @@
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)" :data-pid="player.element">
                                                 <image :href="player.img" width=17 height=17 x="0%" y="0%" style="transform: translate(1.5px,0.5px)" v-if="![388, 601].includes(player.element)"></image>
+                                                <!-- Select captain -->
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
-                                                    <!-- Select captain -->
-                                                    <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
-                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}"  @click="select_captain(player.element)" />
-                                                    <text x="18" y="14" class="field_icons captain_text">C</text>
+                                                    <circle cx="18" cy="10" r="3.5" style="opacity:0" @click="select_captain(player.element)" />
+                                                    <circle cx="18" cy="10" r="1.75" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}"  @click="select_captain(player.element)" />
+                                                    <text x="18" y="10" class="field_icons captain_text">C</text>
+                                                </g>
+                                                <!-- Select VC -->
+                                                <g v-if="player.multiplier > 0" :class="{'half-opacity': !player.is_vice_captain}">
+                                                    <circle cx="18" cy="15" r="3.5" style="opacity:0" @click="select_vice_captain(player.element)" />
+                                                    <circle cx="18" cy="15" r="1.75" :class="{'empty_captain': !player.is_vice_captain, 'current_vcaptain': player.is_vice_captain}"  @click="select_vice_captain(player.element)" />
+                                                    <text x="18" y="15" class="field_icons captain_text">V</text>
                                                 </g>
                                                 <!-- Transfer Out -->
                                                 <g :class="{'half-opacity': player.element != picked_out}">
@@ -334,12 +340,18 @@
                                     <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in rival_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)" :data-pid="player.element">
-                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="![388, 601].includes(player.element)"></image>
+                                                <image :href="player.img" width=17 height=17 x="0%" y="0%" style="transform: translate(1.5px,0.5px)" v-if="![388, 601].includes(player.element)"></image>
+                                                <!-- Select captain -->
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
-                                                    <!-- Select captain -->
-                                                    <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain_rival(player.element)" />
-                                                    <circle cx="18" cy="14" r="2" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}"  @click="select_captain_rival(player.element)" />
-                                                    <text x="18" y="14" class="field_icons captain_text">C</text>
+                                                    <circle cx="18" cy="10" r="3.5" style="opacity:0" @click="select_captain_rival(player.element)" />
+                                                    <circle cx="18" cy="10" r="1.75" :class="{'empty_captain': player.multiplier <= 1, 'current_captain': player.multiplier > 1}"  @click="select_captain_rival(player.element)" />
+                                                    <text x="18" y="10" class="field_icons captain_text">C</text>
+                                                </g>
+                                                <!-- Select VC -->
+                                                <g v-if="player.multiplier > 0" :class="{'half-opacity': !player.is_vice_captain}">
+                                                    <circle cx="18" cy="15" r="3.5" style="opacity:0" @click="select_vice_captain_rival(player.element)" />
+                                                    <circle cx="18" cy="15" r="1.75" :class="{'empty_captain': !player.is_vice_captain, 'current_vcaptain': player.is_vice_captain}"  @click="select_vice_captain_rival(player.element)" />
+                                                    <text x="18" y="15" class="field_icons captain_text">V</text>
                                                 </g>
                                                 <!-- Transfer Out -->
                                                 <g :class="{'half-opacity': player.element != picked_out_rival}">
@@ -354,7 +366,7 @@
                                                     <text x="3" y="4" class="field_icons out_text">⇅</text>
                                                 </g>
                                                 
-                                                <g  transform="translate(0,20)">
+                                                <g  transform="translate(0,17.5)">
                                                     <g>
                                                         <text y="285.37598" x="9.281539" class="jersey-regular-text">
                                                             <tspan
@@ -369,6 +381,7 @@
                                                         </text> -->
                                                         <rect y="0" x="0" height="4" width="19" class="jersey-name-bg" />
                                                         <rect y="4" x="0" height="3" width="19" class="jersey-team-bg" />
+                                                        <rect y="7" x="0" height="3" width="19" class="jersey-xp-bg" />
                                                         <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
                                                             <tspan
                                                                 class="jersey-player-name"
@@ -379,6 +392,8 @@
                                                             <!-- <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan> -->
                                                             <tspan class="jersey-team-name" y="6.5" x="9.4" style="font-size: 2pt;" >{{ fixture_dict[player.data.team].str }}</tspan>
                                                         </text>
+                                                        <text y="8.5" x="1" style="text-anchor:start" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P</tspan> {{ sc_player_avg_full[player.element].avg }}</text>
+                                                        <text y="8.5" x="18" style="text-anchor:end" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P90</tspan> {{ sc_player_avg_full[player.element].pps }}</text>
                                                     </g>
                                                 </g>
                                             </g>
