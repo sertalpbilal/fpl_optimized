@@ -672,6 +672,19 @@ function createTeamFromList(sorted, picks, cap, vice_cap, tc, el_dict, xp_data) 
             })
         })
 
+        let have_cap = team.picks.find(i => i.is_captain)
+        if (have_cap == undefined) {
+            let e = team.picks.find(i => !i.is_vice_captain && i.multiplier > 0)
+            e.is_captain = true
+            e.multiplier = 2
+        }
+
+        let have_vcap = team.picks.find(i => i.is_vice_captain)
+        if (have_vcap == undefined) {
+            let e = team.picks.find(i => !i.is_captain && i.multiplier > 0)
+            e.is_vice_captain = true
+        }
+
         return _.cloneDeep(team)
     }
     else {

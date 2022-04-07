@@ -498,6 +498,7 @@ var app = new Vue({
                     let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
                     p.pts = player_score
                     p.original_mult = p.multiplier
+                    
                     if (p.element in s.values && p.multiplier > 0) {
                         // score += parseInt(player_score) * p.multiplier
                         p.played = true
@@ -542,7 +543,7 @@ var app = new Vue({
                     }
                     if (p.captain_out) {
                         let vc = sc_picks.find(i => i.is_vice_captain)
-                        if (vc.played) {
+                        if (vc && vc.played) {
                             vc.multiplier = (p.original_mult + 0)
                             vc.captain_in = true
                         }
@@ -703,17 +704,27 @@ var app = new Vue({
             console.log(e)
             let picks = this.team_data.picks
             let cc = picks.find(i => i.is_vice_captain)
-            let nc = picks.find(i => i.element == e)
-            if (cc.element == nc.element) { return } // same player
-            this.calculating = true
-            cc.is_vice_captain = false
-            nc.is_vice_captain = true
-            if (nc.multiplier > 1 || nc.is_captain) {
-                nc.is_captain = false
-                nc.multiplier = 1
-                cc.is_captain = true
-                cc.multiplier = 2
+
+            if (cc) {
+                let nc = picks.find(i => i.element == e)
+                if (cc.element == nc.element) { return } // same player
+                this.calculating = true
+                cc.is_vice_captain = false
+                nc.is_vice_captain = true
+                if (nc.multiplier > 1 || nc.is_captain) {
+                    nc.is_captain = false
+                    nc.multiplier = 1
+                    cc.is_captain = true
+                    cc.multiplier = 2
+                }
             }
+            else {
+                let nc = picks.find(i => i.element == e)
+                if (nc.multiplier > 1 || nc.is_captain) { return }
+                this.calculating = true
+                nc.is_vice_captain = true
+            }
+
             this.team_data.picks = picks
         },
         select_captain_rival(e) {
@@ -737,16 +748,24 @@ var app = new Vue({
             console.log(e)
             let picks = this.rival_data.picks
             let cc = picks.find(i => i.is_vice_captain)
-            let nc = picks.find(i => i.element == e)
-            if (cc.element == nc.element) { return } // same player
-            this.calculating = true
-            cc.is_vice_captain = false
-            nc.is_vice_captain = true
-            if (nc.multiplier > 1 || nc.is_captain) {
-                nc.is_captain = false
-                nc.multiplier = 1
-                cc.is_captain = true
-                cc.multiplier = 2
+            if (cc) {
+                let nc = picks.find(i => i.element == e)
+                if (cc.element == nc.element) { return } // same player
+                this.calculating = true
+                cc.is_vice_captain = false
+                nc.is_vice_captain = true
+                if (nc.multiplier > 1 || nc.is_captain) {
+                    nc.is_captain = false
+                    nc.multiplier = 1
+                    cc.is_captain = true
+                    cc.multiplier = 2
+                }
+            }
+            else {
+                let nc = picks.find(i => i.element == e)
+                if (nc.multiplier > 1 || nc.is_captain) { return }
+                this.calculating = true
+                nc.is_vice_captain = true
             }
             this.rival_data.picks = picks
         },
@@ -1913,7 +1932,7 @@ $(document).ready(() => {
                 let sorted = params.get('sorted') == 1
                 let picks = params.get('team').split(',').map(i => parseInt(i))
                 let captain = params.get('cap')
-                let vice_cap = params.get('vc')
+                let vice_cap = params.get('vicecap')
                 let tc = params.get('tc')
                 let gw = params.get('gw')
                 app.set_team_with_url(sorted, picks, captain, vice_cap, tc, gw)
