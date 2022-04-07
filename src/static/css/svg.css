@@ -114,6 +114,31 @@
     opacity: 0.9 !important;
 }
 
+.jersey-xp-bg {
+    stroke: #ababab;
+    stroke-width: 0;
+    stroke-miterlimit: 4;
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+    fill: #484848 !important;
+    fill-opacity: 1 !important;
+    opacity: 0.9 !important;
+}
+
+.jersey-xp-avg {
+    /* text-anchor: middle; */
+    font-size: 1.8pt;
+    stroke: none;
+    alignment-baseline: central;
+    fill: #ffffff;
+}
+
+.jersey-xp-tag {
+    fill: #8fffa9;
+    alignment-baseline: central;
+    dominant-baseline: central;
+}
+
 .jersey-player-name {
     fill: white;
     font-style: normal;

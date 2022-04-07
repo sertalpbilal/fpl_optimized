@@ -351,6 +351,19 @@ var app = new Vue({
             let total_pps = _.mapValues(_.groupBy(sums.flat(), '0'), v => _.sum(v.map(j => j[1])) / v.length)
             let total_app = _.mapValues(_.groupBy(sums.flat(), '0'), v => v.length)
             return { avg: total_avg, pps: total_pps, app: total_app }
+        },
+        sc_player_avg_full () {
+            if (_.isEmpty(this.sc_game_details)) { return {} }
+            let sca = this.sc_player_averages
+            let player_ids = this.main_data.elements.map(i => i.id)
+            let pts_dict = {}
+            player_ids.forEach((p) => {
+                pts_dict[p] = {
+                    'avg': sca.avg[p] ? _.round(sca.avg[p],1) : "-",
+                    'pps': sca.pps[p] ? _.round(sca.pps[p],1) : "-"
+                }
+            })
+            return Object.freeze(pts_dict)
         }
     },
     methods: {

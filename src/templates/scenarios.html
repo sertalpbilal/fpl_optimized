@@ -226,7 +226,7 @@
                                     <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)" :data-pid="player.element">
-                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="![388, 601].includes(player.element)"></image>
+                                                <image :href="player.img" width=17 height=17 x="0%" y="0%" style="transform: translate(1.5px,0.5px)" v-if="![388, 601].includes(player.element)"></image>
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
                                                     <!-- Select captain -->
                                                     <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
@@ -246,7 +246,7 @@
                                                     <text x="3" y="4" class="field_icons out_text">⇅</text>
                                                 </g>
                                                 
-                                                <g  transform="translate(0,20)">
+                                                <g  style="transform: translate(0,17.5px)">
                                                     <g>
                                                         <text y="285.37598" x="9.281539" class="jersey-regular-text">
                                                             <tspan
@@ -261,6 +261,7 @@
                                                         </text> -->
                                                         <rect y="0" x="0" height="4" width="19" class="jersey-name-bg" />
                                                         <rect y="4" x="0" height="3" width="19" class="jersey-team-bg" />
+                                                        <rect y="7" x="0" height="3" width="19" class="jersey-xp-bg" />
                                                         <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
                                                             <tspan
                                                                 class="jersey-player-name"
@@ -271,6 +272,8 @@
                                                             <!-- <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan> -->
                                                             <tspan class="jersey-team-name" y="6.5" x="9.4" style="font-size: 2pt;" >{{ fixture_dict[player.data.team].str }}</tspan>
                                                         </text>
+                                                        <text y="8.5" x="1" style="text-anchor:start" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P</tspan> {{ sc_player_avg_full[player.element].avg }}</text>
+                                                        <text y="8.5" x="18" style="text-anchor:end" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P90</tspan> {{ sc_player_avg_full[player.element].pps }}</text>
                                                     </g>
                                                 </g>
                                             </g>
@@ -643,8 +646,10 @@
                                             <td>{{ teams_ordered[player.team-1].short }}</td>
                                             <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
                                             <td>{{ player.selected_by_percent }}%</td>
-                                            <td>{{ sc_player_averages.avg[player.id] ? _.round(sc_player_averages.avg[player.id],1) : "-" }}</td>
-                                            <td>{{ sc_player_averages.pps[player.id] ? _.round(sc_player_averages.pps[player.id],1) : "-" }}</td>
+                                            <!-- <td>{{ sc_player_averages.avg[player.id] ? _.round(sc_player_averages.avg[player.id],1) : "-" }}</td>
+                                            <td>{{ sc_player_averages.pps[player.id] ? _.round(sc_player_averages.pps[player.id],1) : "-" }}</td> -->
+                                            <td>{{ sc_player_avg_full[player.id].avg }}</td>
+                                            <td>{{ sc_player_avg_full[player.id].pps }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
