@@ -493,11 +493,13 @@ var app = new Vue({
             grouped_scenarios.forEach((s, i) => {
                 let sc_picks = _.cloneDeep(picks.map(i => { return {...i } }))
 
-                let score = 0
+                // Initial assignment
                 sc_picks.forEach(p => {
                     let player_score = (s.values[p.element] && s.values[p.element].Points) || 0
+                    p.pts = player_score
+                    p.original_mult = p.multiplier
                     if (p.element in s.values && p.multiplier > 0) {
-                        score += parseInt(player_score) * p.multiplier
+                        // score += parseInt(player_score) * p.multiplier
                         p.played = true
                     } else {
                         if (p.multiplier > 0) {
@@ -505,11 +507,13 @@ var app = new Vue({
                             p.autosub_out = true
                             p.multiplier = 0
                         }
+                        if (p.is_captain || p.multiplier > 1) {
+                            p.captain_out = true
+                        }
                     }
-                    p.eff_points = ((p.multiplier - ownership[p.element] / 100) * parseInt(player_score)).toFixed(2)
                 })
-                s.lineup_score = score + 0
-                    // Autosub
+                
+                // Autosub
                 sc_picks.filter(i => i.autosub_out).forEach(p => {
                     let pos = p.data.element_type
                     let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
@@ -520,9 +524,9 @@ var app = new Vue({
                             match.multiplier = 1
                             match.played = true
                             match.autosub_in = true
-                            let player_score = s.values[match.element].Points
-                            score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
+                            // let player_score = s.values[match.element].Points
+                            // score += parseInt(player_score) * match.multiplier
+                            // match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
                         }
                     } else {
                         // next available bench player
@@ -531,14 +535,29 @@ var app = new Vue({
                             match.multiplier = 1
                             match.played = true
                             match.autosub_in = true
-                            let player_score = s.values[match.element].Points
-                            score += parseInt(player_score) * match.multiplier
-                            match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
+                            // let player_score = s.values[match.element].Points
+                            // score += parseInt(player_score) * match.multiplier
+                            // match.eff_points = ((match.multiplier - ownership[match.element] / 100) * parseInt(player_score)).toFixed(2)
+                        }
+                    }
+                    if (p.captain_out) {
+                        let vc = sc_picks.find(i => i.is_vice_captain)
+                        if (vc.played) {
+                            vc.multiplier = (p.original_mult + 0)
+                            vc.captain_in = true
                         }
                     }
                 })
+
+                s.lineup_score = _.sum(sc_picks.filter(i => !i.autosub_in && i.played).map(i => i.pts * i.multiplier))
+                s.autosub_score = _.sum(sc_picks.filter(i => i.autosub_in && i.played).map(i => i.pts * i.multiplier))
+
+                sc_picks.forEach((p) => {
+                    p.eff_points = ((p.multiplier - ownership[p.element] / 100) * parseInt(p.pts)).toFixed(2)
+                })
+                
+                let score = s.lineup_score + s.autosub_score
                 s.total_score = score + pen
-                s.autosub_score = score - s.lineup_score
                 s.diff = score + pen - s.total_field
                 s.idx = i
                 s.picks = sc_picks
@@ -674,6 +693,27 @@ var app = new Vue({
             cc.is_captain = false
             nc.multiplier = 2
             nc.is_captain = true
+            if (nc.is_vice_captain) {
+                nc.is_vice_captain = false
+                cc.is_vice_captain = true
+            }
+            this.team_data.picks = picks
+        },
+        select_vice_captain(e) {
+            console.log(e)
+            let picks = this.team_data.picks
+            let cc = picks.find(i => i.is_vice_captain)
+            let nc = picks.find(i => i.element == e)
+            if (cc.element == nc.element) { return } // same player
+            this.calculating = true
+            cc.is_vice_captain = false
+            nc.is_vice_captain = true
+            if (nc.multiplier > 1 || nc.is_captain) {
+                nc.is_captain = false
+                nc.multiplier = 1
+                cc.is_captain = true
+                cc.multiplier = 2
+            }
             this.team_data.picks = picks
         },
         select_captain_rival(e) {
@@ -684,7 +724,30 @@ var app = new Vue({
             if (cc.element == nc.element) { return } // same player
             this.calculating = true
             cc.multiplier = 1
+            cc.is_captain = false
             nc.multiplier = 2
+            nc.is_captain = true
+            if (nc.is_vice_captain) {
+                nc.is_vice_captain = false
+                cc.is_vice_captain = true
+            }
+            this.rival_data.picks = picks
+        },
+        select_vice_captain_rival(e) {
+            console.log(e)
+            let picks = this.rival_data.picks
+            let cc = picks.find(i => i.is_vice_captain)
+            let nc = picks.find(i => i.element == e)
+            if (cc.element == nc.element) { return } // same player
+            this.calculating = true
+            cc.is_vice_captain = false
+            nc.is_vice_captain = true
+            if (nc.multiplier > 1 || nc.is_captain) {
+                nc.is_captain = false
+                nc.multiplier = 1
+                cc.is_captain = true
+                cc.multiplier = 2
+            }
             this.rival_data.picks = picks
         },
         select_out(e) {
@@ -857,6 +920,11 @@ var app = new Vue({
                     let o1 = data.picks.findIndex(i => i.element == this[target])
                     let o2 = data.picks.findIndex(i => i.element == e)
                     swapArrayLocs(data.picks, o1, o2)
+
+                    p_in.is_captain = p_out.is_captain
+                    p_in.is_vice_captain = p_out.is_vice_captain
+                    p_out.is_captain = false
+                    p_out.is_vice_captain = false
 
                     this[target] = undefined
                     data.picks.forEach(p => {
