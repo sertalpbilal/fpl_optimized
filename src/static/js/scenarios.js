@@ -37,6 +37,7 @@ var app = new Vue({
         show_outcomes: true,
         show_field: false,
         show_diff: true,
+        show_diff_rival: true,
         tick: 300,
         my_penalty: 0,
         rival_penalty: 0
@@ -114,6 +115,9 @@ var app = new Vue({
                 p.y = 4 * 35 + 2
             })
             return picks
+        },
+        rival_ready() {
+            return !_.isEmpty(this.rival_picks)
         },
         rival_picks() {
             if (_.isEmpty(this.rival_data)) { return [] }
@@ -1072,6 +1076,7 @@ var app = new Vue({
             draw_histogram()
             draw_field_graph()
             draw_diff_graph()
+            draw_diff_graph(true) // rival
         },
         savePenalty() {
             let val = parseInt(jQuery("#my-penalty").val())
@@ -1512,11 +1517,18 @@ function draw_field_graph() {
 
 }
 
-function draw_diff_graph() {
+function draw_diff_graph(is_rival=false) {
     // initial checks and clear
     if (_.isEmpty(app.scenario_evals)) { return }
-    jQuery("#diff_histogram").empty()
-    if (!app.show_diff) { return }
+
+    if (!is_rival && !app.show_diff) { return }
+    if (is_rival && (!app.rival_ready || !app.rival_mode || !app.show_diff_rival)) { return }
+
+    let graph_name = '#diff_histogram'
+    if (is_rival) { graph_name += '_rival' }
+
+    jQuery(graph_name).empty()
+
 
     // scatter plot + dist
     var margin = { top: 25, bottom: 30, left: 35, right: 15 },
@@ -1534,7 +1546,7 @@ function draw_diff_graph() {
     info_size = '7pt'
     axis_size = '10pt'
 
-    let cnv = d3.select("#diff_histogram")
+    let cnv = d3.select(graph_name)
         .append("svg")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
         .style('display', 'block')
@@ -1586,16 +1598,25 @@ function draw_diff_graph() {
         .attr("stroke-width", "0.5");
 
     // data prep
-    let data = app.scenario_evals
-
+    let data = _.cloneDeep(app.scenario_evals)
 
     // part 1: main data
     let main_part = svg.append('g')
         .attr('transform', 'translate(' + 0 + ',' + (top_height + top_gap) + ')')
 
     let team_points = data.map(i => i.total_score)
+
+    if (is_rival) {
+        rival_points = app.scenario_evals_rival.map(i => i.total_score)
+        data.forEach((d,i) => {
+            d.total_field = rival_points[i]
+        })
+    }
+
     let field_points = data.map(i => i.total_field)
-    let all_points = data.map(i => [i.total_score, i.total_field]).flat()
+    
+    
+    // let all_points = data.map(i => [i.total_score, i.total_field]).flat()
 
     let padded = (e, p) => { return [e[0] - p, e[1] + p] }
 
@@ -1757,7 +1778,7 @@ function draw_diff_graph() {
 
     top_part.append("path")
         .datum(d1_closed)
-        .attr("fill", "#ff7777")
+        .attr("fill", is_rival ? "crimson" : "#fff777")
         .attr("fill-opacity", "0.5")
         .attr("stroke", "#000")
         .attr("stroke-width", 1)
@@ -1836,7 +1857,7 @@ function draw_diff_graph() {
         .attr("y", -9)
         .attr("font-size", title_size)
         .attr("fill", "white")
-        .text("Team Points vs Field Average Difference")
+        .text(is_rival ? "Team vs Rival Difference" : "Team Points vs Field Average Difference")
 
     // top title
     svg.append("text")
@@ -1847,7 +1868,7 @@ function draw_diff_graph() {
         .attr("y", 2)
         .attr("font-size", font_size)
         .attr("fill", "white")
-        .text("Field Average Density")
+        .text(is_rival ? "Rival Points Density" : "Field Average Density")
 
     // x-title
     main_part.append("text")
@@ -1858,7 +1879,7 @@ function draw_diff_graph() {
         .attr("y", main_size+25)
         .attr("font-size", axis_size)
         .attr("fill", "white")
-        .text("Field Average (Points)")
+        .text(is_rival ? "Rival Average (Points)" : "Field Average (Points)")
 
     // right title
     svg.append("text")

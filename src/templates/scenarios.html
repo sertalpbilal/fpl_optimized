@@ -1097,6 +1097,10 @@
                             <input id="diff_dist_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_diff" @change="refresh_histogram">
                             <label for="diff_dist_switch" class="custom-control-label">Team vs Field Comparison</label>
                         </div>
+                        <div class="custom-control custom-switch ml-2 mr-2">
+                            <input id="diff_rdist_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_diff_rival" @change="refresh_histogram">
+                            <label for="diff_rdist_switch" class="custom-control-label">Team vs Rival Comparison</label>
+                        </div>
                     </div>
 
 
@@ -1109,6 +1113,9 @@
 
                             </div>
                             <div id="diff_histogram" v-show="show_diff" class="mt-2 mb-1 col-9 mx-auto">
+
+                            </div>
+                            <div id="diff_histogram_rival" v-show="show_diff_rival" class="mt-2 mb-1 col-9 mx-auto">
 
                             </div>
 
