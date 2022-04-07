@@ -596,6 +596,20 @@ $(document).ready(() => {
                 initialize(puzzle_id, order, date)
             })
         }
+        else if (params.get('no')) {
+            // check if allowed!
+            let today = new Date()
+            let btw = days_between(first_day, today)
+            if (btw < 0) { app.coming_soon = 1; return }
+            let puzzle_no = parseInt(params.get('no'))-1
+            let target = Math.min(btw, puzzle_no)
+            read_local_file(`data/puzzle/order.json`).then((d) => {
+                let order = target % d.length
+                puzzle_id = d[order]
+                let date = new Date(first_day.getTime() + order * 24 * 60 * 60 * 1000)
+                initialize(puzzle_id, order, date)
+            })
+        }
         else {
             let today = new Date()
             
