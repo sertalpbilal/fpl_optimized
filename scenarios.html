@@ -338,7 +338,7 @@
                                     <svg id="player_group" x=0 y=0 :class="{'calculating': calculating}">
                                         <svg v-for="(player,order) in team_picks" :x="player.x" :y="player.y" style="overflow: visible;">
                                             <g class="g_jersey" style="transform:translate(0,0)" :data-pid="player.element">
-                                                <image :href="player.img" width=20 height=20 x="0%" y="0%" style="transform: translate(0,0);" v-if="![388, 601].includes(player.element)"></image>
+                                                <image :href="player.img" width=17 height=17 x="0%" y="0%" style="transform: translate(1.5px,0.5px)" v-if="![388, 601].includes(player.element)"></image>
                                                 <g v-if="player.multiplier > 0" :class="{'half-opacity': player.multiplier <= 1}">
                                                     <!-- Select captain -->
                                                     <circle cx="18" cy="14" r="4" style="opacity:0" @click="select_captain(player.element)" />
@@ -358,7 +358,7 @@
                                                     <text x="3" y="4" class="field_icons out_text">⇅</text>
                                                 </g>
                                                 
-                                                <g  transform="translate(0,20)">
+                                                <g  style="transform: translate(0,17.5px)">
                                                     <g>
                                                         <text y="285.37598" x="9.281539" class="jersey-regular-text">
                                                             <tspan
@@ -373,6 +373,7 @@
                                                         </text> -->
                                                         <rect y="0" x="0" height="4" width="19" class="jersey-name-bg" />
                                                         <rect y="4" x="0" height="3" width="19" class="jersey-team-bg" />
+                                                        <rect y="7" x="0" height="3" width="19" class="jersey-xp-bg" />
                                                         <text  y="2" x="9" class="jersey-regular-text" xml:space="preserve">
                                                             <tspan
                                                                 class="jersey-player-name"
@@ -383,6 +384,8 @@
                                                             <!-- <tspan class="jersey-team-name" y="6.5" x="9" style="font-size: 2pt;" >{{ teams_ordered[player.data.team-1].name }}</tspan> -->
                                                             <tspan class="jersey-team-name" y="6.5" x="9.4" style="font-size: 2pt;" >{{ fixture_dict[player.data.team].str }}</tspan>
                                                         </text>
+                                                        <text y="8.5" x="1" style="text-anchor:start" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P</tspan> {{ sc_player_avg_full[player.element].avg }}</text>
+                                                        <text y="8.5" x="18" style="text-anchor:end" class="jersey-xp-avg"><tspan class="jersey-xp-tag">P90</tspan> {{ sc_player_avg_full[player.element].pps }}</text>
                                                     </g>
                                                 </g>
                                             </g>
@@ -755,8 +758,10 @@
                                             <td>{{ teams_ordered[player.team-1].short }}</td>
                                             <td>{{ (player.now_cost / 10).toFixed(1) }}</td>
                                             <td>{{ player.selected_by_percent }}%</td>
-                                            <td>{{ sc_player_averages.avg[player.id] ? _.round(sc_player_averages.avg[player.id],1) : "-" }}</td>
-                                            <td>{{ sc_player_averages.pps[player.id] ? _.round(sc_player_averages.pps[player.id],1) : "-" }}</td>
+                                            <!-- <td>{{ sc_player_averages.avg[player.id] ? _.round(sc_player_averages.avg[player.id],1) : "-" }}</td>
+                                            <td>{{ sc_player_averages.pps[player.id] ? _.round(sc_player_averages.pps[player.id],1) : "-" }}</td> -->
+                                            <td>{{ sc_player_avg_full[player.id].avg }}</td>
+                                            <td>{{ sc_player_avg_full[player.id].pps }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1511,7 +1516,7 @@
 
 <script>
     let sc_files = [["GW32", "data/2021-22/GW32/2022-04-07/output/scenarios.csv"], ["GW31", "data/2021-22/GW31/2022-04-01/output/scenarios.csv"], ["GW30", "data/2021-22/GW30/2022-03-18/output/scenarios.csv"], ["GW29", "data/2021-22/GW29/2022-03-12/output/scenarios.csv"], ["GW28", "data/2021-22/GW28/2022-03-05/output/scenarios.csv"], ["GW27", "data/2021-22/GW27/2022-02-25/output/scenarios.csv"], ["GW26", "data/2021-22/GW26/2022-02-19/output/scenarios.csv"], ["GW25", "data/2021-22/GW25/2022-02-12/output/scenarios.csv"], ["GW24", "data/2021-22/GW24/2022-02-08/output/scenarios.csv"], ["GW23", "data/2021-22/GW23/2022-01-21/output/scenarios.csv"], ["GW22", "data/2021-22/GW22/2022-01-14/output/scenarios.csv"], ["GW21", "data/2021-22/GW21/2022-01-01/output/scenarios.csv"], ["GW20", "data/2021-22/GW20/2021-12-28/output/scenarios.csv"], ["GW19", "data/2021-22/GW19/2021-12-26/output/scenarios.csv"], ["GW18", "data/2021-22/GW18/2021-12-18/output/scenarios.csv"], ["GW17", "data/2021-22/GW17/2021-12-14/output/scenarios.csv"], ["GW16", "data/2021-22/GW16/2021-12-10/output/scenarios.csv"], ["GW15", "data/2021-22/GW15/2021-12-04/output/scenarios.csv"], ["GW14", "data/2021-22/GW14/2021-11-30/output/scenarios.csv"], ["GW13", "data/2021-22/GW13/2021-11-27/output/scenarios.csv"], ["GW12", "data/2021-22/GW12/2021-11-20/output/scenarios.csv"], ["GW11", "data/2021-22/GW11/2021-11-05/output/scenarios.csv"], ["GW10", "data/2021-22/GW10/2021-10-29/output/scenarios.csv"], ["GW9", "data/2021-22/GW9/2021-10-22/output/scenarios.csv"], ["GW8", "data/2021-22/GW8/2021-10-15/output/scenarios.csv"]]
-    let ts = 20220407102340
+    let ts = 20220407143315
 </script>
 
  </div>
@@ -1577,11 +1582,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220407102340"></script>
+<script src="/static/js/main.js?ts=20220407143315"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220407102340"></script>
+<script src="/static/js/sampling_utils.js?ts=20220407143315"></script>
 
-<script src="/static/js/scenarios.js?ts=20220407102340"></script>
+<script src="/static/js/scenarios.js?ts=20220407143315"></script>
 
 
 <script>
