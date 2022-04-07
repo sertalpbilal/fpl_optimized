@@ -931,6 +931,17 @@ var app = new Vue({
                     p_out.multiplier = p_in.multiplier * 1
                     p_in.multiplier = c
 
+                    // Cap replacement
+                    let cp = p_out.is_captain
+                    p_out.is_captain = p_in.is_captain
+                    p_in.is_captain = cp
+
+                    // VC replacement
+                    cp = p_out.is_vice_captain
+                    p_out.is_vice_captain = p_in.is_vice_captain
+                    p_in.is_vice_captain = cp
+
+
                     const swapArrayLocs = (arr, index1, index2) => {
                         [arr[index1], arr[index2]] = [arr[index2], arr[index1]]
                     }
@@ -939,11 +950,6 @@ var app = new Vue({
                     let o1 = data.picks.findIndex(i => i.element == this[target])
                     let o2 = data.picks.findIndex(i => i.element == e)
                     swapArrayLocs(data.picks, o1, o2)
-
-                    p_in.is_captain = p_out.is_captain
-                    p_in.is_vice_captain = p_out.is_vice_captain
-                    p_out.is_captain = false
-                    p_out.is_vice_captain = false
 
                     this[target] = undefined
                     data.picks.forEach(p => {
