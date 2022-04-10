@@ -47,7 +47,9 @@ var app = new Vue({
         sorted_ownership_cache_last_sort: undefined,
         selected_player: undefined,
         last_gw_data_marker: false,
-        no_white_space: false
+        no_white_space: false,
+        override_rp: [],
+        dropdown_select: 0
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -156,11 +158,13 @@ var app = new Vue({
                 }
             }
             let rp_original = _.cloneDeep(this.rp_data);
+            let override = this.override_rp;
             const fixture = this.gw_fixture;
             // Autosub
             rp_original.forEach((p) => {
                 let total_score = getSum(p.explain.map(i => i.stats.map(j => j.points)).flat())
                 p.rp = total_score
+                p.rp_original = total_score
                 try {
                     p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
                     if (p.games_finished && p.stats.minutes == 0) {
@@ -179,6 +183,14 @@ var app = new Vue({
                     rp_obj[key].stats.total_points += value;
                 })
             }
+            // override
+            override.forEach((e) => {
+                let b = _.cloneDeep(rp_obj[e.id])
+                b.rp = e.rp
+                b.explain = [{'fixture': b.explain[0].fixture, 'stats': [{identifier: 'override', points: e.rp, value: 0}]}]
+                rp_obj[e.id] = b
+
+            })
             return rp_obj;
         },
         gameweek_info() {
@@ -526,6 +538,7 @@ var app = new Vue({
                     n.rp_gain = rp * (Math.max(multiplier, 1) - ownership / 100);
                     n.rp_loss = rp * ownership / 100;
                     n.rp_net = rp * (multiplier - ownership / 100);
+                    n.rp_original = n.rp_data.rp_original || n.rp_data.rp
 
                     n.element_type = parseInt(n.el_data.element_type);
                     n.team = team_codes[parseInt(n.el_data.team_code)];
@@ -1204,6 +1217,44 @@ var app = new Vue({
         toggleWhiteSpace() {
             this.no_white_space = !this.no_white_space
             refresh_all_graphs()
+        },
+        addNewOverride() {
+            let player = this.dropdown_select
+            if (player == '') { return }
+            let rp = parseInt($("#newRpEnter").val()) || 0
+            this.addOverride(player, rp)
+        },
+        addOverride(player, rp) {
+            let b = _.cloneDeep(this.override_rp)
+            let e = b.find(i => i.id == player)
+            if (e) {
+                e.rp = rp
+            }
+            else {
+                b.push({'id': player, 'rp': rp})
+            }
+            this.override_rp = b
+
+            // this.$nextTick(() => {
+            //     refresh_all_graphs()
+            // })
+        },
+        deleteOverride(entry_id) {
+            this.override_rp = this.override_rp.filter(i => i.id != entry_id)
+            // this.$nextTick(() => {
+            //     refresh_all_graphs()
+            // })
+        },
+        clearOverrides() {
+            this.override_rp = []
+            // this.$nextTick(() => {
+            //     refresh_all_graphs()
+            // })
+        },
+        atCloseOverride() {
+            this.$nextTick(() => {
+                refresh_all_graphs()
+            })
         }
     },
 })
@@ -2401,6 +2452,9 @@ $(document).ready(function() {
         }
     });
     $("#editTeamModal").on('hide.bs.modal', (e) => {
+        refresh_all_graphs();
+    });
+    $("#whatifModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
     });
     // $("#sourceModal").on('hide.bs.modal', (e) => {
