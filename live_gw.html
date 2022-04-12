@@ -162,6 +162,9 @@
                                                 Options
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu3">
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="useOriginalXP" v-if="!_.isEmpty(original_xp)">Reset xPts Data</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="useNewXP" v-else :disabled="!xp_storage_this_gw">Use xPts Data</button>
+                                                <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#whatifModal').modal('show')">What/If Analysis</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#editTeamModal').modal('show')">Edit Team</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="$('#showTeamModal').modal('show')">Show Team</button>
@@ -194,6 +197,12 @@
             </div>
         </div>
     </div>
+
+    <!-- <div class="mt-1 mb-1 text-small" v-if="is_all_ready && !xp_storage_this_gw" v-cloak>
+        <div class="alert alert-info">
+            Do you want to use another projection data for the plots? You can use the new <a href="load.html">Load Data</a> page to upload data of your choice.
+        </div>
+    </div> -->
 
     <div class="row" v-cloak v-if="is_team_info_ready && show_team_info">
         <div class="col-12 mb-3">
@@ -1757,7 +1766,7 @@
     let gw = "GW33";
     let next_gw = "GW33";
     let date = "2022-04-12";
-    let lastupdate = "2022-04-12T16:30:26.882243+00:00";
+    let lastupdate = "2022-04-12T17:52:50.344327+00:00";
     let listdates = [
         "2021-22 / GW33 / 2022-04-12 ", 
         "2021-22 / GW32 / 2022-04-08 ", 
@@ -1798,11 +1807,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220412163026"></script>
+<script src="/static/js/main.js?ts=20220412175250"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220412163026"></script>
+<script src="/static/js/sampling_utils.js?ts=20220412175250"></script>
 
-<script src="/static/js/live_gw.js?ts=20220412163026"></script>
+<script src="/static/js/live_gw.js?ts=20220412175250"></script>
 
 
 <script>
@@ -1812,6 +1821,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-04-12T16:30:26.882243+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-04-12T17:52:50.344327+00:00</div>
 
 </html> 

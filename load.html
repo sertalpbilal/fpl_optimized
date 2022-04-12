@@ -2,7 +2,7 @@
 <html lang="en_US">
 
 <head>
-    <title>FPL Optimized  - Spirit Team</title>
+    <title>FPL Optimized  - Load Data</title>
     <meta charset="UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -112,127 +112,139 @@
         </div> -->
 
 
-
-
 <main class="container">
-
-    <div class="row">
-        <div class="col-12 mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Spirit Team</h5>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">
+                    <div class="mb-2"><i class="fas fa-upload mr-1"></i> Data Load <sup class="text-small" style="color: #fff256">Beta</sup></div>
+                    <!-- date -->
+                </h5>
                 <div class="scenario_detail">
-                    Playing FPL and wondering which team resembles your performance the most?
+                    Load your own data to be used in other pages
                 </div>
-                <div class="card-body" v-cloak>
-
-                    <div class="row">
-                        <div class="input-group mb-3 col-md-4 offset-md-4 col-12">
-                            <input class="form-control" placeholder="Team ID" aria-label="Team ID" id="teamID_input" type="number" v-on:keyup="submitTeam">
-                            <div class="input-group-append">
-                                <button class="btn btn-secondary" type="button" @click="enterTeam">Enter</button>
-                            </div>
+                <div class="card-body text-center p-3 animate-height">
+                   <div>If you are subscribed to an FPL Projection source<sup>1</sup>, or have your own data<sup>2</sup>, you can load them here and use on other pages.</div>
+                   <div>The data is stored on your browser.</div>
+                   <div id="load_area" class="mt-3 mb-3 d-flex flex-column justify-content-center align-items-center">
+                       <div><p class="d-block mb-3">Drag and Drop Your Files Here</p></div>
+                       <div>
+                            <input type="file" id="fileElem" class="d-none" multiple accept=".csv" onchange="handleFiles(this.files)">
+                            <label class="button btn btn-secondary" for="fileElem">Select files to load</label>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 col-12 spirit-team-display" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <div>
-                                <div class="text-center">Your Spirit Team: {{ spirit_team[0].club }}</div>
-                                <div class="club-logo text-center"><img :src="'/static/images/clubs/' + spirit_team[0].short + '.png'" /></div>
-                                <div class="text-center">Match Ratio (R-Squared): {{ (spirit_team[0].r.final_r2*100).toFixed(0) }}%</div>
-                                <div class="text-center text-small text-muted">{{ spirit_team[0].r.string }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-8 text-center" id="canvas">
-
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="row col-md-6 offset-md-3 col-12 text-center mx-auto" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <div class="col-6" v-cloak>
-                                <div class="d-flex flex-column metric">
-                                    <div class="text-center p-0">
-                                        <div class="legend-box text-center">
-                                            <svg width="20" height="10"><g>
-                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#3BB9E2" stroke-dasharray="4,0.4" fill="none"></line>
-                                        </g></svg> User Rank
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6" v-cloak>
-                                <div class="d-flex flex-column metric">
-                                    <div class="text-center p-0">
-                                        <div class="legend-box text-center">
-                                            <svg width="20" height="10"><g>
-                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#A6CE51" stroke-dasharray="4,0.4"  fill="none"></line>
-                                        </g></svg> Team Position
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row justify-content-center" v-if="!_.isEmpty(spirit_team)">
-                        <div class="col-12 col-md-4">
-                            <template v-for="s in [spirit_team[0]]">
-                                <table class="table text-white table-striped text-small">
-                                    <thead>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Your Rank</th>
-                                        <th class="text-center">{{ s.club }} Rank</th>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="w in _.range(s.team_rank.length)">
-                                            <td class="text-center">GW{{ w+1 }}</td>
-                                            <td class="text-center">
-                                                <span>{{ s.user_hist[w] }}</span>
-                                                <i class="fas fa-caret-up" style="color: #00d900" v-if="w>0 && s.user_hist[w] < s.user_hist[w-1]"></i>
-                                                <i class="fas fa-caret-down" style="color: #ff005a" v-if="w>0 && s.user_hist[w] > s.user_hist[w-1]"></i>
-                                                <i class="fas fa-minus" style="color: #94968c" v-if="w>0 && s.user_hist[w] == s.user_hist[w-1]"></i>
-                                            </td>
-                                            <td class="text-center">
-                                                <span>{{ s.team_rank[w] }}</span>
-                                                <i class="fas fa-caret-up" style="color: #00d900" v-if="w>0 && s.team_rank[w] < s.team_rank[w-1]"></i>
-                                                <i class="fas fa-caret-down" style="color: #ff005a" v-if="w>0 && s.team_rank[w] > s.team_rank[w-1]"></i>
-                                                <i class="fas fa-minus" style="color: #94968c" v-if="w>0 && s.team_rank[w] == s.team_rank[w-1]"></i>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 col-12" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <b>All Matches</b>
-                            <table class="table table-sm text-white table-striped text-small">
-                                <tr>
-                                    <th>Team</th>
-                                    <th class="text-center">Match (R2)</th>
-                                </tr>
-                                <tr v-for="s in spirit_team">
-                                    <td>{{ s.club }}</td>
-                                    <td class="text-center">{{ (s.r.final_r2*100).toFixed(0) }}%</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
+                   </div>
+                   <div class="mt-2 p-0 p-m-3 border-top" v-cloak>
+                       <h5>Data Status</h5>
+                       <div class="table-responsive">
+                           <table class="table table-sm table-striped text-small narrow-td text-white">
+                                <thead>
+                                    <tr>
+                                        <th>Start GW</th>
+                                        <th>Horizon</th>
+                                        <th>Name</th>
+                                        <th v-if="window.screen.width > 800">Datetime</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="i in reverse_parsed_data">
+                                        <td>{{ i.meta.start_gw }}</td>
+                                        <td>{{ i.meta.horizon }}</td>
+                                        <td>{{ i.meta.filename }}</td>
+                                        <td v-if="window.screen.width > 800">{{ i.meta.dt }}</td>
+                                        <td><span>{{ i.meta.status }}</span>
+                                            <span v-if="i.meta.status == 'active'"><i class="ml-1 fas fa-check-square text-success"></i></span>
+                                            <span v-if="i.meta.status == 'ready'"><i class="ml-1 fas fa-square text-warning"></i></span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary text-small" @click="activateData(i.meta.id)">Activate</button>
+                                            <button class="btn btn-secondary text-small" @click="renameData(i.meta.id)">Rename</button>
+                                            <button class="btn btn-danger text-small" @click="deleteData(i.meta.id)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                           </table>
+                       </div>
+                   </div>
+                   <div class="p-3">
+                       <div class="d-flex flex-column text-left">
+                           <div class="text-gray"><sup>1</sup>Currently works with <a href="https://fplreview.com/massive-data-planner/" target="_blank">FPLReview Massive Data (Premium)</a>, and <a href="https://thefplkiwi.github.io/webpage" target="_blank">theFPLKiwi</a>.</div>
+                           <div class="text-gray"><sup>2</sup>You can give the data in FPLReview format: Either sorted player list by ID, or with `ID` column and `GW_Pts` format (e.g. 34_Pts and 34_xMins)</div>
+                       </div>
+                   </div>
                 </div>
             </div>
         </div>
     </div>
-
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous"></script>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="name-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-responsive text-black">
+                Would you like to give a name to this data?
+                <input type="text" id="data-name-entry"  class="form-control" placeholder="e.g. FPLReview - Premium, Kiwi">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @click="addNameToData" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- <div class="modal fade" tabindex="-1" role="dialog" id="results-modal" v-if="data_ready">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ resultText }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-responsive text-black">
+                <div class="d-flex flex-column">
+                    <div class="row"><div class="col-6 text-right">Played</div><div class="col-6">{{ stat_summary.played }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Won</div><div class="col-6">{{ stat_summary.won_ratio }}%</div></div>
+                    <div class="row"><div class="col-6 text-right">Streak</div><div class="col-6">{{ stat_summary.streak }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Max Streak</div><div class="col-6">{{ stat_summary.max_streak }}</div></div>
+                </div>
+                <div>
+                    <b>Results</b>
+                    <div v-for="p in _.concat(_.range(1,7), [-1])">
+                        <div class="row mb-2">
+                            <div class="col-1">{{ p == -1 ? "X" : p }}</div>
+                            <div class="col-11">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': (stat_summary.score_ratios[p] || 1) + '%'}" v-bind:aria-valuenow="stat_summary.score_ratios[p] || 0" aria-valuemin="0" aria-valuemax="100">{{ stat_summary.result_counts[p] > 0 ? stat_summary.result_counts[p] : "&nbsp;" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center" v-if="result !== undefined">
+                    <button class="btn btn-primary" @click="showSolution">Show Solution</button>
+                    <button class="btn btn-primary" @click="show_share_box = true">Share</button>
+                </div>
+                <div v-if="show_share_box">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Copy content below</label>
+                        <textarea class="form-control" id="result_box" rows="10" readonly>{{ share_text }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
 
  </div>
 
@@ -285,9 +297,9 @@
 
 <script>
     let repo_name = ""
-    let season = "2021-22";
-    let gw = "GW33";
-    let next_gw = "GW33";
+    let season = "";
+    let gw = "";
+    let next_gw = "";
     let date = "";
     let lastupdate = "2022-04-12T17:52:50.344327+00:00";
     let listdates = [
@@ -299,7 +311,7 @@
 
 <script src="/static/js/main.js?ts=20220412175250"></script>
 
-<script src="/static/js/spirit_team.js?ts=20220412175250"></script>
+<script src="/static/js/load.js?ts=20220412175250"></script>
 
 
 <script>

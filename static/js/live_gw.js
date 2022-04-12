@@ -24,7 +24,10 @@ var app = new Vue({
         original_team_data: undefined,
         el_data: undefined,
         xp_data: undefined,
+        xp_source: 'FPLReview - Free',
         rp_data: undefined,
+        original_xp: undefined,
+        xp_storage: undefined,
         ownership_source: "Official FPL API",
         available_sources: ["Official FPL API"],
         sample_data: undefined,
@@ -192,6 +195,11 @@ var app = new Vue({
 
             })
             return rp_obj;
+        },
+        xp_storage_this_gw() {
+            if (_.isEmpty(this.xp_storage)) { return false }
+            let this_gw = parseInt(this.gw.replace('GW', ''));
+            return !_.isEmpty(this.xp_storage.find(i => i.meta.start_gw == this_gw && i.meta.status == 'active'))
         },
         gameweek_info() {
             if (this.gw_fixture.length == 0) { return {} }
@@ -769,6 +777,45 @@ var app = new Vue({
         },
         saveXP(values) {
             this.xp_data = Object.freeze(values);
+            if (this.xp_storage_this_gw) {
+                this.useNewXP()
+            }
+            else {
+                this.original_xp = undefined;
+                this.xp_source = "FPLReview - Free"
+            }
+            
+        },
+        useNewXP() {
+            let this_gw = parseInt(this.gw.replace('GW', ''));
+            let xp_data = this.xp_storage
+            let feas = xp_data.find(i => i.meta.start_gw == this_gw && i.meta.status=='active')
+            if (feas) {
+                let new_data = $.csv.toObjects(feas.data).map((i,j) => [i.ID ? parseInt(i.ID) : i.id ? parseInt(i.id) : j+1, i])
+                let new_data_dict = Object.fromEntries(new_data)
+                let xp_existing = _.cloneDeep(this.xp_data)
+                xp_existing.forEach((player) => {
+                    let new_entry = new_data_dict[player.player_id]
+                    if (new_entry) {
+                        player.points_md = new_entry[player.event + '_Pts'] || player.points_md
+                        player.xmins_md = new_entry[player.event + '_xMins'] || player.xmins_md
+                    }
+                })
+                this.original_xp = _.cloneDeep(this.xp_data)
+                this.xp_data = Object.freeze(xp_existing)
+                this.xp_source = feas.meta.filename
+                refresh_all_graphs()
+            }
+            else {
+                this.useOriginalXP()
+            }
+        },
+        useOriginalXP() {
+            if (_.isEmpty(this.original_xp)) { return }
+            this.xp_source = 'FPLReview - Free'
+            this.xp_data = Object.freeze(_.cloneDeep(this.original_xp))
+            this.original_xp = undefined
+            refresh_all_graphs()
         },
         saveRP(values) {
             this.rp_data = Object.freeze(values);
@@ -1934,6 +1981,14 @@ async function draw_user_graph(options = {}) {
                 .attr("fill", "#ffffff65")
                 .style('pointer-events', 'none')
                 .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
+            text_info.append('text')
+                .attr("text-anchor", "start")
+                .attr("x", x(x_low) + 1)
+                .attr("y", y(y_high) + 20)
+                .attr("font-size", "3pt")
+                .attr("fill", "#ffffff65")
+                .style('pointer-events', 'none')
+                .text("xP Data: " + (app.xp_source));
 
             let pc = app.player_counts;
             let played_text = pc.your_played + '/' + pc.your_total;
@@ -2450,6 +2505,13 @@ $(document).ready(function() {
                 $("#teamModal").modal('show');
             }
         }
+
+        let xp_data = read_xp_storage()
+        if (xp_data !== undefined) {
+            app.xp_storage = xp_data
+            app.useNewXP()
+        }
+
     });
     $("#editTeamModal").on('hide.bs.modal', (e) => {
         refresh_all_graphs();
