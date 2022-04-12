@@ -90,6 +90,15 @@ def puzzle_page():
     else:
         return render_template('puzzle.html', repo_name="", ts=timestamp, page_name="FPL Puzzle", last_update=current_time)
 
+
+@app.route('/load.html')
+def load_page():
+    if app.config['DEBUG']:
+        return render_template('load.html', repo_name="/..", ts=timestamp, page_name="Load Data", last_update=current_time)
+    else:
+        return render_template('load.html', repo_name="", ts=timestamp, page_name="Load Data", last_update=current_time)
+
+
 # @app.route('/top_squads.html')
 # def top_squads():
 #     all_dates = glob.glob('build/data/*/*/*/output/iterative_model.json')

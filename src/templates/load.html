@@ -1,0 +1,137 @@
+"% include 'header.html' %"
+
+<main class="container">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">
+                    <div class="mb-2"><i class="fas fa-upload mr-1"></i> Data Load <sup class="text-small" style="color: #fff256">Beta</sup></div>
+                    <!-- date -->
+                </h5>
+                <div class="scenario_detail">
+                    Load your own data to be used in other pages
+                </div>
+                <div class="card-body text-center p-3 animate-height">
+                   <div>If you are subscribed to an FPL Projection source<sup>1</sup>, or have your own data<sup>2</sup>, you can load them here and use on other pages.</div>
+                   <div>The data is stored on your browser.</div>
+                   <div id="load_area" class="mt-3 mb-3 d-flex flex-column justify-content-center align-items-center">
+                       <div><p class="d-block mb-3">Drag and Drop Your Files Here</p></div>
+                       <div>
+                            <input type="file" id="fileElem" class="d-none" multiple accept=".csv" onchange="handleFiles(this.files)">
+                            <label class="button btn btn-secondary" for="fileElem">Select files to load</label>
+                        </div>
+                   </div>
+                   <div class="mt-2 p-0 p-m-3 border-top" v-cloak>
+                       <h5>Data Status</h5>
+                       <div class="table-responsive">
+                           <table class="table table-sm table-striped text-small narrow-td text-white">
+                                <thead>
+                                    <tr>
+                                        <th>Start GW</th>
+                                        <th>Horizon</th>
+                                        <th>Name</th>
+                                        <th v-if="window.screen.width > 800">Datetime</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="i in reverse_parsed_data">
+                                        <td>{{ i.meta.start_gw }}</td>
+                                        <td>{{ i.meta.horizon }}</td>
+                                        <td>{{ i.meta.filename }}</td>
+                                        <td v-if="window.screen.width > 800">{{ i.meta.dt }}</td>
+                                        <td><span>{{ i.meta.status }}</span>
+                                            <span v-if="i.meta.status == 'active'"><i class="ml-1 fas fa-check-square text-success"></i></span>
+                                            <span v-if="i.meta.status == 'ready'"><i class="ml-1 fas fa-square text-warning"></i></span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary text-small" @click="activateData(i.meta.id)">Activate</button>
+                                            <button class="btn btn-secondary text-small" @click="renameData(i.meta.id)">Rename</button>
+                                            <button class="btn btn-danger text-small" @click="deleteData(i.meta.id)">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                           </table>
+                       </div>
+                   </div>
+                   <div class="p-3">
+                       <div class="d-flex flex-column text-left">
+                           <div class="text-gray"><sup>1</sup>Currently works with <a href="https://fplreview.com/massive-data-planner/" target="_blank">FPLReview Massive Data (Premium)</a>, and <a href="https://thefplkiwi.github.io/webpage" target="_blank">theFPLKiwi</a>.</div>
+                           <div class="text-gray"><sup>2</sup>You can give the data in FPLReview format: Either sorted player list by ID, or with `ID` column and `GW_Pts` format (e.g. 34_Pts and 34_xMins)</div>
+                       </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="name-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-responsive text-black">
+                Would you like to give a name to this data?
+                <input type="text" id="data-name-entry"  class="form-control" placeholder="e.g. FPLReview - Premium, Kiwi">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @click="addNameToData" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- <div class="modal fade" tabindex="-1" role="dialog" id="results-modal" v-if="data_ready">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ resultText }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-responsive text-black">
+                <div class="d-flex flex-column">
+                    <div class="row"><div class="col-6 text-right">Played</div><div class="col-6">{{ stat_summary.played }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Won</div><div class="col-6">{{ stat_summary.won_ratio }}%</div></div>
+                    <div class="row"><div class="col-6 text-right">Streak</div><div class="col-6">{{ stat_summary.streak }}</div></div>
+                    <div class="row"><div class="col-6 text-right">Max Streak</div><div class="col-6">{{ stat_summary.max_streak }}</div></div>
+                </div>
+                <div>
+                    <b>Results</b>
+                    <div v-for="p in _.concat(_.range(1,7), [-1])">
+                        <div class="row mb-2">
+                            <div class="col-1">{{ p == -1 ? "X" : p }}</div>
+                            <div class="col-11">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': (stat_summary.score_ratios[p] || 1) + '%'}" v-bind:aria-valuenow="stat_summary.score_ratios[p] || 0" aria-valuemin="0" aria-valuemax="100">{{ stat_summary.result_counts[p] > 0 ? stat_summary.result_counts[p] : "&nbsp;" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center" v-if="result !== undefined">
+                    <button class="btn btn-primary" @click="showSolution">Show Solution</button>
+                    <button class="btn btn-primary" @click="show_share_box = true">Share</button>
+                </div>
+                <div v-if="show_share_box">
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Copy content below</label>
+                        <textarea class="form-control" id="result_box" rows="10" readonly>{{ share_text }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+"% with scripts=["main", "load"] %" "% include 'footer.html' %" "% endwith %"

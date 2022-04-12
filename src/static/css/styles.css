@@ -416,6 +416,10 @@ div.dtsb-searchBuilder button.dtsb-button:hover {
     color: black;
 }
 
+.text-gray {
+    color: rgb(173, 173, 173);
+}
+
 .own-color {
     color: #6fcfd6;
 }
@@ -1833,5 +1837,16 @@ tr.puzzle-can-transfer:hover {
 
 .addNewRp {
     border-top: 3px solid goldenrod;
+}
+
+#load_area {
+    border: 2px dashed gray;
+    min-height: 300px;
+    border-radius: 15px;
+}
+
+#load_area:hover, #load_area.highlight_box {
+    border-color: #87d1fc;
+    color: #87d1fc;
 }
 

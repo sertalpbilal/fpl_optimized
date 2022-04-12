@@ -740,4 +740,14 @@ function createTeamFromList(sorted, picks, cap, vice_cap, tc, el_dict, xp_data) 
 }
 
 
+function read_xp_storage() {
+    let raw_data = window.localStorage.getItem('xp_storage')
+    if (raw_data) {
+        let json_data = JSON.parse(raw_data)
+        return json_data
+    }
+    return undefined
+}
+
+
 
