@@ -41,7 +41,8 @@ var app = new Vue({
         color_scheme: ["#6a0606", "#ffffff", "#105c0a"],
         color_choice: 0,
         gws_exclude: '',
-        show_time_chart: false
+        show_time_chart: false,
+        show_earlier_gws: false
     },
     computed: {
         is_all_ready() { return this.is_fixture_ready && this.is_main_ready },
@@ -344,6 +345,9 @@ var app = new Vue({
             this.original_fixture_data = _.cloneDeep(data);
             this.fixture_data = data;
         },
+        destroy_table() {
+            $("#main_fixture").DataTable().destroy();
+        },
         load_table() {
             $("#main_fixture").DataTable().destroy();
             this.$nextTick(() => {
@@ -361,9 +365,15 @@ var app = new Vue({
                 });
                 $("#main_fixture").DataTable().buttons().container()
                     .appendTo('#button-box');
-
-                let left_offset = document.querySelector("#active_gw").getBoundingClientRect().x - document.querySelector("#col_gw1").getBoundingClientRect().x;
-                $("#main_fixture").scrollLeft(left_offset);
+ 
+                if (this.show_earlier_gws) {
+                    let left_offset = document.querySelector("#active_gw").getBoundingClientRect().x - document.querySelector("#col_gw1").getBoundingClientRect().x;
+                    // $("#main_fixture").scrollLeft(left_offset);
+                    $("#scroller").scrollLeft(left_offset);
+                }
+                else {
+                    $("#scroller").scrollLeft(0);
+                }
             })
 
 
@@ -386,6 +396,15 @@ var app = new Vue({
                     ]
                 });
             })
+        },
+        refresh_with_timeout() {
+            this.destroy_table()
+
+            setTimeout(() => {
+                app.$nextTick(() => {
+                    app.load_table()
+                })
+            }, 100)
         },
         timelineInteract(e) {
             let timeline = this.timeline;
