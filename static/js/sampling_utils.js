@@ -213,6 +213,8 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
     let sub_replacements = [];
     let cap_replacements = [];
 
+    teams = teams.filter(i => i.data != null)
+
     if (!_.isEmpty(autosubs)) {
         teams = _.cloneDeep(teams);
         teams.forEach((team) => {

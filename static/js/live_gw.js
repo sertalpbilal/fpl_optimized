@@ -860,6 +860,13 @@ var app = new Vue({
         },
         saveSampleData(success, data) {
             if (success) {
+
+                // clear missing teams
+                keys = Object.keys(data)
+                keys.forEach((k) => {
+                    data[k] = data[k].filter(i => i.data != null)
+                })
+
                 this.sample_data = Object.freeze(data);
                 let sample_values = Object.keys(data).reverse().map(i => "Sample - " + sample_compact_number(i));
                 this.available_sources = ["Official FPL API"].concat(sample_values);
