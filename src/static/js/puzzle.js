@@ -58,7 +58,7 @@ var app = new Vue({
         // }
         player_dict() {
             if (!this.data_ready) { return {} }
-            return _(this.raw_data).groupBy('element').mapValues(a => { return {...a[0], 'sum_pts': _.sumBy(a, 'total_points'), 'GW': '', 'entries': a, 'dict': _(a).groupBy('GW').mapValues(j => j[0]).value() } }).value()
+            return _(this.raw_data).groupBy('element').mapValues(a => { return {...a[0], 'sum_pts': _.sumBy(a.filter(i => app.plan_gws.includes(i.GW)), 'total_points'), 'GW': '', 'entries': a, 'dict': _(a).groupBy('GW').mapValues(j => j[0]).value() } }).value()
         },
         player_list() {
             if (_.isEmpty(this.player_dict)) { return [] }
