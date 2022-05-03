@@ -116,6 +116,9 @@ var app = new Vue({
             })
             return picks
         },
+        team_ready() {
+            return !_.isEmpty(this.team_picks)
+        },
         rival_ready() {
             return !_.isEmpty(this.rival_picks)
         },
@@ -690,13 +693,14 @@ var app = new Vue({
         select_captain(e) {
             console.log(e)
             let picks = this.team_data.picks
-            let cc = picks.find(i => i.multiplier > 1)
+            let cc = picks.find(i => i.multiplier > 1.5)
             let nc = picks.find(i => i.element == e)
             if (cc.element == nc.element) { return } // same player
             this.calculating = true
+            let old_mult = cc.multiplier + 0
             cc.multiplier = 1
             cc.is_captain = false
-            nc.multiplier = 2
+            nc.multiplier = old_mult
             nc.is_captain = true
             if (nc.is_vice_captain) {
                 nc.is_vice_captain = false
@@ -716,10 +720,11 @@ var app = new Vue({
                 cc.is_vice_captain = false
                 nc.is_vice_captain = true
                 if (nc.multiplier > 1 || nc.is_captain) {
+                    let old_mult = nc.multiplier + 0
                     nc.is_captain = false
                     nc.multiplier = 1
                     cc.is_captain = true
-                    cc.multiplier = 2
+                    cc.multiplier = old_mult
                 }
             }
             else {
@@ -738,9 +743,10 @@ var app = new Vue({
             let nc = picks.find(i => i.element == e)
             if (cc.element == nc.element) { return } // same player
             this.calculating = true
+            let old_mult = cc.multiplier + 0
             cc.multiplier = 1
             cc.is_captain = false
-            nc.multiplier = 2
+            nc.multiplier = old_mult
             nc.is_captain = true
             if (nc.is_vice_captain) {
                 nc.is_vice_captain = false
@@ -759,10 +765,11 @@ var app = new Vue({
                 cc.is_vice_captain = false
                 nc.is_vice_captain = true
                 if (nc.multiplier > 1 || nc.is_captain) {
+                    let old_mult = nc.multiplier + 0
                     nc.is_captain = false
                     nc.multiplier = 1
                     cc.is_captain = true
-                    cc.multiplier = 2
+                    cc.multiplier = old_mult
                 }
             }
             else {
@@ -1085,6 +1092,40 @@ var app = new Vue({
         saveRivalPenalty() {
             let val = parseInt(jQuery("#rival-penalty").val())
             this.rival_penalty = (val || 0)
+        },
+        toggle_bb(key) {
+            if (_.isEmpty(this[key])) { return }
+            // check number of players
+            picks = this[key].picks
+            let bench = picks.filter(i => i.multiplier == 0)
+            if (_.isEmpty(bench)) {
+                // make last 4 people bench players
+                let need_fix = false
+                picks.slice(11,15).forEach((p) => {
+                    if (p.multiplier > 1.5 || p.is_vice_captain) {
+                        need_fix = true
+                    }
+                    p.multiplier = 0
+                })
+                if (need_fix) {
+                    this.suggestTeam(key)
+                }
+            }
+            else {
+                picks.slice(11,15).forEach((p) => {
+                    p.multiplier = 1
+                })
+            }
+        },
+        toggle_tc(key) {
+            picks = this[key].picks
+            let cap = picks.find(i => i.multiplier > 1.5 || i.is_captain)
+            if (cap.multiplier == 2) {
+                cap.multiplier = 3
+            }
+            else {
+                cap.multiplier = 2
+            }
         }
     }
 })
