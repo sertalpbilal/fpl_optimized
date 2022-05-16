@@ -34,6 +34,8 @@ def get_league_ids():
 
     print(f"Total: {len(teams)} teams")
 
+    return teams
+
 
 def get_team_picks(team_info, gw):
     time.sleep(0.5)
@@ -52,7 +54,71 @@ def get_team_picks(team_info, gw):
         return None
 
 
+def get_active_gw():
+    r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
+    vals = r.json()
+    gw = 38
+    for i in vals['events']:
+        if i['is_current']:
+            gw = i['id']
+            break
+        elif i['is_next']:
+            gw = i['id']
+            break
+    return gw
+
+
+def detect_missing_entries_and_fill():
+
+    env = read_static()
+    season = env['season']
+    active_gw = get_active_gw()
+    teams = get_league_ids()
+    with open('build/static/json/league.json') as f:
+        teams = json.load(f)
+
+    teams = [t for t in teams if t['entry'] != 1728122]
+    missing_entries = []
+
+    for gw in range(1,active_gw+1):
+        
+        gw_missing_entries = []
+
+        try:
+            f_name = f'build/sample/{season}/{gw}/analytics_league.json'
+            with open(f_name) as f:
+                gw_entries = json.load(f)
+        except Exception as e:
+            print(e)
+            continue
+        existing_ids = [i[0]['entry'] for i in gw_entries]
+        for team in teams:
+            if team['entry'] not in existing_ids:
+                gw_missing_entries.append({'gw': gw, **team})
+    
+        missing_entries = missing_entries + gw_missing_entries
+
+        with ProcessPoolExecutor(max_workers=8) as executor:
+            picks = list(executor.map(get_team_picks, gw_missing_entries, repeat(gw)))
+
+        combined = list(zip(gw_missing_entries, picks))
+
+        combined = [c for c in combined if c[1] is not None]
+        new_gw_entries = gw_entries + combined
+        new_gw_entries = [i for i in new_gw_entries if i[0]['entry'] != 1728122]
+
+        base_folder = pathlib.Path().resolve()
+        input_folder = pathlib.Path(base_folder / f"build/sample/{season}/{gw}/")
+        with open(input_folder / 'analytics_league.json', 'w') as file:
+            json.dump(new_gw_entries, file)
+
+        print(f"Added missing {len(combined)} entries for GW {gw}")
+
+    print(f"Added {len(missing_entries)} entries for entire season")
+
 def cache_league_picks():
+
+    get_league_ids()
 
     env = read_static()
     season = env['season']
