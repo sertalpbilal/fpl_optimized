@@ -193,6 +193,22 @@ function get_fpl_main_data() {
     });
 }
 
+async function read_cached_static(req_season) {
+    return $.ajax({
+        type: "GET",
+        url: `data/${req_season}/static.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            return data
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
 function get_entire_fixture() {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -453,6 +469,22 @@ function getXPData_Fernet({season, gw, date}) {
     })
 }
 
+async function read_cached_xp(req_season) {
+    return $.ajax({
+        type: "GET",
+        url: `data/${req_season}/xp.csv`,
+        async: true,
+        dataType: "text",
+        success: (data) => {
+            return data
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
+
 
 function getRPData(gw) {
     return new Promise((resolve, reject) => {
@@ -545,8 +577,21 @@ function read_local_file_Fernet(url) {
     })
 }
 
-
-
+async function read_cached_rp(req_season) {
+    return $.ajax({
+        type: "GET",
+        url: `data/${req_season}/points.json`,
+        async: true,
+        dataType: "json",
+        success: (data) => {
+            return data
+        },
+        error: (xhr, status, error) => {
+            console.log(error);
+            console.error(xhr, status, error);
+        }
+    });
+}
 
 function get_analytics_data({season, gw}) {
     return new Promise((resolve, reject) => {
