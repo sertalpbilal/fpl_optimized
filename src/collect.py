@@ -28,13 +28,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from sys import platform
 from concurrent.futures import ProcessPoolExecutor
 import glob
-from encrypt import encrypt
+from encrypt import encrypt, decrypt
 
 import aiohttp
 import asyncio
 import platform
 from asyncio.proactor_events import _ProactorBasePipeTransport
 from functools import wraps
+
+from collections import OrderedDict
 
 FPL_API = {
     'now': "https://fantasy.premierleague.com/api/bootstrap-static/",
@@ -61,6 +63,7 @@ def get_all_data():
     cache_effective_ownership(season_folder)
     get_fivethirtyeight_data(season_folder)
     cache_realized_points_data(season_folder)
+    cache_projected_points(season_folder)
 
     from xp_league import detect_missing_entries_and_fill, cache_xp_ranks
     detect_missing_entries_and_fill()
@@ -677,6 +680,93 @@ def cache_effective_ownership(season_folder):
     with open(season_folder / 'eo.json', 'w') as file:
         json.dump(season_eo, file)
     return
+
+
+def folder_order(fname):
+    # print(fname)
+    if sys.platform == 'win32':
+        f = [j for i in fname.split('\\') for j in i.split('/')]
+    else:
+        f = fname.split('/')
+    item1 = int(f[2].split('-')[0])
+    item2 = int(f[3].split('GW')[1])
+    item3 = f[4]
+    return (item1, item2, item3)
+
+
+def cache_projected_points(season_folder):
+    
+    vals = read_static()
+    season = vals['season']
+    all_gw_files = glob.glob('build/data/' + season + '/*/*/input/fplreview-free-planner.csv-encrypted')
+    all_gw_files.sort(key=folder_order, reverse=True)
+    if sys.platform == 'win32':
+        all_gw_files = [i.replace('\\', '/') for i in all_gw_files]
+    list_dates = ([i.split('/')[2:5] for i in all_gw_files])
+    gw_dict = dict()
+    base_folder = pathlib.Path().resolve()
+    tmp_folder = pathlib.Path(base_folder / "tmp/")
+    tmp_folder.mkdir(parents=True, exist_ok=True)
+    for date_pair in list_dates:
+        gw_dict.setdefault(date_pair[1], date_pair)
+    
+    with open(season_folder / 'points.json', 'r') as f:
+        final_points = json.load(f)
+
+    print(final_points['1'][0])
+
+    dataframes = []
+    vertical_frames = []
+    for gw in range(1,39):
+        try:
+            gw_rp = final_points[str(gw)]
+        except KeyError:
+            continue
+        rp_val = {i['id']: sum(v['points'] for g in i['e'] for v in g['stats']) for i in gw_rp}
+        rmin_val = {i['id']: np.average([v['value'] for g in i['e'] for v in g['stats'] if v['identifier'] == 'minutes']) for i in gw_rp}
+        game_cnt = {i['id']: len(i['e']) for i in gw_rp}
+        if f'GW{gw}' in gw_dict:
+            val = gw_dict[f'GW{gw}']
+            file_e = f'build/data/{season}/{val[1]}/{val[2]}/input/fplreview-free-planner.csv'
+            print(file_e)
+            decrypt(file_e, 'REVIEW_KEY')
+            file_d = f'build/data/{season}/{val[1]}/{val[2]}/input/fplreview-free-planner.csv'
+            new_loc = tmp_folder / f"GW{gw}.csv"
+            shutil.move(file_e, tmp_folder / f"GW{gw}.csv")
+            df = pd.read_csv(new_loc)
+            if 'ID' not in df.columns:
+                df['ID'] = df.index + 1
+            if 'Price' not in df.columns:
+                df['Price'] = df['BV']
+            else:
+                df['Price'] = df['Price']/10
+            df['ID'] = df['ID'].astype(int)
+            df[f'{gw}_Val'] = df['Price']
+            df[f'{gw}_rp'] = df['ID'].map(rp_val).fillna(0)
+            df[f'{gw}_rmin'] = df['ID'].map(rmin_val).fillna(0)
+            df[f'{gw}_games'] = df['ID'].map(game_cnt).fillna(0)
+            df['index'] = df['ID']
+            df.set_index('index', inplace=True, drop=True)
+            dataframes.append(df[[f'{gw}_Val', f'{gw}_Pts', f'{gw}_xMins', f'{gw}_rp', f'{gw}_rmin', f'{gw}_games']])
+            df['gw'] = gw
+            df['xp'] = df[f'{gw}_Pts']
+            df['xmin'] = df[f'{gw}_xMins']
+            df['price'] = df[f'{gw}_Val']
+            df['rp'] = df[f'{gw}_rp']
+            df['rmin'] = df[f'{gw}_rmin']
+            df['games'] = df[f'{gw}_games']
+            vertical_frames.append(df[['ID', 'Name', 'Team', 'Pos', 'price', 'gw', 'xp', 'xmin', 'rp', 'rmin', 'games']])
+    dataframes.insert(0, df[['ID', 'Name', 'Team', 'Pos']])
+    combined = pd.concat(dataframes, axis=1)
+    # combined = combined[list(set(combined.columns))]
+    combined.to_csv(season_folder / f"xp_pivot.csv")
+    v_combined = pd.concat(vertical_frames)
+    v_combined.to_csv(season_folder / f"xp.csv")
+
+
+def cache_points_main():
+    input_folder, output_folder, season_folder = create_folders()
+    cache_projected_points(season_folder)
 
 
 # TODO: fbref?
