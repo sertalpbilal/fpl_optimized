@@ -54,7 +54,7 @@ def get_all_data():
     """Checks and collects missing data from multiple resources"""
     input_folder, output_folder, season_folder = create_folders()
     get_fixture(season_folder)
-    get_data_fpl_api(input_folder)
+    get_data_fpl_api(input_folder, season_folder)
     from fplreview import get_data_fplreview
     get_data_fplreview(input_folder, page='free-planner')
     generate_intermediate_layer(input_folder, page='free-planner')
@@ -121,11 +121,14 @@ def get_fixture(season_folder):
     print("Getting fixture -- done")
 
 
-def get_data_fpl_api(target_folder):
+def get_data_fpl_api(target_folder, season_folder=None):
     """Read and save values from FPL API to target folder"""
 
     with urlopen(FPL_API['now']) as url:
         data = json.loads(url.read().decode())
+    if season_folder is not None:
+        with open(season_folder / "static.json", "w") as f:
+            json.dump(data, f)
 
     element_data = pd.DataFrame(data['elements'])
     element_data.to_csv(target_folder / "element.csv")
@@ -656,7 +659,12 @@ def cache_effective_ownership(season_folder):
         picks_dict = dict()
         for key in data.keys():
             tier_picks = picks_dict[key] = {}
+            tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
             for team in data[key]:
+                hits = team['data']['entry_history']['event_transfers_cost']
+                if hits > 0 and hits <= 60:
+                    tier_picks['meta']['count'] += 1
+                    tier_picks['meta']['hit_total'] += hits
                 for player in team['data']['picks']:
                     pid = player['element']
                     tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
@@ -667,7 +675,12 @@ def cache_effective_ownership(season_folder):
             with open(f['file'].replace("fpl_sampled", "top_managers"), 'r') as file2:
                 prime_data = json.loads(file2.read())
             tier_picks = picks_dict['Prime'] = {}
+            tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
             for team in prime_data:
+                hits = team['data']['entry_history']['event_transfers_cost']
+                if hits > 0 and hits <= 60:
+                    tier_picks['meta']['count'] += 1
+                    tier_picks['meta']['hit_total'] += hits
                 for player in team['data']['picks']:
                     pid = player['element']
                     tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})

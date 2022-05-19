@@ -780,6 +780,205 @@
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Predicted / Realized Performance</h5>
+                <div class="scenario_detail">
+                    Decision making quality compared to actual outcome
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <!-- <div class="row justify-content-center mb-1">
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label>Sample tier</label>
+                                <div class="input-group">
+                                    <select class="custom-select" id="sample_selection" v-model="sample_selection">
+                                        <option v-for="(p, index) in sample_options" :value="index">{{ (p != 'Overall' && p != 'Prime') ? 'Top ' : ''}}{{ p }}</option>
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" type="button" @click="invalidate_cache(); redraw_graphs();">Select</button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- <div class="row justify-content-center mb-3">
+                        <div class="col-12 col-lg-4">
+                            <span class="text-small">-OR- Enter a team ID to compare</span>
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" placeholder="Team ID" id="new_id_2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary" type="button" @click="add_ID_to_compare">Compare</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12">
+                            <div class="text-center">
+                                <span class="svg-legend-text">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
+                                </span>
+                                <span class="svg-legend-text mr-2">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Gain
+                                </span>
+                            </div>
+                            <!-- <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="cumulative_switch" checked @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox" for="cumulative_switch">Cumulative</label>
+                                </div>
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="net_switch" @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox" for="net_switch">Net Change</label>
+                                </div>
+                            </div> -->
+                            <div id="season-xp-real-diff-plot">
+                                
+                            </div>
+                            <!-- <div class="row flex-grow-1 no-gutters text-small mb-1 pt-1 pb-1">
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                GW
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="hover_gw">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                GW Gain
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="hover_gw_gain">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 col-lg-2 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                GW Loss
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="hover_gw_loss">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Top Gains
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="hover_top_gains">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3 mb-1" v-cloak>
+                                    <div class="d-flex flex-column metric">
+                                        <div class="text-center p-0">
+                                            <div class="legend-box text-center">
+                                                Top Losses
+                                            </div>
+                                        </div> 
+                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                            <span class="setting-value-text" id="hover_top_losses">
+                                                
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-12">
+                            <table class="col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive p-0" 
+                                id="gw_history">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">Season Pred. Pts</th>
+                                        <th class="text-center">Season Real. Pts</th>
+                                        <th class="text-center">Season Pred. Diff</th>
+                                        <th class="text-center">Season Real. Diff</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">Season Luck</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}"  v-for="(v, key) in user_gw_results.data">
+                                        <td class="text-center">{{ v.gw }}</td>
+                                        <td class="text-center">{{ rounded(v.xp) }}</td>
+                                        <td class="text-center">{{        (v.rp) }}</td>
+                                        <td class="text-center">{{ rounded(v.exp_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.real_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_xp) }}</td>
+                                        <td class="text-center">{{        (v.total_rp) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_exp_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_real_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.luck) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_exp_real_diff) }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">Season Pred. Pts</th>
+                                        <th class="text-center">Season Real. Pts</th>
+                                        <th class="text-center">Season Pred. Diff</th>
+                                        <th class="text-center">Season Real. Diff</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">Season Luck</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Fixture Difficulty Analysis</h5>
                 <div class="scenario_detail">
                     Fixture difficulty ratings of your picks through season using FiveThirtyEight data

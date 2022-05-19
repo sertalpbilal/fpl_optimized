@@ -12,6 +12,7 @@ var app = new Vue({
         team_info: {},
         team_data: {},
         el_data: [],
+        xp_data: undefined,
         ready: false,
         loading: false,
         top_players_table: undefined,
@@ -19,7 +20,8 @@ var app = new Vue({
         all_picks_table: undefined,
         rival_info: [],
         sample_selection: 0,
-        sample_options: []
+        sample_options: [],
+        include_hits: true
     },
     computed: {
         is_ready() {
@@ -370,22 +372,30 @@ var app = new Vue({
             let key = this.sample_options[this.sample_selection]
             let gws = Object.keys(eo_data)
             let values = []
+            let hits = []
             for (let gw of Object.keys(eo_data)) {
                 if (key in eo_data[gw]) {
-                    let v = Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])
+                    let v = Object.keys(eo_data[gw][key]).filter(i => i!= 'meta').map(pid => [gw, pid, eo_data[gw][key][pid].eo])
                     values.push(v)
+                    let h = eo_data[gw][key]['meta']
+                    hits.push(h)
                 }
                 else {
-                    let v = Object.keys(eo_data[gw]["Overall"]).map(pid => [gw, pid, eo_data[gw]["Overall"][pid].eo])
+                    let v = Object.keys(eo_data[gw]["Overall"]).filter(i => i!= 'meta').map(pid => [gw, pid, eo_data[gw]["Overall"][pid].eo])
                     values.push(v)
+                    let h = eo_data[gw]["Overall"]['meta']
+                    hits.push(h)
                 }
             }
             values = values.flat()
             // let values = Object.keys(eo_data).map(gw => Object.keys(eo_data[gw][key]).map(pid => [gw, pid, eo_data[gw][key][pid].eo])).flat()
             let values_dict = Object.fromEntries(values.map(i => [i[0] + '_' + i[1], i[2]]))
-            return {gw: gws, raw_values: values, dict: values_dict}
+            return {gw: gws, raw_values: values, dict: values_dict, hits: hits}
         },
         user_ownership_gain_loss() {
+
+            if (!this.is_ready) { return {}}
+
             let ss = this.sample_selection
             let so = this.sample_options[this.sample_selection]
 
@@ -393,7 +403,9 @@ var app = new Vue({
             let all_pids = Object.keys(this.fpl_element)
             let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'id': pid}])).flat())
             let eo_data = _.cloneDeep(this.parsed_eo_data.dict)
+            let hits = this.parsed_eo_data.hits
             let user_picks = this.user_player_gws.filter(i => i.multiplier > 0)
+            let user_team = this.team_data
             let points = this.gw_pid_pts
             for (let pick of user_picks) {
                 pick.pts = points[pick.gw][pick.id] || 0
@@ -440,6 +452,11 @@ var app = new Vue({
                 if (!groups.hasOwnProperty('true')) { groups['true'] = []}
                 let loss = getSum(groups.false.map(i => i.net))
                 let gain = getSum(groups.true.map(i => i.net))
+                let gw_field_hits = hits[parseInt(gw_entry[0])-1]
+                let hit_gain = gw_field_hits.hit_total / Math.max(1,gw_field_hits.teams)
+                let gain_with_hit = gain + hit_gain
+                let hit_loss = _.get(user_team[gw_entry[0]], 'entry_history.event_transfers_cost') || 0
+                let loss_with_hit = loss - hit_loss
                 let top_losses = _.orderBy(groups.false, ['net'], ['asc']).slice(0,3)
                 let top_gains = _.orderBy(groups.true, ['net'], ['desc']).slice(0,3)
                 let gw_picks = gw_entry[1].filter(i => i.owned)
@@ -451,7 +468,7 @@ var app = new Vue({
                 let top_bets_for = _.orderBy(gw_picks, ['own_rate'], ['desc']).slice(0,3)
                 let top_bets_against = _.orderBy(gw_entry[1].filter(i => !i.owned), ['eo'], ['desc']).slice(0,3)
                 let net = gain + loss
-                gw_entry[1] = {net, loss, gain, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
+                gw_entry[1] = {net, loss, gain, loss_with_hit, gain_with_hit, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
             }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
             return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains}
@@ -558,6 +575,54 @@ var app = new Vue({
                 }
             }
             return {groups, tiers}
+        },
+        player_xp_dict() {
+            if (_.isEmpty(this.xp_data)) { return }
+            let e = this.xp_data
+            return Object.fromEntries(e.map(i => [i.gw + '_' + i.ID, _.round(parseFloat(i.xp),2)]))
+        },
+        user_gw_results() {
+            if (_.isEmpty(this.team_data) || _.isEmpty(this.xp_data)) { return }
+            let xp_dict = this.player_xp_dict
+            let rp_dict = this.pid_gw_pts
+            let eo_dict = this.parsed_eo_data
+            let el_ids = _.uniq(this.el_data.map(i => i.id))
+            let gws = Object.keys(this.team_data).map(i => parseInt(i))
+            let gw_results = {}
+            let total_exp_diff=0, total_real_diff=0, total_xp=0, total_rp=0, total_field_xp=0, total_field_rp=0, total_exp_real_diff=0;
+
+            gws.forEach((gw) => {
+                let gw_picks = this.team_data[gw].picks
+                let gw_hit = this.include_hits ? _.get(this.team_data[gw], 'entry_history.event_transfers_cost') || 0 : 0
+                let gw_field_hits = eo_dict.hits[gw-1]
+                let field_hit = this.include_hits ? gw_field_hits.hit_total / Math.max(1,gw_field_hits.teams) : 0
+
+                let xp = _.round(_.sum(gw_picks.map(i => i.multiplier * (_.get(xp_dict, gw + '_' + i.element) || 0))),2) - gw_hit
+                let rp = _.sum(gw_picks.map(i => i.multiplier * (_.get(rp_dict, i.element + '.' + gw) || 0))) - gw_hit
+                let diff = _.round(rp-xp,2)
+
+                let field_xp = _.round(_.sum(el_ids.map(i => (_.get(eo_dict, 'dict.' + gw + '_' + i) || 0)/100 * (_.get(xp_dict, gw + '_' + i) || 0))),2) - field_hit
+                let field_rp = _.round(_.sum(el_ids.map(i => (_.get(eo_dict, 'dict.' + gw + '_' + i) || 0)/100 * (_.get(rp_dict, i + '.' + gw) || 0))),2) - field_hit
+                let field_diff = _.round(field_rp - field_xp, 2)
+
+                let exp_diff = _.round(xp - field_xp, 2)
+                let real_diff = _.round(rp - field_rp, 2)
+
+                total_exp_diff += exp_diff
+                total_real_diff += real_diff
+
+                total_xp += xp
+                total_rp += rp
+                total_field_xp += field_xp
+                total_field_rp += field_rp
+
+                let luck = real_diff - exp_diff
+                total_exp_real_diff += luck
+
+                gw_results[gw] = {gw, xp, rp, diff, field_xp, field_rp, field_diff, exp_diff, real_diff, total_exp_diff, total_real_diff, total_xp, total_rp, total_field_xp, total_field_rp, luck, total_exp_real_diff}
+            })
+
+            return {'start': _.min(gws), 'finish': _.max(gws), 'data': gw_results}
         }
     },
     methods: {
@@ -582,26 +647,55 @@ var app = new Vue({
 
             let init_call = get_team_info(this.team_id).then((response) => {
                 this.team_info = response
+                let cached_info = JSON.parse(localStorage.getItem('team_info'))
+                if (cached_info == null) { cached_info = {}}
+                _.set(cached_info, `${app.season}.T${app.team_id}`, response)
+                localStorage.setItem('team_info', JSON.stringify(cached_info))
+            }).catch((e) => {
+                // check if localstorage has it
+                let cached_info = JSON.parse(localStorage.getItem('team_info'))
+                let team_cached_info = _.get(cached_info, app.season + '.T' + app.team_id)
+                if (team_cached_info != null) {
+                    this.team_info = team_cached_info
+                }
             })
             calls.push(init_call)
+
+            let stored_team_picks = JSON.parse(localStorage.getItem('team_picks'))
+            let this_season = this.season
+            if (stored_team_picks == null) {
+                stored_team_picks = {}
+                _.set(stored_team_picks, this_season + '.T' + app.team_id, {})
+            }
+            else if (_.get(stored_team_picks, this_season + '.T' + app.team_id) == undefined) {
+                _.set(stored_team_picks, this_season + '.T' + app.team_id, {})
+            }
+            let season_picks = stored_team_picks[this_season]['T'+app.team_id]
 
             for (gw = 1; gw <= this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
-                let call = get_team_picks({
+                if (season_picks != undefined && current_gw in season_picks) {
+                    app.$set(app.team_data, current_gw, season_picks[current_gw])
+                }
+                else {
+                    let call = get_team_picks({
                         gw: current_gw,
                         team_id: app.team_id,
                         force_last_gw: false
                     })
                     .then((response) => {
+                        season_picks[current_gw] = response.body
                         app.$set(app.team_data, current_gw, response.body)
                     })
                     .catch((e) => {
                         // ignore
                     })
-                calls.push(call)
+                    calls.push(call)
+                }
             }
             Promise.allSettled(calls).then(() => {
+                localStorage.setItem('team_picks', JSON.stringify(stored_team_picks))
                 setTimeout(() => {
                     app.$nextTick(() => {
                         app.ready = true
@@ -618,7 +712,7 @@ var app = new Vue({
                             draw_tree_map_loss()
                         })
                     })
-                }, 500)
+                }, 100)
             });
         },
         draw_top_5() {
@@ -2360,8 +2454,6 @@ function draw_tree_map_loss() {
     player_data = _.cloneDeep(player_data)
     let el_dict = app.fpl_element
 
-    debugger
-
     player_data.forEach((e) => {
         e.value = e.loss + (e.gain < 0 ? -e.gain : 0)
         e.position = el_dict[e.id].element_type
@@ -2406,8 +2498,6 @@ function draw_tree_map_loss() {
 
     let sorted_data = undefined;
     let text_func, pos_text;
-
-    debugger;
 
     plot_now = () => {
 
@@ -2492,14 +2582,76 @@ function draw_tree_map_loss() {
 
 }
 
+function draw_predicted_realized_diff() {
+    // season-xp-real-diff-plot
 
+    if (!app.is_ready) { return }
+
+    const raw_width = 500;
+    const raw_height = 200;
+
+    const margin = { top: 20, right: 10, bottom: 20, left: 25 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+
+    let data = _.cloneDeep(app.user_gw_results)
+
+    jQuery("#season-xp-real-diff-plot").empty()
+
+    const raw_svg = d3.select("#season-xp-real-diff-plot")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+
+    let svg = raw_svg.append('g')
+        .attr("class", "mainbg")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    let xvals = _.range(1, 39)
+    let x = d3.scaleBand()
+        .range([0, width])
+        .domain(xvals)
+        .padding(0);
+    svg.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'x-axis')
+        .call(d3.axisBottom(x).tickSize(0));
+
+    let val_sum = [...data.map(i => i.was), ...data.map(i => i.current)]
+    let max_y = Math.max(...val_sum) + 5
+    let min_y = Math.min(...val_sum) - 5
+
+    let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
+    svg.append('g').attr('class', 'y-axis').call(d3.axisRight(y).tickSize(width)
+                        //.tickValues(d3.range(min_y, max_y, 4))
+    )
+    .call(g => g.selectAll(".tick line")
+        .attr("stroke-opacity", 0.2)
+        .attr("stroke", "#9a9a9a")
+        .attr("pointer-events", "none")
+    )
+    .call(g => g.selectAll(".tick text")
+        .attr("x", -10)
+        .attr("font-size", "5pt")
+        .attr("fill", "#9a9a9a")
+        .attr("text-anchor", "end"))
+
+
+}
 
 
 async function get_points() {
-    return getSeasonRPData(parseInt(gw)).then((data) => {
+    return read_cached_rp(app.season).then((data) => {
         app.points_data = data;
+    }).catch((e) => {
+        console.log(e)
+        return getSeasonRPData(parseInt(gw)).then((data) => {
+            app.points_data = data;
+        })
     })
-
+    
     // return $.ajax({
     //     type: "GET",
     //     url: `data/${season}/points.json`,
@@ -2577,8 +2729,21 @@ async function get_538_data() {
 }
 
 async function fetch_main_data() {
-    return get_fpl_main_data().then((data) => {
+    return read_cached_static(app.season).then((data) => {
         app.el_data = data['elements'];
+    }).catch((e) => {
+        console.log(e)
+        return get_fpl_main_data().then((data) => {
+            app.el_data = data['elements'];
+        })
+    })
+}
+
+async function fetch_xp_data() {
+    return read_cached_xp(app.season).then((data) => {
+        let xp_data = jQuery.csv.toObjects(data);
+        xp_data = xp_data.filter(i => parseFloat(i.price) < 20 && parseFloat(i.xp) + parseFloat(i.rp) != 0)
+        app.xp_data = xp_data
     })
 }
 
@@ -2588,19 +2753,20 @@ $(document).ready(() => {
             get_eo(),
             get_fixture_data(),
             get_538_data(),
-            fetch_main_data()
+            fetch_main_data(),
+            fetch_xp_data()
         ]).then((values) => {
             Vue.$cookies.config('120d')
-            // app.$nextTick(() => {
-            //     console.log('READY!')
-            //     let cached_team = Vue.$cookies.get('team_id')
-            //     if (cached_team !== null) {
-            //         app.team_id = cached_team;
-            //         app.$nextTick(() => {
-            //             app.fetch_team_picks()
-            //         })
-            //     }
-            // })
+
+            app.$nextTick(() => {
+                let cached_team = Vue.$cookies.get('team_id')
+                if (cached_team !== null) {
+                    app.team_id = parseInt(cached_team);
+                    app.$nextTick(() => {
+                        app.fetch_team_picks()
+                    })
+                }
+            })
         })
         .catch((error) => {
             console.error("An error has occured: " + error);
