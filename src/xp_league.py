@@ -246,7 +246,7 @@ def calculate_xp_ranks(element_locations):
             manager_week_obj -= manager[1]['entry_history']['event_transfers_cost']
             # Simulate week
             if grouped_sim_data is not None:
-                print(f"GW{gw} Manager {manager[0]['entry']}")
+                # print(f"GW{gw} Manager {manager[0]['entry']}")
                 simulation_quartile = simulate(p_picks, grouped_sim_data, elements)
                 for v in simulation_quartile:
                     simulation_quartile[v] -= manager[1]['entry_history']['event_transfers_cost']
