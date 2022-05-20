@@ -21,7 +21,9 @@ var app = new Vue({
         rival_info: [],
         sample_selection: 0,
         sample_options: [],
-        include_hits: true
+        include_hits: true,
+        show_xp_totals: false,
+        show_diff_totals: false
     },
     computed: {
         is_ready() {
@@ -619,7 +621,23 @@ var app = new Vue({
                 let luck = real_diff - exp_diff
                 total_exp_real_diff += luck
 
-                gw_results[gw] = {gw, xp, rp, diff, field_xp, field_rp, field_diff, exp_diff, real_diff, total_exp_diff, total_real_diff, total_xp, total_rp, total_field_xp, total_field_rp, luck, total_exp_real_diff}
+                let skill_ratio = _.round(100 * exp_diff / (Math.abs(exp_diff) + Math.abs(luck)),1) + '%'
+                let luck_ratio = _.round(100 * luck / (Math.abs(exp_diff) + Math.abs(luck)), 1) + '%'
+
+                let total_skill_ratio = _.round(100 * total_exp_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1) + '%'
+                let total_luck_ratio = _.round(100 * total_exp_real_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1) + '%'
+
+                gw_results[gw] = {
+                    gw, xp, rp, diff, 
+                    field_xp, field_rp, field_diff, 
+                    exp_diff, real_diff, 
+                    total_exp_diff, total_real_diff, 
+                    total_xp, total_rp, 
+                    total_field_xp, total_field_rp, 
+                    luck, total_exp_real_diff,
+                    skill_ratio, luck_ratio,
+                    total_skill_ratio, total_luck_ratio
+                }
             })
 
             return {'start': _.min(gws), 'finish': _.max(gws), 'data': gw_results}
@@ -675,7 +693,7 @@ var app = new Vue({
             for (gw = 1; gw <= this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
-                if (season_picks != undefined && current_gw in season_picks) {
+                if (current_gw != app.next_gw && season_picks != undefined && current_gw in season_picks) {
                     app.$set(app.team_data, current_gw, season_picks[current_gw])
                 }
                 else {
