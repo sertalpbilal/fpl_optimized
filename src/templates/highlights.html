@@ -815,11 +815,11 @@
                     <div class="row justify-content-center mb-3">
                         <div class="col-12">
                             <div class="text-center">
-                                <span class="svg-legend-text">
+                                <span class="svg-legend-text mr-2">
                                     <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
                                 </span>
                                 <span class="svg-legend-text mr-2">
-                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Gain
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
                                 </span>
                             </div>
                             <!-- <div class="text-center">
@@ -919,6 +919,14 @@
                                 Even if GW ends up with more or less points than predicted, we expect difference to be around the pre-GW prediction.
                             </span>
                         </div>
+                        <div class="col-12">
+                            <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="all_gw_switch" v-model="show_all_season">
+                                    <label class="custom-control-label highlighted-checkbox" for="all_gw_switch">Show All GWs</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-12 col-md-6">
                             <div class="text-center text-small">GW-by-GW values</div>
                             <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
@@ -935,7 +943,8 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data">
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data" 
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.xp) }}</td>
                                         <td class="text-center">{{        (v.rp) }}</td>
@@ -974,7 +983,8 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data">
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data"
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.total_xp) }}</td>
                                         <td class="text-center">{{        (v.total_rp) }}</td>
@@ -1018,7 +1028,8 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data">
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data"
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ v.skill_ratio }}</td>
                                         <td class="text-center">{{ v.luck_ratio }}</td>

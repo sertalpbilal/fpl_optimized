@@ -23,7 +23,8 @@ var app = new Vue({
         sample_options: [],
         include_hits: true,
         show_xp_totals: false,
-        show_diff_totals: false
+        show_diff_totals: false,
+        show_all_season: false
     },
     computed: {
         is_ready() {
@@ -725,6 +726,7 @@ var app = new Vue({
                             app.draw_radar_svg()
                             draw_event_heatmap()
                             draw_gain_loss_candlestick()
+                            draw_predicted_realized_diff()
                             draw_risk_reward_plot()
                             draw_tree_map()
                             draw_tree_map_loss()
@@ -2305,6 +2307,7 @@ function draw_risk_reward_plot() {
 
 function redraw_graphs() {
     draw_gain_loss_candlestick();
+    draw_predicted_realized_diff();
     draw_risk_reward_plot();
 }
 
@@ -2637,12 +2640,13 @@ function draw_predicted_realized_diff() {
         .attr('class', 'x-axis')
         .call(d3.axisBottom(x).tickSize(0));
 
-    let val_sum = [...data.map(i => i.was), ...data.map(i => i.current)]
+    let values = Object.values(data.data)
+    let val_sum = [0, ...values.map(i => i.total_exp_diff), ...values.map(i => i.total_real_diff)]
     let max_y = Math.max(...val_sum) + 5
     let min_y = Math.min(...val_sum) - 5
 
     let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
-    svg.append('g').attr('class', 'y-axis').call(d3.axisRight(y).tickSize(width)
+    svg.append('g').attr('class', 'y-axis').call(d3.axisRight(y).tickSize(width).tickFormat((v) => v > 0 ? '+'+v : v)
                         //.tickValues(d3.range(min_y, max_y, 4))
     )
     .call(g => g.selectAll(".tick line")
@@ -2651,10 +2655,176 @@ function draw_predicted_realized_diff() {
         .attr("pointer-events", "none")
     )
     .call(g => g.selectAll(".tick text")
-        .attr("x", -10)
+        .attr("x", -5)
         .attr("font-size", "5pt")
         .attr("fill", "#9a9a9a")
         .attr("text-anchor", "end"))
+
+    // axis style
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+    svg.call(s => s.selectAll(".tick").attr("font-size", "5pt").attr("fill", "white"))
+    svg.call(s => s.selectAll(".tick text").attr("fill", "white"))
+
+    // gw backgrounds
+    svg.selectAll()
+        .data(xvals)
+        .enter()
+        .append('rect')
+        .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
+        .attr("height", y(min_y)-y(max_y))
+        .attr("x", (d) => x(d))
+        .attr("y", y(max_y))
+        .attr("class", (d) => d % 2 == 0 ? "gw-bg gw-bg-even" : "gw-bg gw-bg-odd")
+
+
+    // zero & 100 lines
+
+    let markers = _.range(100,max_y,100)
+
+    let zero_line = svg.append('g')
+        .append('line')
+        .attr('x1', x(0))
+        .attr('y1', y(0))
+        .attr('x2', width)
+        .attr('y2', y(0))
+        .style('stroke', 'white')
+        .style("stroke-opacity", 0.5)
+        .style("stroke-width", 1)
+        .style('pointer-events', 'none');
+
+    let hundred_lines = svg.append('g')
+        .selectAll()
+        .data(markers)
+        .enter()
+        .append('line')
+        .attr('x1', x(0))
+        .attr('y1', d => y(d))
+        .attr('x2', width)
+        .attr('y2', d => y(d))
+        .style('stroke', '#f32d7a')
+        .style("stroke-opacity", 0.2)
+        .style("stroke-width", 1)
+        .style('pointer-events', 'none');
+
+    // prediction line
+    let pred_data = _.orderBy(Object.values(data.data), 'gw', 'asc')
+
+    pred_data = [{'gw': 0, 'total_exp_diff': 0, 'total_real_diff': 0}, ...pred_data]
+
+
+
+
+    // luck regions
+
+    svg.append("clipPath")
+      .attr("id", `below-exp`)
+        .append("path")
+        .datum(pred_data)
+        .attr("d", d3.area()
+            .x(d => x(d.gw+1))
+            .y1(d => y(d.total_exp_diff))
+            .y0(d => height)
+            );
+
+    svg.append("clipPath")
+    .attr("id", `above-exp`)
+        .append("path")
+        .datum(pred_data)
+        .attr("d", d3.area()
+            .x(d => x(d.gw+1))
+            .y1(d => y(d.total_exp_diff))
+            .y0(d => 0)
+            );
+
+    svg.append('g')
+        .append("path")
+        .datum(pred_data)
+        .attr("fill", "#ff8da1")
+        .attr("fill-opacity", 0.1)
+        .attr("clip-path", "url(#below-exp)")
+        .attr("d", d3.area()
+            .x(d => x(d.gw+1))
+            .y1(d => y(d.total_real_diff))  
+            .y0(d => 0)
+            );
+
+    svg.append('g')
+        .append("path")
+        .datum(pred_data)
+        .attr("fill", "#008b6d")
+        .attr("fill-opacity", 0.1)
+        .attr("clip-path", "url(#above-exp)")
+        .attr("d", d3.area()
+            .x(d => x(d.gw+1))
+            .y1(d => y(d.total_real_diff))  
+            .y0(d => height)
+            );
+
+    // expected values line
+    svg.append('g')
+        .append("path")
+        .datum(pred_data)
+        .attr("fill", "none")
+        .attr("stroke", "#dbf7b4")
+        .attr("stroke-opacity", 0.8)
+        .style("stroke-dasharray", "2,0.5")
+        .attr("stroke-width", 1)
+        .style('pointer-events', 'none')
+        .attr("d", d3.line()
+                .x((d) => x(d.gw+1))
+                .y((d) => y(d.total_exp_diff))
+            );
+
+    // realized values line
+    svg.append('g')
+        .append('path')
+        .datum(pred_data)
+        .attr("fill", "none")
+        .attr("stroke", "#6fcfd6")
+        .attr("stroke-opacity", 0.8)
+        .attr("stroke-width", 1)
+        .style('pointer-events', 'none')
+        .attr("d", d3.line()
+                .x((d) => x(d.gw+1))
+                .y((d) => y(d.total_real_diff))
+            );
+
+    // axis titles
+    let titles = svg.append('g')
+    titles.append('text')
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 17)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Gameweeks");
+    
+    titles.append('text')
+        .attr("text-anchor", "end")
+        .attr("x", -5)
+        .attr("y", -5)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Diff.");
+
+    titles.append('text')
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", -7)
+        .attr("font-size", "5pt")
+        .attr("fill", "white")
+        .text("Difference to Tier Average");
+
+    titles.append('text')
+        .attr("text-anchor", "start")
+        .attr("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
+        .attr("x", 2)
+        .attr("y", 2)
+        .attr("font-size", "4pt")
+        .attr("fill", "#ffc100")
+        .text(`${app.team_info.name} (${app.team_info.id})`);
 
 
 }
