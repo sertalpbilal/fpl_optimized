@@ -2642,8 +2642,8 @@ function draw_predicted_realized_diff() {
 
     let values = Object.values(data.data)
     let val_sum = [0, ...values.map(i => i.total_exp_diff), ...values.map(i => i.total_real_diff)]
-    let max_y = Math.max(...val_sum) + 5
-    let min_y = Math.min(...val_sum) - 5
+    let max_y = Math.max(...val_sum) + 10
+    let min_y = Math.min(...val_sum) - 10
 
     let y = d3.scaleLinear().domain([min_y, max_y]).range([height, 0])
     svg.append('g').attr('class', 'y-axis').call(d3.axisRight(y).tickSize(width).tickFormat((v) => v > 0 ? '+'+v : v)
@@ -2818,13 +2818,31 @@ function draw_predicted_realized_diff() {
 
     titles.append('text')
         .attr("text-anchor", "start")
-        .attr("alignment-baseline", "hanging")
-        .attr("dominant-baseline", "hanging")
+        .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle")
         .attr("x", 2)
-        .attr("y", 2)
+        .attr("y", -7)
         .attr("font-size", "4pt")
         .attr("fill", "#ffc100")
         .text(`${app.team_info.name} (${app.team_info.id})`);
+
+    let chips = _.toPairs(app.team_data).map(i => [i[0], i[1].active_chip]).filter(i => i[1]!=null)
+    let chip_dict = {'wildcard': 'WC', '3xc': 'TC', 'freehit': 'FH', 'bboost': 'BB'}
+    svg.append('g')
+        .selectAll()
+        .data(chips)
+        .enter()
+        .append('text')
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
+        .attr("x", d => x(d[0]) + x.bandwidth()/2)
+        .attr("y", 2)
+        .attr("font-size", "4pt")
+        .attr("fill", "white")
+        .attr("fill-opacity", "0.4")
+        .text(d => chip_dict[d[1]]);
+
 
 
 }
