@@ -2817,12 +2817,12 @@ function draw_predicted_realized_diff() {
         .text("Difference to Tier Average");
 
     titles.append('text')
-        .attr("text-anchor", "start")
+        .attr("text-anchor", "end")
         .attr("alignment-baseline", "middle")
         .attr("dominant-baseline", "middle")
-        .attr("x", 2)
+        .attr("x", width-2)
         .attr("y", -7)
-        .attr("font-size", "4pt")
+        .attr("font-size", "5pt")
         .attr("fill", "#ffc100")
         .text(`${app.team_info.name} (${app.team_info.id})`);
 
