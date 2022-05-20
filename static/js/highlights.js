@@ -24,7 +24,8 @@ var app = new Vue({
         include_hits: true,
         show_xp_totals: false,
         show_diff_totals: false,
-        show_all_season: false
+        show_all_season: false,
+        show_all_transfers: false
     },
     computed: {
         is_ready() {
@@ -584,6 +585,11 @@ var app = new Vue({
             let e = this.xp_data
             return Object.fromEntries(e.map(i => [i.gw + '_' + i.ID, _.round(parseFloat(i.xp),2)]))
         },
+        player_gw_reference() {
+            if (_.isEmpty(this.xp_data)) { return }
+            let e = this.xp_data
+            return Object.fromEntries(e.map(i => [i.gw + '_' + i.ID, i]))
+        },
         user_gw_results() {
             if (_.isEmpty(this.team_data) || _.isEmpty(this.xp_data)) { return }
             let xp_dict = this.player_xp_dict
@@ -642,6 +648,137 @@ var app = new Vue({
             })
 
             return {'start': _.min(gws), 'finish': _.max(gws), 'data': gw_results}
+        },
+        transfer_analysis() {
+            if (!this.is_ready) { return undefined }
+            let team_data = this.team_data
+            let all_gws = _.range(1,39)
+            let analysis = {'gws': {}}
+            let elements = this.fpl_element
+            let el_data = this.el_data
+            let gw_ref = this.player_gw_reference
+            let xp_dict = app.player_xp_dict
+            let rp_dict = app.pid_gw_pts
+
+            let xp_val = (el,week) => (_.get(xp_dict, week+"_"+el) || 0)
+            let rp_val = (el,week) => (_.get(rp_dict, el + '.' + week) || 0)
+            let xp_sum = (el,weeks) => _.sum(weeks.map(i => xp_val(el,i.gw) * i.mult))
+            let rp_sum = (el,weeks) => _.sum(weeks.map(i => rp_val(el,i.gw) * i.mult))
+            let find_best_xp = (el_type, cost, weeks, exclude) => {
+                if (weeks.length == 0) { return undefined}
+                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[weeks[0].gw + '_' + i.id]).filter(i => parseFloat(gw_ref[weeks[0].gw + '_' + i.id].price) <= parseFloat(cost))
+                    .filter(i => !exclude.includes(i.id))
+                let totals = candidates.map(i => { return {...i, 'xp_total': xp_sum(i.id, weeks)}})
+                let best = _.cloneDeep(_.maxBy(totals, 'xp_total'))
+                best.rp_total = rp_sum(best.id, weeks)
+                best.cost = gw_ref[weeks[0].gw + '_' + best.id].price
+                return best
+            }
+            let find_best_rp = (el_type, cost, weeks, exclude) => {
+                if (weeks.length == 0) { return undefined}
+                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[weeks[0].gw + '_' + i.id]).filter(i => parseFloat(gw_ref[weeks[0].gw + '_' + i.id].price) <= parseFloat(cost))
+                    .filter(i => !exclude.includes(i.id))
+                let totals = candidates.map(i => { return {...i, 'rp_total': rp_sum(i.id, weeks)}})
+                let best = _.cloneDeep(_.maxBy(totals, 'rp_total'))
+                best.xp_total = xp_sum(best.id, weeks)
+                best.cost = gw_ref[weeks[0].gw + '_' + best.id].price
+                return best
+            }
+
+            all_gws.forEach((w) => {
+                if (team_data[w] == undefined) { return }
+                let tr_count = team_data[w].entry_history.event_transfers
+                let chip = team_data[w].active_chip
+                if (w == 1 || tr_count == 0 || chip == 'freehit' || chip == 'wildcard') { return }
+                let this_gw_team = team_data[w].picks.map(i => i.element)
+                let last_gw_team = undefined
+                if (team_data[w-1].active_chip == 'freehit') {
+                    last_gw_team = team_data[w-2].picks.map(i => i.element)
+                }
+                else {
+                    last_gw_team = team_data[w-1].picks.map(i => i.element)
+                }
+                let sold = _.cloneDeep(_.difference(last_gw_team, this_gw_team).map(i => elements[i]))
+                let bought = _.cloneDeep(_.difference(this_gw_team, last_gw_team).map(i => elements[i]))
+                let gw_transfer = []
+                sold.forEach((p) => {
+                    let match = bought.find(i => i.used==undefined && i.element_type == p.element_type)
+                    match.used = true
+                    let new_p = match.id
+                    // check future GWs for new player
+                    future_five = _.range(w, w+5)
+                    let future_plays = future_five.filter(j => team_data[j]).map(j => { return {'gw': j, 'play': team_data[j].picks.find(k => k.element == new_p)}}).filter(j => j.play != undefined).filter(j => j.play.multiplier > 0)
+                    future_plays.forEach((f) => {f.mult = f.play.multiplier})
+                    let bought_player_plays = future_plays.map(i => {return {...i, 'xp': xp_dict[i.gw + '_' + new_p] || 0, 'rp': rp_val(new_p, i.gw)}})
+                    let sold_player_plays = future_plays.map(i => {return {gw: i.gw, 'mult': i.play.multiplier}}).map(i => {return {...i, 'xp': xp_dict[i.gw + '_' + p.id] || 0, 'rp': rp_val(p.id, i.gw)}})
+
+                    let sold_xp_total = _.sum(Object.values(sold_player_plays).map(i => i.xp * i.mult))
+                    let bought_xp_total = _.sum(Object.values(bought_player_plays).map(i => i.xp * i.mult))
+                    let xp_diff = bought_xp_total - sold_xp_total
+
+                    let sold_rp_total = _.sum(Object.values(sold_player_plays).map(i => i.rp * i.mult))
+                    let bought_rp_total = _.sum(Object.values(bought_player_plays).map(i => i.rp * i.mult))
+                    let rp_diff = bought_rp_total - sold_rp_total
+
+                    let gw_list = future_plays.map(i => i.play.multiplier > 1 ? `${i.gw} (${i.play.multiplier == 2 ? "C" : "TC"})` : i.gw).join(', ')
+
+                    let fs_optimal = false
+                    let hs_optimal = false
+                    let missed_rp = 0
+                    let missed_xp = 0
+
+                    let xp_ratio_raw = undefined
+                    let xp_ratio = undefined
+                    
+                    let best_xp = find_best_xp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team)
+                    if (best_xp != undefined) {
+                        best_xp.xp_diff = best_xp.xp_total - sold_xp_total
+                        best_xp.rp_diff = best_xp.rp_total - sold_rp_total
+                        fs_optimal = best_xp.id == match.id
+                        missed_xp = best_xp.xp_total - bought_xp_total
+                        xp_ratio_raw = bought_xp_total / best_xp.xp_total * 100
+                        xp_ratio = rounded(xp_ratio_raw,1) + '%'
+
+                    }
+                    let best_rp = find_best_rp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team)
+                    if (best_rp != undefined) {
+                        best_rp.xp_diff = best_rp.xp_total - sold_xp_total
+                        best_rp.rp_diff = best_rp.rp_total - sold_rp_total
+                        hs_optimal = best_rp.id == match.id
+                        missed_rp = best_rp.rp_total - bought_rp_total
+                    }
+                    gw_transfer.push({
+                        'gw': w, 'sold': p.id, 'bought': match.id, 
+                        gw_list,
+                        future_plays, bought_player_plays, sold_player_plays, 
+                        xp_diff, rp_diff,
+                        'sold_price': gw_ref[w + '_' + p.id].price,
+                        'bought_price': gw_ref[w + '_' + match.id].price,
+                        best_xp, best_rp,
+                        hs_optimal, fs_optimal,
+                        'best_xp_tr': false, 'best_rp_tr': false,
+                        missed_xp, missed_rp,
+                        xp_ratio_raw, xp_ratio
+                    })
+                })
+                
+                analysis.gws[w] = gw_transfer
+
+                
+
+            })
+
+            let all_tr = Object.values(analysis.gws).flat().filter(i => i.best_xp != undefined)
+            analysis.fs_ratio = rounded(all_tr.filter(i => i.fs_optimal).length / all_tr.length * 100,1) + '%'
+            analysis.hs_ratio = rounded(all_tr.filter(i => i.hs_optimal).length / all_tr.length * 100,1) + '%'
+
+            best_xp_transfer = _.maxBy(all_tr, 'xp_diff')
+            best_xp_transfer.best_xp_tr = true
+            best_rp_transfer = _.maxBy(all_tr, 'rp_diff')
+            best_rp_transfer.best_rp_tr = true
+            analysis.tr_optimality = _.sum(all_tr.map(i => i.xp_ratio_raw)) / Math.max(all_tr.length,1)
+
+            return analysis
         }
     },
     methods: {
@@ -2948,7 +3085,7 @@ async function fetch_main_data() {
 async function fetch_xp_data() {
     return read_cached_xp(app.season).then((data) => {
         let xp_data = jQuery.csv.toObjects(data);
-        xp_data = xp_data.filter(i => parseFloat(i.price) < 20 && parseFloat(i.xp) + parseFloat(i.rp) != 0)
+        xp_data = xp_data.filter(i => parseFloat(i.price) < 20) // && parseFloat(i.xp) + parseFloat(i.rp) != 0)
         app.xp_data = xp_data
     })
 }

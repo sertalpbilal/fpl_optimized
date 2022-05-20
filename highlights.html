@@ -897,33 +897,6 @@
                     Decision making quality compared to actual outcome
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
-                    <!-- <div class="row justify-content-center mb-1">
-                        <div class="col-12 col-lg-4">
-                            <div class="form-group">
-                                <label>Sample tier</label>
-                                <div class="input-group">
-                                    <select class="custom-select" id="sample_selection" v-model="sample_selection">
-                                        <option v-for="(p, index) in sample_options" :value="index">{{ (p != 'Overall' && p != 'Prime') ? 'Top ' : ''}}{{ p }}</option>
-                                    </select>
-                                    <div class="input-group-append">
-                                        <button class="btn btn-secondary" type="button" @click="invalidate_cache(); redraw_graphs();">Select</button>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div> -->
-                    <!-- <div class="row justify-content-center mb-3">
-                        <div class="col-12 col-lg-4">
-                            <span class="text-small">-OR- Enter a team ID to compare</span>
-                            <div class="input-group mb-3">
-                                <input type="number" class="form-control" placeholder="Team ID" id="new_id_2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-secondary" type="button" @click="add_ID_to_compare">Compare</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="row justify-content-center mb-3">
                         <div class="col-12">
                             <div class="text-center">
@@ -934,99 +907,19 @@
                                     <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
                                 </span>
                             </div>
-                            <!-- <div class="text-center">
-                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="cumulative_switch" checked @change="refresh_y_axis()">
-                                    <label class="custom-control-label highlighted-checkbox" for="cumulative_switch">Cumulative</label>
-                                </div>
-                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="net_switch" @change="refresh_y_axis()">
-                                    <label class="custom-control-label highlighted-checkbox" for="net_switch">Net Change</label>
-                                </div>
-                            </div> -->
+
                             <div id="season-xp-real-diff-plot">
                                 
                             </div>
-                            <!-- <div class="row flex-grow-1 no-gutters text-small mb-1 pt-1 pb-1">
-                                <div class="col-4 col-lg-2 mb-1" v-cloak>
-                                    <div class="d-flex flex-column metric">
-                                        <div class="text-center p-0">
-                                            <div class="legend-box text-center">
-                                                GW
-                                            </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                            <span class="setting-value-text" id="hover_gw">
-                                                
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-2 mb-1" v-cloak>
-                                    <div class="d-flex flex-column metric">
-                                        <div class="text-center p-0">
-                                            <div class="legend-box text-center">
-                                                GW Gain
-                                            </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                            <span class="setting-value-text" id="hover_gw_gain">
-                                                
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-4 col-lg-2 mb-1" v-cloak>
-                                    <div class="d-flex flex-column metric">
-                                        <div class="text-center p-0">
-                                            <div class="legend-box text-center">
-                                                GW Loss
-                                            </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                            <span class="setting-value-text" id="hover_gw_loss">
-                                                
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-lg-3 mb-1" v-cloak>
-                                    <div class="d-flex flex-column metric">
-                                        <div class="text-center p-0">
-                                            <div class="legend-box text-center">
-                                                Top Gains
-                                            </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                            <span class="setting-value-text" id="hover_top_gains">
-                                                
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-lg-3 mb-1" v-cloak>
-                                    <div class="d-flex flex-column metric">
-                                        <div class="text-center p-0">
-                                            <div class="legend-box text-center">
-                                                Top Losses
-                                            </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
-                                            <span class="setting-value-text" id="hover_top_losses">
-                                                
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
+
                         </div>
-                        <div class="col-12 col-lg-8 mb-3">
-                            <span class="text-smaller">
+                        <div class="col-12 col-lg-8 mb-3 text-small">
+                            <span class="text-smaller d-block">
                                 In the tables below, it is assumed that the FPLReview predicted values are true expectations.
                                 Therefore, any outcome up to the predictions is measured as "skill" and remaining difference (above or below) is measured as "luck" even though this might not be actually true.
                                 The aim here is to evaluate decision making quality, and see how much unpredicted outcomes have affected your season, either good or bad.
                             </span>
-                            <span class="text-smaller">
+                            <span class="text-smaller d-block">
                                 "Diff" refers to point difference between you and the tier average you have selected.
                                 Even if GW ends up with more or less points than predicted, we expect difference to be around the pre-GW prediction.
                             </span>
@@ -1162,19 +1055,97 @@
                         </div>
                     </div>
                     
-
-
-
-
-
-
-
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Transfer Quality Analysis</h5>
+                <div class="scenario_detail">
+                    A review of transfers with hindsight/foresight analysis
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12">
+                            <!-- <div class="text-center">
+                                <span class="svg-legend-text mr-2">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
+                                </span>
+                                <span class="svg-legend-text mr-2">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
+                                </span>
+                            </div> -->
 
+                            <div id="transfer-quality-plot">
+                                
+                            </div>
+
+                        </div>
+                        
+                        <div class="col-12 col-md-9">
+                            <div class="text-center text-smaller">Comparison of predicted/realized points in following 5 GWs</div>
+                            <div v-if="transfer_analysis" class="row mt-1 mb-2">
+                                <div class="col-4 text-center">Hindsight Optimal Ratio <br><span class="rp-color">{{ transfer_analysis.hs_ratio }}</span></div>
+                                <div class="col-4 text-center">Foresight Optimal Ratio <br><span class="xp-color">{{ transfer_analysis.fs_ratio }}</span></div>
+                                <div class="col-4 text-center">Avg. Transfer xP Optimality <br><span class="outcome-color">{{ rounded(transfer_analysis.tr_optimality,1) }}%</span></div>
+                            </div>
+                            <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="show_all_transfers" v-model="show_all_transfers">
+                                    <label class="custom-control-label highlighted-checkbox" for="show_all_transfers">Show All Transfers</label>
+                                </div>
+                            </div>
+                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td table-striped" 
+                                id="transfer_quality">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Range</th>
+                                        <th class="text-center">Sold</th>
+                                        <th class="text-center">Bought</th>
+                                        <th class="text-center">rP Diff</th>
+                                        <th class="text-center">xP Diff</th>
+                                        <th class="text-center">Hindsight Optimal</th>
+                                        <th class="text-center">Foresight Optimal</th>
+                                        <th class="text-center">xP Optimality</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="entry in Object.values(transfer_analysis.gws).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
+                                        <td class="text-center">{{ entry.gw }}</td>
+                                        <td class="text-center">{{ entry.gw_list }}</td>
+                                        <td class="text-center">{{ fpl_element[entry.sold].web_name }}</td>
+                                        <td class="text-center">
+                                            <div>{{ fpl_element[entry.bought].web_name }}</div>
+                                            <div v-if="entry.best_xp" class="xp-color text-smaller">{{ entry.bought == entry.best_xp.id ? "FS Optimal" : "" }}</div>
+                                            <div v-if="entry.best_rp" class="rp-color text-smaller">{{ entry.bought == entry.best_rp.id ? "HS Optimal" : "" }}</div>
+                                        </td>
+                                        <td class="text-center rp-color">{{ getWithSign(entry.rp_diff,0) }}</td>
+                                        <td class="text-center xp-color">{{ getWithSign(entry.xp_diff,1) }}</td>
+                                        <td class="text-center">
+                                            <div v-if="entry.best_rp">{{ entry.best_rp.web_name }}</div>
+                                            <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{ getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
+                                            <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff) }}</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div v-if="entry.best_xp">{{ entry.best_xp.web_name }}</div>
+                                            <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff) }}</div>
+                                            <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{ getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
+                                        </td>
+                                        <td class="text-center">{{ entry.xp_ratio }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -1515,11 +1486,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220520173705"></script>
+<script src="/static/js/main.js?ts=20220520221423"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220520173705"></script>
+<script src="/static/js/sampling_utils.js?ts=20220520221423"></script>
 
-<script src="/static/js/highlights.js?ts=20220520173705"></script>
+<script src="/static/js/highlights.js?ts=20220520221423"></script>
 
 
 <script>
