@@ -52,13 +52,15 @@ FPL_API = {
 
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
+    next_gw = get_gw()
     input_folder, output_folder, season_folder = create_folders()
     get_fixture(season_folder)
     get_data_fpl_api(input_folder, season_folder)
-    from fplreview import get_data_fplreview
-    get_data_fplreview(input_folder, page='free-planner')
-    generate_intermediate_layer(input_folder, page='free-planner')
-    get_fivethirtyeight_data(input_folder)
+    if next_gw != 39:
+        from fplreview import get_data_fplreview
+        get_data_fplreview(input_folder, page='free-planner')
+        generate_intermediate_layer(input_folder, page='free-planner')
+        get_fivethirtyeight_data(input_folder)
 
     cache_effective_ownership(season_folder)
     get_fivethirtyeight_data(season_folder)
@@ -69,7 +71,7 @@ def get_all_data():
     detect_missing_entries_and_fill()
     cache_xp_ranks(output_folder)
 
-    return input_folder, output_folder
+    return input_folder, output_folder, next_gw
 
 
 def get_gw():
@@ -78,7 +80,7 @@ def get_gw():
     try:
         target_gw = [i['name'] for i in data['events'] if i['is_next']][0]
     except:
-        target_gw = "GW 38"
+        target_gw = "GW 39"
     gw = int(target_gw.split()[1])
     print(f"Gameweek {gw}")
     return gw

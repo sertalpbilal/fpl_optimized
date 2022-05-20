@@ -15,8 +15,9 @@ if __name__ == "__main__":
     if opts != "skip-opt":
         from collect import get_all_data, encrypt_files
         from simulator import generate_simulations
-        input_folder, output_folder = get_all_data()
-        solve_all(input_folder, output_folder)
-        generate_simulations(input_folder, output_folder, 100)
-        encrypt_files(input_folder, page='free-planner', remove=True)
+        input_folder, output_folder, next_gw = get_all_data()
+        if next_gw != 39:
+            solve_all(input_folder, output_folder)
+            generate_simulations(input_folder, output_folder, 100)
+            encrypt_files(input_folder, page='free-planner', remove=True)
     freeze_all()
