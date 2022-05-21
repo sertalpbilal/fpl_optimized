@@ -960,7 +960,7 @@
                                     </tr>
                                 </tbody>
                                 <tfoot>
-                                    <tr>
+                                    <tr v-if="show_all_season">
                                         <th class="text-center">GW</th>
                                         <th class="text-center">Pred. Pts</th>
                                         <th class="text-center">Real. Pts</th>
@@ -1007,7 +1007,7 @@
                                         </td>                                    </tr>
                                 </tbody>
                                 <tfoot>
-                                    <tr>
+                                    <tr v-if="show_all_season">
                                         <th class="text-center">GW</th>
                                         <th class="text-center">Pred. Pts</th>
                                         <th class="text-center">Real. Pts</th>
@@ -1020,7 +1020,7 @@
                             </table>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="text-center text-small">Skill/Luck Ratio</div>
+                            <div class="text-center text-small">Skill/Luck Magnitude Proportion</div>
                             <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
                                 id="gw_history_skill">
                                 <thead>
@@ -1036,14 +1036,14 @@
                                     <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
-                                        <td class="text-center">{{ v.skill_ratio }}</td>
-                                        <td class="text-center">{{ v.luck_ratio }}</td>
-                                        <td class="text-center">{{ v.total_skill_ratio }}</td>
-                                        <td class="text-center">{{ v.total_luck_ratio }}</td>
+                                        <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{ Math.abs(v.skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.luck_ratio<0">(-) </span>{{ Math.abs(v.luck_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_skill_ratio<0">(-) </span>{{ Math.abs(v.total_skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_luck_ratio<0">(-) </span>{{ Math.abs(v.total_luck_ratio) }}%</td>
                                         
                                 </tbody>
                                 <tfoot>
-                                    <tr>
+                                    <tr v-if="show_all_season">
                                         <th class="text-center">GW</th>
                                         <th class="text-center">GW Skill</th>
                                         <th class="text-center">GW Luck</th>
@@ -1486,11 +1486,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220521163056"></script>
+<script src="/static/js/main.js?ts=20220521205525"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220521163056"></script>
+<script src="/static/js/sampling_utils.js?ts=20220521205525"></script>
 
-<script src="/static/js/highlights.js?ts=20220521163056"></script>
+<script src="/static/js/highlights.js?ts=20220521205525"></script>
 
 
 <script>
