@@ -628,11 +628,11 @@ var app = new Vue({
                 let luck = real_diff - exp_diff
                 total_exp_real_diff += luck
 
-                let skill_ratio = _.round(100 * exp_diff / (Math.abs(exp_diff) + Math.abs(luck)),1) + '%'
-                let luck_ratio = _.round(100 * luck / (Math.abs(exp_diff) + Math.abs(luck)), 1) + '%'
+                let skill_ratio = _.round(100 * exp_diff / (Math.abs(exp_diff) + Math.abs(luck)),1)
+                let luck_ratio = _.round(100 * luck / (Math.abs(exp_diff) + Math.abs(luck)), 1)
 
-                let total_skill_ratio = _.round(100 * total_exp_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1) + '%'
-                let total_luck_ratio = _.round(100 * total_exp_real_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1) + '%'
+                let total_skill_ratio = _.round(100 * total_exp_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1)
+                let total_luck_ratio = _.round(100 * total_exp_real_diff / (Math.abs(total_exp_diff) + Math.abs(total_exp_real_diff)), 1)
 
                 gw_results[gw] = {
                     gw, xp, rp, diff, 
