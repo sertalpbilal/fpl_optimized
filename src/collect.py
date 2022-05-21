@@ -676,21 +676,30 @@ def cache_effective_ownership(season_folder):
         try:
             with open(f['file'].replace("fpl_sampled", "top_managers"), 'r') as file2:
                 prime_data = json.loads(file2.read())
-            tier_picks = picks_dict['Prime'] = {}
-            tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
+            prime_picks = picks_dict['Prime'] = {}
+            prime_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(prime_data)}
+
             for team in prime_data:
-                hits = team['data']['entry_history']['event_transfers_cost']
-                if hits > 0 and hits <= 60:
-                    tier_picks['meta']['count'] += 1
-                    tier_picks['meta']['hit_total'] += hits
+                try:
+                    hits = team['data']['entry_history']['event_transfers_cost']
+                    if hits > 0 and hits <= 60:
+                        prime_picks['meta']['count'] += 1
+                        prime_picks['meta']['hit_total'] += hits
+                except Exception as e:
+                    print(e)
+                    pass
+                try:
+                    team['data']['picks']
+                except:
+                    continue
                 for player in team['data']['picks']:
                     pid = player['element']
-                    tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
-                    tier_picks[pid]['count'] += 1
-                    tier_picks[pid]['multiplier'] += player['multiplier']
-                    tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(prime_data) * 100, 2)
-        except:
-            pass
+                    prime_picks[pid] = prime_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
+                    prime_picks[pid]['count'] += 1
+                    prime_picks[pid]['multiplier'] += player['multiplier']
+                    prime_picks[pid]['eo'] = round(prime_picks[pid]['multiplier'] / len(prime_data) * 100, 2)
+        except Exception as e:
+            print(e)
         season_eo[f['gw']] = picks_dict
     with open(season_folder / 'eo.json', 'w') as file:
         json.dump(season_eo, file)
