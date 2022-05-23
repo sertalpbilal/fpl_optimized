@@ -468,7 +468,7 @@ def list_one_per_gw(season_filter='*'):
             is_active_gw = 'true'
             active_gw = gws[0]['id']
 
-    all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/element.csv')
+    all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/fplreview-free-planner.csv-encrypted')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
