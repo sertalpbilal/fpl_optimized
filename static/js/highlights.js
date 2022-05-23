@@ -1,3 +1,26 @@
+let season_results = [
+    [1, 159801, 324.82],
+    [10, 10322, 289.82],
+    [100, 3089815, 237.82],
+    [200, 316872, 221.82],
+    [500, 3350292, 199.82],
+    [1000, 251719, 181.82],
+    [2000, 40030, 161.82],
+    [5000, 2016845, 131.82],
+    [10000, 1077954, 106.82],
+    [20000, 2006, 77.82],
+    [50000, 1061692, 30.82],
+    [100000, 11584, -14.18],
+    [200000, 4820324, -73.18],
+    [500000, 245679, -180.18],
+    [1000000, 541485, -286.18],
+    [1500000, 1207710, -363.18],
+    [2000000, 1630750, -428.18],
+    [4000000, 237940, -641.18],
+    [6000000, 2858219, -840.18],
+    [9000000, 9092949, -2059.18]
+]
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -26,7 +49,9 @@ var app = new Vue({
         show_diff_totals: false,
         show_all_season: false,
         show_all_transfers: false,
-        toty_relative: false
+        toty_relative: false,
+        season_targets: season_results,
+        luck_input: 0
         // toty_expected: false
     },
     computed: {
@@ -741,7 +766,49 @@ var app = new Vue({
                 }
             })
 
+            setTimeout(() => {
+                if (gw_results[38] != undefined){
+                    app.luck_input = gw_results[38].total_luck_ratio
+                }
+            }, 100)
+            
+
             return {'start': _.min(gws), 'finish': _.max(gws), 'data': gw_results}
+        },
+        calculated_luck() {
+            if (_.isEmpty(this.final_outcome)) { return undefined}
+            let skill = this.final_outcome.total_exp_diff
+            if (Math.abs(skill) < 1) { skill = 1}
+
+            if (this.luck_input == 0) {
+                return 0
+            }
+            else if (this.luck_input > 0) {
+                return Math.abs(skill) * this.luck_input / (100-this.luck_input)
+            }
+            else {
+                return Math.abs(skill) * this.luck_input / (100+this.luck_input)
+            }
+        },
+        calculated_total() {
+            if (_.isEmpty(this.final_outcome)) { return undefined}
+            return this.final_outcome.total_exp_diff + this.calculated_luck
+        },
+        final_outcome() {
+            if (_.isEmpty(this.user_gw_results)) { return undefined }
+            return this.user_gw_results.data[38]
+        },
+        potential_result() {
+            let score = this.calculated_total
+            for (tier of this.season_targets) {
+                if (score > tier[2]) {
+                    if (tier[0] == 1) { return "1" }
+                    else {
+                        return "Top " + formatnumber(tier[0])
+                    }
+                }
+            }
+            return "9M+"
         },
         transfer_analysis() {
             if (!this.is_ready) { return undefined }
@@ -867,9 +934,9 @@ var app = new Vue({
             analysis.hs_ratio = rounded(all_tr.filter(i => i.hs_optimal).length / all_tr.length * 100,1) + '%'
 
             best_xp_transfer = _.maxBy(all_tr, 'xp_diff')
-            best_xp_transfer.best_xp_tr = true
+            if (best_xp_transfer) { best_xp_transfer.best_xp_tr = true}
             best_rp_transfer = _.maxBy(all_tr, 'rp_diff')
-            best_rp_transfer.best_rp_tr = true
+            if (best_rp_transfer) { best_rp_transfer.best_rp_tr = true}
             analysis.tr_optimality = _.sum(all_tr.map(i => i.xp_ratio_raw)) / Math.max(all_tr.length,1)
 
             return analysis
@@ -939,12 +1006,33 @@ var app = new Vue({
                         app.$set(app.team_data, current_gw, response.body)
                     })
                     .catch((e) => {
+                        console.error(e)
+                        let empty_gw = {
+                            active_chip: null,
+                            automatic_subs: [],
+                            entry_history: {
+                                bank: 0,
+                                event: current_gw,
+                                event_transfers: 0,
+                                event_transfers_cost: 0,
+                                overall_rank: 0,
+                                points: 0,
+                                points_on_bench: 0,
+                                rank: 0,
+                                rank_sort: 0,
+                                total_points: 0,
+                                value: 0,
+                            },
+                            picks: []
+                        }
+                        app.$set(app.team_data, current_gw, empty_gw)
                         // ignore
                     })
                     calls.push(call)
                 }
             }
             Promise.allSettled(calls).then(() => {
+                this.team_data = Object.freeze(this.team_data)
                 localStorage.setItem('team_picks', JSON.stringify(stored_team_picks))
                 setTimeout(() => {
                     app.$nextTick(() => {
@@ -990,6 +1078,7 @@ var app = new Vue({
                 "order": [],
                 "pageLength": 20,
                 "info": false,
+                scrollX: true,
                 fixedHeader: true,
                 // fixedColumns: true,
                 buttons: [
@@ -3078,15 +3167,28 @@ function draw_predicted_realized_diff() {
 
 }
 
+var unitlist = ["","K","M","G"];
+function formatnumber(number){
+    let sign = Math.sign(number);
+    let unit = 0;
+    
+    while(Math.abs(number) >= 1000)
+    {
+      unit = unit + 1; 
+      number = Math.floor(Math.abs(number) / 100)/10;
+    }
+    return sign*Math.abs(number) + unitlist[unit];
+ }
+
 
 async function get_points() {
     return read_cached_rp(app.season).then((data) => {
-        app.points_data = data;
+        app.points_data = Object.freeze(data);
     }).catch((e) => {
         debugger
         console.log(e)
         return getSeasonRPData(parseInt(gw)).then((data) => {
-            app.points_data = data;
+            app.points_data = Object.freeze(data);
         })
     })
     
@@ -3112,7 +3214,7 @@ async function get_eo() {
         async: true,
         dataType: "json",
         success: (data) => {
-            app.eo_data = data;
+            app.eo_data = Object.freeze(data);
             let target_key = Math.max(...Object.keys(data).map(i => parseInt(i)));
             app.sample_options = Object.keys(data[target_key])
             // default 10K
@@ -3138,7 +3240,7 @@ async function get_fixture_data() {
         async: true,
         dataType: "json",
         success: (data) => {
-            app.fixture_data = data;
+            app.fixture_data = Object.freeze(data);
         },
         error: (xhr, status, error) => {
             console.log(error);
@@ -3157,7 +3259,7 @@ async function get_538_data() {
             let keys = tablevals[0];
             let values = tablevals.slice(1);
             let final_data = values.map(i => _.zipObject(keys, i));
-            app.fdr_data = final_data.filter(i => i.league == "Barclays Premier League");
+            app.fdr_data = Object.freeze(final_data.filter(i => i.league == "Barclays Premier League"));
         },
         error: (xhr, status, error) => {
             console.log(error);
@@ -3168,11 +3270,11 @@ async function get_538_data() {
 
 async function fetch_main_data() {
     return read_cached_static(app.season).then((data) => {
-        app.el_data = data['elements'];
+        app.el_data = Object.freeze(data['elements']);
     }).catch((e) => {
         console.log(e)
         return get_fpl_main_data().then((data) => {
-            app.el_data = data['elements'];
+            app.el_data = Object.freeze(data['elements']);
         })
     })
 }
@@ -3181,7 +3283,7 @@ async function fetch_xp_data() {
     return read_cached_xp(app.season).then((data) => {
         let xp_data = jQuery.csv.toObjects(data);
         xp_data = xp_data.filter(i => parseFloat(i.price) < 20) // && parseFloat(i.xp) + parseFloat(i.rp) != 0)
-        app.xp_data = xp_data
+        app.xp_data = Object.freeze(xp_data)
     })
 }
 
