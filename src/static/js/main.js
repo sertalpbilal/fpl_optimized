@@ -580,7 +580,7 @@ function read_local_file_Fernet(url) {
 async function read_cached_rp(req_season) {
     return $.ajax({
         type: "GET",
-        url: `data/${req_season}/points.json`,
+        url: `data/${req_season}/points.json?ts=${ts}`,
         async: true,
         dataType: "json",
         success: (data) => {

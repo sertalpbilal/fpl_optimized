@@ -42,6 +42,14 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
                         <div class="col-12 col-lg-6" id="top_players_field">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                        <input type="checkbox" class="custom-control-input" id="toty_relative_s" v-model="toty_relative">
+                                        <label class="custom-control-label highlighted-checkbox" for="toty_relative_s">Show Relative Gain</label>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="lineup gray-bg">
                                 <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709" style="max-height: 700px">
@@ -63,7 +71,7 @@
                                             <rect class="field-common" id="bench_box" width="104.4753" height="24.503908" x="4.0935702" y="140.51396" />
                                         </g>
                                     </svg>
-                                <svg v-for="player in user_toty" :x="player.x" :y="player.y">
+                                <svg v-for="player in toty_final" :x="player.x" :y="player.y">
                                         <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}" style="transform:translate(-20px,-35px)">
                                             <path  d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular"/>
                                             <g >
@@ -79,7 +87,7 @@
                                                 <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
                                                         <tspan
                                                             class="jersey-xp-text"
-                                                            y="285.37598" x="9.281539"  ><tspan style="font-size:5.5px" >{{ player.points_total }}</tspan>
+                                                            y="285.37598" x="9.281539"  ><tspan style="font-size:5px" >{{ player.points_total }}</tspan>
                                                         </tspan>
                                                     </text>
                                                     <!-- <text  y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text">
@@ -125,6 +133,7 @@
                                         <th>Bench</th>
                                         <th>Capt</th>
                                         <th>Points</th>
+                                        <th>Gain Pts</th>
                                         <!-- <th>Eff.Points</th> -->
                                     </tr>
                                 </thead>
@@ -137,6 +146,7 @@
                                         <td>{{ p.squad_count - p.lineup_count }}</td>
                                         <td>{{ p.cap_count }}</td>
                                         <td>{{ p.points_total }}</td>
+                                        <td>{{ p.points_total_rel }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1309,6 +1319,10 @@
     </div>
 
 </main>
+
+<script>
+    let ts = ** ts **
+</script>
 
 
 "% with scripts=["main", "sampling_utils", "highlights"] %" "% include 'footer.html' %" "% endwith %"
