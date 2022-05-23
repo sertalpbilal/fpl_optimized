@@ -25,7 +25,9 @@ var app = new Vue({
         show_xp_totals: false,
         show_diff_totals: false,
         show_all_season: false,
-        show_all_transfers: false
+        show_all_transfers: false,
+        toty_relative: false
+        // toty_expected: false
     },
     computed: {
         is_ready() {
@@ -83,12 +85,15 @@ var app = new Vue({
             let picks = this.user_player_stats
             let grouped_pick_data = _(picks).groupBy('element').value()
             let grouped_all_stats = {}
+            let eo_dict = this.parsed_eo_data.dict
             Object.keys(grouped_pick_data).map(key => {
                 e = grouped_all_stats[key] = {}
                 e['id'] = key
                 e['squad_count'] = grouped_pick_data[key].length
                 e['lineup_count'] = grouped_pick_data[key].filter(i => i.multiplier > 0).length
                 e['points_total'] = grouped_pick_data[key].map(i => (i.points || 0) * i.multiplier).reduce((a, b) => a + b, 0)
+                let pt_total = grouped_pick_data[key].map(i => (i.points || 0) * (i.multiplier-(eo_dict[i.gw + '_' + i.element] || 0)/100)).reduce((a, b) => a + b, 0)
+                e['points_total_rel'] = _.round(pt_total,1)
                 e['cap_count'] = grouped_pick_data[key].filter(i => i.multiplier > 1).length
                 e['position'] = grouped_pick_data[key][0].raw.element_type
                 e['name'] = grouped_pick_data[key][0].raw.web_name
@@ -97,9 +102,98 @@ var app = new Vue({
             let sorted_data = _.orderBy(grouped_all_stats, ['points_total', 'squad_count', 'lineup_count'], ['desc', 'desc', 'desc'])
             return sorted_data
         },
+        user_player_relative_sum() {
+            if (!this.is_ready) { return [] }
+            let picks = this.user_player_stats
+            let grouped_pick_data = _(picks).groupBy('element').value()
+            let grouped_all_stats = {}
+            let eo_dict = this.parsed_eo_data.dict
+            Object.keys(grouped_pick_data).map(key => {
+                e = grouped_all_stats[key] = {}
+                e['id'] = key
+                e['squad_count'] = grouped_pick_data[key].length
+                e['lineup_count'] = grouped_pick_data[key].filter(i => i.multiplier > 0).length
+                eo_dict
+                // let eo = eo_dict[]
+                let pt_total = grouped_pick_data[key].map(i => (i.points || 0) * (i.multiplier-(eo_dict[i.gw + '_' + i.element] || 0)/100)).reduce((a, b) => a + b, 0)
+                e['points_total'] = _.round(pt_total,1)
+                e['cap_count'] = grouped_pick_data[key].filter(i => i.multiplier > 1).length
+                e['position'] = grouped_pick_data[key][0].raw.element_type
+                e['name'] = grouped_pick_data[key][0].raw.web_name
+                e['raw'] = grouped_pick_data[key][0].raw
+            })
+            let sorted_data = _.orderBy(grouped_all_stats, ['points_total', 'squad_count', 'lineup_count'], ['desc', 'desc', 'desc'])
+            return sorted_data
+        },
+        toty_final() {
+            if (!this.is_ready) { return [] }
+            if (this.toty_relative) { return this.user_toty_relative }
+            else { return this.user_toty }
+        },
         user_toty() {
             if (!this.is_ready) { return [] }
             let player_sum_data = this.user_player_sum
+            
+            let selected_players = []
+            let lineup_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
+            let squad_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
+            let selected_index = {}
+
+            // Initial append for minimum valid formation
+            for (let pos = 1; pos < 5; pos++) {
+                let min_target = element_type[pos].min
+                while (lineup_count[pos] < min_target) {
+                    for (let i = 0; i < player_sum_data.length; i++) {
+                        let p = player_sum_data[i]
+                        if (p.position != pos) { continue }
+                        selected_players.push({ 'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'] })
+                        lineup_count[pos] += 1
+                        squad_count[pos] += 1
+                        selected_index[p.id] = true
+                        if (lineup_count[pos] >= min_target) { break }
+                    }
+                    break;
+                }
+            }
+
+            for (let i = 0; i < player_sum_data.length; i++) {
+                let p = player_sum_data[i]
+                let pos = p['position']
+                if (selected_index[p.id]) { continue }
+                if (lineup_count[pos] < element_type[pos].max && getSum(Object.values(lineup_count)) < 11) {
+                    selected_players.push({ 'player': p, 'lineup': true, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos == 1 })
+                    lineup_count[pos] += 1
+                    squad_count[pos] += 1
+                } else if (squad_count[pos] < element_type[pos].cnt) {
+                    selected_players.push({ 'player': p, 'lineup': false, 'position': pos, 'points_total': p['points_total'], 'cap_count': p['cap_count'], 'is_keeper': pos == 1 })
+                    squad_count[pos] += 1
+                }
+                if (getSum(Object.values(squad_count)) == 15) {
+                    break;
+                }
+            }
+
+            let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
+            selected_players = _.orderBy(selected_players, ['is_keeper', 'points_total'], ['desc', 'desc'])
+            selected_players.forEach((player) => {
+                let pos = player.position
+                let cnt = lineup_count[pos]
+                if (player.lineup) {
+                    player.x = 122 / (cnt + 1) * pos_ctr[pos] - 17;
+                    player.y = (pos - 1) * 35 + 3;
+                    pos_ctr[pos] += 1;
+                } else {
+                    player.x = 122 / 5 * pos_ctr['B'] - 17;
+                    pos_ctr['B'] += 1;
+                    player.y = 138.5;
+                }
+            });
+            return selected_players
+        },
+        user_toty_relative() {
+            if (!this.is_ready) { return [] }
+            let player_sum_data = this.user_player_relative_sum
+            
             let selected_players = []
             let lineup_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
             let squad_count = { 1: 0, 2: 0, 3: 0, 4: 0 }
@@ -2989,6 +3083,7 @@ async function get_points() {
     return read_cached_rp(app.season).then((data) => {
         app.points_data = data;
     }).catch((e) => {
+        debugger
         console.log(e)
         return getSeasonRPData(parseInt(gw)).then((data) => {
             app.points_data = data;
