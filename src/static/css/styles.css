@@ -1870,3 +1870,31 @@ table.no-row-borders td {
     color: #c0ffbf;
 }
 
+.rp-bg {
+    background-color: #ffbd45;
+}
+
+.xp-bg {
+    background-color: #90f0ff;
+}
+
+.outcome-bg {
+    background-color: #c0ffbf;
+}
+
+table.DTFC_Cloned tr {
+    background-color: none;
+}
+
+table.dataTable.table-striped.DTFC_Cloned tbody {
+    background-color: none;
+}
+
+.stick-col {
+    position: sticky;
+    left: 0;
+    /* background-color: #434343; */
+    background-color: none;
+    padding: 0px;
+    z-index: 2;
+}

@@ -126,8 +126,8 @@
                             <table class="p-0 col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
                                 <thead>
                                     <tr>
-                                        <th class="text-muted">ID</th>
-                                        <th>Name</th>
+                                        <th class="text-muted sticky-col">ID</th>
+                                        <th class="sticky-col">Name</th>
                                         <th>Pos</th>
                                         <th>Lineup</th>
                                         <th>Bench</th>
@@ -139,8 +139,8 @@
                                 </thead>
                                 <tbody v-cloak>
                                     <tr v-for="p in user_player_sum" class="owned-row">
-                                        <td class="text-muted">{{ p.id }}</td>
-                                        <td>{{ p.name }}</td>
+                                        <td class="text-muted sticky-col">{{ p.id }}</td>
+                                        <td class="sticky-col">{{ p.name }}</td>
                                         <td>{{ element_type[p.position].short }}</td>
                                         <td>{{ p.lineup_count }}</td>
                                         <td>{{ p.squad_count - p.lineup_count }}</td>
@@ -902,7 +902,8 @@
                                             <span v-if="v.gw > 1 && team_data[v.gw].entry_history.overall_rank < team_data[parseInt(v.gw)-1].entry_history.overall_rank"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
                                             <span v-else-if="v.gw > 1"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
                                             {{ team_data[v.gw].entry_history.overall_rank }}
-                                        </td>                                    </tr>
+                                        </td>                                    
+                                    </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr v-if="show_all_season">
@@ -952,6 +953,49 @@
                             </table>
                         </div>
                     </div>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12 mt-2" v-if="season_targets && sample_selection==6 && final_outcome != undefined">
+                            <div class="col-12">
+                                <span class="d-block border-below-orange">What-if Luck-Meter</span>
+                            </div>
+                            <div class="text-center text-small">
+                                You have finished season with {{ _.round(final_outcome.total_real_diff,1) }} relative points compared  Prime Sample. To get OR #1 you needed {{ season_targets[0][2] }}.<br/>
+                                Move the Luck Slider below to see where you could have ended!<br/>
+                                It shows the magnitude weight of luck (variance) compared to sum of skill (predicted) and luck (variance) and calculates your final difference to tier average.
+                            </div>
+                            <div class="mt-3 mb-3 text-center">
+                                <span class="m-2">
+                                    <input type="range" class="col-12 col-md-6 form-range p-0" min="-99.9" max="99.9" step="0.1" v-model.number="luck_input" >
+                                    <span class="col-12 col-md-6 d-inline next-val" >{{ _.round(luck_input,1) }}%</span>
+                                </span>
+                            </div>
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-6 row justify-content-center">
+                                    <div class="col text-center">
+                                        <div class="xp-bg text-black">Skill</div><div>{{ _.round(final_outcome.total_exp_diff,1) }}</div>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <div class="">+</div><div>&nbsp;</div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <div class="rp-bg text-black">Luck</div><div>{{ _.round(calculated_luck,1) }}</div>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <div class="">=</div><div>&nbsp;</div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <div class="outcome-bg text-black">Total</div><div>{{ _.round(calculated_total,1) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-6 d-flex flex-column">
+                                    <div class="text-center text-small">With this result, you would finish in OR</div>
+                                    <div class="text-center">{{ potential_result }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -986,9 +1030,9 @@
                         <div class="col-12 col-md-9">
                             <div class="text-center text-smaller">Comparison of predicted/realized points in following 5 GWs</div>
                             <div v-if="transfer_analysis" class="row mt-1 mb-2">
-                                <div class="col-4 text-center">Hindsight Optimal Ratio <br><span class="rp-color">{{ transfer_analysis.hs_ratio }}</span></div>
-                                <div class="col-4 text-center">Foresight Optimal Ratio <br><span class="xp-color">{{ transfer_analysis.fs_ratio }}</span></div>
-                                <div class="col-4 text-center">Avg. Transfer xP Optimality <br><span class="outcome-color">{{ rounded(transfer_analysis.tr_optimality,1) }}%</span></div>
+                                <div class="col-4 text-center text-small">Hindsight Optimal Ratio <br><span class="rp-color">{{ transfer_analysis.hs_ratio }}</span></div>
+                                <div class="col-4 text-center text-small">Foresight Optimal Ratio <br><span class="xp-color">{{ transfer_analysis.fs_ratio }}</span></div>
+                                <div class="col-4 text-center text-small">Avg. Transfer xP Optimality <br><span class="outcome-color">{{ rounded(transfer_analysis.tr_optimality,1) }}%</span></div>
                             </div>
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
@@ -996,47 +1040,49 @@
                                     <label class="custom-control-label highlighted-checkbox" for="show_all_transfers">Show All Transfers</label>
                                 </div>
                             </div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td table-striped" 
-                                id="transfer_quality">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Range</th>
-                                        <th class="text-center">Sold</th>
-                                        <th class="text-center">Bought</th>
-                                        <th class="text-center">rP Diff</th>
-                                        <th class="text-center">xP Diff</th>
-                                        <th class="text-center">Hindsight Optimal</th>
-                                        <th class="text-center">Foresight Optimal</th>
-                                        <th class="text-center">xP Optimality</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="entry in Object.values(transfer_analysis.gws).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
-                                        <td class="text-center">{{ entry.gw }}</td>
-                                        <td class="text-center">{{ entry.gw_list }}</td>
-                                        <td class="text-center">{{ fpl_element[entry.sold].web_name }}</td>
-                                        <td class="text-center">
-                                            <div>{{ fpl_element[entry.bought].web_name }}</div>
-                                            <div v-if="entry.best_xp" class="xp-color text-smaller">{{ entry.bought == entry.best_xp.id ? "FS Optimal" : "" }}</div>
-                                            <div v-if="entry.best_rp" class="rp-color text-smaller">{{ entry.bought == entry.best_rp.id ? "HS Optimal" : "" }}</div>
-                                        </td>
-                                        <td class="text-center rp-color">{{ getWithSign(entry.rp_diff,0) }}</td>
-                                        <td class="text-center xp-color">{{ getWithSign(entry.xp_diff,1) }}</td>
-                                        <td class="text-center">
-                                            <div v-if="entry.best_rp">{{ entry.best_rp.web_name }}</div>
-                                            <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{ getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
-                                            <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff) }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div v-if="entry.best_xp">{{ entry.best_xp.web_name }}</div>
-                                            <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff) }}</div>
-                                            <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{ getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
-                                        </td>
-                                        <td class="text-center">{{ entry.xp_ratio }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td table-striped" 
+                                    id="transfer_quality">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">GW</th>
+                                            <th class="text-center">Range</th>
+                                            <th class="text-center">Sold</th>
+                                            <th class="text-center">Bought</th>
+                                            <th class="text-center">rP Diff</th>
+                                            <th class="text-center">xP Diff</th>
+                                            <th class="text-center">Hindsight Optimal</th>
+                                            <th class="text-center">Foresight Optimal</th>
+                                            <th class="text-center">xP Optimality</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="entry in Object.values(transfer_analysis.gws).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
+                                            <td class="text-center">{{ entry.gw }}</td>
+                                            <td class="text-center">{{ entry.gw_list }}</td>
+                                            <td class="text-center">{{ fpl_element[entry.sold].web_name }}</td>
+                                            <td class="text-center">
+                                                <div>{{ fpl_element[entry.bought].web_name }}</div>
+                                                <div v-if="entry.best_xp" class="xp-color text-smaller">{{ entry.bought == entry.best_xp.id ? "FS Optimal" : "" }}</div>
+                                                <div v-if="entry.best_rp" class="rp-color text-smaller">{{ entry.bought == entry.best_rp.id ? "HS Optimal" : "" }}</div>
+                                            </td>
+                                            <td class="text-center rp-color">{{ getWithSign(entry.rp_diff,0) }}</td>
+                                            <td class="text-center xp-color">{{ getWithSign(entry.xp_diff,1) }}</td>
+                                            <td class="text-center">
+                                                <div v-if="entry.best_rp">{{ entry.best_rp.web_name }}</div>
+                                                <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{ getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
+                                                <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff) }}</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div v-if="entry.best_xp">{{ entry.best_xp.web_name }}</div>
+                                                <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff) }}</div>
+                                                <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{ getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
+                                            </td>
+                                            <td class="text-center">{{ entry.xp_ratio }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     
