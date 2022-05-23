@@ -2953,7 +2953,7 @@ function draw_predicted_realized_diff() {
         .append("path")
         .datum(pred_data)
         .attr("d", d3.area()
-            .x(d => x(d.gw+1))
+            .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
             .y1(d => y(d.total_exp_diff))
             .y0(d => height)
             );
@@ -2963,7 +2963,7 @@ function draw_predicted_realized_diff() {
         .append("path")
         .datum(pred_data)
         .attr("d", d3.area()
-            .x(d => x(d.gw+1))
+            .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
             .y1(d => y(d.total_exp_diff))
             .y0(d => 0)
             );
@@ -2975,7 +2975,7 @@ function draw_predicted_realized_diff() {
         .attr("fill-opacity", 0.1)
         .attr("clip-path", "url(#below-exp)")
         .attr("d", d3.area()
-            .x(d => x(d.gw+1))
+            .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
             .y1(d => y(d.total_real_diff))  
             .y0(d => 0)
             );
@@ -2987,7 +2987,7 @@ function draw_predicted_realized_diff() {
         .attr("fill-opacity", 0.1)
         .attr("clip-path", "url(#above-exp)")
         .attr("d", d3.area()
-            .x(d => x(d.gw+1))
+            .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
             .y1(d => y(d.total_real_diff))  
             .y0(d => height)
             );
@@ -3003,7 +3003,7 @@ function draw_predicted_realized_diff() {
         .attr("stroke-width", 1)
         .style('pointer-events', 'none')
         .attr("d", d3.line()
-                .x((d) => x(d.gw+1))
+                .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
                 .y((d) => y(d.total_exp_diff))
             );
 
@@ -3017,7 +3017,7 @@ function draw_predicted_realized_diff() {
         .attr("stroke-width", 1)
         .style('pointer-events', 'none')
         .attr("d", d3.line()
-                .x((d) => x(d.gw+1))
+                .x((d) => (d.gw == 38 ? x(d.gw) + x.bandwidth() : x(d.gw+1)))
                 .y((d) => y(d.total_real_diff))
             );
 
