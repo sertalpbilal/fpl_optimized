@@ -13,8 +13,9 @@ var app = new Vue({
             let clubs = this.clubs;
             let history = {};
             let gw = parseInt((this.this_gw).slice(2))
-            let fixture = fixture_all.filter(i => i.event < gw && i.finished)
-            let weeks = _.range(0, gw);
+
+            let fixture = fixture_all.filter(i => i.event <= gw && i.finished)
+            let weeks = _.range(0, gw+1);
             weeks.forEach((week) => {
                 let week_data = []
                 let games_so_far = fixture.filter(i => i.event <= week)
