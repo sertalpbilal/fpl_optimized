@@ -173,7 +173,10 @@ def fpl_analytics():
 
     # return {"message": "It works!"}, 200
 
-    target = [i.strip() for i in list_dates[1].split('/')]
+    # For regular season use
+    # target = [i.strip() for i in list_dates[0].split('/')]
+
+    target = [i.strip() for i in list_dates[0].split('/')]
 
     if app.config['DEBUG']:
         return render_template('analytics_xp_league.html', repo_name="/..", ts = timestamp, page_name="Analytics xP League", season=global_season, gw=target[1].strip(), date=target[2], list_dates=list_dates, last_update=current_time, season_vals=season_values_js, season_file=f)
