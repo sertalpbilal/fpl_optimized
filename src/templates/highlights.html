@@ -1196,11 +1196,11 @@
                                             <td class="text-center">
                                                 <div v-if="entry.best_rp">{{ entry.best_rp.web_name }}</div>
                                                 <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{ getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
-                                                <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff) }}</div>
+                                                <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff, 1) }}</div>
                                             </td>
                                             <td class="text-center">
                                                 <div v-if="entry.best_xp">{{ entry.best_xp.web_name }}</div>
-                                                <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff) }}</div>
+                                                <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff, 0) }}</div>
                                                 <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{ getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
                                             </td>
                                             <td class="text-center">{{ entry.xp_ratio }}</td>
