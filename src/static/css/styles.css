@@ -1243,6 +1243,16 @@ tbody tr:last-child td.highlighted-col {
     border: 0px solid black;
 }
 
+#total_exp_gain_loss_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
+
+#total_player_luck_table_paginate .page-link {
+    padding: 0.25rem 0.4rem;
+    border: 0px solid black;
+}
+
 #all_fdr_table_paginate .page-link {
     padding: 0.25rem 0.4rem;
     border: 0px solid black;

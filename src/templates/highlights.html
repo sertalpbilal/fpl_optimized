@@ -161,6 +161,181 @@
         </div>
     </div>
 
+
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Points Analysis per Player</h5>
+                <div class="scenario_detail">
+                    Impact of each player on your season - realized and predicted
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="text-center text-small mb-1">
+                        The prediction values are courtesy of FPLReview Free Model
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-6">
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-12">
+                                    <span class="d-block border-below-orange">Total realized gain / loss per player</span>
+                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Team</th>
+                                                <th class="text-center">Pos</th>
+                                                <th class="text-center">Pts</th>
+                                                <th class="text-center">Gain</th>
+                                                <th class="text-center">Loss</th>
+                                                <th class="text-center highlighted-text-col">Net</th>
+                                                <th class="text-center">Impact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-cloak>
+                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player" :class="{'owned-row': p.net>0, 'nonowned-row': p.net < 0}">
+                                                <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
+                                                <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
+                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ p.points }}</td>
+                                                <td class="text-center">{{ rounded(p.gain) }}</td>
+                                                <td class="text-center">{{ rounded(p.loss) }}</td>
+                                                <td class="text-center highlighted-text-col">{{ rounded(p.net) }}</td>
+                                                <td class="text-center">{{ rounded(p.impact) }}%</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons4">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-12">
+                                    <span class="d-block border-below-orange">Total predicted gain / loss per player</span>
+                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_exp_gain_loss_table" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Team</th>
+                                                <th class="text-center">Pos</th>
+                                                <th class="text-center">xPts</th>
+                                                <th class="text-center">xGain</th>
+                                                <th class="text-center">xLoss</th>
+                                                <th class="text-center highlighted-text-col">xNet</th>
+                                                <th class="text-center">xImpact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-cloak>
+                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player_exp" :class="{'owned-row': p.xnet>0, 'nonowned-row': p.xnet < 0}">
+                                                <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
+                                                <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
+                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ rounded(p.xpoints) }}</td>
+                                                <td class="text-center">{{ rounded(p.xgain) }}</td>
+                                                <td class="text-center">{{ rounded(p.xloss) }}</td>
+                                                <td class="text-center highlighted-text-col">{{ rounded(p.xnet) }}</td>
+                                                <td class="text-center">{{ rounded(p.ximpact) }}%</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons_exp">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-12">
+                                    <span class="d-block border-below-orange">Total luck per player</span>
+                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_player_luck_table" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Team</th>
+                                                <th class="text-center">Pos</th>
+                                                <th class="text-center">Net</th>
+                                                <th class="text-center">xNet</th>
+                                                <th class="text-center highlighted-text-col">Luck</th>
+                                                <th class="text-center">Impact</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-cloak>
+                                            <tr v-for="p in user_ownership_gain_loss.comb_per_player_luck" :class="{'owned-row': p.luck>0, 'nonowned-row': p.luck < 0}">
+                                                <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
+                                                <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
+                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ rounded(p.net) }}</td>
+                                                <td class="text-center">{{ rounded(p.xnet) }}</td>
+                                                <td class="text-center highlighted-text-col">{{ getWithSign(p.luck) }}</td>
+                                                <td class="text-center">{{ rounded(p.luckimpact) }}%</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <!-- <th class="text-center text-muted">ID</th> -->
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons_luck_table">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+
+
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -729,56 +904,6 @@
                         </div>
                         <div class="col-12 col-lg-8">
                             <span class="text-smaller">This scatter plot shows your relative change to average and your differential (risk) percentage. This value is calculated based on how different your lineup compared to tier effective ownership. It is a measure of how much you are betting against the template.</span>
-                        </div>
-                    </div>
-
-
-                    <div class="row justify-content-center mb-3">
-                        <div class="col-12 col-lg-8">
-                            <span class="d-block border-below-orange">Total gain / loss per player</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
-                                <thead>
-                                    <tr>
-                                        <!-- <th class="text-center text-muted">ID</th> -->
-                                        <th class="text-center">Name</th>
-                                        <th class="text-center">Team</th>
-                                        <th class="text-center">Pos</th>
-                                        <th class="text-center">Pts</th>
-                                        <th class="text-center">Gain</th>
-                                        <th class="text-center">Loss</th>
-                                        <th class="text-center highlighted-text-col">Net</th>
-                                        <th class="text-center">Impact</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr v-for="p in user_ownership_gain_loss.combined_per_player" :class="{'owned-row': p.net>0, 'nonowned-row': p.net < 0}">
-                                        <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
-                                        <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
-                                        <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
-                                        <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
-                                        <td class="text-center">{{ p.points }}</td>
-                                        <td class="text-center">{{ rounded(p.gain) }}</td>
-                                        <td class="text-center">{{ rounded(p.loss) }}</td>
-                                        <td class="text-center highlighted-text-col">{{ rounded(p.net) }}</td>
-                                        <td class="text-center">{{ rounded(p.impact) }}%</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <!-- <th class="text-center text-muted">ID</th> -->
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons4">
                         </div>
                     </div>
 
