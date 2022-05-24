@@ -522,6 +522,8 @@ var app = new Vue({
             let ss = this.sample_selection
             let so = this.sample_options[this.sample_selection]
 
+            let xp_dict = this.player_xp_dict
+
             let gws = this.parsed_eo_data.gw
             let all_pids = Object.keys(this.fpl_element)
             let all_pairs = Object.fromEntries(gws.map(gw => all_pids.map(pid => [gw + '_' + pid, {'gw': gw, 'id': pid}])).flat())
@@ -532,6 +534,7 @@ var app = new Vue({
             let points = this.gw_pid_pts
             for (let pick of user_picks) {
                 pick.pts = points[pick.gw][pick.id] || 0
+                pick.xpts = xp_dict[pick.gw + '_' + pick.id] || 0
                 pick.total_pts = pick.pts * pick.multiplier
                 pick.eo = eo_data[pick.gw + '_' + pick.id] || 0
                 pick.owned = true
@@ -540,13 +543,19 @@ var app = new Vue({
                 // table values
                 pick.points_gain = pick.pts * pick.multiplier
                 pick.relative_gain = pick.net
+                pick.pred_gain = pick.xpts * ((100 * pick.multiplier - pick.eo) /100)
                 pick.points_loss = pick.pts * pick.eo / 100
                 pick.relative_loss = 0
+                pick.pred_loss = 0
+                pick.exp_diff = pick.pred_gain
+                pick.real_diff = pick.relative_gain
+                pick.luck = pick.real_diff - pick.exp_diff
                 delete all_pairs[pick.gw + '_' + pick.id]
             }
             all_pairs = Object.values(all_pairs)
             for (let pair of all_pairs) {
                 pair.pts = points[pair.gw][pair.id] || 0
+                pair.xpts = xp_dict[pair.gw + '_' + pair.id] || 0
                 pair.total_pts = pair.pts
                 pair.eo = eo_data[pair.gw + '_' + pair.id] || 0
                 pair.owned = false
@@ -554,8 +563,13 @@ var app = new Vue({
                 // table values
                 pair.points_gain = 0
                 pair.relative_gain = 0
+                pair.pred_gain = 0
                 pair.points_loss = pair.pts * pair.eo / 100
                 pair.relative_loss = pair.points_loss
+                pair.pred_loss = pair.xpts * pair.eo / 100
+                pair.exp_diff = -pair.points_loss
+                pair.real_diff = -pair.relative_loss
+                pair.luck = pair.real_diff - pair.exp_diff
             }
             let all_data = all_pairs.concat(user_picks)
             let player_gains = _(all_data).groupBy('id')
@@ -563,11 +577,33 @@ var app = new Vue({
                     let gain = getSum(i.map(j => j.relative_gain))
                     let loss = getSum(i.map(j => j.relative_loss))
                     let pts = getSum(i.map(j => j.pts))
-                    return {'id': v, gain, loss, 'net': gain - loss, 'magnitude': Math.abs(gain - loss), 'points': pts}
+                    let xgain = getSum(i.map(j => j.pred_gain))
+                    let xloss = getSum(i.map(j => j.pred_loss))
+                    let xpts = getSum(i.map(j => j.xpts))
+                    let xdiff = xgain - xloss
+                    let diff = gain - loss
+                    let luck = diff - xdiff
+                    return {
+                        'id': v, 
+                        gain, loss, 'net': gain - loss, 
+                        'magnitude': Math.abs(gain - loss), 'points': pts,
+                        xgain, xloss, 'xnet': xgain-xloss,
+                        'xmagnitude': Math.abs(xgain - xloss), 'xpoints': xpts,
+                        diff, xdiff, luck, 'luckmagnitude': Math.abs(luck)
+                    }
                 }).value()
             player_gains = _(player_gains).orderBy(['magnitude'], ['desc']).value()
             let max_impact = player_gains[0].magnitude
             player_gains.forEach((e) => {e.impact = e.magnitude / max_impact * 100})
+
+            player_xgains = _(_.cloneDeep(player_gains)).orderBy(['xmagnitude'], ['desc']).value()
+            let exp_max_impact = player_xgains[0].xmagnitude
+            player_xgains.forEach((e) => {e.ximpact = e.xmagnitude / exp_max_impact * 100})
+
+            player_luck = _(_.cloneDeep(player_gains)).orderBy(['luckmagnitude'], ['desc']).value()
+            let max_luck = player_luck[0].luckmagnitude
+            player_luck.forEach((e) => {e.luckimpact = e.luckmagnitude / max_luck * 100})
+
             let combined = Object.entries(_.groupBy(all_data, 'gw'))
             for (let gw_entry of combined) {
                 let groups = _.groupBy(gw_entry[1], (entry) => entry.net >0)
@@ -575,6 +611,8 @@ var app = new Vue({
                 if (!groups.hasOwnProperty('true')) { groups['true'] = []}
                 let loss = getSum(groups.false.map(i => i.net))
                 let gain = getSum(groups.true.map(i => i.net))
+                let xloss = getSum(groups.false.map(i => i.xnet))
+                let xgain = getSum(groups.true.map(i => i.xnet))
                 let gw_field_hits = hits[parseInt(gw_entry[0])-1]
                 let hit_gain = gw_field_hits.hit_total / Math.max(1,gw_field_hits.teams)
                 let gain_with_hit = gain + hit_gain
@@ -591,10 +629,11 @@ var app = new Vue({
                 let top_bets_for = _.orderBy(gw_picks, ['own_rate'], ['desc']).slice(0,3)
                 let top_bets_against = _.orderBy(gw_entry[1].filter(i => !i.owned), ['eo'], ['desc']).slice(0,3)
                 let net = gain + loss
-                gw_entry[1] = {net, loss, gain, loss_with_hit, gain_with_hit, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
+                let xnet = xgain + xloss
+                gw_entry[1] = {net, xnet, loss, gain, xgain, loss_with_hit, gain_with_hit, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
             }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
-            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains}
+            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains, 'combined_per_player_exp': player_xgains, 'comb_per_player_luck': player_luck}
         },
         user_candlestick_values() {
             if (!this.is_ready) { return [] }
@@ -955,6 +994,8 @@ var app = new Vue({
             $("#gain_table").DataTable().destroy()
             $("#loss_table").DataTable().destroy()
             $("#total_gain_loss_table").DataTable().destroy()
+            $("#total_exp_gain_loss_table").DataTable().destroy()
+            $("#total_player_luck_table").DataTable().destroy()
             $("#all_fdr_table").DataTable().destroy()
 
             this.team_data = {}
@@ -1242,8 +1283,91 @@ var app = new Vue({
                     });
                 }
             })
+
             tg_table.buttons().container()
                 .appendTo('#csv_buttons4');
+
+            let tge_table = $("#total_exp_gain_loss_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                scrollX: true,
+                // sScrollX: "100%",
+                // responsive: true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+
+            tge_table.buttons().container()
+                .appendTo('#csv_buttons_exp');
+
+            let tgl_table = $("#total_player_luck_table").DataTable({
+                "lengthChange": false,
+                "order": [],
+                "info": true,
+                "paging": true,
+                "pageLength": 15,
+                "searching": true,
+                scrollX: true,
+                // sScrollX: "100%",
+                // responsive: true,
+                buttons: [
+                    'copy', 'csv'
+                ],
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        var select = $('<select class="w-100"><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function() {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort((a, b) => parseInt(a) ? parseInt(a) - parseInt(b) : (a > b ? 1 : -1)).each(function(d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+
+                    });
+                }
+            })
+
+            tgl_table.buttons().container()
+                .appendTo('#csv_buttons_luck_table');
+
+
+
+            
 
             let fdr_table = $("#all_fdr_table").DataTable({
                 "lengthChange": false,
@@ -1332,6 +1456,8 @@ var app = new Vue({
                 table = $("#loss_table").DataTable();
                 table.cells("td").invalidate().draw();
                 table = $("#total_gain_loss_table").DataTable();
+                table = $("#total_exp_gain_loss_table").DataTable();
+                table = $("#total_player_luck_table").DataTable();
                 table.cells("td").invalidate().draw();
 
                 
