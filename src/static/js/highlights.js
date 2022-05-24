@@ -864,9 +864,9 @@ var app = new Vue({
             let rp_val = (el,week) => (_.get(rp_dict, el + '.' + week) || 0)
             let xp_sum = (el,weeks) => _.sum(weeks.map(i => xp_val(el,i.gw) * i.mult))
             let rp_sum = (el,weeks) => _.sum(weeks.map(i => rp_val(el,i.gw) * i.mult))
-            let find_best_xp = (el_type, cost, weeks, exclude) => {
+            let find_best_xp = (el_type, cost, weeks, exclude, target_week) => {
                 if (weeks.length == 0) { return undefined}
-                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[weeks[0].gw + '_' + i.id]).filter(i => parseFloat(gw_ref[weeks[0].gw + '_' + i.id].price) <= parseFloat(cost))
+                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[target_week + '_' + i.id]).filter(i => parseFloat(gw_ref[target_week + '_' + i.id].price) <= parseFloat(cost))
                     .filter(i => !exclude.includes(i.id))
                 let totals = candidates.map(i => { return {...i, 'xp_total': xp_sum(i.id, weeks)}})
                 let best = _.cloneDeep(_.maxBy(totals, 'xp_total'))
@@ -874,9 +874,9 @@ var app = new Vue({
                 best.cost = gw_ref[weeks[0].gw + '_' + best.id].price
                 return best
             }
-            let find_best_rp = (el_type, cost, weeks, exclude) => {
+            let find_best_rp = (el_type, cost, weeks, exclude, target_week) => {
                 if (weeks.length == 0) { return undefined}
-                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[weeks[0].gw + '_' + i.id]).filter(i => parseFloat(gw_ref[weeks[0].gw + '_' + i.id].price) <= parseFloat(cost))
+                let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[target_week + '_' + i.id]).filter(i => parseFloat(gw_ref[target_week + '_' + i.id].price) <= parseFloat(cost))
                     .filter(i => !exclude.includes(i.id))
                 let totals = candidates.map(i => { return {...i, 'rp_total': rp_sum(i.id, weeks)}})
                 let best = _.cloneDeep(_.maxBy(totals, 'rp_total'))
@@ -888,6 +888,7 @@ var app = new Vue({
             all_gws.forEach((w) => {
                 if (team_data[w] == undefined) { return }
                 let tr_count = team_data[w].entry_history.event_transfers
+                let tr_cost = team_data[w].entry_history.event_transfers_cost
                 let chip = team_data[w].active_chip
                 if (w == 1 || tr_count == 0 || chip == 'freehit' || chip == 'wildcard') { return }
                 let this_gw_team = team_data[w].picks.map(i => i.element)
@@ -930,17 +931,18 @@ var app = new Vue({
                     let xp_ratio_raw = undefined
                     let xp_ratio = undefined
                     
-                    let best_xp = find_best_xp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team)
+                    let best_xp = find_best_xp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team, w)
                     if (best_xp != undefined) {
                         best_xp.xp_diff = best_xp.xp_total - sold_xp_total
                         best_xp.rp_diff = best_xp.rp_total - sold_rp_total
                         fs_optimal = best_xp.id == match.id
                         missed_xp = best_xp.xp_total - bought_xp_total
                         xp_ratio_raw = bought_xp_total / best_xp.xp_total * 100
+                        if (best_xp.xp_total == 0) { xp_ratio_raw = 100 }
                         xp_ratio = rounded(xp_ratio_raw,1) + '%'
 
                     }
-                    let best_rp = find_best_rp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team)
+                    let best_rp = find_best_rp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team, w)
                     if (best_rp != undefined) {
                         best_rp.xp_diff = best_rp.xp_total - sold_xp_total
                         best_rp.rp_diff = best_rp.rp_total - sold_rp_total
