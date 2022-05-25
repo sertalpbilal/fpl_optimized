@@ -5,7 +5,7 @@
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">
-                    <div class="mb-2"><i class="fas fa-puzzle-piece mr-1"></i> FPL Puzzle</div>
+                    <div class="mb-2" @click="location.href=base_page()"><i class="fas fa-puzzle-piece mr-1"></i> FPL Puzzle</div>
                     <!-- date -->
                 </h5>
                 <div class="scenario_detail">
@@ -18,6 +18,7 @@
                     <div class="mb-3">
                         <button class="btn btn-info btn-sm" @click="$('#instructions-modal').modal('show')">Show Instructions</button>
                         <button class="btn btn-info btn-sm" @click="$('#results-modal').modal('show')">Show Results</button>
+                        <button class="btn btn-secondary btn-sm" @click="$('#history-modal').modal('show')">History</button>
                     </div>
 
                     <!-- 🟩🟨🟪⬜️ -->
@@ -42,7 +43,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="play-bar" class="mt-2 mb-3">
+                    <div id="play-bar" class="mt-2 mb-3 text-smaller">
                         
                         <!-- Play bar -->
 
@@ -273,6 +274,47 @@
     </div>
 </div>
 
+
+<div class="modal fade" tabindex="-1" role="dialog" id="history-modal">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">History</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-body-scrollable modal-responsive text-black">
+                <table class="table table-sm text-small narrow-td" v-if="data_ready">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="n in _.rangeRight(max_no+1)">
+                            <td class="text-center">{{ n+1 }}</td>
+                            <td class="text-center">{{ data_formatter(new Date(first_day.getTime() + n * 24 * 60 * 60 * 1000)) }}</td>
+                            <td class="text-center">
+                                <span v-if="stat_for_id[n] && stat_for_id[n][0].result == 'solved'">
+                                    <button class="btn btn-sm btn-success" @click="open_puzzle(n)">Solved</button> {{ stat_for_id[n][0].tries.length }}/6
+                                </span>
+                                <span v-else-if="stat_for_id[n] && stat_for_id[n][0].result == 'failed'">
+                                    <button class="btn btn-sm btn-danger" @click="open_puzzle(n)">Failed</button> X/6
+                                </span>
+                                <span v-else>
+                                    <button class="btn btn-sm btn-secondary" @click="open_puzzle(n)">Not Played</button>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <div class="modal fade" tabindex="-1" role="dialog" id="results-modal" v-if="data_ready">
