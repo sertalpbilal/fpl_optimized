@@ -1908,3 +1908,12 @@ table.dataTable.table-striped.DTFC_Cloned tbody {
     padding: 0px;
     z-index: 2;
 }
+
+.modal-dialog-scrollable {
+    overflow-y: initial !important
+}
+
+.modal-body-scrollable {
+    height: 80vh;
+    overflow-y: auto;
+}

@@ -1,6 +1,8 @@
 var app = new Vue({
     el: '#app',
     data: {
+        max_no: 0,
+        first_day: undefined,
         puzzle_order: 0,
         puzzle_date: undefined,
         puzzle_id: undefined,
@@ -51,6 +53,9 @@ var app = new Vue({
         date_str() {
             if (this.puzzle_date == undefined) { return '' }
             return new Intl.DateTimeFormat().format(this.puzzle_date)
+        },
+        data_formatter() {
+            return d => new Intl.DateTimeFormat().format(d)
         },
         // player_dict() {
         //     if (!this.data_ready) { return {} }
@@ -203,6 +208,15 @@ var app = new Vue({
                 'max_streak': 0,
                 'result_counts': score_counts,
                 'score_ratios': score_ratios
+            }
+        },
+        stat_for_id() {
+            if (!this.data_ready) { return {} }
+            if (this.stats && this.stats.scores) {
+                return _.groupBy(this.stats.scores, 'order')
+            }
+            else {
+                return {}
             }
         },
         tries_text() {
@@ -450,6 +464,13 @@ var app = new Vue({
             else {
                 this.mobile_show_gw = 0
             }
+        },
+        open_puzzle(n) {
+            let target = window.location.origin + window.location.pathname
+            location.href = target + '?no=' + (parseInt(n)+1)
+        },
+        base_page() {
+            return window.location.origin + window.location.pathname
         }
     }
 });
@@ -548,14 +569,26 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
             
             let solved_before 
             if (stats !== null) {
-                solved_before = stats.scores.find(i => i.order == app.puzzle_order && i.puzzle_id == app.puzzle_id)
-                if (stats.today && stats.today.puzzle_id == app.puzzle_id) {
+                solved_before = stats.scores.find(i => i.order == puzzle_order && i.puzzle_id == puzzle_id)
+                if (stats.today && stats.today.puzzle_id == puzzle_id) {
                     app.tries = _.cloneDeep(stats.today.tries)
+                    if (stats.today.tries) {
+                        let e = stats.today.tries
+                        if (e.length > 0) {
+                            app.choice = e[e.length-1].choice
+                        }
+                    }
                     app.result = stats.today.result
                 }
                 else if (solved_before)  {
                     app.tries = _.cloneDeep(solved_before.tries)
                     app.result = solved_before.result
+                    if (solved_before.tries) {
+                        e = solved_before.tries
+                        if (e.length > 0) {
+                            app.choice = e[e.length-1].choice
+                        }
+                    }
                 }
             }
             
@@ -570,6 +603,7 @@ function initialize(puzzle_id, puzzle_order, puzzle_date) {
 $(document).ready(() => {
 
     let first_day = new Date(2022, 2, 31, 12, 0, 0)
+    app.first_day = first_day
     //"2022-03-31 12:00")
     let demo_mode = false
     let puzzle_id
@@ -589,6 +623,7 @@ $(document).ready(() => {
     } else {
         
         if (params.get('id') && params.get('unlock') == 1) {
+            app.max_no = parseInt(params.get('id'))
             read_local_file(`data/puzzle/order.json`).then((d) => {
                 let order = parseInt(params.get('id')) % d.length
                 puzzle_id = d[order]
@@ -602,6 +637,7 @@ $(document).ready(() => {
             let btw = days_between(first_day, today)
             if (btw < 0) { app.coming_soon = 1; return }
             let puzzle_no = parseInt(params.get('no'))-1
+            app.max_no = btw
             let target = Math.min(btw, puzzle_no)
             read_local_file(`data/puzzle/order.json`).then((d) => {
                 let order = target % d.length
@@ -615,6 +651,7 @@ $(document).ready(() => {
             
             let btw = days_between(first_day, today)
             if (btw < 0) { app.coming_soon = 1; return }
+            app.max_no = btw
             read_local_file(`data/puzzle/order.json`).then((d) => {
                 let order = btw % d.length
                 puzzle_id = d[order]
