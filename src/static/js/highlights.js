@@ -53,7 +53,8 @@ var app = new Vue({
         season_targets: season_results,
         luck_input: 0,
         maximize: false,
-        show_pts_on_ts: true
+        show_pts_on_ts: true,
+        show_info_ts: false
         // toty_expected: false
     },
     computed: {
@@ -3408,7 +3409,7 @@ function draw_team_season_visual() {
     const raw_width = 600;
     const raw_height = 400;
 
-    const margin = { top: 20, right: 15, bottom: 20, left: 15 },
+    const margin = { top: 20, right: 10, bottom: 20, left: 15 },
         width = raw_width - margin.left - margin.right,
         height = raw_height - margin.top - margin.bottom;
 
@@ -3429,9 +3430,15 @@ function draw_team_season_visual() {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+    let p2_left = 0
+    if (app.show_info_ts) {
+        p2_left = width/8
+    }
+
+
     let xvals = _.range(1, 16)
     let x = d3.scaleBand()
-        .range([0, width])
+        .range([p2_left, width])
         .domain(xvals)
         .paddingInner(0.1)
         .paddingOuter(0);
@@ -3444,6 +3451,30 @@ function draw_team_season_visual() {
         .call(g => g.selectAll(".tick text")
             .attr("opacity", 0)
             .style("display", "none"))
+
+    let x2;
+    if (app.show_info_ts) {
+        let x2vals = ['Chip', 'Pts', 'OR']
+        x2 = d3.scaleBand()
+            .range([0, p2_left])
+            .domain(x2vals)
+            .paddingInner(0.1)
+            .paddingOuter(0);
+        svg.append('g')
+            // .attr('transform', 'translate(0,-8)')
+            .attr('class', 'x-axis-2')
+            .call(
+                d3.axisTop(x2)
+                .tickSize(0));
+        svg.call(g => g.selectAll(".x-axis-2")
+                .attr("transform", 'translate(0px, -3px)'))
+    }
+    
+        // .call(g => g.selectAll(".tick text")
+        //     .attr("opacity", 0)
+        //     .style("display", "none")
+        // )
+
 
     let y_vals = gws
     let y = d3.scaleBand()
@@ -3611,6 +3642,74 @@ function draw_team_season_visual() {
             .text(d => d.rp || 0)
 
         
+    }
+
+    if (app.show_info_ts) {
+        let td = app.team_data
+        let chips = Object.entries(td).map(i => [i[0], i[1].active_chip]).filter(j => j[1])
+        
+        let chip_dict = {'wildcard': 'WC', '3xc': 'TC', 'freehit': 'FH', 'bboost': 'BB'}
+
+        body.append('g')
+            .selectAll()
+            .data(chips)
+            .enter()
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x2('Chip') + x2.bandwidth() / 2)
+            .attr("y", d => y(d[0]) + y.bandwidth()/2 + 1)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => chip_dict[d[1]])
+
+        let gw_pts_text = (e) => {
+            if (e.entry_history && e.entry_history.event_transfers_cost && e.entry_history.event_transfers_cost > 0) {
+                return e.entry_history.points + ' (-' + e.entry_history.event_transfers_cost + ')'
+            }
+            else if (e.entry_history) {
+                return e.entry_history.points
+            }
+            else {
+                return '-'
+            }
+        }
+
+        let pts_vals = Object.entries(td).map(i => [i[0], gw_pts_text(i[1])])
+
+        body.append('g')
+            .selectAll()
+            .data(pts_vals)
+            .enter()
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x2('Pts') + x2.bandwidth() / 2)
+            .attr("y", d => y(d[0]) + y.bandwidth()/2 + 1)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => d[1])
+
+        let rank_vals = Object.entries(td).map(i => [i[0], _.get(i[1], 'entry_history.overall_rank')])
+
+        // formatted_rank
+
+        body.append('g')
+            .selectAll()
+            .data(rank_vals)
+            .enter()
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x2('OR') + x2.bandwidth() / 2)
+            .attr("y", d => y(d[0]) + y.bandwidth()/2 + 1)
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => formatnumber(d[1]))
+
     }
     
     
