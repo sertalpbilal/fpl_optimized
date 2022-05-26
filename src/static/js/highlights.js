@@ -368,7 +368,7 @@ var app = new Vue({
                         _.set(gw_order_dict, gw + '.' + posssible[0], el.element)
 
                         let next = future_picks.find(i => i.element == el.element)
-                        if (next == undefined) {
+                        if (next == undefined || chips[gw] == 'freehit') {
                             el.sort_finish = gw
                         }
 
