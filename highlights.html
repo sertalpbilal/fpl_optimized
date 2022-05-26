@@ -464,6 +464,10 @@
                         <div class="col-12">
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="show_info_tog" v-model="show_info_ts" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="show_info_tog">Show Info Cols</label>
+                                </div>
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
                                     <input type="checkbox" class="custom-control-input" id="show_pts_tog" v-model="show_pts_on_ts" @change="draw_team_season_visual()">
                                     <label class="custom-control-label highlighted-checkbox" for="show_pts_tog">Show Points</label>
                                 </div>
@@ -1651,7 +1655,7 @@
 </main>
 
 <script>
-    let ts = 20220526185829
+    let ts = 20220526200438
 </script>
 
 
@@ -1718,11 +1722,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220526185829"></script>
+<script src="/static/js/main.js?ts=20220526200438"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220526185829"></script>
+<script src="/static/js/sampling_utils.js?ts=20220526200438"></script>
 
-<script src="/static/js/highlights.js?ts=20220526185829"></script>
+<script src="/static/js/highlights.js?ts=20220526200438"></script>
 
 
 <script>
