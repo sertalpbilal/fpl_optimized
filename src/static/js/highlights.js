@@ -3593,7 +3593,11 @@ function draw_team_season_visual() {
             .attr("y", d => y(d.gw))
             .attr("class", "team_captain_border")
     
-        gw_markers
+        body
+            .append('g')
+            .selectAll()
+            .data(data)
+            .enter()
             .append('text')
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
