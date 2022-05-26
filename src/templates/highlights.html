@@ -340,15 +340,39 @@
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Team Picks over Season</h5>
+                <button type="button" class="btn btn-secondary btn-sm btn-right-corner" @click="maximize=!maximize">
+                    <i class="fas fa-expand" v-if="!maximize"></i>
+                    <i class="fas fa-compress" v-else></i>
+                </button>
                 <div class="scenario_detail">
                     A visualization of your picks per position
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
                         <div class="col-12">
+                            <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="show_pts_tog" v-model="show_pts_on_ts" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="show_pts_tog">Show Points</label>
+                                </div>
+                            </div>
                             <div id="team_season_visual">
 
                             </div>
+                            <!-- <div class="row justify-content-center">
+                                <table class="col-8 col-md-6 table table-sm text-small table-striped mx-auto text-white">
+                                    <tbody>
+                                        <tr>
+                                            <td>Blanks / Picks</td>
+                                            <td>{{ pick_stats.blanks }} / {{ pick_stats.picked }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>10+ Picks</td>
+                                            <td>{{ pick_stats.tens }} / {{ pick_stats.picked }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div> -->
                         </div>
                     </div>
                 </div>

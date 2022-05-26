@@ -52,7 +52,8 @@ var app = new Vue({
         toty_relative: false,
         season_targets: season_results,
         luck_input: 0,
-        maximize: false
+        maximize: false,
+        show_pts_on_ts: true
         // toty_expected: false
     },
     computed: {
@@ -297,7 +298,109 @@ var app = new Vue({
                 p.eltype = fpl_data[p.id].element_type
                 p.name = fpl_data[p.id].web_name
             })
+            
             return picked_stats
+        },
+        user_picks_with_order() {
+            if (!this.is_ready) { return [] }
+            if (_.isEmpty(this.user_ownership_gain_loss)) { return [] }
+            let td = _.cloneDeep(this.team_data)
+            let picks = Object.keys(td).map(i => td[i].picks.map(j => ({ 'gw': parseInt(i), ...j }))).flat()
+            // _.cloneDeep(this.user_ownership_gain_loss.picked_players)
+            let chips = Object.fromEntries(Object.entries(td).map(i => [i[0], i[1].active_chip]))
+            let fpl_el = this.fpl_element
+            let rp_dict = this.pid_gw_pts
+            
+            picks.forEach((el) => {el.element_type = fpl_el[el.element].element_type})
+            picks.forEach((el) => {el.rp = _.get(rp_dict, el.element + '.' + el.gw) || 0})
+
+            // calculate viz positions
+            let gw_player_dict = {}
+            let gw_order_dict = {}
+            let eltypes = [1,2,3,4]
+            let el_lowest = {1: 1, 2: 3, 3: 8, 4: 13}
+            let el_highest = {1: 2, 2: 7, 3: 12, 4: 15}
+            // let order = _.range(1,16)
+            let gws = _.sortedUniq(picks.map(i => i.gw)).map(i => parseInt(i))
+            gws.forEach((gw) => {
+                let gw_picks = picks.filter(i => i.gw==gw)
+                
+                eltypes.forEach((pos) => {
+                    let pos_picks = gw_picks.filter(i => i.element_type == pos)
+                    let prev_gw = chips[gw-1] == 'freehit' ? gw-2 : gw-1
+                    let prev_picks = picks.filter(i => i.gw == prev_gw)
+
+                    let one_before = parseInt(gw)-1
+                    let history_picks = picks.filter(i => i.gw == one_before)
+                    let one_after = parseInt(gw)+1 // chips[gw+1] == 'freehit' ? gw+2 : gw+1
+                    let future_picks = picks.filter(i => i.gw == one_after)
+                    
+                    // existing ones
+                    let existing_players = pos_picks.filter(i => prev_picks.map(i => i.element).includes(i.element))
+                    existing_players.forEach((el) => {
+                        let previous = _.get(gw_player_dict, prev_gw + '.' + el.element)
+                        
+                        let prev = history_picks.find(i => i.element == el.element)
+                        let next = future_picks.find(i => i.element == el.element)
+
+                        el.sort_order = previous
+                        if (prev != undefined) {
+                            el.sort_start = prev.sort_start
+                        }
+                        else {
+                            el.sort_start = gw
+                        }
+                        if (next == undefined) {
+                            el.sort_finish = gw
+                        }
+                        _.set(gw_player_dict, gw + '.' + el.element, previous)
+                        _.set(gw_order_dict, gw + '.' + previous, el.element)
+                    })
+                    // new players
+                    let new_players = _.differenceWith(pos_picks, existing_players, _.isEqual)
+                    new_players.forEach((el) => {
+                        let start_order = el_lowest[el.element_type]
+                        let finish_order = el_highest[el.element_type]
+                        let posssible =  _.range(start_order, finish_order+1).filter(i => _.get(gw_order_dict, gw + '.' + i) == undefined)
+                        el.sort_order = posssible[0]
+                        el.sort_start = gw
+                        _.set(gw_player_dict, gw + '.' + el.element, posssible[0])
+                        _.set(gw_order_dict, gw + '.' + posssible[0], el.element)
+
+                        let next = future_picks.find(i => i.element == el.element)
+                        if (next == undefined) {
+                            el.sort_finish = gw
+                        }
+
+                        // for (this_order of posssible) {
+                            //     el.sort_order = this_order
+                            //     _.set(gw_player_dict, gw + '.' + el.element, this_order)
+                            //     _.set(gw_order_dict, gw + '.' + this_order, el.element)
+
+
+                            // let current_entry = _.get(gw_order_dict, gw + '.' + this_order)
+                            // if (current_entry == undefined) {
+                            //     el.sort_order = this_order
+                            //     _.set(gw_player_dict, gw + '.' + el.element, this_order)
+                            //     _.set(gw_order_dict, gw + '.' + this_order, el.element)
+                            //     break
+                            // }
+                            // else {
+                            //     continue
+                            // }
+                        // }
+                    })
+                })
+            })
+            return picks
+        },
+        pick_stats() {
+            if (_.isEmpty(this.user_picks_with_order)) { return {} }
+            let data = this.user_picks_with_order
+            let blanks = data.filter(i => i.multiplier > 0 && i.rp <= 3).length
+            let picked = data.filter(i => i.multiplier > 0).length
+            let tens = data.filter(i => i.multiplier > 0 && i.rp >= 10).length
+            return {blanks, picked, tens}
         },
         user_grouped_by_fixture() {
             return _(this.user_picks_detailed).groupBy('id').map((i,v) => [v, _(i).groupBy('fixture').value()]).value()
@@ -634,7 +737,7 @@ var app = new Vue({
                 gw_entry[1] = {net, xnet, loss, gain, xgain, loss_with_hit, gain_with_hit, top_gains, top_losses, gw, risk, this_gw_own, top_bets_for, top_bets_against}
             }
             all_pairs = all_pairs.filter(i => i.eo > 2 && i.total_pts > 3 && i.net <= -1)
-            return {'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains, 'combined_per_player_exp': player_xgains, 'comb_per_player_luck': player_luck}
+            return {'picked_players': user_picks, 'gains': user_picks, 'losses': all_pairs, 'combined_per_gw': combined, 'combined_per_player': player_gains, 'combined_per_player_exp': player_xgains, 'comb_per_player_luck': player_luck}
         },
         user_candlestick_values() {
             if (!this.is_ready) { return [] }
@@ -1093,6 +1196,7 @@ var app = new Vue({
                             draw_risk_reward_plot()
                             draw_tree_map()
                             draw_tree_map_loss()
+                            draw_team_season_visual()
                         })
                     })
                 }, 100)
@@ -2758,6 +2862,7 @@ function redraw_graphs() {
     draw_gain_loss_candlestick();
     draw_predicted_realized_diff();
     draw_risk_reward_plot();
+    draw_team_season_visual();
 }
 
 let refresh_point_dist;
@@ -3296,6 +3401,217 @@ function draw_predicted_realized_diff() {
 
 }
 
+function draw_team_season_visual() {
+
+    if (!app.is_ready) { return }
+
+    const raw_width = 600;
+    const raw_height = 400;
+
+    const margin = { top: 20, right: 15, bottom: 20, left: 15 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+
+    let data = _.cloneDeep(app.user_picks_with_order)
+
+    let gws = _.sortedUniq(data.map(i => parseInt(i.gw)))
+
+    jQuery("#team_season_visual").empty()
+
+    const raw_svg = d3.select("#team_season_visual")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+
+    let svg = raw_svg.append('g')
+        .attr("class", "mainbg")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    let xvals = _.range(1, 16)
+    let x = d3.scaleBand()
+        .range([0, width])
+        .domain(xvals)
+        .paddingInner(0.1)
+        .paddingOuter(0);
+    svg.append('g')
+        // .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'x-axis')
+        .call(
+            d3.axisTop(x)
+            .tickSize(0))
+        .call(g => g.selectAll(".tick text")
+            .attr("opacity", 0)
+            .style("display", "none"))
+
+    let y_vals = gws
+    let y = d3.scaleBand()
+        .domain(_.reverse(y_vals))
+        .range([height, 0])
+        .paddingInner(0.1)
+        .paddingOuter(0)
+    svg.append('g').attr('class', 'y-axis')
+        .call(
+            d3.axisLeft(y)
+            .tickSize(0))
+    .call(g => g.selectAll(".tick line")
+        .attr("stroke-opacity", 0.2)
+        .attr("stroke", "#9a9a9a")
+        .attr("pointer-events", "none")
+    )
+    .call(g => g.selectAll(".tick text")
+        .attr("x", -5)
+        .attr("font-size", "5pt")
+        .attr("fill", "#9a9a9a")
+        .attr("text-anchor", "end"));
+
+    // svg settings
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+    svg.call(s => s.selectAll(".tick").attr("font-size", "5pt").attr("fill", "white"))
+    svg.call(s => s.selectAll(".tick text").attr("fill", "white"))
+
+
+    let body = svg.append('g')
+
+    // pos plot
+
+    let pos_data = [
+        {'name': 'GK', 'start': 1, 'finish': 2},
+        {'name': 'DF', 'start': 3, 'finish': 7},
+        {'name': 'MD', 'start': 8, 'finish': 12},
+        {'name': 'FW', 'start': 13, 'finish': 15},
+    ]
+
+    let pos_grp = body.append('g')
+        .selectAll()
+        .data(pos_data)
+        .enter()
+    
+    pos_grp
+        .append('rect')
+        .attr("width", d => x(d.finish) - x(d.start) + x.bandwidth())
+        .attr("height", d => y.bandwidth())
+        .attr("x", d => x(d.start))
+        .attr("y", -y.bandwidth() - 4 )
+        .attr("class", "team_pos_box");
+
+    pos_grp
+        .append('text')
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("x", d => (x(d.start) + x(d.finish)) / 2 + x.bandwidth()/2)
+        .attr("y", d => -y.bandwidth()/2 - 4 + 1 )
+        .attr("font-size", "4pt")
+        .attr("class", "team_pos_name")
+        .text(d => d.name)
+
+        
+
+    // data plot
+
+    let actual_markers = data.filter(i => i.sort_finish)
+
+    let markers= body
+        .append('g')
+        .selectAll()
+        .data(actual_markers)
+        .enter();
+
+    markers
+        .append('rect')
+        .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
+        .attr("height", d => y(d.sort_finish) - y(d.sort_start) + y.bandwidth())
+        .attr("x", (d) => x(d.sort_order))
+        .attr("y", d => y(d.sort_start))
+        .attr("class", "team_visual_box");
+
+    let gw_markers = body
+        .append('g')
+        .selectAll()
+        .data(data)
+        .enter();
+
+    if (app.show_pts_on_ts) {
+        let bColor = (v) => {
+            let p = d3.scaleLinear()
+            .domain([-100, 3, 4, 20, 100])
+            .range(["#ff9c99", "#ff9c99", "#2cf5ff", "#49c6ff", "#49c6ff"])
+            return p(v)
+        }
+            
+        gw_markers.append('rect')
+            .attr("width", x.bandwidth()/6)
+            .attr("height", d => y.bandwidth())
+            .attr("x", (d) => x(d.sort_order) + x.bandwidth()*5/6)
+            .attr("y", d => y(d.gw))
+            .attr("class", "gw_visual_box")
+            .attr("fill", (d) => d.multiplier == 0 ? "none" : bColor(d.rp));
+    }
+        
+    let text_group = body
+        .append('g')
+        .selectAll()
+        .data(actual_markers)
+        .enter();
+        
+    text_group
+        .append('text')
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("x", d => x(d.sort_order) + (app.show_pts_on_ts ? x.bandwidth()*5/12 : x.bandwidth()/2))
+        .attr("y", d => (y(d.sort_finish) + y(d.sort_start))/2 + y.bandwidth()/2 + 1)
+        .attr("font-size", "4pt")
+        // .attr("fill", "black")
+        // .attr("fill", "#ffc100")
+        .attr("class", "team_box_player_name")
+        .text(d => long_name_str(app.fpl_element[d.element].web_name))
+
+    text_group
+        .append('rect')
+        .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
+        .attr("height", d => y(d.sort_finish) - y(d.sort_start) + y.bandwidth())
+        .attr("x", (d) => x(d.sort_order))
+        .attr("y", d => y(d.sort_start))
+        .attr("class", "team_visual_border");
+
+    if (app.show_pts_on_ts) {
+
+        // captain square
+        body
+            .append('g')
+            .selectAll()
+            .data(data.filter(i => i.multiplier > 1))
+            .enter()
+            .append('rect')
+            .attr("width", x.bandwidth()/6)
+            .attr("height", d => y.bandwidth())
+            .attr("x", (d) => x(d.sort_order) + x.bandwidth()*5/6)
+            .attr("y", d => y(d.gw))
+            .attr("class", "team_captain_border")
+    
+        gw_markers
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", d => x(d.sort_order) + x.bandwidth()*11/12)
+            .attr("y", d => y(d.gw) + y.bandwidth()/2 + 1)
+            .attr("font-size", "4pt")
+            // .attr("fill", "black")
+            .attr("fill", d => d.multiplier == 0 ? "#bbbbbb" : "#000000")
+            .attr("class", "team_box_pts")
+            .text(d => d.rp || 0)
+
+        
+    }
+    
+    
+}
+
 var unitlist = ["","K","M","G"];
 function formatnumber(number){
     let sign = Math.sign(number);
@@ -3414,6 +3730,16 @@ async function fetch_xp_data() {
         xp_data = xp_data.filter(i => parseFloat(i.price) < 20) // && parseFloat(i.xp) + parseFloat(i.rp) != 0)
         app.xp_data = Object.freeze(xp_data)
     })
+}
+
+let name_dict = {
+    'Alexander-Arnold': 'TAA',
+    'Ward-Prowse': 'JWP',
+    'Calvert-Lewin': 'DCL'
+}
+
+let long_name_str = n => {
+    return name_dict[n] || (n.length > 10 ? n.slice(0,8) + '...' : n)
 }
 
 $(document).ready(() => {

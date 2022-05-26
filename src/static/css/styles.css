@@ -1924,3 +1924,42 @@ table.dataTable.table-striped.DTFC_Cloned tbody {
     right: 10px;
 }
 
+rect.team_visual_box {
+    fill: #1f4046;
+}
+
+rect.gw_visual_box {
+    /* fill: rgb(221 145 145); */
+    filter: blur(0.5px);
+    stroke-opacity: 0;
+}
+
+rect.team_visual_border {
+    fill: none;
+    stroke: #008b8b;
+    stroke-width: 0.5px;
+}
+
+text.team_box_player_name {
+    fill: white;
+}
+
+text.team_box_pts {
+    /* fill: black; */
+}
+
+rect.team_captain_border {
+    fill: none;
+    stroke: #daed1c;
+    stroke-width: 1px;
+}
+
+rect.team_pos_box {
+    fill: #646464;
+    stroke: #adeaff;
+    stroke-width: 0.5;
+}
+
+text.team_pos_name {
+    fill: white;
+}
