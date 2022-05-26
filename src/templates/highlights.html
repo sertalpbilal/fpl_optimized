@@ -1,10 +1,14 @@
 "% include 'header.html' %"
 
-<main class="container">
+<main :class="{'container-fluid': maximize, 'container': !maximize}" v-cloak>
     <div class="row mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
                 <h5 class="card-header border-complement text-center scenario_title">Season Highlights</h5>
+                <button type="button" class="btn btn-secondary btn-sm btn-right-corner" @click="maximize=!maximize">
+                    <i class="fas fa-expand" v-if="!maximize"></i>
+                    <i class="fas fa-compress" v-else></i>
+                </button>
                 <div class="scenario_detail">
                     A brief look to your entire season stats per player
                 </div>
@@ -332,6 +336,25 @@
     </div>
 
 
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Team Picks over Season</h5>
+                <div class="scenario_detail">
+                    A visualization of your picks per position
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="team_season_visual">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
 
 

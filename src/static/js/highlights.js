@@ -51,7 +51,8 @@ var app = new Vue({
         show_all_transfers: false,
         toty_relative: false,
         season_targets: season_results,
-        luck_input: 0
+        luck_input: 0,
+        maximize: false
         // toty_expected: false
     },
     computed: {
