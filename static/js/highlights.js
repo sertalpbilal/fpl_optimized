@@ -373,24 +373,6 @@ var app = new Vue({
                         if (next == undefined || chips[gw] == 'freehit') {
                             el.sort_finish = gw
                         }
-
-                        // for (this_order of posssible) {
-                            //     el.sort_order = this_order
-                            //     _.set(gw_player_dict, gw + '.' + el.element, this_order)
-                            //     _.set(gw_order_dict, gw + '.' + this_order, el.element)
-
-
-                            // let current_entry = _.get(gw_order_dict, gw + '.' + this_order)
-                            // if (current_entry == undefined) {
-                            //     el.sort_order = this_order
-                            //     _.set(gw_player_dict, gw + '.' + el.element, this_order)
-                            //     _.set(gw_order_dict, gw + '.' + this_order, el.element)
-                            //     break
-                            // }
-                            // else {
-                            //     continue
-                            // }
-                        // }
                     })
                 })
             })
@@ -3570,6 +3552,7 @@ function draw_team_season_visual() {
         .attr("class", "team_visual_box")
         .style("fill", (d) => use_team_colors ? d.bg_color : "")
         .style("stroke", (d) => use_team_colors ? d.fg_color : "")
+        .style("stroke-width", (d) => use_team_colors ? "0.5px" : "")
         ;
 
     let gw_markers = body
@@ -3580,10 +3563,19 @@ function draw_team_season_visual() {
 
     if (app.show_pts_on_ts) {
         let bColor = (v) => {
-            let p = d3.scaleLinear()
-            .domain([-100, 3, 4, 20, 100])
-            .range(["#ff9c99", "#ff9c99", "#2cf5ff", "#49c6ff", "#49c6ff"])
-            return p(v)
+            if (!use_team_colors) {
+                let p = d3.scaleLinear()
+                .domain([-100, 3, 4, 20, 100])
+                .range(["#ff9c99", "#ff9c99", "#2cf5ff", "#49c6ff", "#49c6ff"])
+                return p(v)
+            }
+            else {
+                let p = d3.scaleLinear()
+                .domain([-100, 3, 4, 20, 100])
+                .range(["#ffc5c5", "#ffc5c5", "#ddfbff", "#ddfbff", "#ddfbff"])
+                return p(v)
+            }
+            
         }
             
         gw_markers.append('rect')
@@ -3615,13 +3607,15 @@ function draw_team_season_visual() {
         .style("fill", (d) => use_team_colors ? d.fg_color : "")
         .text(d => long_name_str(app.fpl_element[d.element].web_name))
 
-    text_group
-        .append('rect')
-        .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
-        .attr("height", d => y(d.sort_finish) - y(d.sort_start) + y.bandwidth())
-        .attr("x", (d) => x(d.sort_order))
-        .attr("y", d => y(d.sort_start))
-        .attr("class", "team_visual_border");
+    if (!use_team_colors) {
+        text_group
+            .append('rect')
+            .attr("width", x.bandwidth()) //x.bandwidth()/2 * 0.95)
+            .attr("height", d => y(d.sort_finish) - y(d.sort_start) + y.bandwidth())
+            .attr("x", (d) => x(d.sort_order))
+            .attr("y", d => y(d.sort_start))
+            .attr("class", "team_visual_border");
+    }
 
     if (app.show_pts_on_ts) {
 
