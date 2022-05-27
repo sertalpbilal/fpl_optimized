@@ -148,6 +148,12 @@
         </div>
     </div>
 
+    <!-- <table>
+        <tr >
+            <td class="p-2" v-for="(t, key) in pl_team_colors" :style="{'background-color': t[0], 'color': t[1]}">{{ key }}</td>
+        </tr>
+    </table> -->
+
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -462,7 +468,7 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row">
                         <div class="col-12">
-                            <div class="text-center">
+                            <div class="text-center text-small">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
                                     <input type="checkbox" class="custom-control-input" id="show_info_tog" v-model="show_info_ts" @change="draw_team_season_visual()">
                                     <label class="custom-control-label highlighted-checkbox" for="show_info_tog">Show Info Cols</label>
@@ -470,6 +476,10 @@
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
                                     <input type="checkbox" class="custom-control-input" id="show_pts_tog" v-model="show_pts_on_ts" @change="draw_team_season_visual()">
                                     <label class="custom-control-label highlighted-checkbox" for="show_pts_tog">Show Points</label>
+                                </div>
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="team_col_tog" v-model="use_team_colors" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="team_col_tog">Use Team Colors</label>
                                 </div>
                             </div>
                             <div id="team_season_visual">
@@ -1655,7 +1665,7 @@
 </main>
 
 <script>
-    let ts = 20220526200438
+    let ts = 20220527194338
 </script>
 
 
@@ -1722,11 +1732,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220526200438"></script>
+<script src="/static/js/main.js?ts=20220527194338"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20220526200438"></script>
+<script src="/static/js/sampling_utils.js?ts=20220527194338"></script>
 
-<script src="/static/js/highlights.js?ts=20220526200438"></script>
+<script src="/static/js/highlights.js?ts=20220527194338"></script>
 
 
 <script>

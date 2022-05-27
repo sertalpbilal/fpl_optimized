@@ -45,7 +45,7 @@ let team_codes = {
     8: { name: "Chelsea", short: "CHE" },
     31: { name: "Crystal Palace", short: "CRY" },
     11: { name: "Everton", short: "EVE" },
-    54: { name: "Fulham", short: "FUL" },
+    54: { name: "Fulham", short: "FUL" }, // demoted
     13: { name: "Leicester", short: "LEI" },
     2: { name: "Leeds", short: "LEE" },
     14: { name: "Liverpool", short: "LIV" },
@@ -87,6 +87,29 @@ let teams_ordered = [
     { name: "West Ham", short: "WHU", long: "West Ham United" },
     { name: "Wolves", short: "WOL", long: "Wolverhampton" }
 ]
+
+let pl_team_colors = {
+    "ARS": ['#EF0107', '#FFFFFF'],
+    "AVL": ['#95BFE5', '#670E36'],
+    "BRE": ['#FFFFFF', '#e30613'],
+    "BHA": ['#FFFFFF', '#005DAA'],
+    "BUR": ['#6C1D45', '#99D6EA'],
+    "CHE": ['#034694', '#D1D3D4'],
+    "CRY": ['#1B458F', '#D16475'],
+    "EVE": ['#003399', '#FFFFFF'],
+    "LEI": ['#003090', '#FDBE11'],
+    "LEE": ['#FFFFFF', '#b19c06'],
+    "LIV": ['#C8102E', '#0bcdc3'],
+    "MCI": ['#6CABDD', '#1C2C5B'],
+    "MUN": ['#DA291C', '#FBE122'],
+    "NEW": ['#241F20', '#FFFFFF'],
+    "NOR": ['#FFF200', '#00A650'],
+    "SOU": ['#ed1a3b', '#FFFFFF'],
+    "TOT": ['#132257', '#FFFFFF'],
+    "WAT": ['#FBEE23', '#ED2127'],
+    "WHU": ['#7A263A', '#F3D459'],
+    "WOL": ['#FDB913', '#231F20'],
+}
 
 let element_type = {
     1: { name: "Goalkeeper", "short": "GK", "id": 1, "min": 1, "max": 1, "cnt": 2 },
