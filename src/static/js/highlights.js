@@ -3563,10 +3563,19 @@ function draw_team_season_visual() {
 
     if (app.show_pts_on_ts) {
         let bColor = (v) => {
-            let p = d3.scaleLinear()
-            .domain([-100, 3, 4, 20, 100])
-            .range(["#ff9c99", "#ff9c99", "#2cf5ff", "#49c6ff", "#49c6ff"])
-            return p(v)
+            if (!use_team_colors) {
+                let p = d3.scaleLinear()
+                .domain([-100, 3, 4, 20, 100])
+                .range(["#ff9c99", "#ff9c99", "#2cf5ff", "#49c6ff", "#49c6ff"])
+                return p(v)
+            }
+            else {
+                let p = d3.scaleLinear()
+                .domain([-100, 3, 4, 20, 100])
+                .range(["#ffc5c5", "#ffc5c5", "#ddfbff", "#ddfbff", "#ddfbff"])
+                return p(v)
+            }
+            
         }
             
         gw_markers.append('rect')
