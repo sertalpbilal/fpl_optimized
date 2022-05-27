@@ -54,7 +54,8 @@ var app = new Vue({
         luck_input: 0,
         maximize: false,
         show_pts_on_ts: true,
-        show_info_ts: false
+        show_info_ts: false,
+        use_team_colors: false
         // toty_expected: false
     },
     computed: {
@@ -3435,6 +3436,15 @@ function draw_team_season_visual() {
         p2_left = width/8
     }
 
+    let use_team_colors = app.use_team_colors
+    if (use_team_colors) {
+        let fpl_dict = app.fpl_element
+        data.forEach((p) => {
+            let team = team_codes[fpl_dict[p.element].team_code].short
+            p.bg_color = pl_team_colors[team][0]
+            p.fg_color = pl_team_colors[team][1]
+        })
+    }
 
     let xvals = _.range(1, 16)
     let x = d3.scaleBand()
@@ -3557,7 +3567,10 @@ function draw_team_season_visual() {
         .attr("height", d => y(d.sort_finish) - y(d.sort_start) + y.bandwidth())
         .attr("x", (d) => x(d.sort_order))
         .attr("y", d => y(d.sort_start))
-        .attr("class", "team_visual_box");
+        .attr("class", "team_visual_box")
+        .style("fill", (d) => use_team_colors ? d.bg_color : "")
+        .style("stroke", (d) => use_team_colors ? d.fg_color : "")
+        ;
 
     let gw_markers = body
         .append('g')
@@ -3599,6 +3612,7 @@ function draw_team_season_visual() {
         // .attr("fill", "black")
         // .attr("fill", "#ffc100")
         .attr("class", "team_box_player_name")
+        .style("fill", (d) => use_team_colors ? d.fg_color : "")
         .text(d => long_name_str(app.fpl_element[d.element].web_name))
 
     text_group
