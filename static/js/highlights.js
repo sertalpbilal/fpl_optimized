@@ -3459,7 +3459,7 @@ function draw_team_season_visual() {
                 d3.axisTop(x2)
                 .tickSize(0));
         svg.call(g => g.selectAll(".x-axis-2")
-                .attr("transform", 'translate(0px, -3px)'))
+                .style("transform", 'translate(0px, -3px)'))
     }
     
         // .call(g => g.selectAll(".tick text")
