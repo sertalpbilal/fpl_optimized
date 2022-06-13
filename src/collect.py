@@ -679,6 +679,8 @@ def cache_effective_ownership(season_folder):
             prime_picks = picks_dict['Prime'] = {}
             prime_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(prime_data)}
 
+            # TODO: apply autosub
+
             for team in prime_data:
                 try:
                     hits = team['data']['entry_history']['event_transfers_cost']

@@ -393,6 +393,59 @@
             </div>
         </div>
     </div>
+
+
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Points by Acquisition Type and Decision Age</h5>
+                <div class="scenario_detail">
+                    Details about where points originated with decision age details
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <!-- <div class="text-center text-small">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="exclude_fh_tag" v-model="exclude_fh_from_age_0" @change="draw_point_origin_graph()">
+                                    <label class="custom-control-label highlighted-checkbox" for="exclude_fh_tag">Exclude FH from decision age analysis</label>
+                                </div>
+                            </div> -->
+                            <!-- <div class="text-small" style="overflow-x: hidden; overflow-y: scroll; max-height: 300px;">
+                                <div>
+                                    {{ user_picks_origin }}
+                                </div>
+                            </div> -->
+                            <div id="point_origin_visual">
+                                
+                            </div>
+                        </div>
+                        <!-- <div class="col-12 col-md-8 mt-3">
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="point_origin_table" v-if="ready">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Decision Age</th>
+                                        <th class="text-center" v-for="stat in user_picks_origin.group_names">{{ stat[0] }}</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr v-for="age in user_picks_origin.age_groups">
+                                        <td class="text-center">{{ age }}</td>
+                                        <td class="text-center" v-for="stat in user_picks_origin.group_names">{{ _.get(user_picks_origin.nested_sum, stat[1] + '.' + age) || "-" }}</td>
+                                        <td class="text-center">{{ _.get(user_picks_origin.age_sums, age) || "-" }}</td>
+                                        <td class="text-center">{{ _.round( (_.get(user_picks_origin.age_sums, age) || 0) / user_picks_origin.stats.total * 100, 0) }}%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
 
 
