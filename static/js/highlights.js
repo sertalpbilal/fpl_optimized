@@ -55,7 +55,8 @@ var app = new Vue({
         maximize: false,
         show_pts_on_ts: true,
         show_info_ts: false,
-        use_team_colors: false
+        use_team_colors: false,
+        // exclude_fh_from_age_0: false
         // toty_expected: false
     },
     computed: {
@@ -323,6 +324,7 @@ var app = new Vue({
             let el_lowest = {1: 1, 2: 3, 3: 8, 4: 13}
             let el_highest = {1: 2, 2: 7, 3: 12, 4: 15}
             // let order = _.range(1,16)
+
             let gws = _.sortedUniq(picks.map(i => i.gw)).map(i => parseInt(i))
             gws.forEach((gw) => {
                 let gw_picks = picks.filter(i => i.gw==gw)
@@ -388,6 +390,184 @@ var app = new Vue({
         },
         user_grouped_by_fixture() {
             return _(this.user_picks_detailed).groupBy('id').map((i,v) => [v, _(i).groupBy('fixture').value()]).value()
+        },
+        user_picks_origin() {
+            if (!this.is_ready) { return []}
+            let rp_dict = this.pid_gw_pts
+            data = this.team_data
+            let gameweeks = Object.keys(data).map(i => parseInt(i))
+            let wc_count = 1
+            let fh_count = 1
+            gameweeks.forEach((gw) => {
+                picks = data[gw].picks
+                // if GW 1 or WC: then everyone is WC -  reset
+                if (gw == gameweeks[0]) {
+                    picks.forEach((p) => {
+                        p.gw = gw
+                        p.origin = 'initial'
+                        p.origin_text = 'initial'
+                        p.origin_gw = gw
+                        p.age = 0
+                        p.age_group = p.age
+                    })
+                }
+                else if (data[gw].active_chip == 'wildcard') {
+                    picks.forEach((p) => {
+                        p.gw = gw
+                        p.origin = 'wildcard'
+                        p.origin_text = 'wc' + wc_count
+                        p.origin_gw = gw
+                        p.age = 0
+                        p.age_group = p.age
+                        p.wildcard_cnt = wc_count
+                    })
+                    wc_count += 1;
+                }
+                else if (data[gw].active_chip == 'freehit') {
+                    picks.forEach((p) => {
+                        p.gw = gw
+                        p.origin = 'freehit'
+                        p.origin_text = 'fh' + fh_count
+                        p.origin_gw = gw
+                        p.age = 0
+                        p.age_group = p.age
+                        p.freehit_cnt = fh_count
+                    })
+                    fh_count += 1;
+                }
+                else {
+                    // check if last gw was FH
+                    let target_gw = data[gw-1].active_chip == 'freehit' ? gw-2 : gw-1
+                    last_gw_picks = data[target_gw].picks
+                    picks.forEach((p) => {
+                        last_entry = last_gw_picks.find(i => i.element == p.element)
+                        if (last_entry) {
+                            p.gw = gw
+                            p.origin = last_entry.origin
+                            p.origin_text = last_entry.origin_text
+                            p.origin_gw = last_entry.origin_gw
+                            p.age = gw - p.origin_gw
+                            p.age_group = p.age > 10 ? '11+' : p.age
+                            p.wildcard_cnt = last_entry.wildcard_cnt
+                        }
+                        else {
+                            p.gw = gw
+                            p.origin = 'transfer'
+                            p.origin_text = 'transfer'
+                            p.origin_gw = gw
+                            p.age = 0
+                            p.age_group = p.age
+                        }
+                    })
+                }
+            })
+
+            gameweeks.forEach((gw) => {
+                data[gw].picks.forEach((p) => {
+                    p.points = _.get(rp_dict, p.element + '.' + gw) || 0
+                    p.eff_points = p.points * p.multiplier
+                })
+            })
+
+            let all_players = Object.values(data).map(i => i.picks).flat()
+
+            let age_pts = _.map(_.groupBy(all_players, 'age'), (val, key) => [key, _.sumBy(val, 'eff_points')])
+
+            stats = {
+                total: _.sum(all_players.map(i => i.eff_points)),
+                pts_main: {
+                    'initial': _.sum(all_players.filter(i => i.origin == 'initial').map(i => i.eff_points)),
+                    'wildcard': _.sum(all_players.filter(i => i.origin == 'wildcard').map(i => i.eff_points)),
+                    'freehit': _.sum(all_players.filter(i => i.origin == 'freehit').map(i => i.eff_points)),
+                    'transfer': _.sum(all_players.filter(i => i.origin == 'transfer').map(i => i.eff_points)),
+                },
+                // 'split': {
+                //     'total_pts_initial': _.sum(all_players.filter(i => i.real_origin == 'initial').map(i => i.eff_points)),
+                //     'total_pts_wildcard_only': _.sum(all_players.filter(i => i.real_origin == 'wildcard').map(i => i.eff_points)),
+                //     'total_pts_freehit': _.sum(all_players.filter(i => i.real_origin == 'freehit').map(i => i.eff_points)),
+                //     'total_pts_transfer': _.sum(all_players.filter(i => i.real_origin == 'transfer').map(i => i.eff_points)),
+                // },
+                pts_details: {
+                    'initial': _.sum(all_players.filter(i => i.origin == 'initial').map(i => i.eff_points)),
+                    'wc1': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1).map(i => i.eff_points)),
+                    'wc2': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2).map(i => i.eff_points)),
+                    'fh1': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1).map(i => i.eff_points)),
+                    'fh2': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2).map(i => i.eff_points)),
+                    'transfer': _.sum(all_players.filter(i => i.origin == 'transfer').map(i => i.eff_points))
+                },
+                groups: {
+                    'initial': all_players.filter(i => i.origin == 'initial'),
+                    'wc1': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1),
+                    'wc2': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2),
+                    'fh1': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1),
+                    'fh2': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2),
+                    'transfer': all_players.filter(i => i.origin == 'transfer')
+                },
+                age_pts
+            }
+
+            let group_names = [
+                ['Initial', 'initial'],
+                ['WC 1', 'wc1'],
+                ['WC 2', 'wc2'],
+                ['Transfers', 'transfer'],
+                ['FH 1', 'fh1'],
+                ['FH 2', 'fh2']
+            ]
+            // let age_groups = _.range(11).concat(['11+'])
+
+            let main_groups = [
+                ['Initial', 'initial', 'IN'],
+                ['WC', 'wildcard', 'WC'],
+                ['Transfers', 'transfer', 'TR'],
+                ['FH', 'freehit', 'FH'],
+            ]
+
+            let main_coll = m = _(all_players).groupBy('origin').mapValues((val, key) => _(val).groupBy('age_group').value()).value()
+            
+            let main_sum = _(m).mapValues((val,key) => _(val).mapValues((ival, ikey) => _.sumBy(ival, 'eff_points')).value()).value()
+            let main_cnt = _(m).mapValues((val,key) => _(val).mapValues((ival, ikey) => ival.filter(i => i.multiplier > 0).length).value()).value()
+
+            let tabular_values = {}
+
+            let nested_collection = e = _(all_players).groupBy('origin_text').mapValues((val, key) => _(val).groupBy('age_group').value()).value()
+            let age_groups = _.uniq(_(e).map((val,key) => _(val).map((ival, ikey) => ikey).value()).value().flat())
+
+            let nested_sum = _(e).mapValues((val,key) => _(val).mapValues((ival, ikey) => _.sumBy(ival, 'eff_points')).value()).value()
+            let nested_count = _(e).mapValues((val,key) => _(val).mapValues((ival, ikey) => ival.filter(i => i.multiplier > 0).length).value()).value()
+            
+            let age_sums = _(all_players).groupBy('age_group').mapValues((val, key) => _(val).sumBy('eff_points')).value()
+            let age_cnt = _(all_players).groupBy('age_group').mapValues((val, key) => val.filter(i => i.multiplier > 0).length).value()
+
+            let grp_cnt = _(all_players).groupBy('origin_text').mapValues((val, key) => val.filter(i => i.multiplier > 0).length).value()
+
+            // group_names.forEach((gr) => {
+            //     age_groups.forEach((age) => {
+            //         if (age.includes('+')) {
+
+            //         }
+            //         else {
+            //             total_in_cell = _.sum(all_players.filter(i => i.origin == gr[1] && i.age == age).map(i => i.eff_points))
+
+            //         }
+            //     })
+            // })
+
+            return Object.freeze({
+                data: data,
+                all_players,
+                stats: stats,
+                group_names,
+                age_groups,
+                nested_sum,
+                nested_count,
+                age_sums,
+                age_cnt,
+                grp_cnt,
+                main_sum,
+                main_cnt,
+                main_groups
+            })
         },
         user_picks_custom_stats() {
             if (!this.is_ready) { return [] }
@@ -1181,6 +1361,7 @@ var app = new Vue({
                             draw_tree_map()
                             draw_tree_map_loss()
                             draw_team_season_visual()
+                            draw_point_origin_graph()
                         })
                     })
                 }, 100)
@@ -2847,6 +3028,7 @@ function redraw_graphs() {
     draw_predicted_realized_diff();
     draw_risk_reward_plot();
     draw_team_season_visual();
+    draw_point_origin_graph();
 }
 
 let refresh_point_dist;
@@ -3721,6 +3903,691 @@ function draw_team_season_visual() {
     }
     
     
+}
+
+function draw_point_origin_graph() {
+
+    if (!app.is_ready) { return }
+
+    const raw_width = 620;
+    const raw_height = 620;
+
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 },
+        width = raw_width - margin.left - margin.right,
+        height = raw_height - margin.top - margin.bottom;
+    
+    let data = _.cloneDeep(app.user_picks_origin)
+
+    let gws = Object.keys(data.data)
+
+    jQuery("#point_origin_visual").empty()
+
+    const raw_svg = d3.select("#point_origin_visual")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .attr('class', 'pull-center').style('display', 'block')
+        .style('margin-bottom', '10px')
+
+    let svg = raw_svg.append('g')
+        .attr("class", "mainbg")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // let x = d3.scaleLinear().domain([0, data.stats.total]).range([0, width])
+    // svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x).tickSize(0));
+    
+
+    // section 1
+    // total points earned
+    let s1_top = 0
+    let s1_end = 0
+    let s1 = svg.append('g').attr("transform", "translate(0, 0)")
+    if (true) {
+
+        let local_data = data.stats.pts_main
+
+        // title
+        s1.append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "hanging")
+            .attr("dominant-baseline", "hanging")
+            .attr("x", width/2)
+            .attr("y", 0)
+            .attr("font-size", "8pt")
+            .attr("fill", "white")
+            .text("Total Points Earned by Acquisition Type")
+
+        let categories = {
+            'Initial': 'initial',
+            'Wildcard': 'wildcard',
+            'Transfers': 'transfer',
+            'Free Hit': 'freehit'
+        }
+        let cat_keys = Object.keys(categories)
+
+        let all_values = []
+
+        let box_value = 10
+        let row_count = 4
+        let col_start = 0
+
+        cat_keys.forEach((c) => {
+            let t_value = local_data[categories[c]]
+            let col_count = Math.ceil(t_value/box_value/row_count)
+            entry = {
+                'cat': c,
+                'total_score': t_value,
+                'cat_tag': categories[c],
+                'cols': col_count,
+                'col_start': col_start,
+                'col_end': col_start + col_count
+            }
+            col_start += col_count;
+            let col_boxes = []
+            let score = t_value
+            _.range(entry.cols).forEach((col) => {
+                col_values = []
+                while (col_values.length < row_count && score > 0) {
+                    let e_score = score > box_value ? box_value : score
+                    col_values.push(e_score)
+                    score -= e_score;
+                }
+                col_boxes.push(col_values)
+            })
+            entry.col_boxes = col_boxes
+            all_values.push(entry)
+        })
+
+        let x = d3.scaleBand().domain(_.range(0,_.maxBy(all_values, 'col_end').col_end+1)).range([0, width]).paddingInner(0.15)
+        let y = d3.scaleBand().domain(_.range(row_count)).range([0, x.step()*row_count]).paddingInner(0.15)
+
+        let y_end = s1_end = x.step()*row_count
+
+        let group_holder = s1.append('g').attr("transform", "translate(0, 20)")
+            .selectAll()
+            .data(all_values)
+            .enter()
+            .append('g')
+            .attr("transform", (d) => `translate(${x(d.col_start)}, 0)`)
+        
+        let box_holders = group_holder.selectAll()
+            .data((d,g) => d.col_boxes.map((val, inner_col) => {return {'val': val, 'inner_col': inner_col, 'group': g}}))
+            .enter()
+
+        type_cols = ['#d65544', '#48baff', '#93dea6', '#ffdc31']
+
+        let single_node = box_holders.selectAll()
+            .data(d => d.val.map((k,r) => {return {'val': k, 'row': r, 'col': d.inner_col, 'group': d.group}}) )
+            .enter()
+        
+        // gray box
+        single_node.append("rect")
+            .attr("x", d => x(d.col))
+            .attr("y", d => y(d.row))
+            .attr("width", x.bandwidth())
+            .attr("height", y.bandwidth())
+            .attr("fill", "#686868")
+            .attr("stroke", "none")
+
+        // color box
+        single_node.append("rect")
+            .attr("x", d => x(d.col))
+            .attr("y", d => y(d.row))
+            .attr("width", d => x.bandwidth() * d.val/box_value)
+            .attr("height", y.bandwidth())
+            .attr("fill", d => type_cols[d.group])
+            .attr("stroke", "none")
+            .attr("data-val", (d) => d.val)
+            .attr("data-col", (d) => d.col)
+            .attr("data-row", (d) => d.row)
+
+        // legend box
+        let single_width = 100
+
+        let legend_box = s1.append('g')
+            .attr("transform", `translate(${(width - cat_keys.length * single_width)/2}, ${y_end + 30})`)
+
+        let legend_entry = legend_box.selectAll()
+            .data(all_values)
+            .enter()
+
+        let single_entry = legend_entry.append('g')
+            .attr("transform", (d,i) => `translate(${i * single_width}, 0)`)
+
+        single_entry
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", 10)
+            .attr("height", 10)
+            .attr("fill", (d,i) => type_cols[i])
+            .attr("stroke", "none")
+
+        single_entry
+            .append("text")
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", 15)
+            .attr("y", 6)
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => d.cat)
+
+        single_entry
+            .append("text")
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", 15)
+            .attr("y", 16)
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => d.total_score + " pts")
+
+        single_entry
+            .append("text")
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("x", 15)
+            .attr("y", 26)
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => _.round(d.total_score / data.stats.total * 100,0) + "%")
+
+
+        // svg.append('rect').attr('x', 0).attr('y', y_end + 70).attr('width', 100).attr('height', 100)
+        
+        
+    }
+
+    let s2_top = Math.ceil(s1_end + 75)
+    let s2 = svg.append('g').attr("transform", `translate(0, ${s2_top})`)
+    if (true) {
+        // work rect:
+        // s2.append("rect")
+        // .attr("x", 0)
+        // .attr("y", 0)
+        // .attr("width", width)
+        // .attr("height", 390)
+        // .attr("fill", "red")
+        // .attr("fill-opacity", 0)
+        // .attr("stroke", "white")
+        // .attr("stroke-opacity", 0.1)
+
+        let age_groups = data.age_groups
+        let group_names = data.group_names
+        let total = data.nested_sum
+        let count = data.nested_count
+
+        // title
+        s2.append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "hanging")
+            .attr("dominant-baseline", "hanging")
+            .attr("x", width/2)
+            .attr("y", 0)
+            .attr("font-size", "8pt")
+            .attr("fill", "white")
+            .text("Total Points, Counts, Points per Pick by Decision Age and Acquisition Type")
+
+        let graph_inner = s2.append('g').attr("transform", "translate(0, 35)")
+
+        let x = d3.scaleBand()
+            .range([0, width])
+            .domain(['Age'].concat(group_names.map(i => i[0])).concat(['Total', 'Perc.']))
+            .padding(0.05);
+        graph_inner.append('g').attr('transform', 'translate(0,0)').call(d3.axisTop(x).tickSize(0));
+        let y = d3.scaleBand()
+            .range([0, 340])
+            .domain(age_groups.concat(['Total']))
+            .padding(0.1);
+        // graph_inner.append('g').call(d3.axisLeft(y).tickSize(0));
+            //.select(".domain").remove();
+
+        graph_inner.call(g => g.selectAll(".domain").attr("opacity", 0))
+
+        
+
+        let values_as_list = age_groups.map(
+            (age) => group_names.map((gr) => {
+                    return {
+                        'age': age,
+                        'group': gr,
+                        'group_text': gr[0],
+                        'val': _.get(total, gr[1] + '.' + age) || 0,
+                        'total': _.get(total, gr[1] + '.' + age) || "",
+                        'count': _.get(count, gr[1] + '.' + age) || "",
+                        'ppp': _.round((_.get(total, gr[1] + '.' + age) || 0) / (_.get(count, gr[1] + '.' + age) || 1),1)
+                    }
+                })).flat()
+        console.log(values_as_list)
+
+        let color_range = d3.scaleLinear().range(["#ffffff", "#00fff8"]).domain([0, d3.max(values_as_list.map(i => i.total))])
+
+        // y labels
+        y_labels = graph_inner.append('g')
+            .selectAll()
+            .data(age_groups.concat("Total"))
+            .enter()
+        y_labels.append('text')
+            .attr("x", x("Age") + x.bandwidth()/2)
+            .attr("y", d => y(d) + y.bandwidth()/2 + 1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => d)
+        
+        // data cells
+
+        let cell = graph_inner.append('g')
+                .selectAll()
+                .data(values_as_list)
+                .enter()
+        
+        cell.append('rect')
+            .attr("x", d => x(d.group[0]))
+            .attr("y", d => y(d.age))
+            .attr("width", x.bandwidth())
+            .attr("height", y.bandwidth())
+            .attr("rx", "2px")
+            .attr("ry", "2px")
+            // .attr("fill", d => color_range(d.total))
+            .attr("fill", "#686868")
+            .attr("fill-opacity", 0.5)
+
+        cell.append('text')
+            .attr("x", d => x(d.group[0]) + x.bandwidth()/2)
+            .attr("y", d => y(d.age) + y.bandwidth()*3.5/10)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", d => color_range(d.total)) // "#abf8f9")
+            .text(d => d.total != "" ? d.total + " pts" : "")
+
+        cell.append('text')
+            .attr("x", d => x(d.group[0]) + x.bandwidth()/2)
+            .attr("y", d => y(d.age) + y.bandwidth()*8.5/10)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => d.count != "" ? d.count + " picks / " + d.ppp + " ppp" : "")
+
+        let total_cells = graph_inner.append('g')
+            .selectAll()
+            .data(Object.entries(data.age_sums))
+            .enter()
+
+        total_cells.append('text')
+            .attr("x", x("Total") + x.bandwidth()/2)
+            .attr("y", d => y(d[0]) + y.bandwidth()*3.5/10)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => d[1] + " pts")
+
+        total_cells.append('text')
+            .attr("x", x("Total") + x.bandwidth()/2)
+            .attr("y", d => y(d[0]) + y.bandwidth()*8.5/10)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => (data.age_cnt[d[0]] || 0) + " picks / " + _.round(d[1]/(data.age_cnt[d[0]] || 1), 1) + " ppp" )
+
+        let overall_sum = data.stats.total
+
+        total_cells.append('text')
+            .attr("x", x("Perc.") + x.bandwidth()/2)
+            .attr("y", d => y(d[0]) + y.bandwidth()/2 + 1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => _.round(100*d[1]/overall_sum,0) + "%")
+
+        // total for y
+        let gr_dict = Object.fromEntries(data.group_names)
+        let gr_sums = _(values_as_list).groupBy('group_text').map((val, key) => [key, _.sum(val.map(i => parseInt(i.val))), data.grp_cnt[gr_dict[key]] || 0]).value()
+        
+        let total_groups = graph_inner.append('g')
+            .selectAll()
+            .data(gr_sums)
+            .enter()
+
+        total_groups.append('text')
+            .attr("x", d => x(d[0]) + x.bandwidth()/2)
+            .attr("y", d => y("Total") + y.bandwidth()*3.5/10 + 1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(d => d[1] + " pts")
+
+        total_groups.append('text')
+            .attr("x", d => x(d[0]) + x.bandwidth()/2)
+            .attr("y", d => y("Total") + y.bandwidth()*8.5/10 + 1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "4pt")
+            .attr("fill", "white")
+            .text(d => d[2] + " picks / " + _.round(d[1]/(d[2] || 1), 1) + " ppp")
+
+        graph_inner.append('text')
+            .attr("x", d => x("Total") + x.bandwidth()/2)
+            .attr("y", d => y("Total") + y.bandwidth()/2 + 1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "7pt")
+            .attr("fill", "white")
+            .text(overall_sum + " pts")
+
+
+    }
+
+    let s3_top = Math.ceil(s2_top + 390)
+    let s3 = svg.append('g').attr("transform", `translate(0, ${s3_top})`)
+    if(true) {
+        
+        s3.append('text')
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "hanging")
+            .attr("dominant-baseline", "hanging")
+            .attr("x", width/2)
+            .attr("y", 0)
+            .attr("font-size", "8pt")
+            .attr("fill", "white")
+            .text("Team Composition")
+
+        let gws = _.range(1,39)
+
+        let x = d3.scaleBand()
+            .range([30, width])
+            .domain(gws)
+            .padding(0.1);
+        let y = d3.scaleBand()
+            .range([0, 150])
+            .domain(_.range(15))
+            .paddingInner(0.1);
+
+        let gw_chips = _(data.data).mapValues((val, key) => val.active_chip).value()
+        let all_players = data.all_players
+        let nodes = [];
+        let links = [];
+        gws.forEach((gw) => {
+            let gw_picks = all_players.filter(i => i.gw == gw)
+            let gw_acq = _.uniq(gw_picks.map(i => i.origin_text))
+            let picked_groups = data.group_names.filter(i => gw_acq.includes(i[1]))
+            let cnt = 0;
+            let lineup_cnt = 0;
+            picked_groups.forEach((group) => {
+                let picks = gw_picks.filter(i => i.origin_text == group[1])
+                let val = picks.length
+                let lineup_val = picks.filter(i => i.multiplier > 0).length
+                nodes.push({
+                    'type': 'regular',
+                    'x0': x(gw),
+                    'x1': x(gw)+x.bandwidth(),
+                    'y0': y(cnt),
+                    'y1': y(cnt+val-1) + y.bandwidth(),
+                    'group': group,
+                    'val': val,
+                    'pts': _.sum(picks.map(i => i.eff_points)),
+                    'lineup': lineup_val,
+                    'bench': picks.filter(i => i.multiplier == 0).length,
+                    'ly0': y(lineup_cnt),
+                    'ly1': y(lineup_cnt+lineup_val-1) + y.bandwidth()
+                })
+                cnt += val;
+                lineup_cnt += lineup_val;
+            })
+            if (lineup_cnt < 15) {
+                nodes.push({
+                    'type': 'bench',
+                    'x0': x(gw),
+                    'x1': x(gw)+x.bandwidth(),
+                    'group': ['', 'bench', ''],
+                    'bench': picks.filter(i => i.multiplier == 0).length,
+                    'lineup': 15-lineup_cnt,
+                    'ly0': y(lineup_cnt),
+                    'ly1': y(14) + y.bandwidth()
+                })
+            }
+        })
+
+
+        let s3_p1 = s3.append('g').attr("transform", "translate(0,20)")
+
+        type_cols = {'bench': 'gray', 'initial': '#d65544', 'wildcard': '#48baff', 'wc1': '#48baff', 'wc2': '#48baff', 'transfer': '#93dea6', 'freehit': '#ffdc31', 'fh1': '#ffdc31', 'fh2': '#ffdc31'}
+        gr_text_color = {'bench': 'white', 'initial': 'white', 'wildcard': 'black', 'wc1': 'black', 'wc2': 'black', 'transfer': 'black', 'fh1': 'black', 'fh2': 'black', 'freehit': 'black'}
+
+        {
+            
+            // points
+            s3_p1.append("text")
+                .attr("text-anchor", "start")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("font-size", "6pt")
+                .attr("fill", "#7fd3d9")
+                .text("Points")
+
+            s3_p1.selectAll().data(gws).enter().append('text')
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => x(d) + x.bandwidth()/2)
+                .attr("y", 0)
+                .attr("font-size", "4pt")
+                .attr("fill", "white")
+                .text(d => d)
+            
+            let main_colors = {'IN': '#d65544', 'WC': '#48baff', 'TR': '#93dea6', 'FH': '#ffdc31'}
+            let ymain = d3.scaleBand()
+                .range([0, 48])
+                .domain(data.main_groups.map(i => i[1]))
+                .paddingInner(0.1);
+
+            let point_holder = s3_p1.append('g')
+                .attr("transform", "translate(0, 10)")
+
+            let leg_box = point_holder.selectAll()
+                .data(data.main_groups)
+                .enter()
+                .append('g')
+            
+            leg_box.append("rect")
+                .attr("x", 15)
+                .attr("y", (d,i) => ymain(d[1]))
+                .attr("width", 10)
+                .attr("height", ymain.bandwidth())
+                .attr("fill", d => main_colors[d[2]])
+                .attr("stroke", "none")
+
+            leg_box.append("text")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", 20)
+                .attr("y", (d,i) => ymain(d[1]) + ymain.bandwidth()/2)
+                .attr("font-size", "5pt")
+                .attr("fill", d => gr_text_color[d[1]])
+                .text(d => d[2])
+            
+            let type_vals = _(data.all_players).groupBy('origin').map((val, key) => _(val).groupBy('gw').map((ival, ikey) => { return {cnt: ival.filter(i => i.multiplier > 0).length, val: _.sum(ival.map(i => i.eff_points)), gw: ikey, group: key}}).value()).value().flat()
+
+            let type_box = point_holder.append('g')
+                .selectAll()
+                .data(type_vals)
+                .enter()
+
+            type_box.append("text")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => x(d.gw) + x.bandwidth()/2)
+                .attr("y", d => ymain(d.group) + ymain.bandwidth()/2)
+                .attr("font-size", "5pt")
+                .attr("fill", d => type_cols[d.group])
+                .text(d => d.val)
+
+        }
+
+        // data part
+
+        let s3_p2 = s3.append('g').attr("transform", "translate(0,90)")
+
+        {
+            
+            // points
+            s3_p2.append("text")
+                .attr("text-anchor", "start")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", 0)
+                .attr("y", 85)
+                .attr("font-size", "6pt")
+                .attr("fill", "#7fd3d9")
+                .text("Squad")
+
+            s3_p2.selectAll().data(gws).enter().append('text')
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => x(d) + x.bandwidth()/2)
+                .attr("y", 0)
+                .attr("font-size", "4pt")
+                .attr("fill", "white")
+                .text(d => d)
+
+            let boxes = s3_p2.append('g')
+                .attr("transform", "translate(0,10)")
+                .selectAll()
+                .data(nodes.filter(i => i.type == 'regular'))
+                .enter()
+            
+            boxes.append("rect")
+                .attr("x", d => d.x0)
+                .attr("y", d => d.y0)
+                .attr("width", d => d.x1-d.x0)
+                .attr("height", d => d.y1-d.y0)
+                .attr("fill", d => type_cols[d.group[1]])
+                // .attr("fill-opacity", 0.1)
+                .attr("stroke", "none")
+
+            // boxes.append("text")
+            //     .attr("text-anchor", "middle")
+            //     .attr("alignment-baseline", "middle")
+            //     .attr("dominant-baseline", "middle")
+            //     .attr("x", d => (d.x0 + d.x1)/2)
+            //     .attr("y", d => (d.y0+d.y1)/2 - 6)
+            //     .attr("font-size", "5pt")
+            //     .attr("fill", d => gr_text_color[d.group[1]])
+            //     .text(d => d.pts + " P")
+
+            boxes.append("text")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => (d.x0 + d.x1)/2)
+                .attr("y", d => (d.y0 + d.y1)/2)
+                .attr("font-size", "5pt")
+                .attr("fill", d => gr_text_color[d.group[1]])
+                .text(d => d.val)
+
+            // boxes.append("text")
+            //     .attr("text-anchor", "middle")
+            //     .attr("alignment-baseline", "middle")
+            //     .attr("dominant-baseline", "middle")
+            //     .attr("x", d => (d.x0 + d.x1)/2)
+            //     .attr("y", d => (d.y0+d.y1)/2 + 0)
+            //     .attr("font-size", "5pt")
+            //     .attr("fill", d => gr_text_color[d.group[1]])
+            //     .text(d => 'L: ' + d.lineup)
+
+            // boxes.append("text")
+            //     .attr("text-anchor", "middle")
+            //     .attr("alignment-baseline", "middle")
+            //     .attr("dominant-baseline", "middle")
+            //     .attr("x", d => (d.x0 + d.x1)/2)
+            //     .attr("y", d => (d.y0+d.y1)/2 + 6)
+            //     .attr("font-size", "5pt")
+            //     .attr("fill", d => gr_text_color[d.group[1]])
+            //     .text(d => 'B: ' + d.bench)
+        }
+
+        let s3_p3 = s3.append('g').attr("transform", "translate(0,260)")
+
+        {
+            // 
+            s3_p3.append("text")
+                .attr("text-anchor", "start")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", 0)
+                .attr("y", 85)
+                .attr("font-size", "6pt")
+                .attr("fill", "#7fd3d9")
+                .text("Lineup")
+
+            s3_p3.selectAll().data(gws).enter().append('text')
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => x(d) + x.bandwidth()/2)
+                .attr("y", 0)
+                .attr("font-size", "4pt")
+                .attr("fill", "white")
+                .text(d => d)
+
+            let lineup_boxes = s3_p3.append('g')
+                .attr("transform", "translate(0,10)")
+                .selectAll()
+                .data(nodes.filter(i => i.lineup != 0))
+                .enter()
+            
+            lineup_boxes.append("rect")
+                .attr("x", d => d.x0)
+                .attr("y", d => d.ly0)
+                .attr("width", d => d.x1-d.x0)
+                .attr("height", d => d.ly1-d.ly0)
+                .attr("fill", d => type_cols[d.group[1]])
+                .attr("stroke", "none")
+
+            lineup_boxes.append("text")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("x", d => (d.x0 + d.x1)/2)
+                .attr("y", d => (d.ly0 + d.ly1)/2)
+                .attr("font-size", "5pt")
+                .attr("fill", d => gr_text_color[d.group[1]])
+                .text(d => d.lineup)
+        }
+
+    }
+
+
+    // final height update
+
+    let n_height = Math.ceil(s3_top + 420)
+    raw_svg.attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(n_height + margin.top + margin.bottom)}`)
+
 }
 
 var unitlist = ["","K","M","G"];
