@@ -401,6 +401,15 @@ def calculator_page():
         return render_template(page_name, repo_name="", ts = timestamp, page_name="FPL Expected Points Calculator")
 
 
+@app.route('/test.html')
+def test_page():
+    page_name = 'test.html'
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", last_update = current_time, page_name="Test Page")
+    else:
+        return render_template(page_name, repo_name="", last_update = current_time, page_name="Test Page")
+
 
 @app.route('/who_played.html')
 def who_played():
