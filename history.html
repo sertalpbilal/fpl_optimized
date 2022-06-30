@@ -2,7 +2,7 @@
 <html lang="en_US">
 
 <head>
-    <title>FPL Optimized  - Spirit Team</title>
+    <title>FPL Optimized  - FPL Player Point History</title>
     <meta charset="UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -112,119 +112,62 @@
         </div> -->
 
 
-
-
-<main class="container">
-
-    <div class="row">
-        <div class="col-12 mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Spirit Team</h5>
-                <div class="scenario_detail">
-                    Playing FPL and wondering which team resembles your performance the most?
-                </div>
+<main class="container" v-cloak>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">FPL Point History</h5>
                 <div class="card-body" v-cloak>
-
-                    <div class="row">
-                        <div class="input-group mb-3 col-md-4 offset-md-4 col-12">
-                            <input class="form-control" placeholder="Team ID" aria-label="Team ID" id="teamID_input" type="number" v-on:keyup="submitTeam">
-                            <div class="input-group-append">
-                                <button class="btn btn-secondary" type="button" @click="enterTeam">Enter</button>
-                            </div>
-                        </div>
+                    <div class="text-center mb-3">
+                        <span>Choose a season</span>
+                        <span>
+                            <select v-model="selected_season" @change="update_season">
+                                <option value=""></option>
+                                <option v-for="s in seasons">{{ s }}</option>
+                            </select>
+                        </span>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 col-12 spirit-team-display" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <div>
-                                <div class="text-center">Your Spirit Team: {{ spirit_team[0].club }}</div>
-                                <div class="club-logo text-center"><img :src="'/static/images/clubs/' + spirit_team[0].short + '.png'" /></div>
-                                <div class="text-center">Match Ratio (R-Squared): {{ (spirit_team[0].r.final_r2*100).toFixed(0) }}%</div>
-                                <div class="text-center text-small text-muted">{{ spirit_team[0].r.string }}</div>
-                            </div>
+                    <div v-if="players_sorted" v-show="table_ready" class="text-small">
+                        <div id="buttons" class="mt-1 mb-1 text-center mini-buttons">
+                            
                         </div>
-                    </div>
-
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-8 text-center" id="canvas">
-
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="row col-md-6 offset-md-3 col-12 text-center mx-auto" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <div class="col-6" v-cloak>
-                                <div class="d-flex flex-column metric">
-                                    <div class="text-center p-0">
-                                        <div class="legend-box text-center">
-                                            <svg width="20" height="10"><g>
-                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#3BB9E2" stroke-dasharray="4,0.4" fill="none"></line>
-                                        </g></svg> User Rank
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6" v-cloak>
-                                <div class="d-flex flex-column metric">
-                                    <div class="text-center p-0">
-                                        <div class="legend-box text-center">
-                                            <svg width="20" height="10"><g>
-                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#A6CE51" stroke-dasharray="4,0.4"  fill="none"></line>
-                                        </g></svg> Team Position
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row justify-content-center" v-if="!_.isEmpty(spirit_team)">
-                        <div class="col-12 col-md-4">
-                            <template v-for="s in [spirit_team[0]]">
-                                <table class="table text-white table-striped text-small">
-                                    <thead>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Your Rank</th>
-                                        <th class="text-center">{{ s.club }} Rank</th>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="w in _.range(s.team_rank.length)">
-                                            <td class="text-center">GW{{ w+1 }}</td>
-                                            <td class="text-center">
-                                                <span>{{ s.user_hist[w] }}</span>
-                                                <i class="fas fa-caret-up" style="color: #00d900" v-if="w>0 && s.user_hist[w] < s.user_hist[w-1]"></i>
-                                                <i class="fas fa-caret-down" style="color: #ff005a" v-if="w>0 && s.user_hist[w] > s.user_hist[w-1]"></i>
-                                                <i class="fas fa-minus" style="color: #94968c" v-if="w>0 && s.user_hist[w] == s.user_hist[w-1]"></i>
-                                            </td>
-                                            <td class="text-center">
-                                                <span>{{ s.team_rank[w] }}</span>
-                                                <i class="fas fa-caret-up" style="color: #00d900" v-if="w>0 && s.team_rank[w] < s.team_rank[w-1]"></i>
-                                                <i class="fas fa-caret-down" style="color: #ff005a" v-if="w>0 && s.team_rank[w] > s.team_rank[w-1]"></i>
-                                                <i class="fas fa-minus" style="color: #94968c" v-if="w>0 && s.team_rank[w] == s.team_rank[w-1]"></i>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 col-12" v-if="fpl_id != -1 && spirit_team != undefined">
-                            <b>All Matches</b>
-                            <table class="table table-sm text-white table-striped text-small">
+                        <table class="table table-sm table-striped text-white text-smaller" id="pts_table">
+                            <thead>
                                 <tr>
-                                    <th>Team</th>
-                                    <th class="text-center">Match (R2)</th>
+                                    <th class="text-center text-muted">ID</th>
+                                    <th class="text-center">Pos</th>
+                                    <th class="stick-col gray-bg">Name</th>
+                                    <th class="text-center">CV</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center" v-for="gw in _.range(1,39)">
+                                        {{ gw }}
+                                    </th>
                                 </tr>
-                                <tr v-for="s in spirit_team">
-                                    <td>{{ s.club }}</td>
-                                    <td class="text-center">{{ (s.r.final_r2*100).toFixed(0) }}%</td>
+                            </thead>
+                            <tbody>
+                                <tr v-for="player in players_sorted">
+                                    <td class="text-center text-muted">{{ player[0] }}</td>
+                                    <td class="text-center">{{ pos_dict[player_dict[player[0]].element_type] }}</td>
+                                    <td class="stick-col gray-bg">{{ player_dict[player[0]].web_name }}</td>
+                                    <td class="text-center">{{ _.round(player_dict[player[0]].now_cost / 10,1) }}</td>
+                                    <td class="text-center">{{ player[1] }}</td>
+                                    <td class="text-center" v-for="gw  in _.range(1,39)">
+                                        <span :style="{'color': pts_color(player[0], gw)}">{{ _.get(player_gw_dict, `${player[0]}.${gw}.total`, "") }}</span>
+                                    </td>
                                 </tr>
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
                 </div>
             </div>
         </div>
@@ -232,7 +175,9 @@
 
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous"></script>
+<script>
+    let seasons = ['2020-21', '2021-22'];
+</script>
 
  </div>
 
@@ -274,9 +219,9 @@
 
 <script>
     let repo_name = ""
-    let season = "2021-22";
-    let gw = "GW38";
-    let next_gw = "GW38";
+    let season = "";
+    let gw = "";
+    let next_gw = "";
     let date = "";
     let lastupdate = "2022-06-30T18:42:19.957056+00:00";
     let listdates = [
@@ -286,9 +231,9 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20220630184219"></script>
+<script src="/static/js/main.js?ts="></script>
 
-<script src="/static/js/spirit_team.js?ts=20220630184219"></script>
+<script src="/static/js/history.js?ts="></script>
 
 
 <script>
