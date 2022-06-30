@@ -64,9 +64,9 @@ def home_page():
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('index.html', repo_name="/..", ts = timestamp, page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
+        return render_template('index.html', repo_name="/..", ts = timestamp, page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time, no_ev=True)
     else:
-        return render_template('index.html', repo_name="", ts = timestamp, page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time)
+        return render_template('index.html', repo_name="", ts = timestamp, page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time, no_ev=True)
 
 @app.route('/week.html')
 def best_gw_squads():
@@ -86,17 +86,17 @@ def best_gw_squads():
 @app.route('/puzzle.html')
 def puzzle_page():
     if app.config['DEBUG']:
-        return render_template('puzzle.html', repo_name="/..", ts=timestamp, page_name="FPL Puzzle", last_update=current_time)
+        return render_template('puzzle.html', repo_name="/..", ts=timestamp, page_name="FPL Puzzle", last_update=current_time, no_ev=True)
     else:
-        return render_template('puzzle.html', repo_name="", ts=timestamp, page_name="FPL Puzzle", last_update=current_time)
+        return render_template('puzzle.html', repo_name="", ts=timestamp, page_name="FPL Puzzle", last_update=current_time, no_ev=True)
 
 
 @app.route('/load.html')
 def load_page():
     if app.config['DEBUG']:
-        return render_template('load.html', repo_name="/..", ts=timestamp, page_name="Load Data", last_update=current_time)
+        return render_template('load.html', repo_name="/..", ts=timestamp, page_name="Load Data", last_update=current_time, no_ev=True)
     else:
-        return render_template('load.html', repo_name="", ts=timestamp, page_name="Load Data", last_update=current_time)
+        return render_template('load.html', repo_name="", ts=timestamp, page_name="Load Data", last_update=current_time, no_ev=True)
 
 
 # @app.route('/top_squads.html')
@@ -137,9 +137,9 @@ def ownership_trend():
     target = list_dates[0]
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
-        return render_template('ownership_trend.html', repo_name="/..", ts = timestamp, page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('ownership_trend.html', repo_name="/..", ts = timestamp, page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, no_ev=True)
     else:
-        return render_template('ownership_trend.html', repo_name="", ts = timestamp, page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time)
+        return render_template('ownership_trend.html', repo_name="", ts = timestamp, page_name="Ownership Trends", season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, no_ev=True)
 
 @app.route('/analytics_league.html')
 def fpl_analytics():
@@ -227,10 +227,10 @@ def fpl_fixture_page():
 
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", ts = timestamp, page_name="FPL Fixture", 
-            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time)
+            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time, no_ev=True)
     else:
         return render_template(page_name, repo_name="", ts = timestamp, page_name="FPL Fixture", 
-            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time)
+            season=target[0], gw=target[1], date=target[2], data_target=data_target, last_update=current_time, no_ev=True)
 
 
 # @app.route('/player_stats.html')
@@ -267,10 +267,10 @@ def spirit_team_page():
 
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Spirit Team", 
-            season=season, gw=gw, last_update=current_time)
+            season=season, gw=gw, last_update=current_time, no_ev=True)
     else:
         return render_template(page_name, repo_name="", ts = timestamp, page_name="Spirit Team", 
-            season=season, gw=gw, last_update=current_time)
+            season=season, gw=gw, last_update=current_time, no_ev=True)
 
 
 # @app.route('/manager_form.html')
@@ -317,10 +317,10 @@ def ownership_rates():
     
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Ownership Rates", 
-            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
+            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
     else:
         return render_template(page_name, repo_name="", ts = timestamp, page_name="Ownership Rates", 
-            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
+            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
 
 
 @app.route('/impact_summary.html')
@@ -344,10 +344,10 @@ def impact_summary_page():
     
     if app.config['DEBUG']:
         return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Impact Summary", 
-            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
+            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
     else:
         return render_template(page_name, repo_name="", ts = timestamp, page_name="Impact Summary", 
-            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time)
+            season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
 
 
 @app.route('/highlights.html')
@@ -396,9 +396,9 @@ def calculator_page():
     page_name = 'calculator.html'
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="FPL Expected Points Calculator")
+        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="FPL Expected Points Calculator", no_ev=True)
     else:
-        return render_template(page_name, repo_name="", ts = timestamp, page_name="FPL Expected Points Calculator")
+        return render_template(page_name, repo_name="", ts = timestamp, page_name="FPL Expected Points Calculator", no_ev=True)
 
 
 @app.route('/test.html')
@@ -406,9 +406,24 @@ def test_page():
     page_name = 'test.html'
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", last_update = current_time, page_name="Test Page")
+        return render_template(page_name, repo_name="/..", last_update = current_time, page_name="Test Page", no_ev=True)
     else:
-        return render_template(page_name, repo_name="", last_update = current_time, page_name="Test Page")
+        return render_template(page_name, repo_name="", last_update = current_time, page_name="Test Page", no_ev=True)
+
+
+@app.route('/history.html')
+def history_page():
+    page_name = 'history.html'
+
+    files = glob.glob("build/data/*/points.json")
+    seasons = [i.split('/')[2] for i in files]
+    seasons.reverse()
+
+    if app.config['DEBUG']:
+        return render_template(page_name, repo_name="/..", last_update = current_time, page_name="FPL Player Point History", seasons=seasons, no_ev=True)
+    else:
+        return render_template(page_name, repo_name="", last_update = current_time, page_name="FPL Player Point History", seasons=seasons, no_ev=True)
+
 
 
 @app.route('/who_played.html')
@@ -424,10 +439,10 @@ def who_played():
     gw = target[1].split('GW')[1]
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements))
+        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements), no_ev=True)
             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template(page_name, repo_name="", ts = timestamp, page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements))
+        return render_template(page_name, repo_name="", ts = timestamp, page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements), no_ev=True)
 
 
 @app.route('/scenarios.html')

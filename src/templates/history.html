@@ -1,0 +1,70 @@
+"% include 'header.html' %"
+
+<main class="container" v-cloak>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">FPL Point History</h5>
+                <div class="card-body" v-cloak>
+                    <div class="text-center mb-3">
+                        <span>Choose a season</span>
+                        <span>
+                            <select v-model="selected_season" @change="update_season">
+                                <option value=""></option>
+                                <option v-for="s in seasons">{{ s }}</option>
+                            </select>
+                        </span>
+                    </div>
+                    <div v-if="players_sorted" v-show="table_ready" class="text-small">
+                        <div id="buttons" class="mt-1 mb-1 text-center mini-buttons">
+                            
+                        </div>
+                        <table class="table table-sm table-striped text-white text-smaller" id="pts_table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-muted">ID</th>
+                                    <th class="text-center">Pos</th>
+                                    <th class="stick-col gray-bg">Name</th>
+                                    <th class="text-center">CV</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center" v-for="gw in _.range(1,39)">
+                                        {{ gw }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="player in players_sorted">
+                                    <td class="text-center text-muted">{{ player[0] }}</td>
+                                    <td class="text-center">{{ pos_dict[player_dict[player[0]].element_type] }}</td>
+                                    <td class="stick-col gray-bg">{{ player_dict[player[0]].web_name }}</td>
+                                    <td class="text-center">{{ _.round(player_dict[player[0]].now_cost / 10,1) }}</td>
+                                    <td class="text-center">{{ player[1] }}</td>
+                                    <td class="text-center" v-for="gw  in _.range(1,39)">
+                                        <span :style="{'color': pts_color(player[0], gw)}">{{ _.get(player_gw_dict, `${player[0]}.${gw}.total`, "") }}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    let seasons = ** seasons | safe **;
+</script>
+
+"% with scripts=["main", "history"] %" "% include 'footer.html' %" "% endwith %"

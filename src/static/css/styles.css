@@ -1901,7 +1901,7 @@ table.dataTable.table-striped.DTFC_Cloned tbody {
 }
 
 .stick-col {
-    position: sticky;
+    position: sticky !important;
     left: 0;
     /* background-color: #434343; */
     background-color: none;
@@ -1962,4 +1962,9 @@ rect.team_pos_box {
 
 text.team_pos_name {
     fill: white;
+}
+
+#buttons.mini-buttons button {
+    padding: 3px 6px;
+    font-size: small;
 }
