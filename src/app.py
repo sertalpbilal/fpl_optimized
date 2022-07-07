@@ -34,6 +34,8 @@ global_season = "2021-22"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
+off_season = True
+
 def folder_order(fname):
     # print(fname)
     if sys.platform == 'win32':
@@ -362,12 +364,13 @@ def highlights():
     #     league_list = f.read()
 
     gw = target[1].split('GW')[1]
+    gw = '39' if off_season else gw
 
     if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Season Highlights", season=target[0], gw=gw)
+        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Season Highlights", season=target[0], gw=gw, off_season=off_season)
             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
     else:
-        return render_template(page_name, repo_name="", ts = timestamp, page_name="Season Highlights", season=target[0], gw=gw)
+        return render_template(page_name, repo_name="", ts = timestamp, page_name="Season Highlights", season=target[0], gw=gw, off_season=off_season)
             # season=target[0], gw=target[1], date=target[2], list_dates=list_dates, last_update=current_time, is_active=is_active_gw, active_gw=active_gw, next_gw=next_gw, league_list=league_list)
 
 
