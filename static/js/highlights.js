@@ -27,7 +27,8 @@ var app = new Vue({
         season: season,
         team_id: '',
         next_gw: gw,
-        max_gw: Math.min(gw, 39),
+        off_season: off_season,
+        max_gw: Math.min(gw, 38),
         points_data: {},
         eo_data: {},
         fixture_data: [],
@@ -1278,7 +1279,10 @@ var app = new Vue({
                 let cached_info = JSON.parse(localStorage.getItem('team_info'))
                 if (cached_info == null) { cached_info = {}}
                 _.set(cached_info, `${app.season}.T${app.team_id}`, response)
-                localStorage.setItem('team_info', JSON.stringify(cached_info))
+                if (!this.off_season) {
+                    localStorage.setItem('team_info', JSON.stringify(cached_info))
+                }
+                
             }).catch((e) => {
                 // check if localstorage has it
                 let cached_info = JSON.parse(localStorage.getItem('team_info'))
@@ -1344,7 +1348,9 @@ var app = new Vue({
             }
             Promise.allSettled(calls).then(() => {
                 this.team_data = Object.freeze(this.team_data)
-                localStorage.setItem('team_picks', JSON.stringify(stored_team_picks))
+                if (!app.off_season) {
+                    localStorage.setItem('team_picks', JSON.stringify(stored_team_picks))
+                }
                 setTimeout(() => {
                     app.$nextTick(() => {
                         app.ready = true
@@ -3536,15 +3542,15 @@ function draw_predicted_realized_diff() {
         .attr("fill", "white")
         .text("Difference to Tier Average");
 
-    titles.append('text')
-        .attr("text-anchor", "end")
-        .attr("alignment-baseline", "middle")
-        .attr("dominant-baseline", "middle")
-        .attr("x", width-2)
-        .attr("y", -7)
-        .attr("font-size", "5pt")
-        .attr("fill", "#ffc100")
-        .text(`${app.team_info.name} (${app.team_info.id})`);
+    // titles.append('text')
+    //     .attr("text-anchor", "end")
+    //     .attr("alignment-baseline", "middle")
+    //     .attr("dominant-baseline", "middle")
+    //     .attr("x", width-2)
+    //     .attr("y", -7)
+    //     .attr("font-size", "5pt")
+    //     .attr("fill", "#ffc100")
+    //     .text(`${app.team_info.name} (${app.team_info.id})`);
 
     let chips = _.toPairs(app.team_data).map(i => [i[0], i[1].active_chip]).filter(i => i[1]!=null)
     let chip_dict = {'wildcard': 'WC', '3xc': 'TC', 'freehit': 'FH', 'bboost': 'BB'}
