@@ -433,7 +433,7 @@ def history_page():
 def who_played():
     page_name = 'who_played.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
 
     r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
     vals = r.json()
