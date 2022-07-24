@@ -169,8 +169,11 @@ def fpl_analytics():
         season_values_js = []
     except:
         f = ''
-        season_values = calculate_xp_ranks(all_files)
-        season_values_js = season_values.to_dict(orient="records")
+        try:
+            season_values = calculate_xp_ranks(all_files)
+            season_values_js = season_values.to_dict(orient="records")
+        except:
+            return 'Not ready yet!', 200
         # season_values.to_csv("debug.csv")
 
     # return {"message": "It works!"}, 200
@@ -352,7 +355,7 @@ def impact_summary_page():
             season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
 
 
-@app.route('/highlights.html')
+# @app.route('/highlights.html')
 def highlights():
     page_name = 'highlights.html'
 

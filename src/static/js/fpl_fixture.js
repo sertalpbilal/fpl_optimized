@@ -94,6 +94,7 @@ var app = new Vue({
             return weeks
         },
         fdr_fte() {
+            if (_.isEmpty(this.fte_data)) { return {}}
             let fdr = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
             teams.forEach((team) => {
@@ -101,7 +102,11 @@ var app = new Vue({
                 let team_name = teams_ordered[team - 1].name;
                 let entry = app.fte_data.find(i => i.name == team_name)
                 if (entry == undefined) {
-                    let team_long = teams_ordered[team - 1].long;
+                    let team_entry = teams_ordered[team - 1]
+                    if (team_entry.long == undefined) {
+                        console.log("Cannot find", team_entry.name)
+                    }
+                    team_long = team_entry.long
                     entry = app.fte_data.find(i => i.name == team_long)
                 }
 
