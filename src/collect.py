@@ -649,7 +649,8 @@ def cache_effective_ownership(season_folder):
 
     files = glob.glob(f'build/sample/{season}/*/fpl_sampled.json')
     print(files)
-    print(files[0].replace('\\', '/').split('/'))
+    if len(files) > 0:
+        print(files[0].replace('\\', '/').split('/'))
     if True: # sys.platform == 'win32':
         files = [{'gw': int(i.replace('\\', '/').split('/')[3]), 'file': i} for i in files]
     print(files)
