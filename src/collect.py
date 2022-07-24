@@ -786,13 +786,19 @@ def cache_projected_points(season_folder):
             df['rmin'] = df[f'{gw}_rmin']
             df['games'] = df[f'{gw}_games']
             vertical_frames.append(df[['ID', 'Name', 'Team', 'Pos', 'price', 'gw', 'xp', 'xmin', 'rp', 'rmin', 'games']])
-    dataframes.insert(0, df[['ID', 'Name', 'Team', 'Pos']])
-    combined = pd.concat(dataframes, axis=1)
-    # combined = combined[list(set(combined.columns))]
-    combined.to_csv(season_folder / f"xp_pivot.csv")
-    v_combined = pd.concat(vertical_frames)
-    v_combined.to_csv(season_folder / f"xp.csv")
+    try:
+        dataframes.insert(0, df[['ID', 'Name', 'Team', 'Pos']])
+    except:
+        print("No df items -- new season?")
 
+    try:
+        combined = pd.concat(dataframes, axis=1)
+        combined.to_csv(season_folder / f"xp_pivot.csv")
+        v_combined = pd.concat(vertical_frames)
+        v_combined.to_csv(season_folder / f"xp.csv")
+    except:
+        print("Cannot generate xp and xp_pivot files")
+    
 
 def cache_points_main():
     input_folder, output_folder, season_folder = create_folders()
