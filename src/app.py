@@ -508,8 +508,13 @@ def list_one_per_gw(season_filter='*'):
             filtered_dates.append(i)
             exist.add(i[1])
     # filtered_dates.pop(0)
-    target = filtered_dates[0]
-    next_gw = target[1]
+    try:
+        target = filtered_dates[0]
+        next_gw = target[1]
+    except:
+        active_gw = -1
+        next_gw = 1
+    
     if active_gw != -1:
         for i in filtered_dates:
             if f"GW{active_gw}" == i[1]:
