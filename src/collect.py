@@ -740,7 +740,10 @@ def cache_projected_points(season_folder):
     with open(season_folder / 'points.json', 'r') as f:
         final_points = json.load(f)
 
-    print(final_points['1'][0])
+    try:
+        print(final_points['1'][0])
+    except:
+        print("Cannot print GW1 points -- new season?")
 
     dataframes = []
     vertical_frames = []
