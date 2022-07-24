@@ -58,7 +58,7 @@ def get_all_data():
     get_data_fpl_api(input_folder, season_folder)
     if next_gw != 39:
         from fplreview import get_data_fplreview
-        get_data_fplreview(input_folder, page='free-planner')
+        get_data_fplreview(input_folder, page='preliminary-planner', rename='free-planner')
         generate_intermediate_layer(input_folder, page='free-planner')
         get_fivethirtyeight_data(input_folder)
 

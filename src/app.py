@@ -30,7 +30,7 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
-global_season = "2021-22"
+global_season = "2022-23"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -356,7 +356,7 @@ def impact_summary_page():
 def highlights():
     page_name = 'highlights.html'
 
-    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw()
+    target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
 
     print(next_gw)
 
