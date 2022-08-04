@@ -58,7 +58,7 @@ def get_all_data():
     get_data_fpl_api(input_folder, season_folder)
     if next_gw != 39:
         from fplreview import get_data_fplreview
-        get_data_fplreview(input_folder, page='free-planner', rename='free-planner', method='api')
+        get_data_fplreview(input_folder, page='free-planner', rename='free-planner', method='legacy')
         generate_intermediate_layer(input_folder, page='free-planner')
         get_fivethirtyeight_data(input_folder)
 
@@ -185,11 +185,11 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
 def encrypt_files(target_folder, page, remove=True):
     encrypt(str(target_folder / f'element_gameweek.csv'), key_name='REVIEW_KEY')
     encrypt(str(target_folder / f'fplreview-{page}.csv'), key_name='REVIEW_KEY')
-    # encrypt(str(target_folder / f'detailed-fplreview-{page}.csv'), key_name='REVIEW_KEY')
+    encrypt(str(target_folder / f'detailed-fplreview-{page}.csv'), key_name='REVIEW_KEY')
     if remove:
         os.remove(target_folder / f'element_gameweek.csv')
         os.remove(target_folder / f'fplreview-{page}.csv')
-        # os.remove(target_folder / f'detailed-fplreview-{page}.csv')
+        os.remove(target_folder / f'detailed-fplreview-{page}.csv')
 
 def read_static():
     """Reads user-specified static values from JSON file"""
