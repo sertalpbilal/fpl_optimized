@@ -2492,6 +2492,8 @@ async function app_initialize(clear=true) {
 
 }
 
+let current_season = '2022_2023';
+
 $(document).ready(function() {
 
     let url = window.location.search
@@ -2510,7 +2512,7 @@ $(document).ready(function() {
             app.setTeamWithURL(sorted, picks, captain, vice_cap, tc, gw)
         }
         else {
-            let cached_team = Vue.$cookies.get('team_id');
+            let cached_team = Vue.$cookies.get(current_season + '_' + 'team_id');
             if (cached_team !== null) {
                 app.loadAutoSettings();
             } else {
