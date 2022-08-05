@@ -665,6 +665,11 @@ def cache_effective_ownership(season_folder):
             tier_picks = picks_dict[key] = {}
             tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
             for team in data[key]:
+
+                if team['data']['picks'] is None:
+                    print(f"Team has no picks {team}, skipping...")
+                    continue
+
                 try:
                     hits = team['data']['entry_history']['event_transfers_cost']
                 except:
@@ -672,6 +677,7 @@ def cache_effective_ownership(season_folder):
                 if hits > 0 and hits <= 60:
                     tier_picks['meta']['count'] += 1
                     tier_picks['meta']['hit_total'] += hits
+
                 for player in team['data']['picks']:
                     pid = player['element']
                     tier_picks[pid] = tier_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
