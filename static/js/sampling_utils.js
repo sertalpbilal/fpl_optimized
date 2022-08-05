@@ -207,7 +207,14 @@ function get_ownership_by_type(ownership_source, fpl_data, sample_data, autosubs
     if (tag == "Official FPL API") {
         return {data: fpl_data}
     }
-    teams = sample_data[tag].filter(i => i.team != undefined)
+    
+    if (tag in sample_data) {
+        teams = sample_data[tag].filter(i => i.team != undefined)
+    }
+    else {
+        teams = sample_data['Overall'].filter(i => i.team != undefined)
+    }
+    
 
     let el_copy = _.cloneDeep(fpl_data);
     let sub_replacements = [];

@@ -64,6 +64,8 @@ let team_codes = {
     39: { name: "Wolves", short: "WOL" }
 }
 
+let team_short_dict = _.fromPairs(_(team_codes).map((val,key) => [val.short, key]).value())
+
 let teams_ordered = [
     { name: "Arsenal", short: "ARS" },
     { name: "Aston Villa", short: "AVL" },
