@@ -69,8 +69,9 @@ def get_all_data():
 
     from xp_league import detect_missing_entries_and_fill, cache_xp_ranks
     detect_missing_entries_and_fill()
-    if next_gw > 1:
-        cache_xp_ranks(output_folder)
+    # if next_gw > 1:
+    #     cache_xp_ranks(output_folder)
+    # TODO disabled temporarily!
 
     return input_folder, output_folder, next_gw
 
