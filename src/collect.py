@@ -666,8 +666,8 @@ def cache_effective_ownership(season_folder):
             tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
             for team in data[key]:
 
-                if team['data']['picks'] is None:
-                    print(f"Team has no picks {team}, skipping...")
+                if team['data'] is None:
+                    print(f"Team has no data {team}, skipping...")
                     continue
 
                 try:
