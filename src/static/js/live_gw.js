@@ -105,7 +105,12 @@ var app = new Vue({
         current_sample_data() {
             if (!this.is_using_sample) { return [] }
             let key = reverse_sample_name(this.ownership_source);
-            return this.sample_data[key];
+            if (key in this.sample_data) {
+                return this.sample_data[key]
+            }
+            else {
+                return this.sample_data["Overall"];
+            }
         },
         ownership_data() {
             if (!this.is_using_autosub || !this.is_using_sample) {
