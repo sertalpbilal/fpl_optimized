@@ -665,7 +665,10 @@ def cache_effective_ownership(season_folder):
             tier_picks = picks_dict[key] = {}
             tier_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(data[key])}
             for team in data[key]:
-                hits = team['data']['entry_history']['event_transfers_cost']
+                try:
+                    hits = team['data']['entry_history']['event_transfers_cost']
+                except:
+                    hits = 0
                 if hits > 0 and hits <= 60:
                     tier_picks['meta']['count'] += 1
                     tier_picks['meta']['hit_total'] += hits
