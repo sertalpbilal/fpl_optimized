@@ -703,7 +703,7 @@ var app = new Vue({
             let saved_settings = {};
             let settings = this.allowed_settings;
             for (let st of settings) {
-                let val = Vue.$cookies.get(st)
+                let val = Vue.$cookies.get(current_season + '_' + st)
                 if (val !== null) {
                     saved_settings[st] = convertToJS(val);
                 }
@@ -979,7 +979,7 @@ var app = new Vue({
             this.remember_settings = true;
             let settings = this.allowed_settings;
             for (let st of settings) {
-                let val = Vue.$cookies.get(st)
+                let val = Vue.$cookies.get(current_season + '_' + st)
                 if (val !== null) {
                     this[st] = convertToJS(val);
                 }
@@ -998,13 +998,13 @@ var app = new Vue({
                 this.remember_settings = false;
                 let settings = this.allowed_settings;
                 for (let st of settings) {
-                    Vue.$cookies.remove(st);
+                    Vue.$cookies.remove(current_season + '_' + st);
                 }
             } else {
                 this.remember_settings = true;
                 let settings = this.allowed_settings;
                 for (let st of settings) {
-                    Vue.$cookies.set(st, this[st]);
+                    Vue.$cookies.set(current_season + '_' + st, this[st]);
                 }
             }
         },
@@ -2499,7 +2499,7 @@ $(document).ready(function() {
     let url = window.location.search
     const params = new URLSearchParams(url)
 
-    Vue.$cookies.config('120d')
+    Vue.$cookies.config('270d')
     app_initialize().then(() => {
 
         if (params.get('team') != null) {
