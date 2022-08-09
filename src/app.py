@@ -34,7 +34,7 @@ global_season = "2022-23"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
-off_season = True
+off_season = False
 
 def folder_order(fname):
     # print(fname)
@@ -355,7 +355,7 @@ def impact_summary_page():
             season=target[0], gw=target[1], list_dates=dates, next_gw=next_gw, last_update=current_time, no_ev=True)
 
 
-# @app.route('/highlights.html')
+@app.route('/highlights.html')
 def highlights():
     page_name = 'highlights.html'
 
