@@ -1,24 +1,24 @@
 let season_results = [
-    [1, 159801, 324.82],
-    [10, 10322, 289.82],
-    [100, 3089815, 237.82],
-    [200, 316872, 221.82],
-    [500, 3350292, 199.82],
-    [1000, 251719, 181.82],
-    [2000, 40030, 161.82],
-    [5000, 2016845, 131.82],
-    [10000, 1077954, 106.82],
-    [20000, 2006, 77.82],
-    [50000, 1061692, 30.82],
-    [100000, 11584, -14.18],
-    [200000, 4820324, -73.18],
-    [500000, 245679, -180.18],
-    [1000000, 541485, -286.18],
-    [1500000, 1207710, -363.18],
-    [2000000, 1630750, -428.18],
-    [4000000, 237940, -641.18],
-    [6000000, 2858219, -840.18],
-    [9000000, 9092949, -2059.18]
+    // [1, 159801, 324.82],
+    // [10, 10322, 289.82],
+    // [100, 3089815, 237.82],
+    // [200, 316872, 221.82],
+    // [500, 3350292, 199.82],
+    // [1000, 251719, 181.82],
+    // [2000, 40030, 161.82],
+    // [5000, 2016845, 131.82],
+    // [10000, 1077954, 106.82],
+    // [20000, 2006, 77.82],
+    // [50000, 1061692, 30.82],
+    // [100000, 11584, -14.18],
+    // [200000, 4820324, -73.18],
+    // [500000, 245679, -180.18],
+    // [1000000, 541485, -286.18],
+    // [1500000, 1207710, -363.18],
+    // [2000000, 1630750, -428.18],
+    // [4000000, 237940, -641.18],
+    // [6000000, 2858219, -840.18],
+    // [9000000, 9092949, -2059.18]
 ]
 
 var app = new Vue({
@@ -883,6 +883,9 @@ var app = new Vue({
                 let xloss = getSum(groups.false.map(i => i.xnet))
                 let xgain = getSum(groups.true.map(i => i.xnet))
                 let gw_field_hits = hits[parseInt(gw_entry[0])-1]
+                if (gw_field_hits == undefined) {
+                    gw_field_hits = {'hit_total': 0, 'teams': 0}
+                }
                 let hit_gain = gw_field_hits.hit_total / Math.max(1,gw_field_hits.teams)
                 let gain_with_hit = gain + hit_gain
                 let hit_loss = _.get(user_team[gw_entry[0]], 'entry_history.event_transfers_cost') || 0
@@ -1031,6 +1034,9 @@ var app = new Vue({
                 let gw_picks = this.team_data[gw].picks
                 let gw_hit = this.include_hits ? _.get(this.team_data[gw], 'entry_history.event_transfers_cost') || 0 : 0
                 let gw_field_hits = eo_dict.hits[gw-1]
+                if (gw_field_hits == undefined) {
+                    gw_field_hits = {'hit_total': 0, 'teams': 0}
+                }
                 let field_hit = this.include_hits ? gw_field_hits.hit_total / Math.max(1,gw_field_hits.teams) : 0
 
                 let xp = _.round(_.sum(gw_picks.map(i => i.multiplier * (_.get(xp_dict, gw + '_' + i.element) || 0))),2) - gw_hit
@@ -1340,7 +1346,7 @@ var app = new Vue({
                             },
                             picks: []
                         }
-                        app.$set(app.team_data, current_gw, empty_gw)
+                        // app.$set(app.team_data, current_gw, empty_gw)
                         // ignore
                     })
                     calls.push(call)
@@ -3578,7 +3584,7 @@ function draw_team_season_visual() {
     if (!app.is_ready) { return }
 
     const raw_width = 600;
-    const raw_height = 400;
+    const raw_height = 20 * (parseInt(app.next_gw) + 1);//400;
 
     const margin = { top: 20, right: 10, bottom: 20, left: 15 },
         width = raw_width - margin.left - margin.right,
@@ -4004,7 +4010,12 @@ function draw_point_origin_graph() {
             all_values.push(entry)
         })
 
-        let x = d3.scaleBand().domain(_.range(0,_.maxBy(all_values, 'col_end').col_end+1)).range([0, width]).paddingInner(0.15)
+        let xdomain = _.range(0,_.maxBy(all_values, 'col_end').col_end+1)
+        if (app.next_gw != '39') {
+            xdomain = _.range(0,60)
+        }
+
+        let x = d3.scaleBand().domain(xdomain).range([0, width]).paddingInner(0.15)
         let y = d3.scaleBand().domain(_.range(row_count)).range([0, x.step()*row_count]).paddingInner(0.15)
 
         let y_end = s1_end = x.step()*row_count
