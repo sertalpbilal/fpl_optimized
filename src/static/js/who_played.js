@@ -31,6 +31,7 @@ var app = new Vue({
         // selection
         team_selected: undefined,
         gw_selected: undefined,
+        pos_selected: "",
         scaled_color: scaled_color,
         show_pts: false
     },
@@ -39,7 +40,7 @@ var app = new Vue({
             if (this.team_selected == undefined || this.gw_selected == undefined) { return []}
             if (!(this.gw_selected in this.points_data)) { return []}
             let filtered = this.points_data[this.gw_selected]
-            let player_ids = this.elements.filter(i => i.team == this.team_selected).map(i => i.id)
+            let player_ids = this.elements.filter(i => (this.team_selected == "all" || i.team == this.team_selected) && (this.pos_selected == "" || parseInt(this.pos_selected) == i.element_type)).map(i => i.id)
             filtered = filtered.filter(i => player_ids.includes(i.id))
             filtered = _.orderBy(filtered, ['player.element_type', 'total_min', 'total_pts'], ['asc', 'desc', 'desc'])
             let lineup_count = _.countBy(filtered, 'player.element_type')
@@ -56,7 +57,7 @@ var app = new Vue({
         },
         filtered_by_season_players() {
             if (this.team_selected == undefined) { return []}
-            let players = this.elements.filter(i => i.team == this.team_selected)
+            let players = this.elements.filter(i => (this.team_selected == "all" || i.team == this.team_selected) && (this.pos_selected == "" || parseInt(this.pos_selected) == i.element_type))
             let overall_total = 0
             players.forEach((p) => {
                 p.min_data = {}
@@ -98,6 +99,7 @@ var app = new Vue({
         },
         team_selected_name() {
             if (this.team_selected == undefined) { return ""}
+            if (this.team_selected == "all") { return "All" }
             return this.teams[this.team_selected-1].name
         },
         team_computed: {
@@ -107,6 +109,16 @@ var app = new Vue({
             set: (v) => {
                 app.remove_dt()
                 app.team_selected = v
+                app.load_dt()
+            }
+        },
+        pos_computed: {
+            get: () => {
+                return app.pos_selected
+            },
+            set: (v) => {
+                app.remove_dt()
+                app.pos_selected = v
                 app.load_dt()
             }
         }

@@ -22,11 +22,22 @@
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center">
-                        <div class="col-6 col-md-3">
-                            <div class="form-group">
+                        <div class="col-12 col-md-6 d-flex flex-row justify-content-center">
+                            <div class="form-group ml-2 mr-2">
                                 <label for="team_select">Team</label>
                                 <select class="form-control" id="team_select" v-model="team_computed">
+                                    <option value="all">All</option>
                                     <option v-for="(team,key) in teams" :value="key+1">{{ team.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group ml-2 mr-2">
+                                <label for="team_select">Position</label>
+                                <select class="form-control" id="pos_selected" v-model="pos_computed">
+                                    <option value="" selected>All</option>
+                                    <option value="1">GK</option>
+                                    <option value="2">DF</option>
+                                    <option value="3">MD</option>
+                                    <option value="4">FW</option>
                                 </select>
                             </div>
                         </div>
@@ -40,11 +51,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive col-12">
-                            <table class="p-0 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive" id="value_table">
+                        <div class="table-responsive col-12 sticky-first-row" style="max-height: 500px;">
+                            <!-- <table class="p-0 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive" id="value_table"> -->
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="value_table">
                                 <thead>
                                     <tr>
+                                        <th class="d-none">ID</th>
                                         <th class="text-center vertical-name">Name</th>
+                                        <th class="text-center" v-show="team_selected == 'all'">Team</th>
                                         <th class="text-center">Pos</th>
                                         <th class="text-center">Price</th>
                                         <th class="text-center">MP</th>
@@ -61,7 +75,9 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="p in filtered_by_season_players" :class="{'text-muted': p.muted}">
-                                        <th class="text-center vertical-name">{{ p.web_name.includes("[") ? p.second_name : p.web_name }}</td>
+                                        <td class="d-none">{{ p.id }}</td>
+                                        <td class="text-center vertical-name">{{ p.web_name.includes("[") ? p.second_name : p.web_name }}</td>
+                                        <td class="text-center" v-show="team_selected == 'all'">{{ teams[p.team-1] ? teams[p.team-1].short : "" }}</td>
                                         <td class="text-center">{{ element_type[p.element_type].short }}</td>
                                         <td class="text-center">{{ (p.now_cost/10).toFixed(1) }}</td>
                                         <td class="text-center">{{ p.matches_played }}</td>
