@@ -57,12 +57,19 @@ var app = new Vue({
         gameweeks() {
             if (!this.is_all_ready) { return [] }
             let this_gw;
-            try {
-                this_gw = app.main_data.events.find(i => i.is_next).id;
-            } catch {
-                this_gw = 38;
+            let now_time = (new Date()).getTime()/1000;
+            for (let gw of app.main_data.events) {
+                if (gw.deadline_time_epoch > now_time) {
+                    this_gw = gw.id;
+                    break;
+                }
             }
-            let weeks = _.uniq(this.fixture_data.map(i => i.event), true)
+            // try {
+            //     this_gw = app.main_data.events.find(i => i.is_next).id;
+            // } catch {
+            //     this_gw = 38;
+            // }
+            let weeks = _.range(1,39) //_.uniq(this.fixture_data.map(i => i.event), true)
             if (weeks[0] == null) {
                 weeks = [...weeks.slice(1), weeks[0]]
             }
@@ -78,13 +85,14 @@ var app = new Vue({
         future_gameweeks() {
             if (!this.is_all_ready) { return [] }
             let this_gw = this.this_gw;
-            let weeks = _.uniq(this.fixture_data.map(i => i.event), true)
+            let weeks = _.range(1,39) //_.uniq(this.fixture_data.map(i => i.event), true)
             weeks = _.cloneDeep(weeks)
             if (weeks[0] == null) {
                 weeks = [...weeks.slice(1), weeks[0]]
             }
             weeks = weeks.map(i => i == null ? { "no": i, "text": "No date", "this_gw": false } : { "no": i, "text": "GW" + i, "this_gw": false })
             weeks.find(i => i.no == this_gw)['this_gw'] = true;
+
             weeks = weeks.filter(i => (i.no >= this_gw) || (i.no === null));
             weeks.sort((a, b) => {
                 if (a.no === null) { return 1; }
@@ -121,7 +129,7 @@ var app = new Vue({
             let fd = this.fixture_data;
             let rivals = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
-            let gameweeks = _.uniq(app.fixture_data.map(i => i.event));
+            let gameweeks = _.range(1,39) //_.uniq(app.fixture_data.map(i => i.event));
             teams.forEach((team) => {
                 let r = rivals[team] = {}
                 gameweeks.forEach((gw) => {
