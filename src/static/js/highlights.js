@@ -58,7 +58,8 @@ var app = new Vue({
         show_info_ts: false,
         use_team_colors: false,
         // exclude_fh_from_age_0: false
-        // toty_expected: false
+        // toty_expected: false,
+        caches_enabled: false
     },
     computed: {
         is_ready() {
@@ -1318,7 +1319,7 @@ var app = new Vue({
             for (gw = 1; gw <= this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
-                if (current_gw != app.next_gw && season_picks != undefined && current_gw in season_picks) {
+                if (app.caches_enabled && current_gw != app.next_gw && season_picks != undefined && current_gw in season_picks) {
                     app.$set(app.team_data, current_gw, season_picks[current_gw])
                 }
                 else {
