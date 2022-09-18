@@ -87,6 +87,11 @@ var app = new Vue({
             let pts_data = this.points_2d
             let gw_grouped = _.groupBy(pts_data, 'gw')
             Object.keys(gw_grouped).map((key, index) => { gw_grouped[key] = Object.fromEntries(gw_grouped[key].map(i => [i.id, i.pts])) })
+            for (let gw of _.range(1, parseInt(app.next_gw))) {
+                if (gw_grouped[gw] == undefined) {
+                    gw_grouped[gw] = {}
+                }
+            }
             return gw_grouped
         },
         pid_gw_pts() {
