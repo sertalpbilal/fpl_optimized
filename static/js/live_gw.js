@@ -2030,7 +2030,7 @@ async function draw_user_graph(options = {}) {
                 .attr("x", x(x_low) + 1)
                 .attr("y", y(y_high) + 20)
                 .attr("font-size", "3pt")
-                .attr("fill", "#ffffff65")
+                .attr("fill", app.xp_source == 'FPLReview - Free' ? "#ffffff65" : "#81ff008a")
                 .style('pointer-events', 'none')
                 .text("xP Data: " + (app.xp_source));
 
