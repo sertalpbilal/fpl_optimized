@@ -187,6 +187,7 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block" type="button" @click="large_graphs = !large_graphs">Larger Graphs {{ large_graphs ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-block" type="button" @click="toggleShowDetails">Show Details {{ show_details ? ": On" : ": Off" }}</button>
                                                 <div class="dropdown-divider"></div>
+                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="use_upload_data = !use_upload_data; useNewXP()">Toggle Upload Data {{ use_upload_data ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="show_team_info = !show_team_info">Toggle Team Info {{ show_team_info ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button" @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" : ": Off" }}</button>
@@ -899,12 +900,49 @@
                             </tbody>
                         </table>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
     <span class="d-none">{{ sorted_ownership }}</span>
+
+    <!--
+    <div class="row" v-cloak id="team-eo-box" v-if="!_.isEmpty(sorted_ownership_cache)">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Team Level EO</h5>
+                <div class="card-body" v-if="is_ready">
+                    <div>
+                        <div>
+                            <h6>Defense EO</h6>
+                            <hr>
+                        </div>
+                        <div>
+                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1" id="defense_eo_table" data-source="team_eo_defense">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="name">Team</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="multiplier">Your EO</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="ownership">Field EO</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="xp">Net EO</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="xp_net">CS?</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="rp_total">xNet</th>
+                                        <th class="text-center sortable-th" @click="sortData" data-tag="rp_net">rNet</th>
+                                        <th><button class="btn btn-sm btn-info">Report</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="e in team_eo_defense" :key="e.id" :class="{'owned-row': e.multiplier >0, 'nonowned-row': e.multiplier == 0}" v-if="">
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
 
     <div class="row" v-cloak>
         <div class="col-12 mb-3">
@@ -1779,7 +1817,7 @@
     let gw = "GW12";
     let next_gw = "GW12";
     let date = "2022-10-18";
-    let lastupdate = "2022-10-18T10:37:05.780594+00:00";
+    let lastupdate = "2022-10-18T13:49:43.555699+00:00";
     let listdates = [
         "2022-23 / GW12 / 2022-10-18 ", 
         "2022-23 / GW11 / 2022-10-14 ", 
@@ -1799,11 +1837,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20221018103705"></script>
+<script src="/static/js/main.js?ts=20221018134943"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20221018103705"></script>
+<script src="/static/js/sampling_utils.js?ts=20221018134943"></script>
 
-<script src="/static/js/live_gw.js?ts=20221018103705"></script>
+<script src="/static/js/live_gw.js?ts=20221018134943"></script>
 
 
 <script>
@@ -1813,6 +1851,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-10-18T10:37:05.780594+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2022-10-18T13:49:43.555699+00:00</div>
 
 </html> 

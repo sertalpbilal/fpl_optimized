@@ -1,6 +1,8 @@
 // non-reactive values
 autosub_stats = {}
 
+let current_season = '2022_2023';
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -52,7 +54,8 @@ var app = new Vue({
         last_gw_data_marker: false,
         no_white_space: false,
         override_rp: [],
-        dropdown_select: 0
+        dropdown_select: 0,
+        use_upload_data: true
     },
     beforeMount: function() {
         this.initEmptyData();
@@ -146,6 +149,31 @@ var app = new Vue({
             let sorted_own = _.orderBy(all_elements, ["ownership", "xp"], ["desc", "desc"])
             this.sorted_ownership_cache = Object.freeze(sorted_own)
             return 0
+        },
+        team_eo_defense() {
+            return undefined
+
+            if (_.isEmpty(this.ownership_data) || !this.is_ready) {
+                return []
+            }
+            let data = this.gameweek_games_with_metadata
+            if (_.isEmpty(data)) { return []}
+            
+            let entries = []
+            data.forEach((game) => {
+                let teams = [teams_ordered[game['team_h']-1], teams_ordered[game['team_a']-1]]
+                teams.forEach((team, order) => {
+                    let players = order == 0 ? game.players.home : game.player.away
+                    let defenders = players.filter(i => i.data.element_type <= 2)
+                    let field_eo = _.sum(defenders.map(i => i.ownership))
+                    
+                    let your_eo = _.sum(defenders.map(i => i.multiplier))/100
+                    let net_eo = your_eo - field_eo
+                    let cs = game.started ? 1 : "-";
+                    // TODO haven't finished yet
+                })
+            })
+
         },
         el_by_id() {
             if (this.el_data == undefined) { return undefined; }
@@ -792,6 +820,10 @@ var app = new Vue({
             
         },
         useNewXP() {
+            if (app.use_upload_data == false) {
+                this.useOriginalXP()
+                return
+            }
             let this_gw = parseInt(this.gw.replace('GW', ''));
             let xp_data = this.xp_storage
             let feas = xp_data.find(i => i.meta.start_gw == this_gw && i.meta.status=='active')
@@ -2492,8 +2524,6 @@ async function app_initialize(clear=true) {
 
 }
 
-let current_season = '2022_2023';
-
 $(document).ready(function() {
 
     let url = window.location.search
@@ -2523,7 +2553,9 @@ $(document).ready(function() {
         let xp_data = read_xp_storage()
         if (xp_data !== undefined) {
             app.xp_storage = xp_data
-            app.useNewXP()
+            if (app.use_upload_data) {
+                app.useNewXP()
+            }
         }
 
     });
