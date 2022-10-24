@@ -15,18 +15,18 @@ rank,prev_rank,name,league,off,def,spi
 14,15,Internazionale,Italy Serie A,2.44,0.8,78.96
 15,21,Manchester United,Barclays Premier League,2.24,0.68,78.72
 16,12,FC Porto,Portuguese Liga,2.28,0.71,78.71
-17,13,Atletico Madrid,Spanish Primera Division,2.01,0.58,77.76
-18,22,Brighton and Hove Albion,Barclays Premier League,2.05,0.62,77.49
-19,18,RB Leipzig,German Bundesliga,2.4,0.85,77.35
-20,26,Newcastle,Barclays Premier League,2.05,0.64,76.98
-21,19,FC Salzburg,Austrian T-Mobile Bundesliga,2.22,0.76,76.7
-22,17,Villarreal,Spanish Primera Division,1.99,0.62,76.67
-23,23,Zenit St Petersburg,Russian Premier Liga,2.11,0.71,76.33
+17,23,Zenit St Petersburg,Russian Premier Liga,2.2,0.69,77.97
+18,13,Atletico Madrid,Spanish Primera Division,2.01,0.58,77.76
+19,22,Brighton and Hove Albion,Barclays Premier League,2.05,0.62,77.49
+20,18,RB Leipzig,German Bundesliga,2.4,0.85,77.35
+21,26,Newcastle,Barclays Premier League,2.05,0.64,76.98
+22,19,FC Salzburg,Austrian T-Mobile Bundesliga,2.22,0.76,76.7
+23,17,Villarreal,Spanish Primera Division,1.99,0.62,76.67
 24,20,AC Milan,Italy Serie A,2.18,0.76,76.23
 25,24,Real Sociedad,Spanish Primera Division,1.9,0.62,75.04
 26,29,Stade Rennes,French Ligue 1,2.08,0.74,74.95
-27,28,Marseille,French Ligue 1,1.96,0.68,74.74
-28,32,West Ham United,Barclays Premier League,1.89,0.64,74.5
+27,32,West Ham United,Barclays Premier League,1.89,0.62,74.9
+28,28,Marseille,French Ligue 1,1.96,0.68,74.74
 29,27,Athletic Bilbao,Spanish Primera Division,1.92,0.67,74.26
 30,30,AS Roma,Italy Serie A,1.95,0.69,74.18
 31,25,PSV,Dutch Eredivisie,2.49,1.1,73.71
@@ -50,7 +50,7 @@ rank,prev_rank,name,league,off,def,spi
 49,51,Flamengo,Brasileiro Série A,1.82,0.79,69.4
 50,57,Club Brugge,Belgian Jupiler League,2.08,1.0,69.18
 51,62,Juventus,Italy Serie A,1.87,0.85,69.01
-52,46,Celta Vigo,Spanish Primera Division,1.76,0.77,68.86
+52,46,Celta Vigo,Spanish Primera Division,1.74,0.75,68.85
 53,59,Fenerbahce,Turkish Turkcell Super Lig,2.17,1.09,68.74
 54,48,Borussia Monchengladbach,German Bundesliga,2.17,1.09,68.62
 55,52,Fiorentina,Italy Serie A,1.88,0.87,68.55
@@ -83,11 +83,11 @@ rank,prev_rank,name,league,off,def,spi
 82,87,Young Boys,Swiss Raiffeisen Super League,1.99,1.21,62.63
 83,83,Atletico Mineiro,Brasileiro Série A,1.49,0.79,62.6
 84,79,Strasbourg,French Ligue 1,1.7,0.98,62.55
-85,84,Hertha Berlin,German Bundesliga,1.75,1.02,62.51
-86,86,Sassuolo,Italy Serie A,1.86,1.12,62.33
+85,88,Getafe,Spanish Primera Division,1.49,0.8,62.53
+86,84,Hertha Berlin,German Bundesliga,1.75,1.02,62.51
 87,89,Southampton,Barclays Premier League,1.71,0.99,62.31
-88,88,Getafe,Spanish Primera Division,1.5,0.82,62.27
-89,93,São Paulo,Brasileiro Série A,1.56,0.87,62.24
+88,93,São Paulo,Brasileiro Série A,1.56,0.87,62.24
+89,86,Sassuolo,Italy Serie A,1.86,1.13,62.1
 90,82,Monterrey,Mexican Primera Division Torneo Apertura,1.64,0.95,61.98
 91,85,Nice,French Ligue 1,1.55,0.87,61.89
 92,97,Bodo/Glimt,Norwegian Tippeligaen,2.09,1.34,61.75
@@ -104,8 +104,8 @@ rank,prev_rank,name,league,off,def,spi
 103,99,Red Star Belgrade,UEFA Europa League,1.76,1.18,58.99
 104,107,Real Valladolid,Spanish Primera Division,1.58,1.02,58.91
 105,101,Molde,Norwegian Tippeligaen,1.9,1.33,58.51
-106,108,FC Augsburg,German Bundesliga,1.76,1.21,58.21
-107,104,Verona,Italy Serie A,1.66,1.13,58.08
+106,104,Verona,Italy Serie A,1.67,1.13,58.27
+107,108,FC Augsburg,German Bundesliga,1.76,1.21,58.21
 108,105,Fluminense,Brasileiro Série A,1.55,1.03,58.06
 109,110,Almeria,Spanish Primera Division,1.59,1.08,57.72
 110,113,Lorient,French Ligue 1,1.58,1.09,57.1
@@ -115,9 +115,9 @@ rank,prev_rank,name,league,off,def,spi
 114,129,Nottingham Forest,Barclays Premier League,1.52,1.08,56.08
 115,116,SK Sturm Graz,Austrian T-Mobile Bundesliga,1.57,1.14,55.81
 116,112,CSKA Moscow,Russian Premier Liga,1.55,1.12,55.71
-117,117,AFC Bournemouth,Barclays Premier League,1.5,1.07,55.68
-118,114,Philadelphia Union,Major League Soccer,1.71,1.29,55.5
-119,109,Norwich City,English League Championship,1.58,1.16,55.47
+117,114,Philadelphia Union,Major League Soccer,1.71,1.29,55.5
+118,109,Norwich City,English League Championship,1.58,1.16,55.47
+119,117,AFC Bournemouth,Barclays Premier League,1.48,1.08,55.35
 120,121,FC Utrecht,Dutch Eredivisie,1.77,1.35,55.32
 121,123,Corinthians,Brasileiro Série A,1.27,0.87,55.32
 122,122,Schalke 04,German Bundesliga,1.64,1.23,55.13
@@ -152,24 +152,24 @@ rank,prev_rank,name,league,off,def,spi
 151,147,Olympiacos,Greek Super League,1.4,1.12,52.38
 152,149,FC Copenhagen,Danish SAS-Ligaen,1.51,1.23,52.37
 153,170,FC Krasnodar,Russian Premier Liga,1.51,1.23,52.36
-154,155,Besiktas,Turkish Turkcell Super Lig,1.59,1.32,52.14
-155,154,América Mineiro,Brasileiro Série A,1.34,1.07,52.0
-156,158,FC Sheriff Tiraspol,UEFA Europa League,1.54,1.28,51.82
-157,161,Fortaleza,Brasileiro Série A,1.28,1.02,51.71
-158,160,Vitesse,Dutch Eredivisie,1.53,1.27,51.69
-159,174,New York City FC,Major League Soccer,1.61,1.35,51.68
-160,142,Clermont Foot,French Ligue 1,1.47,1.22,51.68
-161,178,Brest,French Ligue 1,1.51,1.27,51.55
-162,146,Gil Vicente,Portuguese Liga,1.46,1.21,51.53
-163,163,Kawasaki Frontale,Japanese J League,1.73,1.48,51.5
-164,177,Dinamo Moscow,Russian Premier Liga,1.51,1.27,51.44
-165,165,Guadalajara,Mexican Primera Division Torneo Apertura,1.34,1.1,51.4
-166,159,Angers,French Ligue 1,1.5,1.26,51.24
-167,171,Yokohama F. Marinos,Japanese J League,1.58,1.37,50.76
-168,162,Atlético Paranaense,Brasileiro Série A,1.3,1.09,50.72
-169,172,Santos Laguna,Mexican Primera Division Torneo Apertura,1.64,1.43,50.68
-170,176,Montreal Impact,Major League Soccer,1.56,1.36,50.6
-171,169,Sampdoria,Italy Serie A,1.41,1.2,50.59
+154,154,América Mineiro,Brasileiro Série A,1.34,1.07,52.0
+155,158,FC Sheriff Tiraspol,UEFA Europa League,1.54,1.28,51.82
+156,161,Fortaleza,Brasileiro Série A,1.28,1.02,51.71
+157,160,Vitesse,Dutch Eredivisie,1.53,1.27,51.69
+158,174,New York City FC,Major League Soccer,1.61,1.35,51.68
+159,142,Clermont Foot,French Ligue 1,1.47,1.22,51.68
+160,178,Brest,French Ligue 1,1.51,1.27,51.55
+161,146,Gil Vicente,Portuguese Liga,1.46,1.21,51.53
+162,163,Kawasaki Frontale,Japanese J League,1.73,1.48,51.5
+163,177,Dinamo Moscow,Russian Premier Liga,1.51,1.27,51.44
+164,165,Guadalajara,Mexican Primera Division Torneo Apertura,1.34,1.1,51.4
+165,159,Angers,French Ligue 1,1.5,1.26,51.24
+166,155,Besiktas,Turkish Turkcell Super Lig,1.57,1.35,50.91
+167,169,Sampdoria,Italy Serie A,1.41,1.19,50.85
+168,171,Yokohama F. Marinos,Japanese J League,1.58,1.37,50.76
+169,162,Atlético Paranaense,Brasileiro Série A,1.3,1.09,50.72
+170,172,Santos Laguna,Mexican Primera Division Torneo Apertura,1.64,1.43,50.68
+171,176,Montreal Impact,Major League Soccer,1.56,1.36,50.6
 172,166,Galatasaray,Turkish Turkcell Super Lig,1.41,1.2,50.59
 173,180,Heerenveen,Dutch Eredivisie,1.45,1.24,50.53
 174,168,Adana Demirspor,Turkish Turkcell Super Lig,1.53,1.32,50.44
@@ -177,53 +177,53 @@ rank,prev_rank,name,league,off,def,spi
 176,151,West Bromwich Albion,English League Championship,1.34,1.15,50.19
 177,152,Silkeborg,Danish SAS-Ligaen,1.73,1.55,50.11
 178,173,Rosenborg,Norwegian Tippeligaen,1.87,1.69,50.05
-179,179,Cremonese,Italy Serie A,1.51,1.33,49.87
+179,179,Cremonese,Italy Serie A,1.5,1.33,49.67
 180,186,RKC,Dutch Eredivisie,1.62,1.47,49.18
 181,182,Lech Poznan,UEFA Europa Conference League,1.34,1.21,48.87
 182,181,Panathinaikos,Greek Super League,1.17,1.03,48.81
 183,183,Maccabi Haifa,UEFA Champions League,1.59,1.46,48.79
-184,184,Portimonense,Portuguese Liga,1.26,1.12,48.78
-185,193,Salernitana,Italy Serie A,1.47,1.36,48.34
-186,213,Millwall,English League Championship,1.32,1.21,48.24
-187,188,Ceará,Brasileiro Série A,1.14,1.02,48.23
-188,187,Cruz Azul,Mexican Primera Division Torneo Apertura,1.4,1.3,48.21
-189,222,Argentinos Juniors,Argentina Primera Division,1.2,1.08,48.2
-190,185,Famalicao,Portuguese Liga,1.29,1.18,48.19
-191,210,Middlesbrough,English League Championship,1.26,1.15,48.14
-192,175,Empoli,Italy Serie A,1.49,1.39,48.0
-193,190,Botafogo,Brasileiro Série A,1.18,1.08,47.76
-194,200,Konyaspor,Turkish Turkcell Super Lig,1.27,1.18,47.73
-195,194,Sochi,Russian Premier Liga,1.44,1.36,47.61
-196,195,AEK Athens,Greek Super League,1.36,1.28,47.58
-197,215,Chaves,Portuguese Liga,1.35,1.27,47.51
-198,189,Estoril Praia,Portuguese Liga,1.2,1.12,47.46
-199,197,Sparta,Dutch Eredivisie,1.42,1.34,47.46
-200,196,Hapoel Be'er,UEFA Europa Conference League,1.43,1.36,47.38
-201,191,Luton Town,English League Championship,1.27,1.19,47.38
-202,198,Rostov,Russian Premier Liga,1.48,1.42,47.23
-203,192,Vizela,Portuguese Liga,1.28,1.21,47.21
-204,206,NEC,Dutch Eredivisie,1.4,1.34,47.16
-205,211,Santa Clara,Portuguese Liga,1.17,1.09,47.16
-206,205,FK Qarabag,UEFA Europa League,1.41,1.35,47.12
-207,201,LASK Linz,Austrian T-Mobile Bundesliga,1.58,1.53,47.05
-208,207,Urawa Red Diamonds,Japanese J League,1.33,1.28,46.8
-209,203,Basel,Swiss Raiffeisen Super League,1.44,1.4,46.72
-210,199,Bordeaux,French Ligue 2,1.26,1.22,46.6
-211,217,FC Cincinnati,Major League Soccer,1.64,1.63,46.27
-212,209,Auxerre,French Ligue 1,1.36,1.34,46.2
-213,221,Huracán,Argentina Primera Division,1.11,1.08,46.05
-214,202,Rapid Vienna,Austrian T-Mobile Bundesliga,1.27,1.26,45.95
-215,212,Spezia,Italy Serie A,1.39,1.39,45.81
-216,204,Parma,Italy Serie B,1.3,1.3,45.78
-217,219,FK Austria Vienna,Austrian T-Mobile Bundesliga,1.46,1.47,45.75
-218,214,Los Angeles Galaxy,Major League Soccer,1.61,1.63,45.65
-219,216,Apollon Limassol,UEFA Europa Conference League,1.28,1.27,45.64
+184,195,AEK Athens,Greek Super League,1.36,1.24,48.6
+185,184,Portimonense,Portuguese Liga,1.24,1.11,48.57
+186,193,Salernitana,Italy Serie A,1.47,1.36,48.34
+187,213,Millwall,English League Championship,1.32,1.21,48.24
+188,188,Ceará,Brasileiro Série A,1.14,1.02,48.23
+189,187,Cruz Azul,Mexican Primera Division Torneo Apertura,1.4,1.3,48.21
+190,222,Argentinos Juniors,Argentina Primera Division,1.2,1.08,48.2
+191,185,Famalicao,Portuguese Liga,1.29,1.18,48.19
+192,210,Middlesbrough,English League Championship,1.26,1.15,48.14
+193,175,Empoli,Italy Serie A,1.49,1.39,48.0
+194,190,Botafogo,Brasileiro Série A,1.18,1.08,47.76
+195,200,Konyaspor,Turkish Turkcell Super Lig,1.27,1.18,47.73
+196,215,Chaves,Portuguese Liga,1.35,1.27,47.51
+197,189,Estoril Praia,Portuguese Liga,1.2,1.12,47.46
+198,197,Sparta,Dutch Eredivisie,1.42,1.34,47.46
+199,196,Hapoel Be'er,UEFA Europa Conference League,1.43,1.36,47.38
+200,191,Luton Town,English League Championship,1.27,1.19,47.38
+201,198,Rostov,Russian Premier Liga,1.48,1.42,47.23
+202,192,Vizela,Portuguese Liga,1.28,1.21,47.21
+203,206,NEC,Dutch Eredivisie,1.4,1.34,47.16
+204,211,Santa Clara,Portuguese Liga,1.17,1.09,47.16
+205,205,FK Qarabag,UEFA Europa League,1.41,1.35,47.12
+206,201,LASK Linz,Austrian T-Mobile Bundesliga,1.58,1.53,47.05
+207,207,Urawa Red Diamonds,Japanese J League,1.33,1.28,46.8
+208,203,Basel,Swiss Raiffeisen Super League,1.44,1.4,46.72
+209,199,Bordeaux,French Ligue 2,1.26,1.22,46.6
+210,217,FC Cincinnati,Major League Soccer,1.64,1.63,46.27
+211,209,Auxerre,French Ligue 1,1.36,1.34,46.2
+212,221,Huracán,Argentina Primera Division,1.11,1.08,46.05
+213,202,Rapid Vienna,Austrian T-Mobile Bundesliga,1.27,1.26,45.95
+214,212,Spezia,Italy Serie A,1.39,1.39,45.81
+215,204,Parma,Italy Serie B,1.3,1.3,45.78
+216,219,FK Austria Vienna,Austrian T-Mobile Bundesliga,1.46,1.47,45.75
+217,214,Los Angeles Galaxy,Major League Soccer,1.61,1.63,45.65
+218,216,Apollon Limassol,UEFA Europa Conference League,1.28,1.27,45.64
+219,194,Sochi,Russian Premier Liga,1.41,1.42,45.61
 220,208,Stoke City,English League Championship,1.22,1.22,45.55
 221,223,Levante,Spanish Segunda Division,1.24,1.24,45.39
 222,218,Boavista,Portuguese Liga,1.25,1.28,45.07
-223,238,Toluca,Mexican Primera Division Torneo Apertura,1.49,1.54,44.95
-224,225,León,Mexican Primera Division Torneo Apertura,1.39,1.44,44.81
-225,226,Rio Ave,Portuguese Liga,1.35,1.39,44.78
+223,226,Rio Ave,Portuguese Liga,1.34,1.37,45.05
+224,238,Toluca,Mexican Primera Division Torneo Apertura,1.49,1.54,44.95
+225,225,León,Mexican Primera Division Torneo Apertura,1.39,1.44,44.81
 226,250,FC Nordsjaelland,Danish SAS-Ligaen,1.32,1.36,44.75
 227,224,Go Ahead Eagles,Dutch Eredivisie,1.47,1.53,44.73
 228,220,St Gallen,Swiss Raiffeisen Super League,1.65,1.72,44.72
@@ -264,11 +264,11 @@ rank,prev_rank,name,league,off,def,spi
 263,230,Hammarby,Swedish Allsvenskan,1.4,1.58,42.23
 264,239,Standard Liege,Belgian Jupiler League,1.29,1.45,42.19
 265,264,Sanfrecce Hiroshima,Japanese J League,1.33,1.5,42.0
-266,265,Cagliari,Italy Serie B,1.19,1.34,41.99
-267,243,Wolfsberger AC,Austrian T-Mobile Bundesliga,1.66,1.88,41.94
-268,277,Las Palmas,Spanish Segunda Division,0.98,1.1,41.89
-269,296,Fatih Karagümrük,Turkish Turkcell Super Lig,1.39,1.58,41.83
-270,268,Gazisehir Gaziantep,Turkish Turkcell Super Lig,1.28,1.45,41.82
+266,243,Wolfsberger AC,Austrian T-Mobile Bundesliga,1.66,1.88,41.94
+267,277,Las Palmas,Spanish Segunda Division,0.98,1.1,41.89
+268,296,Fatih Karagümrük,Turkish Turkcell Super Lig,1.39,1.58,41.83
+269,268,Gazisehir Gaziantep,Turkish Turkcell Super Lig,1.28,1.45,41.82
+270,317,Djurgardens IF,Swedish Allsvenskan,1.33,1.51,41.8
 271,261,Sheffield Wednesday,English League One,1.28,1.47,41.53
 272,274,Brondby,Danish SAS-Ligaen,1.33,1.52,41.52
 273,287,Granada,Spanish Segunda Division,1.07,1.23,41.44
@@ -277,52 +277,52 @@ rank,prev_rank,name,league,off,def,spi
 276,275,Ludogorets,UEFA Europa League,1.31,1.51,41.25
 277,266,Randers FC,Danish SAS-Ligaen,1.31,1.52,41.14
 278,280,Frosinone,Italy Serie B,1.16,1.35,41.14
-279,300,Alanyaspor,Turkish Turkcell Super Lig,1.44,1.68,40.97
-280,285,Tijuana,Mexican Primera Division Torneo Apertura,1.26,1.48,40.9
-281,288,Metz,French Ligue 2,1.22,1.44,40.77
-282,289,Sporting Kansas City,Major League Soccer,1.23,1.44,40.77
-283,284,KVC Westerlo,Belgian Jupiler League,1.35,1.58,40.75
-284,290,Columbus Crew,Major League Soccer,1.24,1.47,40.66
-285,291,Orlando City SC,Major League Soccer,1.25,1.48,40.66
-286,271,Blackburn,English League Championship,1.11,1.31,40.63
-287,262,St. Truidense,Belgian Jupiler League,1.03,1.23,40.52
-288,317,Djurgardens IF,Swedish Allsvenskan,1.3,1.54,40.5
-289,282,FC Dallas,Major League Soccer,1.21,1.43,40.46
-290,310,Aberdeen,Scottish Premiership,1.28,1.52,40.42
-291,245,Boca Juniors,Argentina Primera Division,1.03,1.22,40.4
-292,294,Necaxa,Mexican Primera Division Torneo Apertura,1.17,1.39,40.38
-293,276,FC Volendam,Dutch Eredivisie,1.4,1.66,40.3
-294,278,Valerenga,Norwegian Tippeligaen,1.4,1.67,40.25
-295,279,Krylia Sovetov,Russian Premier Liga,1.11,1.33,40.25
-296,281,SC Paderborn,German 2. Bundesliga,1.32,1.58,40.24
-297,295,SV Darmstadt 98,German 2. Bundesliga,1.35,1.61,40.22
-298,298,Newell's Old Boys,Argentina Primera Division,0.99,1.19,40.18
+279,265,Cagliari,Italy Serie B,1.18,1.37,41.06
+280,306,Le Havre,French Ligue 2,1.06,1.24,41.02
+281,300,Alanyaspor,Turkish Turkcell Super Lig,1.44,1.68,40.97
+282,285,Tijuana,Mexican Primera Division Torneo Apertura,1.26,1.48,40.9
+283,323,Viborg,Danish SAS-Ligaen,1.19,1.4,40.9
+284,289,Sporting Kansas City,Major League Soccer,1.23,1.44,40.77
+285,284,KVC Westerlo,Belgian Jupiler League,1.35,1.58,40.75
+286,290,Columbus Crew,Major League Soccer,1.24,1.47,40.66
+287,291,Orlando City SC,Major League Soccer,1.25,1.48,40.66
+288,271,Blackburn,English League Championship,1.11,1.31,40.63
+289,262,St. Truidense,Belgian Jupiler League,1.03,1.23,40.52
+290,282,FC Dallas,Major League Soccer,1.21,1.43,40.46
+291,310,Aberdeen,Scottish Premiership,1.28,1.52,40.42
+292,245,Boca Juniors,Argentina Primera Division,1.03,1.22,40.4
+293,294,Necaxa,Mexican Primera Division Torneo Apertura,1.17,1.39,40.38
+294,276,FC Volendam,Dutch Eredivisie,1.4,1.66,40.3
+295,278,Valerenga,Norwegian Tippeligaen,1.4,1.67,40.25
+296,279,Krylia Sovetov,Russian Premier Liga,1.11,1.33,40.25
+297,281,SC Paderborn,German 2. Bundesliga,1.32,1.58,40.24
+298,295,SV Darmstadt 98,German 2. Bundesliga,1.35,1.61,40.22
 299,299,FC Tokyo,Japanese J League,1.21,1.46,40.07
 300,303,Portland Timbers,Major League Soccer,1.48,1.77,39.97
 301,304,Vissel Kobe,Japanese J League,1.09,1.32,39.92
 302,292,Sunderland,English League Championship,1.11,1.34,39.92
 303,313,Bristol City,English League Championship,1.24,1.5,39.91
 304,257,Sporting de Charleroi,Belgian Jupiler League,1.4,1.7,39.76
-305,306,Le Havre,French Ligue 2,1.04,1.27,39.75
-306,311,Pacos Ferreira,Portuguese Liga,1.11,1.35,39.75
-307,307,Seattle Sounders FC,Major League Soccer,1.25,1.52,39.74
-308,308,Rosario Central,Argentina Primera Division,1.07,1.31,39.68
-309,327,BK Hacken,Swedish Allsvenskan,1.47,1.78,39.62
-310,354,IF Elfsborg,Swedish Allsvenskan,1.37,1.67,39.56
-311,305,Eibar,Spanish Segunda Division,1.0,1.23,39.44
-312,367,WSG Swarovski Wattens,Austrian T-Mobile Bundesliga,1.51,1.83,39.41
-313,328,Lillestrom,Norwegian Tippeligaen,1.21,1.49,39.33
+305,311,Pacos Ferreira,Portuguese Liga,1.11,1.35,39.75
+306,307,Seattle Sounders FC,Major League Soccer,1.25,1.52,39.74
+307,327,BK Hacken,Swedish Allsvenskan,1.47,1.78,39.62
+308,354,IF Elfsborg,Swedish Allsvenskan,1.37,1.67,39.56
+309,298,Newell's Old Boys,Argentina Primera Division,0.97,1.2,39.48
+310,305,Eibar,Spanish Segunda Division,1.0,1.23,39.44
+311,367,WSG Swarovski Wattens,Austrian T-Mobile Bundesliga,1.51,1.83,39.41
+312,328,Lillestrom,Norwegian Tippeligaen,1.21,1.49,39.33
+313,288,Metz,French Ligue 2,1.18,1.46,39.32
 314,335,SK Austria Klagenfurt,Austrian T-Mobile Bundesliga,1.38,1.7,39.25
-315,314,Charlotte FC,Major League Soccer,1.29,1.59,39.23
-316,315,Antalyaspor,Turkish Turkcell Super Lig,1.3,1.6,39.23
-317,343,Sivasspor,Turkish Turkcell Super Lig,1.19,1.48,39.11
-318,293,Blackpool,English League Championship,1.2,1.5,38.98
-319,316,Maritimo,Portuguese Liga,1.21,1.51,38.92
-320,321,Real Salt Lake,Major League Soccer,1.19,1.49,38.87
-321,302,Kasimpasa,Turkish Turkcell Super Lig,1.31,1.63,38.86
-322,347,Hearts,Scottish Premiership,1.32,1.64,38.82
-323,322,New England Revolution,Major League Soccer,1.34,1.67,38.77
-324,323,Viborg,Danish SAS-Ligaen,1.12,1.41,38.76
+315,308,Rosario Central,Argentina Primera Division,1.07,1.32,39.25
+316,314,Charlotte FC,Major League Soccer,1.29,1.59,39.23
+317,315,Antalyaspor,Turkish Turkcell Super Lig,1.3,1.6,39.23
+318,343,Sivasspor,Turkish Turkcell Super Lig,1.19,1.48,39.11
+319,293,Blackpool,English League Championship,1.2,1.5,38.98
+320,316,Maritimo,Portuguese Liga,1.21,1.51,38.92
+321,321,Real Salt Lake,Major League Soccer,1.19,1.49,38.87
+322,302,Kasimpasa,Turkish Turkcell Super Lig,1.31,1.63,38.86
+323,347,Hearts,Scottish Premiership,1.32,1.64,38.82
+324,322,New England Revolution,Major League Soccer,1.34,1.67,38.77
 325,325,Kashima Antlers,Japanese J League,1.25,1.57,38.67
 326,360,FC Luzern,Swiss Raiffeisen Super League,1.34,1.68,38.63
 327,329,Chicago Fire,Major League Soccer,1.28,1.61,38.63
@@ -346,60 +346,60 @@ rank,prev_rank,name,league,off,def,spi
 345,344,F.B.C Unione Venezia,Italy Serie B,1.17,1.54,37.44
 346,339,Cambuur Leeuwarden,Dutch Eredivisie,1.27,1.67,37.4
 347,376,KV Mechelen,Belgian Jupiler League,1.39,1.82,37.18
-348,350,AaB,Danish SAS-Ligaen,1.1,1.47,37.14
-349,320,OH Leuven,Belgian Jupiler League,1.33,1.74,37.13
-350,336,Karlsruher SC,German 2. Bundesliga,1.27,1.68,37.06
-351,349,Aris Salonika,Greek Super League,0.95,1.29,36.89
-352,356,AGF Aarhus,Danish SAS-Ligaen,1.05,1.42,36.89
-353,378,Caen,French Ligue 2,1.07,1.45,36.79
-354,369,Gazovik Orenburg,Russian Premier Liga,1.26,1.68,36.75
-355,380,Servette,Swiss Raiffeisen Super League,1.14,1.54,36.66
-356,346,Paris FC,French Ligue 2,0.96,1.31,36.65
-357,351,Mamelodi Sundowns,South African ABSA Premier League,1.05,1.43,36.58
-358,353,Union Santa Fe,Argentina Primera Division,1.01,1.39,36.5
-359,371,Melbourne City,Australian A-League,1.26,1.69,36.49
-360,364,Cerezo Osaka,Japanese J League,1.11,1.52,36.38
-361,352,Ternana,Italy Serie B,1.26,1.7,36.36
-362,342,Alavés,Spanish Segunda Division,0.96,1.33,36.28
-363,324,FC Zurich,Swiss Raiffeisen Super League,1.23,1.66,36.28
-364,366,Mazatlán FC,Mexican Primera Division Torneo Apertura,1.03,1.42,36.26
-365,362,Juventude,Brasileiro Série A,1.04,1.44,36.06
-366,348,Amiens,French Ligue 2,0.93,1.3,36.04
-367,370,Huddersfield Town,English League Championship,1.01,1.42,35.78
-368,391,Ural Sverdlovsk Oblast,Russian Premier Liga,0.99,1.4,35.73
-369,357,Inter Miami CF,Major League Soccer,1.27,1.75,35.67
-370,372,Lanus,Argentina Primera Division,1.01,1.42,35.65
-371,394,Odense BK,Danish SAS-Ligaen,1.1,1.54,35.59
-372,361,FC Cartagena,Spanish Segunda Division,1.0,1.41,35.58
-373,363,Motherwell,Scottish Premiership,1.1,1.54,35.53
-374,379,Atlético San Luis,Mexican Primera Division Torneo Apertura,1.03,1.46,35.51
-375,365,Derby County,English League One,1.09,1.53,35.5
-376,399,Livingston,Scottish Premiership,0.98,1.4,35.43
-377,373,Brescia,Italy Serie B,1.08,1.53,35.42
+348,320,OH Leuven,Belgian Jupiler League,1.33,1.74,37.13
+349,336,Karlsruher SC,German 2. Bundesliga,1.27,1.68,37.06
+350,349,Aris Salonika,Greek Super League,0.95,1.29,36.89
+351,356,AGF Aarhus,Danish SAS-Ligaen,1.05,1.42,36.89
+352,378,Caen,French Ligue 2,1.07,1.45,36.79
+353,369,Gazovik Orenburg,Russian Premier Liga,1.26,1.68,36.75
+354,380,Servette,Swiss Raiffeisen Super League,1.14,1.54,36.66
+355,346,Paris FC,French Ligue 2,0.96,1.31,36.65
+356,351,Mamelodi Sundowns,South African ABSA Premier League,1.05,1.43,36.58
+357,353,Union Santa Fe,Argentina Primera Division,1.01,1.39,36.5
+358,371,Melbourne City,Australian A-League,1.26,1.69,36.49
+359,364,Cerezo Osaka,Japanese J League,1.11,1.52,36.38
+360,352,Ternana,Italy Serie B,1.26,1.7,36.36
+361,342,Alavés,Spanish Segunda Division,0.96,1.33,36.28
+362,324,FC Zurich,Swiss Raiffeisen Super League,1.23,1.66,36.28
+363,366,Mazatlán FC,Mexican Primera Division Torneo Apertura,1.03,1.42,36.26
+364,362,Juventude,Brasileiro Série A,1.04,1.44,36.06
+365,348,Amiens,French Ligue 2,0.93,1.3,36.04
+366,370,Huddersfield Town,English League Championship,1.01,1.42,35.78
+367,391,Ural Sverdlovsk Oblast,Russian Premier Liga,0.99,1.4,35.73
+368,357,Inter Miami CF,Major League Soccer,1.27,1.75,35.67
+369,372,Lanus,Argentina Primera Division,1.01,1.42,35.65
+370,394,Odense BK,Danish SAS-Ligaen,1.1,1.54,35.59
+371,361,FC Cartagena,Spanish Segunda Division,1.0,1.41,35.58
+372,363,Motherwell,Scottish Premiership,1.1,1.54,35.53
+373,379,Atlético San Luis,Mexican Primera Division Torneo Apertura,1.03,1.46,35.51
+374,365,Derby County,English League One,1.09,1.53,35.5
+375,399,Livingston,Scottish Premiership,0.98,1.4,35.43
+376,373,Brescia,Italy Serie B,1.08,1.53,35.42
+377,350,AaB,Danish SAS-Ligaen,1.09,1.54,35.3
 378,405,Sporting Gijón,Spanish Segunda Division,0.94,1.35,35.28
 379,368,Benevento,Italy Serie B,0.99,1.42,35.28
 380,358,Malmo FF,Swedish Allsvenskan,1.07,1.52,35.25
 381,409,Volos NFC,Greek Super League,1.07,1.52,35.23
-382,384,Real Oviedo,Spanish Segunda Division,0.85,1.24,35.19
-383,385,Vancouver Whitecaps,Major League Soccer,1.15,1.62,35.19
-384,386,Toronto FC,Major League Soccer,1.31,1.83,35.17
-385,424,Grasshoppers Zürich,Swiss Raiffeisen Super League,1.4,1.94,35.13
-386,374,Tenerife,Spanish Segunda Division,0.87,1.28,35.08
-387,388,San Jose Earthquakes,Major League Soccer,1.3,1.82,35.06
-388,389,Sagan Tosu,Japanese J League,1.05,1.5,35.04
-389,392,Holstein Kiel,German 2. Bundesliga,1.32,1.85,34.98
-390,395,Sarmiento,Argentina Primera Division,0.99,1.44,34.88
-391,383,Guingamp,French Ligue 2,1.06,1.53,34.85
-392,382,Bari,Italy Serie B,1.13,1.62,34.84
+382,385,Vancouver Whitecaps,Major League Soccer,1.15,1.62,35.19
+383,386,Toronto FC,Major League Soccer,1.31,1.83,35.17
+384,424,Grasshoppers Zürich,Swiss Raiffeisen Super League,1.4,1.94,35.13
+385,374,Tenerife,Spanish Segunda Division,0.87,1.28,35.08
+386,388,San Jose Earthquakes,Major League Soccer,1.3,1.82,35.06
+387,389,Sagan Tosu,Japanese J League,1.05,1.5,35.04
+388,392,Holstein Kiel,German 2. Bundesliga,1.32,1.85,34.98
+389,395,Sarmiento,Argentina Primera Division,0.99,1.44,34.88
+390,383,Guingamp,French Ligue 2,1.06,1.53,34.85
+391,382,Bari,Italy Serie B,1.13,1.62,34.84
+392,419,Colon Santa Fe,Argentina Primera Division,1.09,1.57,34.83
 393,381,Platense,Argentina Primera Division,0.87,1.28,34.74
 394,402,SD Huesca,Spanish Segunda Division,0.89,1.32,34.59
 395,377,Defensa y Justicia,Argentina Primera Division,1.02,1.49,34.58
 396,375,Gimnasia La Plata,Argentina Primera Division,0.85,1.28,34.47
-397,417,Pisa,Italy Serie B,1.12,1.63,34.43
-398,387,Real Zaragoza,Spanish Segunda Division,0.85,1.28,34.42
-399,390,AIK,Swedish Allsvenskan,1.13,1.64,34.41
-400,359,FC Lugano,Swiss Raiffeisen Super League,1.2,1.73,34.4
-401,419,Colon Santa Fe,Argentina Primera Division,1.08,1.58,34.4
+397,412,Ascoli,Italy Serie B,0.96,1.43,34.44
+398,417,Pisa,Italy Serie B,1.12,1.63,34.43
+399,384,Real Oviedo,Spanish Segunda Division,0.83,1.25,34.42
+400,387,Real Zaragoza,Spanish Segunda Division,0.85,1.28,34.42
+401,359,FC Lugano,Swiss Raiffeisen Super League,1.2,1.73,34.4
 402,427,Central Córdoba Santiago del Estero,Argentina Primera Division,1.0,1.48,34.25
 403,398,Ballkani,UEFA Europa Conference League,1.24,1.8,34.18
 404,401,Patronato,Argentina Primera Division,0.99,1.48,34.15
@@ -410,43 +410,43 @@ rank,prev_rank,name,league,off,def,spi
 409,408,Fakel Voronezh,Russian Premier Liga,1.02,1.54,33.69
 410,406,Nagoya Grampus Eight,Japanese J League,0.83,1.28,33.67
 411,411,FC Sion,Swiss Raiffeisen Super League,1.23,1.82,33.53
-412,412,Ascoli,Italy Serie B,0.93,1.43,33.42
-413,404,Avaí,Brasileiro Série A,0.99,1.52,33.4
-414,413,Houston Dynamo,Major League Soccer,1.23,1.83,33.4
-415,414,Arminia Bielefeld,German 2. Bundesliga,1.13,1.7,33.37
-416,410,Sarpsborg,Norwegian Tippeligaen,1.29,1.9,33.32
-417,418,Rigas Futbola Skola,UEFA Europa Conference League,1.19,1.79,33.12
-418,429,Grenoble,French Ligue 2,0.84,1.32,33.08
-419,397,FK Nizhny Novgorod,Russian Premier Liga,0.93,1.46,32.98
-420,434,1. FC Heidenheim 1846,German 2. Bundesliga,1.02,1.57,32.94
-421,447,AC Horsens,Danish SAS-Ligaen,0.96,1.5,32.82
-422,430,Barracas Central,Argentina Primera Division,0.98,1.52,32.81
+412,430,Barracas Central,Argentina Primera Division,0.99,1.51,33.5
+413,390,AIK,Swedish Allsvenskan,1.08,1.63,33.41
+414,404,Avaí,Brasileiro Série A,0.99,1.52,33.4
+415,413,Houston Dynamo,Major League Soccer,1.23,1.83,33.4
+416,414,Arminia Bielefeld,German 2. Bundesliga,1.13,1.7,33.37
+417,410,Sarpsborg,Norwegian Tippeligaen,1.29,1.9,33.32
+418,418,Rigas Futbola Skola,UEFA Europa Conference League,1.19,1.79,33.12
+419,429,Grenoble,French Ligue 2,0.84,1.32,33.08
+420,397,FK Nizhny Novgorod,Russian Premier Liga,0.93,1.46,32.98
+421,434,1. FC Heidenheim 1846,German 2. Bundesliga,1.02,1.57,32.94
+422,447,AC Horsens,Danish SAS-Ligaen,0.96,1.5,32.82
 423,403,Dijon FCO,French Ligue 2,0.97,1.52,32.78
 424,400,Reggina,Italy Serie B,0.94,1.47,32.74
 425,415,Banfield,Argentina Primera Division,0.84,1.35,32.64
 426,438,St Mirren,Scottish Premiership,0.91,1.45,32.6
 427,426,Austria Lustenau,Austrian T-Mobile Bundesliga,1.05,1.64,32.58
 428,421,Viking FK,Norwegian Tippeligaen,1.28,1.94,32.42
-429,425,Arsenal Sarandi,Argentina Primera Division,0.83,1.36,32.26
-430,423,Atlético Tucumán,Argentina Primera Division,0.9,1.46,32.24
-431,407,Kalmar FF,Swedish Allsvenskan,0.95,1.52,32.21
+429,445,Hatayspor,Turkish Turkcell Super Lig,1.06,1.66,32.32
+430,425,Arsenal Sarandi,Argentina Primera Division,0.83,1.36,32.26
+431,423,Atlético Tucumán,Argentina Primera Division,0.9,1.46,32.24
 432,393,Hartberg,Austrian T-Mobile Bundesliga,1.11,1.75,31.98
-433,432,Dundee Utd,Scottish Premiership,0.96,1.57,31.51
-434,441,Kashiwa Reysol,Japanese J League,1.01,1.65,31.44
-435,435,Shimizu S-Pulse,Japanese J League,1.11,1.78,31.41
-436,422,Rotherham United,English League Championship,0.93,1.54,31.35
-437,443,Zalgiris Vilnius,UEFA Europa Conference League,1.1,1.77,31.25
-438,445,Hatayspor,Turkish Turkcell Super Lig,1.03,1.68,31.19
+433,407,Kalmar FF,Swedish Allsvenskan,0.91,1.48,31.8
+434,432,Dundee Utd,Scottish Premiership,0.96,1.57,31.51
+435,441,Kashiwa Reysol,Japanese J League,1.01,1.65,31.44
+436,435,Shimizu S-Pulse,Japanese J League,1.11,1.78,31.41
+437,422,Rotherham United,English League Championship,0.93,1.54,31.35
+438,443,Zalgiris Vilnius,UEFA Europa Conference League,1.1,1.77,31.25
 439,446,Tromso,Norwegian Tippeligaen,1.09,1.76,31.17
 440,448,Consadole Sapporo,Japanese J League,1.12,1.81,31.14
 441,436,Valenciennes,French Ligue 2,0.78,1.35,31.13
-442,461,Cashpoint SC Rheindorf Altach,Austrian T-Mobile Bundesliga,1.15,1.85,31.1
-443,449,Hannover 96,German 2. Bundesliga,1.03,1.69,31.05
-444,463,St Johnstone,Scottish Premiership,0.88,1.49,31.05
-445,454,SV Ried,Austrian T-Mobile Bundesliga,0.94,1.57,30.98
-446,437,Burgos,Spanish Segunda Division,0.71,1.25,30.97
-447,444,1. FC Nürnberg,German 2. Bundesliga,0.98,1.64,30.92
-448,433,Ankaragucu,Turkish Turkcell Super Lig,1.02,1.69,30.87
+442,433,Ankaragucu,Turkish Turkcell Super Lig,1.02,1.67,31.12
+443,461,Cashpoint SC Rheindorf Altach,Austrian T-Mobile Bundesliga,1.15,1.85,31.1
+444,449,Hannover 96,German 2. Bundesliga,1.03,1.69,31.05
+445,463,St Johnstone,Scottish Premiership,0.88,1.49,31.05
+446,454,SV Ried,Austrian T-Mobile Bundesliga,0.94,1.57,30.98
+447,437,Burgos,Spanish Segunda Division,0.71,1.25,30.97
+448,444,1. FC Nürnberg,German 2. Bundesliga,0.98,1.64,30.92
 449,420,Portsmouth,English League One,1.03,1.7,30.83
 450,431,Barnsley,English League One,0.95,1.6,30.79
 451,439,KV Kortrijk,Belgian Jupiler League,1.04,1.73,30.72
@@ -470,28 +470,28 @@ rank,prev_rank,name,league,off,def,spi
 469,462,Racing Santander,Spanish Segunda Division,0.79,1.45,29.38
 470,465,Albacete,Spanish Segunda Division,0.83,1.52,29.26
 471,458,Haugesund,Norwegian Tippeligaen,1.02,1.79,29.21
-472,451,Giresunspor,Turkish Turkcell Super Lig,0.86,1.57,29.15
+472,468,IFK Goteborg,Swedish Allsvenskan,1.02,1.79,29.16
 473,478,FC Andorra,Spanish Segunda Division,0.77,1.43,29.11
 474,471,Cittadella,Italy Serie B,0.71,1.34,29.05
-475,468,IFK Goteborg,Swedish Allsvenskan,1.04,1.84,28.74
+475,451,Giresunspor,Turkish Turkcell Super Lig,0.85,1.57,28.89
 476,477,SD Ponferradina,Spanish Segunda Division,0.9,1.64,28.68
 477,485,Wycombe Wanderers,English League One,0.89,1.65,28.41
 478,476,Louisville City FC,United Soccer League,0.94,1.72,28.41
 479,484,Bolton,English League One,0.82,1.55,28.37
-480,490,IFK Norrkoping,Swedish Allsvenskan,1.05,1.88,28.28
-481,479,Guangzhou Evergrande,Chinese Super League,1.08,1.93,28.19
+480,479,Guangzhou Evergrande,Chinese Super League,1.08,1.93,28.19
+481,490,IFK Norrkoping,Swedish Allsvenskan,1.03,1.87,28.11
 482,494,Lugo,Spanish Segunda Division,0.83,1.59,28.01
 483,480,HJK Helsinki,UEFA Europa League,0.9,1.69,27.96
 484,486,Shonan Bellmare,Japanese J League,0.68,1.37,27.73
-485,482,UD Ibiza,Spanish Segunda Division,0.8,1.56,27.68
-486,493,Pau,French Ligue 2,0.81,1.58,27.67
-487,500,Asteras Tripolis,Greek Super League,0.74,1.47,27.67
-488,487,Avispa Fukuoka,Japanese J League,0.73,1.46,27.64
-489,499,SV Zulte Waregem,Belgian Jupiler League,1.13,2.03,27.58
-490,475,Umraniyespor,Turkish Turkcell Super Lig,0.85,1.64,27.57
-491,504,Perugia,Italy Serie B,0.79,1.56,27.49
-492,491,Istanbulspor,Turkish Turkcell Super Lig,0.87,1.67,27.47
-493,495,Málaga,Spanish Segunda Division,0.77,1.55,27.1
+485,495,Málaga,Spanish Segunda Division,0.77,1.52,27.71
+486,482,UD Ibiza,Spanish Segunda Division,0.8,1.56,27.68
+487,493,Pau,French Ligue 2,0.81,1.58,27.67
+488,500,Asteras Tripolis,Greek Super League,0.74,1.47,27.67
+489,487,Avispa Fukuoka,Japanese J League,0.73,1.46,27.64
+490,499,SV Zulte Waregem,Belgian Jupiler League,1.13,2.03,27.58
+491,475,Umraniyespor,Turkish Turkcell Super Lig,0.85,1.64,27.57
+492,504,Perugia,Italy Serie B,0.79,1.56,27.49
+493,491,Istanbulspor,Turkish Turkcell Super Lig,0.87,1.67,27.47
 494,492,RFC Seraing,Belgian Jupiler League,0.9,1.74,27.04
 495,481,Villarreal B,Spanish Segunda Division,0.85,1.66,27.03
 496,489,Ross County,Scottish Premiership,0.84,1.66,27.02
@@ -506,24 +506,24 @@ rank,prev_rank,name,league,off,def,spi
 505,519,Eupen,Belgian Jupiler League,1.0,1.96,25.87
 506,502,Kyoto Purple Sanga,Japanese J League,0.71,1.53,25.85
 507,506,Birmingham Legion FC,United Soccer League,1.03,2.01,25.82
-508,517,1. FC Kaiserslautern,German 2. Bundesliga,0.92,1.87,25.57
-509,503,Melbourne Victory,Australian A-League,0.91,1.88,25.26
-510,516,Como,Italy Serie B,0.95,1.94,25.15
-511,523,US Quevilly,French Ligue 2,0.78,1.68,25.07
-512,513,Beijing Guoan,Chinese Super League,0.98,1.99,24.95
-513,512,Annecy,French Ligue 2,0.7,1.57,24.93
-514,505,Lyngby,Danish SAS-Ligaen,0.9,1.88,24.92
-515,510,Ionikos FC,Greek Super League,0.88,1.84,24.88
-516,515,San Antonio FC,United Soccer League,0.76,1.67,24.74
-517,501,Hansa Rostock,German 2. Bundesliga,0.83,1.79,24.55
-518,518,Shanghai SIPG,Chinese Super League,0.9,1.92,24.26
-519,509,Rodez,French Ligue 2,0.64,1.51,24.19
-520,514,Oxford United,English League One,0.86,1.86,24.17
-521,508,San Diego Loyal SC,United Soccer League,1.03,2.12,24.08
-522,524,Memphis 901 FC,United Soccer League,0.9,1.95,23.84
-523,539,Mjallby,Swedish Allsvenskan,0.69,1.64,23.58
+508,539,Mjallby,Swedish Allsvenskan,0.78,1.64,25.71
+509,517,1. FC Kaiserslautern,German 2. Bundesliga,0.92,1.87,25.57
+510,503,Melbourne Victory,Australian A-League,0.91,1.88,25.26
+511,516,Como,Italy Serie B,0.95,1.94,25.15
+512,523,US Quevilly,French Ligue 2,0.78,1.68,25.07
+513,513,Beijing Guoan,Chinese Super League,0.98,1.99,24.95
+514,512,Annecy,French Ligue 2,0.7,1.57,24.93
+515,505,Lyngby,Danish SAS-Ligaen,0.9,1.88,24.92
+516,510,Ionikos FC,Greek Super League,0.88,1.84,24.88
+517,515,San Antonio FC,United Soccer League,0.76,1.67,24.74
+518,501,Hansa Rostock,German 2. Bundesliga,0.83,1.79,24.55
+519,518,Shanghai SIPG,Chinese Super League,0.9,1.92,24.26
+520,509,Rodez,French Ligue 2,0.64,1.51,24.19
+521,514,Oxford United,English League One,0.86,1.86,24.17
+522,508,San Diego Loyal SC,United Soccer League,1.03,2.12,24.08
+523,524,Memphis 901 FC,United Soccer League,0.9,1.95,23.84
 524,536,SuperSport United,South African ABSA Premier League,0.76,1.76,23.49
-525,525,OFI Crete,Greek Super League,0.79,1.81,23.47
+525,525,OFI Crete,Greek Super League,0.75,1.77,22.87
 526,534,Lincoln City,English League One,0.78,1.84,22.71
 527,526,Palermo,Italy Serie B,0.75,1.79,22.7
 528,520,Kristiansund BK,Norwegian Tippeligaen,0.98,2.14,22.69
@@ -536,22 +536,22 @@ rank,prev_rank,name,league,off,def,spi
 535,542,Giannina,Greek Super League,0.74,1.82,21.97
 536,529,Milton Keynes Dons,English League One,0.72,1.81,21.66
 537,538,Kaizer Chiefs,South African ABSA Premier League,0.69,1.76,21.62
-538,541,Levadiakos,Greek Super League,0.69,1.77,21.55
-539,540,Pittsburgh Riverhounds,United Soccer League,0.72,1.83,21.47
-540,546,IK Sirius,Swedish Allsvenskan,0.72,1.83,21.46
-541,548,Niort,French Ligue 2,0.68,1.77,21.4
-542,521,Cosenza,Italy Serie B,0.7,1.8,21.3
-543,547,Winterthur,Swiss Raiffeisen Super League,0.74,1.88,21.25
-544,528,Aldosivi,Argentina Primera Division,0.68,1.77,21.25
-545,531,Rio Grande Valley FC Toros,United Soccer League,0.69,1.83,20.75
-546,543,New Mexico United,United Soccer League,0.75,1.93,20.65
-547,554,Orlando Pirates,South African ABSA Premier League,0.51,1.53,20.57
+538,540,Pittsburgh Riverhounds,United Soccer League,0.72,1.83,21.47
+539,548,Niort,French Ligue 2,0.68,1.77,21.4
+540,521,Cosenza,Italy Serie B,0.7,1.8,21.3
+541,547,Winterthur,Swiss Raiffeisen Super League,0.74,1.88,21.25
+542,528,Aldosivi,Argentina Primera Division,0.68,1.77,21.25
+543,546,IK Sirius,Swedish Allsvenskan,0.68,1.78,21.09
+544,531,Rio Grande Valley FC Toros,United Soccer League,0.69,1.83,20.75
+545,543,New Mexico United,United Soccer League,0.75,1.93,20.65
+546,554,Orlando Pirates,South African ABSA Premier League,0.51,1.53,20.57
+547,541,Levadiakos,Greek Super League,0.65,1.78,20.5
 548,545,Western Sydney FC,Australian A-League,0.78,2.0,20.35
 549,549,Shamrock Rovers,UEFA Europa Conference League,0.69,1.86,20.34
 550,553,Exeter City,English League One,0.82,2.09,20.05
 551,560,Colorado Springs Switchbacks FC,United Soccer League,0.77,2.02,19.97
 552,544,Shrewsbury Town,English League One,0.59,1.71,19.93
-553,552,IFK Värnamo,Swedish Allsvenskan,0.76,2.0,19.91
+553,552,IFK Värnamo,Swedish Allsvenskan,0.74,1.98,19.86
 554,557,Western United,Australian A-League,0.8,2.08,19.74
 555,555,Adelaide United,Australian A-League,0.77,2.06,19.46
 556,550,Miami FC,United Soccer League,0.66,1.87,19.4
@@ -563,7 +563,7 @@ rank,prev_rank,name,league,off,def,spi
 562,562,Shandong Luneng,Chinese Super League,0.82,2.22,18.5
 563,558,Newcastle Jets,Australian A-League,0.77,2.13,18.49
 564,563,Jiangsu Suning FC,Chinese Super League,0.71,2.04,18.37
-565,566,Lamia,Greek Super League,0.4,1.51,17.93
+565,566,Lamia,Greek Super League,0.38,1.46,18.0
 566,551,Salford City,English League Two,0.58,1.86,17.71
 567,569,Arizona United,United Soccer League,0.8,2.25,17.67
 568,567,Fleetwood Town,English League One,0.56,1.84,17.53
@@ -574,11 +574,11 @@ rank,prev_rank,name,league,off,def,spi
 573,576,Detroit City FC,United Soccer League,0.51,1.85,16.31
 574,574,El Paso Locomotive FC,United Soccer League,0.69,2.18,16.27
 575,580,Port Vale,English League One,0.57,1.97,16.21
-576,570,Varbergs BoIS FC,Swedish Allsvenskan,0.59,2.01,16.16
-577,571,Stellenbosch FC,South African ABSA Premier League,0.47,1.8,15.88
-578,573,Central Coast Mariners,Australian A-League,0.71,2.29,15.49
-579,579,Macarthur FC,Australian A-League,0.69,2.28,15.31
-580,578,Cheltenham Town,English League One,0.6,2.11,15.2
+576,571,Stellenbosch FC,South African ABSA Premier League,0.47,1.8,15.88
+577,573,Central Coast Mariners,Australian A-League,0.71,2.29,15.49
+578,579,Macarthur FC,Australian A-League,0.69,2.28,15.31
+579,578,Cheltenham Town,English League One,0.6,2.11,15.2
+580,570,Varbergs BoIS FC,Swedish Allsvenskan,0.6,2.12,15.05
 581,585,Accrington Stanley,English League One,0.6,2.14,14.96
 582,583,Orange County SC,United Soccer League,0.57,2.08,14.94
 583,582,FK Jerv,Norwegian Tippeligaen,0.68,2.31,14.79
@@ -616,14 +616,14 @@ rank,prev_rank,name,league,off,def,spi
 615,608,Colchester United,English League Two,0.35,2.13,10.07
 616,617,Charleston Battery,United Soccer League,0.58,2.65,10.05
 617,618,Dalian Aerbin,Chinese Super League,0.51,2.51,9.96
-618,616,GIF Sundsvall,Swedish Allsvenskan,0.56,2.65,9.83
-619,619,Guangzhou RF,Chinese Super League,0.66,2.86,9.74
-620,620,Indy Eleven,United Soccer League,0.43,2.38,9.67
-621,629,Stockport County,English League Two,0.37,2.24,9.6
-622,623,Carlisle United,English League Two,0.32,2.12,9.57
-623,621,Maritzburg Utd,South African ABSA Premier League,0.2,1.83,9.49
-624,622,Wuhan Zall,Chinese Super League,0.39,2.32,9.4
-625,626,AFC Wimbledon,English League Two,0.37,2.29,9.19
+618,619,Guangzhou RF,Chinese Super League,0.66,2.86,9.74
+619,620,Indy Eleven,United Soccer League,0.43,2.38,9.67
+620,629,Stockport County,English League Two,0.37,2.24,9.6
+621,623,Carlisle United,English League Two,0.32,2.12,9.57
+622,621,Maritzburg Utd,South African ABSA Premier League,0.2,1.83,9.49
+623,622,Wuhan Zall,Chinese Super League,0.39,2.32,9.4
+624,626,AFC Wimbledon,English League Two,0.37,2.29,9.19
+625,616,GIF Sundsvall,Swedish Allsvenskan,0.54,2.68,9.17
 626,624,Las Vegas Lights FC,United Soccer League,0.34,2.28,8.73
 627,625,Sutton United,English League Two,0.27,2.15,8.51
 628,627,Crewe Alexandra,English League Two,0.26,2.13,8.43
