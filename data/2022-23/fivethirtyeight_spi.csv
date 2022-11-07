@@ -9,8 +9,8 @@ rank,prev_rank,name,league,off,def,spi
 8,8,Napoli,Italy Serie A,2.55,0.73,81.91
 9,9,Chelsea,Barclays Premier League,2.21,0.54,81.49
 10,10,Ajax,Dutch Eredivisie,2.91,0.97,81.43
-11,12,FC Porto,Portuguese Liga,2.39,0.68,80.8
-12,15,Benfica,Portuguese Liga,2.41,0.72,80.3
+11,15,Benfica,Portuguese Liga,2.46,0.72,80.95
+12,12,FC Porto,Portuguese Liga,2.39,0.68,80.8
 13,20,RB Leipzig,German Bundesliga,2.45,0.76,80.06
 14,14,Tottenham Hotspur,Barclays Premier League,2.32,0.68,80.05
 15,11,Manchester United,Barclays Premier League,2.27,0.65,79.85
@@ -43,7 +43,7 @@ rank,prev_rank,name,league,off,def,spi
 42,36,Celtic,Scottish Premiership,2.43,1.18,71.04
 43,48,Aston Villa,Barclays Premier League,1.85,0.75,71.02
 44,42,Real Betis,Spanish Primera Division,1.73,0.68,70.69
-45,55,Palmeiras,Brasileiro Série A,1.78,0.72,70.58
+45,55,Palmeiras,Brasileiro Série A,1.81,0.74,70.51
 46,46,Lens,French Ligue 1,1.82,0.75,70.42
 47,50,Fiorentina,Italy Serie A,1.96,0.86,70.28
 48,52,Valencia,Spanish Primera Division,1.86,0.8,69.94
@@ -205,13 +205,13 @@ rank,prev_rank,name,league,off,def,spi
 204,202,Vizela,Portuguese Liga,1.28,1.22,46.93
 205,219,Go Ahead Eagles,Dutch Eredivisie,1.54,1.51,46.82
 206,214,Spezia,Italy Serie A,1.43,1.39,46.75
-207,200,Estoril Praia,Portuguese Liga,1.21,1.17,46.61
-208,208,Chaves,Portuguese Liga,1.34,1.3,46.56
-209,206,Luton Town,English League Championship,1.23,1.2,46.27
-210,209,FC Cincinnati,Major League Soccer,1.64,1.63,46.27
-211,213,Stoke City,English League Championship,1.26,1.24,46.09
-212,212,Huracán,Argentina Primera Division,1.11,1.08,46.05
-213,248,Terek Grozny,Russian Premier Liga,1.32,1.31,45.96
+207,208,Chaves,Portuguese Liga,1.34,1.3,46.56
+208,206,Luton Town,English League Championship,1.23,1.2,46.27
+209,209,FC Cincinnati,Major League Soccer,1.64,1.63,46.27
+210,213,Stoke City,English League Championship,1.26,1.24,46.09
+211,212,Huracán,Argentina Primera Division,1.11,1.08,46.05
+212,248,Terek Grozny,Russian Premier Liga,1.32,1.31,45.96
+213,200,Estoril Praia,Portuguese Liga,1.22,1.2,45.82
 214,215,FC Nordsjaelland,Danish SAS-Ligaen,1.33,1.33,45.68
 215,216,Los Angeles Galaxy,Major League Soccer,1.61,1.63,45.65
 216,232,Casa Pia,Portuguese Liga,1.19,1.18,45.47
@@ -254,8 +254,8 @@ rank,prev_rank,name,league,off,def,spi
 253,261,Atlético Goianiense,Brasileiro Série A,1.23,1.34,43.01
 254,275,Coventry City,English League Championship,1.14,1.24,43.0
 255,253,New York Red Bulls,Major League Soccer,1.17,1.29,42.85
-256,255,Tigre,Argentina Primera Division,1.26,1.39,42.67
-257,260,Cuiaba,Brasileiro Série A,1.07,1.18,42.62
+256,260,Cuiaba,Brasileiro Série A,1.09,1.2,42.73
+257,255,Tigre,Argentina Primera Division,1.26,1.39,42.67
 258,258,Puebla,Mexican Primera Division Torneo Apertura,1.3,1.44,42.54
 259,243,Austin FC,Major League Soccer,1.45,1.61,42.52
 260,247,FC Groningen,Dutch Eredivisie,1.36,1.51,42.51
@@ -516,8 +516,8 @@ rank,prev_rank,name,league,off,def,spi
 515,511,Kyoto Purple Sanga,Japanese J League,0.63,1.45,24.99
 516,505,Atromitos,Greek Super League,0.72,1.6,24.96
 517,515,Beijing Guoan,Chinese Super League,0.98,1.99,24.95
-518,518,San Antonio FC,United Soccer League,0.77,1.68,24.79
-519,504,Aalesund,Norwegian Tippeligaen,0.79,1.74,24.51
+518,504,Aalesund,Norwegian Tippeligaen,0.79,1.74,24.51
+519,518,San Antonio FC,United Soccer League,0.74,1.67,24.47
 520,513,US Quevilly,French Ligue 2,0.74,1.66,24.43
 521,521,Shanghai SIPG,Chinese Super League,0.9,1.92,24.26
 522,523,San Diego Loyal SC,United Soccer League,1.03,2.12,24.08
@@ -551,7 +551,7 @@ rank,prev_rank,name,league,off,def,spi
 550,550,Shrewsbury Town,English League One,0.6,1.7,20.49
 551,551,Exeter City,English League One,0.82,2.09,20.25
 552,568,Central Coast Mariners,Australian A-League,0.88,2.19,20.21
-553,552,Colorado Springs Switchbacks FC,United Soccer League,0.76,2.02,19.83
+553,552,Colorado Springs Switchbacks FC,United Soccer League,0.74,2.0,19.66
 554,561,Degerfors IF,Swedish Allsvenskan,0.73,1.97,19.64
 555,554,Bristol Rovers,English League One,0.84,2.17,19.49
 556,555,Oakland Roots,United Soccer League,0.74,2.0,19.47
