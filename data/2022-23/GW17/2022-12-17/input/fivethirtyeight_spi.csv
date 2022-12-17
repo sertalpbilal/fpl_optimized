@@ -48,7 +48,7 @@ rank,prev_rank,name,league,off,def,spi
 47,47,Leicester City,Barclays Premier League,1.95,0.86,70.19
 48,48,VfL Wolfsburg,German Bundesliga,2.0,0.9,70.07
 49,49,Osasuna,Spanish Primera Division,1.71,0.69,70.01
-50,50,Celtic,Scottish Premiership,2.37,1.19,69.9
+50,50,Celtic,Scottish Premiership,2.31,1.15,69.92
 51,51,Real Betis,Spanish Primera Division,1.69,0.69,69.58
 52,52,Crystal Palace,Barclays Premier League,1.75,0.73,69.49
 53,53,Mainz,German Bundesliga,1.95,0.89,69.42
@@ -265,15 +265,15 @@ rank,prev_rank,name,league,off,def,spi
 264,264,Ludogorets,UEFA Europa League,1.32,1.49,42.04
 265,266,Le Havre,French Ligue 2,1.03,1.16,41.97
 266,267,IF Elfsborg,Swedish Allsvenskan,1.38,1.57,41.89
-267,268,Aberdeen,Scottish Premiership,1.35,1.53,41.83
-268,269,FC Arouca,Portuguese Liga,1.1,1.25,41.79
-269,270,Wolfsberger AC,Austrian T-Mobile Bundesliga,1.62,1.85,41.7
-270,275,Bristol City,English League Championship,1.21,1.38,41.62
-271,271,Sochaux,French Ligue 2,1.11,1.27,41.62
-272,255,Queens Park Rangers,English League Championship,1.14,1.31,41.6
-273,272,Atlético San Luis,Mexican Primera Division Torneo Clausura,1.27,1.45,41.59
-274,273,Pumas Unam,Mexican Primera Division Torneo Clausura,1.17,1.34,41.53
-275,274,WSG Swarovski Wattens,Austrian T-Mobile Bundesliga,1.5,1.73,41.43
+267,269,FC Arouca,Portuguese Liga,1.1,1.25,41.79
+268,270,Wolfsberger AC,Austrian T-Mobile Bundesliga,1.62,1.85,41.7
+269,275,Bristol City,English League Championship,1.21,1.38,41.62
+270,271,Sochaux,French Ligue 2,1.11,1.27,41.62
+271,255,Queens Park Rangers,English League Championship,1.14,1.31,41.6
+272,272,Atlético San Luis,Mexican Primera Division Torneo Clausura,1.27,1.45,41.59
+273,273,Pumas Unam,Mexican Primera Division Torneo Clausura,1.17,1.34,41.53
+274,274,WSG Swarovski Wattens,Austrian T-Mobile Bundesliga,1.5,1.73,41.43
+275,268,Aberdeen,Scottish Premiership,1.29,1.49,41.28
 276,276,St. Truidense,Belgian Jupiler League,1.08,1.25,41.25
 277,277,Djurgardens IF,Swedish Allsvenskan,1.25,1.45,41.25
 278,278,CFR 1907 Cluj,UEFA Europa Conference League,1.2,1.39,41.24
@@ -556,8 +556,8 @@ rank,prev_rank,name,league,off,def,spi
 555,554,Colorado Springs Switchbacks FC,United Soccer League,0.74,2.0,19.66
 556,555,Degerfors IF,Swedish Allsvenskan,0.73,1.97,19.64
 557,556,Oakland Roots,United Soccer League,0.74,2.0,19.47
-558,559,Western Sydney FC,Australian A-League,0.71,1.95,19.42
-559,558,Miami FC,United Soccer League,0.66,1.87,19.4
+558,558,Western Sydney FC,Australian A-League,0.71,1.95,19.42
+559,559,Miami FC,United Soccer League,0.66,1.87,19.4
 560,560,Orlando Pirates,South African ABSA Premier League,0.47,1.53,19.31
 561,561,Western United,Australian A-League,0.84,2.23,18.9
 562,562,Leyton Orient,English League Two,0.59,1.8,18.86
@@ -569,7 +569,7 @@ rank,prev_rank,name,league,off,def,spi
 568,565,Port Vale,English League One,0.61,1.91,17.8
 569,569,Arizona United,United Soccer League,0.8,2.25,17.67
 570,570,Black Aces,South African ABSA Premier League,0.49,1.73,17.37
-571,577,Wellington Phoenix,Australian A-League,0.77,2.24,17.3
+571,579,Wellington Phoenix,Australian A-League,0.77,2.24,17.3
 572,573,FK Jerv,Norwegian Tippeligaen,0.75,2.29,16.36
 573,574,Detroit City FC,United Soccer League,0.51,1.85,16.31
 574,580,Brisbane Roar,Australian A-League,0.59,2.0,16.31
@@ -577,8 +577,8 @@ rank,prev_rank,name,league,off,def,spi
 576,575,El Paso Locomotive FC,United Soccer League,0.69,2.18,16.27
 577,571,Newcastle Jets,Australian A-League,0.68,2.18,16.19
 578,572,Cheltenham Town,English League One,0.51,1.87,15.94
-579,578,Varbergs BoIS FC,Swedish Allsvenskan,0.71,2.26,15.85
-580,579,Salford City,English League Two,0.5,1.88,15.65
+579,577,Varbergs BoIS FC,Swedish Allsvenskan,0.71,2.26,15.85
+580,578,Salford City,English League Two,0.5,1.88,15.65
 581,582,Lamia,Greek Super League,0.39,1.7,15.18
 582,583,Stellenbosch FC,South African ABSA Premier League,0.43,1.79,15.16
 583,584,Orange County SC,United Soccer League,0.57,2.08,14.94
@@ -625,20 +625,20 @@ rank,prev_rank,name,league,off,def,spi
 624,625,Barrow,English League Two,0.33,2.19,9.25
 625,619,Newport County,English League Two,0.27,2.08,8.94
 626,626,Las Vegas Lights FC,United Soccer League,0.34,2.28,8.73
-627,631,Grimsby Town,English League Two,0.26,2.11,8.64
-628,628,Maritzburg Utd,South African ABSA Premier League,0.2,1.95,8.57
-629,629,Harrogate Town,English League Two,0.41,2.49,8.54
-630,630,GIF Sundsvall,Swedish Allsvenskan,0.52,2.81,8.15
-631,634,Sutton United,English League Two,0.23,2.14,7.84
-632,632,Tianjin Quanujian,Chinese Super League,0.37,2.51,7.83
-633,633,Shenzhen FC,Chinese Super League,0.4,2.6,7.73
-634,635,Crewe Alexandra,English League Two,0.22,2.13,7.66
-635,636,Chongqing Lifan,Chinese Super League,0.3,2.35,7.66
-636,627,Crawley Town,English League Two,0.31,2.38,7.61
+627,630,Grimsby Town,English League Two,0.26,2.11,8.64
+628,627,Maritzburg Utd,South African ABSA Premier League,0.2,1.95,8.57
+629,628,Harrogate Town,English League Two,0.41,2.49,8.54
+630,629,GIF Sundsvall,Swedish Allsvenskan,0.52,2.81,8.15
+631,633,Sutton United,English League Two,0.23,2.14,7.84
+632,631,Tianjin Quanujian,Chinese Super League,0.37,2.51,7.83
+633,632,Shenzhen FC,Chinese Super League,0.4,2.6,7.73
+634,634,Crewe Alexandra,English League Two,0.22,2.13,7.66
+635,635,Chongqing Lifan,Chinese Super League,0.3,2.35,7.66
+636,636,Crawley Town,English League Two,0.31,2.38,7.61
 637,637,Gillingham,English League Two,0.2,2.12,7.42
 638,638,Rochdale,English League Two,0.2,2.25,6.6
 639,639,Atlanta United 2,United Soccer League,0.48,3.01,6.47
 640,640,Loudoun United FC,United Soccer League,0.33,2.75,5.86
-641,642,Hartlepool,English League Two,0.2,2.6,4.9
-642,641,Guizhou Renhe,Chinese Super League,0.2,2.61,4.86
+641,641,Hartlepool,English League Two,0.2,2.6,4.9
+642,642,Guizhou Renhe,Chinese Super League,0.2,2.61,4.86
 643,643,New York Red Bulls II,United Soccer League,0.2,2.82,4.03
