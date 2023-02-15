@@ -38,6 +38,10 @@
                         <input id="rival-toggle" type="checkbox" data-toggle="toggle" v-model="rival_mode" class="custom-control-input mr-1">
                         <label for="rival-toggle" class="custom-control-label">Rival Mode</label>
                     </div>
+                    <!-- <div class="custom-control custom-switch ml-1 mr-1" v-if="!is_next_gw">
+                        <input id="result-toggle" type="checkbox" data-toggle="toggle" v-model="show_gw_result" class="custom-control-input mr-1">
+                        <label for="result-toggle" class="custom-control-label">Show GW Result</label>
+                    </div> -->
                 </div>
                 <div class="scenario_detail">
                     Simulated outcomes based on current projections
@@ -1082,6 +1086,33 @@
             </div>
         </div>
     </div>
+    
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white" style="background-color: #474747;" id="player_pane">
+                <div class="close text-white close-absolute" @click="saveImage('#player_pane', 'player_pane.png')" v-if="!_.isEmpty(scenario_stats)">
+                    <i class="fas fa-image"></i>
+                </div>
+                <h6 class="card-header border-complement text-center scenario_title">Player Outcome</h6>
+
+                <div class="card-body text-center p-3" v-cloak>
+                    <div class="text-center">
+                        <div class="form-group">
+                            <label for="player_sim_select">Player</label>
+                            <select class="form-control" id="player_sim_select" @change="plot_player($event)">
+                                <option value=""></option>
+                                <option v-for="(v,i) in sorted_player_list" :value="v.id">{{ v.web_name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="player_plot">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="row mb-3">
         <div class="col-12">
