@@ -40,7 +40,8 @@ var app = new Vue({
         show_diff_rival: true,
         tick: 300,
         my_penalty: 0,
-        rival_penalty: 0
+        rival_penalty: 0,
+        show_gw_result: false
     },
     computed: {
         current_gw() {
@@ -1126,6 +1127,9 @@ var app = new Vue({
             else {
                 cap.multiplier = 2
             }
+        },
+        plot_player(event) {
+            plot_player_graph(event.target.value)
         }
     }
 })
@@ -1944,6 +1948,181 @@ function draw_diff_graph(is_rival=false) {
         .attr("font-size", axis_size)
         .attr("fill", "white")
         .text("Team Score (Points)")
+
+
+}
+
+function plot_player_graph(pid) {
+    console.log(pid)
+    // player_plot
+
+    
+    var margin = { top: 25, bottom: 25, left: 25, right: 25 },
+        width = 600 - margin.left - margin.right,
+        height = 250 - margin.top - margin.bottom
+    
+
+    let is_mobile = window.screen.width < 800
+
+    let font_size = '7.5pt'
+    let title_size = '7.5pt'
+
+    if (is_mobile) {
+        // height = 180 - margin.top - margin.bottom
+        font_size = '6pt'
+        title_size = '6pt'
+    }
+
+    jQuery("#player_plot").empty()
+
+    let cnv = d3.select("#player_plot")
+        .append("svg")
+        .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
+        .style('display', 'block')
+
+
+    let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    let content = svg.append('g').attr('id', 'graph-content')
+    let grayrect = content.append('g').attr('class', 'brush');
+    grayrect.append('rect')
+        .attr('fill', '#5a5d5c')
+        .attr('width', width)
+        .attr('height', height)
+        .attr("stroke", "white")
+        .attr("stroke-width", "0.5");
+
+    let sc = app.sc_details
+    let player_data = sc.filter(i => i.ID == pid)
+    let sim_pts = player_data.map(i => [i.sim, parseInt(i.Points)])
+    let all_points = sim_pts.map(i => i[1])
+
+    let x_max = _.max(all_points)
+    let x_min = _.min([_.min(all_points), 0])
+
+    var x = d3.scaleBand()
+        .domain(_.range(x_min, x_max+2))
+        .range([0, width])
+        .paddingInner(0.3)
+        .paddingOuter(0.1);
+    let xAxis = svg.append("g")
+        .attr("opacity", 1)
+        .attr("transform", `translate(0, ${height})`)
+        .call(
+            d3.axisBottom(x)
+            .tickSize(0)
+        )
+
+    // Add X axis label:
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + 20)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Points");
+
+    let counts = _.countBy(all_points)
+    let y_vals = _.values(counts)
+    let data = _.map(counts, (v,i) => {return {'points': parseInt(i), 'count': v}})
+
+    // Axis-y
+    let y_high = _.max(y_vals) + 2
+    let y_low = 0
+    var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
+    let yAxis = svg.append('g')
+        .attr("transform", "translate(" + width + ",0)")
+        .call(d3.axisLeft(y).tickSize(width))
+        .call(g => g.selectAll(".tick text"))
+        .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
+
+    svg.call(g => g.selectAll(".tick text")
+            .attr("fill", "white"))
+        .call(g => g.selectAll(".tick line")
+            .attr("stroke-dasharray", "3,1")
+            .attr("stroke-width", 0.5)
+            .attr("stroke-opacity", 0.1)
+            .style('pointer-events', 'none'))
+        .call(g => g.selectAll(".domain")
+            .attr("opacity", 0))
+        
+    // Add y axis label:
+    svg.append("text")
+        .attr("text-anchor", "left")
+        .attr("x", -margin.left)
+        .attr("y", -5)
+        .attr("font-size", font_size)
+        .attr("fill", "white")
+        .text("Occurence");
+
+    svg.call(g => g.selectAll(".tick")
+        .style("font-size", font_size))
+    svg.call(g => g.selectAll(".domain")
+        .attr("opacity", 0))
+
+    let plot_title = svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "center")
+        .attr("dominant-baseline", "center")
+        .attr("x", width / 2)
+        .attr("y", -8)
+        .attr("font-size", title_size)
+        .attr("fill", "white")
+        .text("");
+
+    let holder = svg.append('g')
+
+    let bars = holder.selectAll().data(data)
+    let points = holder.selectAll().data(data)
+    
+    let bar_entries = bars.enter().append("rect")
+    bar_entries
+        .attr("class", "probability-bars")
+        .attr("fill", "#40c8de")
+        .attr("x", (d) => x(d.points))
+        .attr("y", (d) => y(d.count))
+        .attr("width", x.bandwidth())
+        .attr("height", (d) => y(0)-y(d.count))
+
+    let x_cont = d3.scaleLinear()
+        .domain([x_min-0.5, x_max+1.5])
+        .range([0, width])
+
+    // density
+    debugger
+    var kde = kernelDensityEstimator(kernelEpanechnikov(1), x_cont.ticks(x.domain().length*2))
+    var density =  kde(all_points) //kde(data.map(d => d.count) )
+    let d1_closed = fill_density(density)
+
+    let y_cont = d3.scaleLinear()
+        .range([height, y(_.max(y_vals))])
+        .domain([0, _.max(d1_closed.map(i => i[1]))]);
+
+    holder.append("path")
+        .datum(d1_closed)
+        .attr("fill", "#fff777")
+        .attr("fill-opacity", "0.3")
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1)
+        .attr("stroke-linejoin", "round")
+        .attr("d",
+            d3.line().curve(d3.curveCardinal) //curveBasis)
+                .x(function(d) { return x_cont(d[0]); })
+                .y(function(d) { return y_cont(d[1]); })
+        );
+
+    // let point_entries = points.enter().append("text")
+    // point_entries
+    //     .text((d) => d.count + " Pts")
+    //     .attr("class", "prob-bar-values")
+    //     .attr("x", (d) => x(d.count) + x.bandwidth()/2)
+    //     .attr("text-anchor", "middle")
+    //     .attr("y", (d) => y(d.probability) - 2)
+    //     .attr("alignment-baseline", "baseline")
+    //     .attr("dominant-baseline", "baseline")
+    //     .attr("font-size", font_size)
+    //     .attr("fill", "white")
+
+    debugger
 
 
 }

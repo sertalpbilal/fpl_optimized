@@ -3432,7 +3432,9 @@ function draw_predicted_realized_diff() {
 
     // zero & 100 lines
 
-    let markers = _.range(100,max_y,100)
+
+
+    let markers = _.range(Math.min(100*Math.ceil(min_y/100), 0),max_y,100).filter(i => i != 0)
 
     let zero_line = svg.append('g')
         .append('line')
@@ -3458,6 +3460,19 @@ function draw_predicted_realized_diff() {
         .style("stroke-opacity", 0.2)
         .style("stroke-width", 1)
         .style('pointer-events', 'none');
+
+    if (markers.includes(-100)) {
+        svg.append('g')
+            .append("text")
+            .attr("text-anchor", "end")
+            .attr("alignment-baseline", "after-edge")
+            .attr("dominant-baseline", "after-edge")
+            .attr("x", width)
+            .attr("y", y(-100))
+            .attr("font-size", "5pt")
+            .attr("fill", "#a78694")
+            .text("EuroFPL/Formadillo Line")
+    }
 
     // prediction line
     let pred_data = _.orderBy(Object.values(data.data), 'gw', 'asc')
