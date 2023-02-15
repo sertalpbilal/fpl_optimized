@@ -418,6 +418,17 @@ var app = new Vue({
                         p.age_group = p.age
                     })
                 }
+                // 2022-2023 special: World Cup Wildcard
+                else if (gw == 17) {
+                    picks.forEach((p) => {
+                        p.gw = gw
+                        p.origin = 'wildcard'
+                        p.origin_text = 'wcb'
+                        p.origin_gw = gw
+                        p.age = 0
+                        p.age_group = p.age
+                    })
+                }
                 else if (data[gw].active_chip == 'wildcard') {
                     picks.forEach((p) => {
                         p.gw = gw
@@ -498,16 +509,18 @@ var app = new Vue({
                     'initial': _.sum(all_players.filter(i => i.origin == 'initial').map(i => i.eff_points)),
                     'wc1': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1).map(i => i.eff_points)),
                     'wc2': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2).map(i => i.eff_points)),
+                    'wcb': _.sum(all_players.filter(i => i.origin == 'wildcard_bonus').map(i => i.eff_points)),
                     'fh1': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1).map(i => i.eff_points)),
-                    'fh2': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2).map(i => i.eff_points)),
+                    // 'fh2': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2).map(i => i.eff_points)),
                     'transfer': _.sum(all_players.filter(i => i.origin == 'transfer').map(i => i.eff_points))
                 },
                 groups: {
                     'initial': all_players.filter(i => i.origin == 'initial'),
                     'wc1': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1),
                     'wc2': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2),
+                    'wcb': all_players.filter(i => i.origin == 'wildcard_bonus'),
                     'fh1': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1),
-                    'fh2': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2),
+                    // 'fh2': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2),
                     'transfer': all_players.filter(i => i.origin == 'transfer')
                 },
                 age_pts
@@ -517,9 +530,10 @@ var app = new Vue({
                 ['Initial', 'initial'],
                 ['WC 1', 'wc1'],
                 ['WC 2', 'wc2'],
+                ['WC B', 'wcb'],
                 ['Transfers', 'transfer'],
-                ['FH 1', 'fh1'],
-                ['FH 2', 'fh2']
+                ['FH', 'fh1'],
+                // ['FH 2', 'fh2']
             ]
             // let age_groups = _.range(11).concat(['11+'])
 
@@ -808,8 +822,8 @@ var app = new Vue({
             let user_team = this.team_data
             let points = this.gw_pid_pts
             for (let pick of user_picks) {
-                pick.pts = points[pick.gw][pick.id] || 0
-                pick.xpts = xp_dict[pick.gw + '_' + pick.id] || 0
+                pick.pts = points?.[pick.gw]?.[pick.id] || 0
+                pick.xpts = xp_dict?.[pick.gw + '_' + pick.id] || 0
                 pick.total_pts = pick.pts * pick.multiplier
                 pick.eo = eo_data[pick.gw + '_' + pick.id] || 0
                 pick.owned = true
@@ -1212,7 +1226,7 @@ var app = new Vue({
                     let xp_ratio_raw = undefined
                     let xp_ratio = undefined
                     
-                    let best_xp = find_best_xp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team, w)
+                    let best_xp = find_best_xp(elements[p.id].element_type, gw_ref?.[w + '_' + match.id]?.price, future_plays, last_gw_team, w)
                     if (best_xp != undefined) {
                         best_xp.xp_diff = best_xp.xp_total - sold_xp_total
                         best_xp.rp_diff = best_xp.rp_total - sold_rp_total
@@ -4394,7 +4408,18 @@ function draw_point_origin_graph() {
 
         let s3_p1 = s3.append('g').attr("transform", "translate(0,20)")
 
-        type_cols = {'bench': 'gray', 'initial': '#d65544', 'wildcard': '#48baff', 'wc1': '#48baff', 'wc2': '#48baff', 'transfer': '#93dea6', 'freehit': '#ffdc31', 'fh1': '#ffdc31', 'fh2': '#ffdc31'}
+        type_cols = {
+            'bench': 'gray',
+            'initial': '#d65544',
+            'wildcard': '#48baff',
+            'wc1': '#48baff',
+            'wc2': '#48baff',
+            'wcb': '#48baff',
+            'transfer': '#93dea6',
+            'freehit': '#ffdc31',
+            'fh1': '#ffdc31',
+            'fh2': '#ffdc31'
+        }
         gr_text_color = {'bench': 'white', 'initial': 'white', 'wildcard': 'black', 'wc1': 'black', 'wc2': 'black', 'transfer': 'black', 'fh1': 'black', 'fh2': 'black', 'freehit': 'black'}
 
         {
