@@ -1750,14 +1750,16 @@ async function draw_user_graph(options = {}) {
         let x_high = data[data.length - 1].time;
         let x_low = data[0].time;
 
-        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])).concat(data.map(i => i.projected[options.stat])));
-        y_high = Math.max(y_high * 1.1, y_high + 5)
         let y_low = Math.min(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])).concat(data.map(i => i.projected[options.stat])));
         y_low = Math.min(y_low, 0);
+        let y_high = Math.max(...data.map(i => i.expected[options.stat]).concat(data.map(i => i.realized[options.stat])).concat(data.map(i => i.projected[options.stat])));
+        // y_high = Math.max(y_high * 1.1, y_high + 5)
+        
+        
 
         if (options.stat == "points") {
             let y_avg_high = Math.max(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)).concat(data.map(i => i.projected.avg)));
-            y_avg_high = Math.max(y_avg_high * 1.1, y_avg_high + 5)
+            // y_avg_high = Math.max(y_avg_high * 1.1, y_avg_high + 5)
             let y_avg_low = Math.min(...data.map(i => i.average.expected).concat(data.map(i => i.average.realized)).concat(data.map(i => i.projected.avg)));
             y_high = Math.max(y_high, y_avg_high);
             y_low = Math.min(y_low, y_avg_low);
@@ -1812,6 +1814,17 @@ async function draw_user_graph(options = {}) {
         // Axis -y
         // var y = d3.scaleBand().domain(vals.map(i => i.order)).range([height, 0]).paddingInner(0.1).paddingOuter(0.05);
         // svg.append('g').call(d3.axisLeft(y).tickSize(0).tickValues([]));
+
+        let top_gap = 22 // 18
+        y_high = (y_high-y_low)/(height-top_gap) *  height + y_low
+
+        // svg.append('rect')
+        //     .attr("x", 0 )
+        //     .attr("y", 0)
+        //     .attr('fill', 'red')
+        //     .attr('width', width)
+        //     .attr('height', top_gap);
+                
 
         var y = d3.scaleLinear().domain([y_low, y_high]).range([height, 0]);
         svg.append('g').attr("transform", "translate(" + width + ",0)").call(d3.axisLeft(y).tickSize(width));
@@ -2042,15 +2055,24 @@ async function draw_user_graph(options = {}) {
                 .attr("x", x(x_high) - 3)
                 .attr("y", y(y_high) + 5)
                 .attr("font-size", "3pt")
+                .attr("fill", "burlywood")
+                .style('pointer-events', 'none')
+                .style('letter-spacing', '0.15px')
+                .text("fploptimized.com");
+            text_info.append('text')
+                .attr("text-anchor", "end")
+                .attr("x", x(x_high) - 3)
+                .attr("y", y(y_high) + 10)
+                .attr("font-size", "3pt")
                 .attr("fill", "#82f1ffbd")
                 .style('pointer-events', 'none')
                 .text("Played: " + played_text);
             text_info.append('text')
                 .attr("text-anchor", "end")
                 .attr("x", x(x_high) - 3)
-                .attr("y", y(y_high) + 10)
+                .attr("y", y(y_high) + 15)
                 .attr("font-size", "3pt")
-                .attr("fill", "#ff8d9b9e")
+                .attr("fill", "#ffb6bfd6")
                 .style('pointer-events', 'none')
                 .text("Avg Played: " + avg_text);
 
