@@ -137,6 +137,10 @@ svg.field>g>* {
     font-size: 10pt;
 }
 
+.text-xs-mini {
+    font-size: small;
+}
+
 @media screen and (max-width: 480px) {
     .metric {
         font-size: 9pt;
@@ -1990,4 +1994,31 @@ text.team_pos_name {
 #buttons.mini-buttons button {
     padding: 3px 6px;
     font-size: small;
+}
+
+.table-dark.table-striped tbody tr.highlight-player-table {
+    background-color: #1b8c9d !important;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+
+
+table.sticky-top thead tr th {
+    position: sticky;
+    top: 0;
+    background-color: #454d55;
+}
+
+table.sticky-left tr td:first-child, table.sticky-left tr th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #454d55;
+    z-index: 3;
+}
+
+.mh-300 {
+    max-height: 300px;
 }

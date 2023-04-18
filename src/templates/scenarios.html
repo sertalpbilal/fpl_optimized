@@ -1096,15 +1096,60 @@
                 <h6 class="card-header border-complement text-center scenario_title">Player Outcome</h6>
 
                 <div class="card-body text-center p-3" v-cloak>
-                    <div class="text-center">
-                        <div class="form-group">
+
+                    <div class="text-center mt-2 row">
+                        <div class="form-group col">
                             <label for="player_sim_select">Player</label>
-                            <select class="form-control" id="player_sim_select" @change="plot_player($event)">
+                            <select class="form-control" id="player_sim_select" @change="plot_player($event)" v-model="selected_id">
                                 <option value=""></option>
                                 <option v-for="(v,i) in sorted_player_list" :value="v.id">{{ v.web_name }}</option>
                             </select>
                         </div>
+                        <div class="form-group col">
+                            <label for="target_pts">Target Pts</label>
+                            <select class="form-control" id="target_pts" @change="plot_current" v-model="target_pts">
+                                <option :value="undefined"></option>
+                                <option v-for="v in target_pts_range" :value="v">{{ v }}</option>
+                            </select>
+                        </div>
                     </div>
+                    <div class="mt-2">
+                        <div class="table-responsive mh-300">
+                            <table class="table table-sm text-small table-striped table-dark sticky-top sticky-left">
+                                <thead>
+                                    <tr>
+                                        <!-- <th>ID</th> -->
+                                        <th>Player</th>
+                                        <th>Play Prob %</th>
+                                        <th>Average Pts</th>
+                                        <th>Average Pts<br/>when Play</th>
+                                        <th>Min</th>
+                                        <th>Q1</th>
+                                        <th>Median</th>
+                                        <th>Q3</th>
+                                        <th>Max</th>
+                                        <th>Prob % >= Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="clickable" @click="selected_id = v.id; plot_player_graph(v.id)" v-for="(v,i) in sorted_player_list" :class="{'highlight-player-table': v.id == selected_id}">
+                                        <!-- <td>{{ v.id }}</td> -->
+                                        <td>{{ v.web_name }}</td>
+                                        <td>{{ (sc_player_data[v.id].play_prob*100).toFixed(0) }}</td>
+                                        <td>{{ (sc_player_data[v.id].avg).toFixed(2) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].avg90) ? "-" : sc_player_data[v.id].avg90.toFixed(2) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].q0  ) ? "-" : _.round(sc_player_data[v.id].q0,   1) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].q25 ) ? "-" : _.round(sc_player_data[v.id].q25,  1) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].q50 ) ? "-" : _.round(sc_player_data[v.id].q50,  1) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].q75 ) ? "-" : _.round(sc_player_data[v.id].q75,  1) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].q100) ? "-" : _.round(sc_player_data[v.id].q100, 1) }}</td>
+                                        <td>{{ isNaN(sc_player_data[v.id].tp) ? "-" : _.round(sc_player_data[v.id].tp*100, 1) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div id="player_plot">
                         
                     </div>
@@ -1123,7 +1168,7 @@
                 <h6 class="card-header border-complement text-center scenario_title">Simulations</h6>
 
                 <div class="card-body text-center p-3" v-cloak>
-                    <div id="controls" class="d-flex justify-content-center">
+                    <div id="controls" class="d-flex justify-content-center flex-wrap">
                         <div class="custom-control custom-switch ml-2 mr-2">
                             <input id="outcome_switch" class="custom-control-input mr-1" type="checkbox" data-toggle="toggle" v-model="show_outcomes" @change="refresh_histogram">
                             <label for="outcome_switch" class="custom-control-label">Team Point Distribution</label>
