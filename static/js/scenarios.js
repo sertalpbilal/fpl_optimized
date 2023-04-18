@@ -41,7 +41,9 @@ var app = new Vue({
         tick: 300,
         my_penalty: 0,
         rival_penalty: 0,
-        show_gw_result: false
+        show_gw_result: false,
+        selected_id: undefined,
+        target_pts: undefined
     },
     computed: {
         current_gw() {
@@ -257,6 +259,10 @@ var app = new Vue({
             if (this.active_rep == undefined) { return [] }
             return this.grouped_scenarios[this.active_rep].values
         },
+        target_pts_range() {
+            if (_.isEmpty(this.sc_details)) { return [] }
+            return _.range(0, _.max(this.sc_details.map(i => parseInt(i.Points))))
+        },
         current_rep_players() {
             if (_.isEmpty(this.grouped_scenarios)) { return [] }
             if (this.active_rep == undefined) { return [] }
@@ -372,6 +378,28 @@ var app = new Vue({
                 }
             })
             return Object.freeze(pts_dict)
+        },
+        sc_player_data() {
+            if (_.isEmpty(this.sc_game_details)) { return {} }
+            let sc_d = this.sc_details
+            player_ids = this.elements.map(i => i.id)
+            data = {}
+            let sc_count = _.uniq(sc_d.map(i => i.sim)).length
+            let target_pts = this.target_pts
+            for (let pid of player_ids) {
+                let entries = sc_d.filter(i => i.ID == pid)
+                let vals = entries.map(i => parseInt(i.Points))
+                let total_pts = _.sum(vals)
+                let avg_pts = total_pts / sc_count
+                let avg_90 = _.mean(vals)
+                let q = jStat.quantiles(vals, [0, 0.25, 0.5, 0.75, 1])
+                let tp = NaN
+                if (target_pts != undefined) {
+                    tp = vals.filter(j => j >= target_pts).length / sc_count
+                }
+                data[pid] = {'entries': entries, 'play_prob': entries.length/sc_count, 'values': vals, 'avg': avg_pts, 'avg90': avg_90, 'q0': q[0], 'q25': q[1], 'q50': q[2], 'q75': q[3], 'q100': q[4], 'tp': tp}
+            }
+            return data
         }
     },
     methods: {
@@ -1130,6 +1158,9 @@ var app = new Vue({
         },
         plot_player(event) {
             plot_player_graph(event.target.value)
+        },
+        plot_current() {
+            plot_player_graph(this.selected_id)
         }
     }
 })
@@ -1975,6 +2006,8 @@ function plot_player_graph(pid) {
 
     jQuery("#player_plot").empty()
 
+    if (pid == undefined) { return }
+
     let cnv = d3.select("#player_plot")
         .append("svg")
         .attr("viewBox", `0 0  ${(width + margin.left + margin.right)} ${(height + margin.top + margin.bottom)}`)
@@ -2088,7 +2121,7 @@ function plot_player_graph(pid) {
         .range([0, width])
 
     // density
-    debugger
+    // debugger
     var kde = kernelDensityEstimator(kernelEpanechnikov(1), x_cont.ticks(x.domain().length*2))
     var density =  kde(all_points) //kde(data.map(d => d.count) )
     let d1_closed = fill_density(density)
@@ -2097,18 +2130,18 @@ function plot_player_graph(pid) {
         .range([height, y(_.max(y_vals))])
         .domain([0, _.max(d1_closed.map(i => i[1]))]);
 
-    holder.append("path")
-        .datum(d1_closed)
-        .attr("fill", "#fff777")
-        .attr("fill-opacity", "0.3")
-        .attr("stroke", "#000")
-        .attr("stroke-width", 1)
-        .attr("stroke-linejoin", "round")
-        .attr("d",
-            d3.line().curve(d3.curveCardinal) //curveBasis)
-                .x(function(d) { return x_cont(d[0]); })
-                .y(function(d) { return y_cont(d[1]); })
-        );
+    // holder.append("path")
+    //     .datum(d1_closed)
+    //     .attr("fill", "#fff777")
+    //     .attr("fill-opacity", "0.3")
+    //     .attr("stroke", "#000")
+    //     .attr("stroke-width", 1)
+    //     .attr("stroke-linejoin", "round")
+    //     .attr("d",
+    //         d3.line().curve(d3.curveCardinal) //curveBasis)
+    //             .x(function(d) { return x_cont(d[0]); })
+    //             .y(function(d) { return y_cont(d[1]); })
+    //     );
 
     // let point_entries = points.enter().append("text")
     // point_entries
@@ -2122,8 +2155,15 @@ function plot_player_graph(pid) {
     //     .attr("font-size", font_size)
     //     .attr("fill", "white")
 
-    debugger
-
+    if (app.target_pts) {
+        holder.append("line")
+        .attr("x1", app.target_pts > x_max + 1 ? width : x(app.target_pts) - x.step() * x.paddingInner()/2)
+        .attr("x2", app.target_pts > x_max + 1 ? width : x(app.target_pts) - x.step() * x.paddingInner()/2)
+        .attr("y1", height)
+        .attr("y2", 0)
+        .attr("stroke", "crimson")
+        .style("stroke-width", "3px")
+    }
 
 }
 
