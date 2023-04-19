@@ -43,7 +43,8 @@ var app = new Vue({
         rival_penalty: 0,
         show_gw_result: false,
         selected_id: undefined,
-        target_pts: undefined
+        target_pts: undefined,
+        sort_method: 'avg'
     },
     computed: {
         current_gw() {
@@ -380,7 +381,7 @@ var app = new Vue({
             return Object.freeze(pts_dict)
         },
         sc_player_data() {
-            if (_.isEmpty(this.sc_game_details)) { return {} }
+            if (_.isEmpty(this.sc_game_details)) { return [] }
             let sc_d = this.sc_details
             player_ids = this.elements.map(i => i.id)
             data = {}
@@ -397,9 +398,16 @@ var app = new Vue({
                 if (target_pts != undefined) {
                     tp = vals.filter(j => j >= target_pts).length / sc_count
                 }
-                data[pid] = {'entries': entries, 'play_prob': entries.length/sc_count, 'values': vals, 'avg': avg_pts, 'avg90': avg_90, 'q0': q[0], 'q25': q[1], 'q50': q[2], 'q75': q[3], 'q100': q[4], 'tp': tp}
+                data[pid] = {'id': pid, 'web_name': this.elements_dict[pid].web_name, 'entries': entries, 'play_prob': entries.length/sc_count, 'values': vals, 'avg': avg_pts, 'avg90': avg_90, 'q0': q[0], 'q25': q[1], 'q50': q[2], 'q75': q[3], 'q100': q[4], 'tp': tp}
             }
-            return data
+            let ldata = Object.values(data)
+            return ldata
+        },
+        sc_data_sorted() {
+            if (_.isEmpty(this.sc_player_data)) { return [] }
+            let sort_method = this.sort_method
+            ldata = _.orderBy(this.sc_player_data, [i => i.play_prob > 0.5 ? 1 : 0, i => isNaN(i[sort_method]) ? -100 : 1, i => i[sort_method]], ['desc', 'desc', 'desc'])
+            return ldata
         }
     },
     methods: {
