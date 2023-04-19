@@ -1121,29 +1121,29 @@
                                         <!-- <th>ID</th> -->
                                         <th>Player</th>
                                         <th>Play Prob %</th>
-                                        <th>Average Pts</th>
-                                        <th>Average Pts<br/>when Play</th>
-                                        <th>Min</th>
-                                        <th>Q1</th>
-                                        <th>Median</th>
-                                        <th>Q3</th>
-                                        <th>Max</th>
-                                        <th>Prob % >= Target</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'avg'}" @click="sort_method='avg'">Average Pts</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'avg90'}" @click="sort_method='avg90'">Average Pts<br/>when Play</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'q0'}" @click="sort_method='q0'">Min</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'q25'}" @click="sort_method='q25'">Q1</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'q50'}" @click="sort_method='q50'">Median</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'q75'}" @click="sort_method='q75'">Q3</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'q100'}" @click="sort_method='q100'">Max</th>
+                                        <th class="clickable hover-blue" :class="{'sorted-by': sort_method == 'tp'}" @click="sort_method='tp'">Prob % >= Target</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="clickable" @click="selected_id = v.id; plot_player_graph(v.id)" v-for="(v,i) in sorted_player_list" :class="{'highlight-player-table': v.id == selected_id}">
+                                    <tr class="clickable" @click="selected_id = v.id; plot_player_graph(v.id)" v-for="v in sc_data_sorted" :class="{'highlight-player-table': v.id == selected_id}">
                                         <!-- <td>{{ v.id }}</td> -->
                                         <td>{{ v.web_name }}</td>
-                                        <td>{{ (sc_player_data[v.id].play_prob*100).toFixed(0) }}</td>
-                                        <td>{{ (sc_player_data[v.id].avg).toFixed(2) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].avg90) ? "-" : sc_player_data[v.id].avg90.toFixed(2) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].q0  ) ? "-" : _.round(sc_player_data[v.id].q0,   1) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].q25 ) ? "-" : _.round(sc_player_data[v.id].q25,  1) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].q50 ) ? "-" : _.round(sc_player_data[v.id].q50,  1) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].q75 ) ? "-" : _.round(sc_player_data[v.id].q75,  1) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].q100) ? "-" : _.round(sc_player_data[v.id].q100, 1) }}</td>
-                                        <td>{{ isNaN(sc_player_data[v.id].tp) ? "-" : _.round(sc_player_data[v.id].tp*100, 1) }}</td>
+                                        <td>{{ (v.play_prob*100).toFixed(0) }}</td>
+                                        <td>{{ (v.avg).toFixed(2) }}</td>
+                                        <td>{{ isNaN(v.avg90) ? "-" : v.avg90.toFixed(2) }}</td>
+                                        <td>{{ isNaN(v.q0  ) ? "-" : _.round(v.q0,   1) }}</td>
+                                        <td>{{ isNaN(v.q25 ) ? "-" : _.round(v.q25,  1) }}</td>
+                                        <td>{{ isNaN(v.q50 ) ? "-" : _.round(v.q50,  1) }}</td>
+                                        <td>{{ isNaN(v.q75 ) ? "-" : _.round(v.q75,  1) }}</td>
+                                        <td>{{ isNaN(v.q100) ? "-" : _.round(v.q100, 1) }}</td>
+                                        <td>{{ isNaN(v.tp) ? "-" : _.round(v.tp*100, 1) }}</td>
                                     </tr>
                                 </tbody>
                             </table>

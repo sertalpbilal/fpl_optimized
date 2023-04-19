@@ -2012,13 +2012,28 @@ table.sticky-top thead tr th {
     background-color: #454d55;
 }
 
-table.sticky-left tr td:first-child, table.sticky-left tr th:first-child {
+table.sticky-left tr td:first-child {
     position: sticky;
     left: 0;
     background-color: #454d55;
     z-index: 3;
 }
 
+table.sticky-left tr th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #454d55;
+    z-index: 4;
+}
+
 .mh-300 {
     max-height: 300px;
+}
+
+.sorted-by {
+    color: yellowgreen;
+}
+
+.hover-blue:hover {
+    color: turquoise;
 }
