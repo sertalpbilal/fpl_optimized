@@ -1356,7 +1356,7 @@ async function load_team_data(graph_refresh = false) {
 
     await get_team_picks({ gw: app.gw.slice(2), team_id: app.team_id, force_last_gw: true }).then((response) => {
         app.saveTeamData(response.body);
-        if (app.gw == app.next_gw) {
+        if (app.gw == app.next_gw && app.last_gw_data_marker) {
             app.findIdealPicks()
         }
         app.using_last_gw_team = response.is_last_gw;
@@ -1409,7 +1409,7 @@ async function load_rp_data() {
 }
 
 async function load_sample_data() {
-    return get_sample_data(app.season, app.gw.slice(2))
+    return get_sample_data(app.season, parseInt(app.gw.slice(2)))
         .then((data) => {
             if (data[0].status == 'rejected') {
                 app.is_using_autosub = false

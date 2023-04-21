@@ -92,6 +92,18 @@
             Do you want to use another projection data for the plots? You can use the new <a href="load.html">Load Data</a> page to upload data of your choice.
         </div>
     </div> -->
+    
+    <div class="mt-1 mb-1 text-small" v-if="last_gw_data_marker && is_using_sample" v-cloak>
+        <div class="alert alert-warning">
+            Current GW sample is not available yet.
+        </div>
+    </div>
+
+    <div class="mt-1 mb-1 text-small" v-if="using_last_gw_team" v-cloak>
+        <div class="alert alert-warning">
+            Current GW team picks are not available yet, using your last GW team.
+        </div>
+    </div>
 
     <div class="row" v-cloak v-if="is_team_info_ready && show_team_info">
         <div class="col-12 mb-3">
