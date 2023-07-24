@@ -346,7 +346,6 @@ function get_team_info(team_id) {
         $.ajax({
             type: "GET",
             url: `${proxy}/fantasy.premierleague.com/api/entry/${team_id}/`,
-            dataType: 'json',
             async: true,
             headers: {
                 'Access-Control-Allow-Origin': '*',
