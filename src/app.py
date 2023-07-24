@@ -484,14 +484,14 @@ def scenario_page():
     else:
         return render_template(page_name, repo_name="", ts = timestamp, season=files[0][1].split('/')[1], gw=files[0][0], page_name="Scenarios", sc_files=files)
 
-@app.route('/set-and-forget.html')
-def set_and_forget_page():
-    page_name = 'set-and-forget.html'
+# @app.route('/set-and-forget.html')
+# def set_and_forget_page():
+#     page_name = 'set-and-forget.html'
 
-    if app.config['DEBUG']:
-        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Set and Forget")
-    else:
-        return render_template(page_name, repo_name="", ts = timestamp, page_name="Set and Forget")
+#     if app.config['DEBUG']:
+#         return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Set and Forget")
+#     else:
+#         return render_template(page_name, repo_name="", ts = timestamp, page_name="Set and Forget")
 
 
 def list_all_snapshots():
