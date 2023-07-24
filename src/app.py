@@ -563,7 +563,7 @@ def get_gw():
 
 
 if __name__ == "__main__":
-    app.config['DEBUG']=True
+    app.config['DEBUG']=False
     from app import app
     app.run(host='0.0.0.0', port=8001, debug=True)
 
