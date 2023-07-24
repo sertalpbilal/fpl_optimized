@@ -100,7 +100,7 @@
             </div>
         </div> -->
 
-        <!-- <div class="mt-2 container">
+        <div class="mt-2 container">
             <div class="row pl-3 pr-3">
                 <div class="col-12 alert alert-warning alert-dismissible text-small fade show" role="alert">
                     <i class="fas fa-info-circle"></i> FPLOptimized is getting ready for the new season! Some functonalities may not work properly.</a>
@@ -109,7 +109,7 @@
                     </button>
                 </div>
             </div>
-        </div> -->
+        </div>
 <!--         
         <div class="mt-2 container">
             <div class="row pl-3 pr-3">
@@ -1573,6 +1573,61 @@
         </div>
     </div>
 
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Team / Opposition Analysis</h5>
+                <div class="scenario_detail">
+                    Stats about players picked from teams and played against opposition
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="col-12 col-md-6">
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-12">
+                                <!-- <span class="d-block border-below-orange">Team Picks</span> -->
+                                <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <!-- <th class="text-center text-muted">ID</th> -->
+                                            <th class="text-center">Team</th>
+                                            <th class="text-center">Played For</th>
+                                            <th class="text-center">Points For</th>
+                                            <th class="text-center">For Percentage</th>
+                                            <th class="text-center">Played Against</th>
+                                            <th class="text-center">Points Against</th>
+                                            <th class="text-center">Against Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody v-cloak>
+                                        <tr>
+                                            <td class="text-center"></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <!-- <th class="text-center text-muted">ID</th> -->
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="row col-8 col-lg-6 justify-content-center" id="csv_buttons6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -1623,6 +1678,9 @@
             </div>
         </div>
     </div>
+
+    
+
 
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
@@ -1729,7 +1787,7 @@
 </main>
 
 <script>
-    let ts = 20230531102124;
+    let ts = 20230724162256;
     let off_season = false;
 </script>
 
@@ -1799,11 +1857,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20230531102124"></script>
+<script src="/static/js/main.js?ts=20230724162256"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20230531102124"></script>
+<script src="/static/js/sampling_utils.js?ts=20230724162256"></script>
 
-<script src="/static/js/highlights.js?ts=20230531102124"></script>
+<script src="/static/js/highlights.js?ts=20230724162256"></script>
 
 
 <script>
