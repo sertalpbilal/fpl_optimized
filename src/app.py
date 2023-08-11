@@ -70,20 +70,20 @@ def home_page():
     else:
         return render_template('index.html', repo_name="", ts = timestamp, page_name="", season=target[2], gw=target[3], date=target[4], list_dates=[], last_update=current_time, no_ev=True)
 
-@app.route('/week.html')
-def best_gw_squads():
-    all_dates = glob.glob('build/data/*/*/*/output/no_limit_best_11.csv')
-    # print(all_dates)
-    all_dates.sort(key=folder_order, reverse=True)
-    if sys.platform == 'win32':
-        all_dates = [i.replace('\\', '/') for i in all_dates]
-    target = all_dates[0].split('/')
-    list_dates = ([i.split('/')[2:5] for i in all_dates])
-    list_dates = [' / '.join(i) for i in list_dates]
-    if app.config['DEBUG']:
-        return render_template('week.html', repo_name="/..", ts = timestamp, page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
-    else:
-        return render_template('week.html', repo_name="", ts = timestamp, page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
+# @app.route('/week.html')
+# def best_gw_squads():
+#     all_dates = glob.glob('build/data/*/*/*/output/no_limit_best_11.csv')
+#     # print(all_dates)
+#     all_dates.sort(key=folder_order, reverse=True)
+#     if sys.platform == 'win32':
+#         all_dates = [i.replace('\\', '/') for i in all_dates]
+#     target = all_dates[0].split('/')
+#     list_dates = ([i.split('/')[2:5] for i in all_dates])
+#     list_dates = [' / '.join(i) for i in list_dates]
+#     if app.config['DEBUG']:
+#         return render_template('week.html', repo_name="/..", ts = timestamp, page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
+#     else:
+#         return render_template('week.html', repo_name="", ts = timestamp, page_name="Optimal Squads", season=target[2], gw=target[3], date=target[4], list_dates=list_dates, last_update=current_time)
 
 @app.route('/puzzle.html')
 def puzzle_page():
