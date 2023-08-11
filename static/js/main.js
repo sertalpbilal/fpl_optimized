@@ -46,7 +46,7 @@ let team_codes = {
     8: { name: "Chelsea", short: "CHE" },
     31: { name: "Crystal Palace", short: "CRY" },
     11: { name: "Everton", short: "EVE" },
-    54: { name: "Fulham", short: "FUL" }, // demoted
+    54: { name: "Fulham", short: "FUL" },
     13: { name: "Leicester", short: "LEI" },
     2: { name: "Leeds", short: "LEE" },
     14: { name: "Liverpool", short: "LIV" },
@@ -55,16 +55,19 @@ let team_codes = {
     4: { name: "Newcastle", short: "NEW" },
     17: { name: "Nott'm Forest", short: "NFO" },
     45: { name: "Norwich", short: "NOR" },
-    49: { name: "Sheffield Utd", short: "SHU" }, // demoted
+    49: { name: "Sheffield Utd", short: "SHU" },
     20: { name: "Southampton", short: "SOU" },
     6: { name: "Spurs", short: "TOT" },
     57: { name: "Watford", short: "WAT" },
-    35: { name: "West Brom", short: "WBA" }, // demoted
+    35: { name: "West Brom", short: "WBA" },
     21: { name: "West Ham", short: "WHU" },
-    39: { name: "Wolves", short: "WOL" }
+    39: { name: "Wolves", short: "WOL" },
+    102: { name: "Luton", short: "LUT" },
 }
 
 let team_short_dict = _.fromPairs(_(team_codes).map((val,key) => [val.short, key]).value())
+
+let season_teams = ["ARS", "AVL", "BOU", "BRE", "BHA", "BUR", "CHE", "CRY", "EVE", "FUL", "LIV", "LUT", "MCI", "MUN", "NEW", "NFO", "SHU", "TOT", "WHU", "WOL"]
 
 let teams_ordered = [
     { name: "Arsenal", short: "ARS" },
@@ -72,21 +75,22 @@ let teams_ordered = [
     { name: "Bournemouth", short: "BOU", long: "AFC Bournemouth" },
     { name: "Brentford", short: "BRE" },
     { name: "Brighton", short: "BHA", long: "Brighton and Hove Albion" },
-    // { name: "Burnley", short: "BUR" },
+    { name: "Burnley", short: "BUR" },
     { name: "Chelsea", short: "CHE" },
     { name: "Crystal Palace", short: "CRY" },
     { name: "Everton", short: "EVE" },
     { name: "Fulham", short: "FUL" },
-    { name: "Leicester", short: "LEI", long: "Leicester City" },
-    { name: "Leeds", short: "LEE", long: "Leeds United" },
+    // { name: "Leicester", short: "LEI", long: "Leicester City" },
+    // { name: "Leeds", short: "LEE", long: "Leeds United" },
     { name: "Liverpool", short: "LIV" },
+    { name: "Luton", short: "LUT" },
     { name: "Man City", short: "MCI", long: "Manchester City" },
     { name: "Man Utd", short: "MUN", long: "Manchester United" },
     { name: "Newcastle", short: "NEW" },
     { name: "Nott'm Forest", short: "NFO", long: "Nottingham Forest" },
     // { name: "Norwich", short: "NOR", long: "Norwich City" },
-    // { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
-    { name: "Southampton", short: "SOU" },
+    { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
+    // { name: "Southampton", short: "SOU" },
     { name: "Spurs", short: "TOT", long: "Tottenham Hotspur" },
     // { name: "Watford", short: "WAT" },
     // { name: "West Brom", short: "WBA", long: "West Bromwich Albion" },
