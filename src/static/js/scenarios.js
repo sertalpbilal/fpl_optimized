@@ -105,7 +105,9 @@ var app = new Vue({
             let picks = td.picks
             picks.forEach(p => {
                 p.data = app.elements.find(i => i.id == p.element)
-                p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
+                debugger
+                // p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
+                p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
             let bench = picks.filter(i => i.multiplier == 0)
@@ -133,7 +135,8 @@ var app = new Vue({
             let picks = td.picks
             picks.forEach(p => {
                 p.data = app.elements.find(i => i.id == p.element)
-                p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
+                // p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
+                p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
             let bench = picks.filter(i => i.multiplier == 0)

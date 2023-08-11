@@ -17,7 +17,7 @@ if __name__ == "__main__":
         from simulator import generate_simulations
         input_folder, output_folder, next_gw = get_all_data()
         if next_gw != 39:
-            solve_all(input_folder, output_folder)
+            # solve_all(input_folder, output_folder)
             generate_simulations(input_folder, output_folder, 100)
             encrypt_files(input_folder, page='free-planner', remove=True)
     freeze_all()

@@ -30,7 +30,7 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
-global_season = "2022-23"
+global_season = "2023-24"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -419,6 +419,8 @@ def test_page():
 
 @app.route('/history.html')
 def history_page():
+
+    return 'WIP'
     page_name = 'history.html'
 
     files = glob.glob("build/data/*/points.json")

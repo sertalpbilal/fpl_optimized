@@ -5,7 +5,7 @@ var app = new Vue({
         gw: gw,
         active_gw: parseInt(gw.slice(2)),
         static_data: undefined,
-        season: "2022-23",
+        season: "2023-24",
         league_data: [],
         rp_data: [],
         xp_data: [],

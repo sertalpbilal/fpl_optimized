@@ -60,15 +60,15 @@ def get_all_data():
         from fplreview import get_data_fplreview
         get_data_fplreview(input_folder, page='free-planner', rename='free-planner', method='legacy')
         generate_intermediate_layer(input_folder, page='free-planner')
-        get_fivethirtyeight_data(input_folder)
+        # get_fivethirtyeight_data(input_folder)
 
     cache_effective_ownership(season_folder)
-    get_fivethirtyeight_data(season_folder)
+    # get_fivethirtyeight_data(season_folder)
     cache_realized_points_data(season_folder)
     cache_projected_points(season_folder)
 
-    from xp_league import detect_missing_entries_and_fill, cache_xp_ranks
-    detect_missing_entries_and_fill()
+    # from xp_league import detect_missing_entries_and_fill, cache_xp_ranks
+    # detect_missing_entries_and_fill()
     # if next_gw > 1:
     #     cache_xp_ranks(output_folder)
     # TODO disabled temporarily!

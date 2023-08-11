@@ -1,7 +1,7 @@
 // non-reactive values
 autosub_stats = {}
 
-let current_season = '2022_2023';
+let current_season = '2023_2024';
 
 var app = new Vue({
     el: '#app',
