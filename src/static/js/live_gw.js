@@ -763,44 +763,44 @@ var app = new Vue({
             refresh_all_graphs();
         },
         loadOptimal() {
-            $.ajax({
-                type: "GET",
-                url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15_weighted.csv`,
-                dataType: "text",
-                async: true,
-                success: (data) => {
-                    tablevals = data.split('\n').map(i => i.split(','));
-                    keys = tablevals[0];
-                    values = tablevals.slice(1);
-                    values_filtered = values.filter(i => i.length > 1);
-                    let squad = values_filtered.map(i => _.zipObject(keys, i));
-                    if(_.isEmpty(this.team_data)) {
-                        this.team_data = {'picks': [], 'event_transfers_cost': [], 'entry_history': {'event_transfers_cost': []}}
-                        squad.forEach((item, index) => {
-                            item.element = parseInt(item.player_id)
-                            item.multiplier = index < 11 ? (item.is_captain == "True" ? 2 : 1) : 0;
-                            item.is_captain = item.is_captain == "True";
-                            this.team_data.picks.push(item)
-                        })
-                        this.original_team_data = _.cloneDeep(this.team_data);
-                        this.$forceUpdate();
-                    }
-                    else {
-                        this.team_data.picks.forEach(function load(val, index) {
-                            val.element = parseInt(squad[index].player_id);
-                            val.multiplier = index < 11 ? (squad[index].is_captain == "True" ? 2 : 1) : 0;
-                            val.is_captain = squad[index].is_captain == "True";
-                        })
-                    }
+            // $.ajax({
+            //     type: "GET",
+            //     url: `data/${this.season}/${this.gw}/${this.date}/output/limited_best_15_weighted.csv`,
+            //     dataType: "text",
+            //     async: true,
+            //     success: (data) => {
+            //         tablevals = data.split('\n').map(i => i.split(','));
+            //         keys = tablevals[0];
+            //         values = tablevals.slice(1);
+            //         values_filtered = values.filter(i => i.length > 1);
+            //         let squad = values_filtered.map(i => _.zipObject(keys, i));
+            //         if(_.isEmpty(this.team_data)) {
+            //             this.team_data = {'picks': [], 'event_transfers_cost': [], 'entry_history': {'event_transfers_cost': []}}
+            //             squad.forEach((item, index) => {
+            //                 item.element = parseInt(item.player_id)
+            //                 item.multiplier = index < 11 ? (item.is_captain == "True" ? 2 : 1) : 0;
+            //                 item.is_captain = item.is_captain == "True";
+            //                 this.team_data.picks.push(item)
+            //             })
+            //             this.original_team_data = _.cloneDeep(this.team_data);
+            //             this.$forceUpdate();
+            //         }
+            //         else {
+            //             this.team_data.picks.forEach(function load(val, index) {
+            //                 val.element = parseInt(squad[index].player_id);
+            //                 val.multiplier = index < 11 ? (squad[index].is_captain == "True" ? 2 : 1) : 0;
+            //                 val.is_captain = squad[index].is_captain == "True";
+            //             })
+            //         }
                     
-                    this.$nextTick(() => {
-                        refresh_all_graphs();
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr, status, error);
-                }
-            });
+            //         this.$nextTick(() => {
+            //             refresh_all_graphs();
+            //         });
+            //     },
+            //     error: function(xhr, status, error) {
+            //         console.log(xhr, status, error);
+            //     }
+            // });
         },
         saveTeamInfo(data) {
             this.team_info = Object.freeze(data);
@@ -1351,6 +1351,8 @@ var app = new Vue({
 })
 
 async function load_team_data(graph_refresh = false) {
+
+    debugger
 
     if (app.team_id == -1 || app.team_id == -2) { return; }
 
