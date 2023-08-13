@@ -1,1 +1,427 @@
-Not ready yet!
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+    <title>FPL Optimized  - Analytics xP League</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Optimized squads for Fantasy Premier League -- everyday!" />
+    <meta name="keywords" content="fantasy, football, soccer, premier league, mathematics, optimization, analytics, sports" />
+    <meta name="author" content="Sertalp B. Cay (sertalpbilal@gmail.com)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+    <!-- <link href="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.css')" rel="stylesheet" type="text/css" /> -->
+
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.dataTables.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css"> -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L07T8LS957"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-L07T8LS957');
+    </script>
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/svg.css">
+
+    <link rel="manifest" href="/static/asset/manifest.json">
+    <link rel="apple-touch-icon" href="/static/asset/apple_logo_114.png">
+    <link rel="apple-touch-startup-image" href="/static/asset/apple_splash_320.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FPLOptimized">
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <header class="bg-dark-gray mb-1">
+            <div class="container">
+                <nav class="navbar navbar-collapse navbar-dark container-fluid pl-0 pr-0">
+                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3 mr-auto flex-grow-1" href="/" aria-label="Bootstrap">FPL Optimized</a>
+                    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse text-secondary flex-row-reverse" id="menuToggler">
+                        <span class="twitter-link ml-2 float-right"><a href="https://twitter.com/sertalpbilal"></a></span>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="week.html">Optimal Squads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="live_gw.html">Live GW</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="team_summary.html">GW Summary</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="fpl_analytics_league.html">FPL Analytics xP League</a>
+                            </li>
+                            <li class="nav-item no-sep">
+                                <a class="nav-link" href="https://twitter.com/sertalpbilal" target=_blank><i class="fab fa-twitter-square"></i></a>
+                            </li>
+                        </ul>
+                    </div> -->
+                </nav>
+            </div>
+        </header>
+
+
+        <!-- <div class="mt-1 container">
+            <div class="row pl-3 pr-3">
+                <div class="col-12 alert alert-info alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> First time on FPL Optimized? Read a summary of tools <a target="_blank" href="https://threadreaderapp.com/thread/1391100607205941253.html">here.</a>
+                    <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div> -->
+
+        <div class="mt-2 container">
+            <div class="row pl-3 pr-3">
+                <div class="col-12 alert alert-warning alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> FPLOptimized is getting ready for the new season! Some functonalities may not work properly.</a>
+                    <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+<!--         
+        <div class="mt-2 container">
+            <div class="row pl-3 pr-3">
+                <div class="col-12 alert alert-success alert-dismissible text-small fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> FPLOptimized is ready for new season! Welcome back :)</a>
+                    <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div> -->
+
+
+<main class="container" v-cloak>
+    
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">FPL Analytics xP League</h5>
+                <div class="card-body text-center p-3">
+                    <div class="text-center mb-1">Overall Standings</div>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw <= 1" @click="active_gw_update(-1)"><i class="fas fa-caret-left"></i></button>
+                        </div>
+                        <div class="col-10 col-lg-2">
+                            {{ 'GW ' + active_gw }}
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="table-responsive mh-500" v-if="!_.isEmpty(season_data_for_gw)">
+                            <table class="table table-sm text-white table-striped text-small" id="season_table" data-source="season_data_for_gw_cached">
+                                <thead>
+                                    <tr>
+                                        <th class="" ><i class="fas fa-check-square"></i></th>
+                                        <th class="sortable-th" @click="sortData" data-tag="rank">Obj Rank</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_rank">Sim Rank</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="entry">ID</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="entry_name">Team</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="player_name">Manager</th>
+                                        <th class="sortable-th highlighted-col-type2" @click="sortData" data-tag="obj_sum">Obj. Score</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_mean_sum">Sim Sum</th>
+
+                                        <th class="sortable-th" @click="sortData" data-tag="week_obj">GW Obj</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="sim_q50">GW Sim Mean</th>
+                                        <!-- <th class="sortable-th" @click="sortData" data-tag="season_sum">Season Pts</th> -->
+                                        <th class="sortable-th" @click="sortData" data-tag="total_pts">FPL Pts*</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="last_rank">FPL Rank*</th>
+                                        
+                                        <th class="sortable-th" @click="sortData" data-tag="chip_count">Chips Used</th>
+                                        <th class="sortable-th" @click="sortData" data-tag="total_gw">GWs</th>
+                                        <!-- <th class="sortable-th" @click="sortData" data-tag="obj_per_gw">Obj.pGW</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="entry in season_data_for_gw_cached">
+                                        <td>
+                                            <div class="form-group m-0">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" :value="entry.entry" :id="'comp-'+entry.entry" v-model="compareEntries" :disabled="compareEntries.length >= 10 && compareEntries.indexOf(entry.entry)==-1" @change="redraw_bump">
+                                                    <label class="custom-control-label custom-control-label-t text-hide" :for="'comp-'+entry.entry">xx</label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ entry.rank }}</td>
+                                        <td>{{ entry.sim_rank }}</td>
+                                        <td><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry.entry+'/history'">{{ entry.entry }}</a></td>
+                                        <td>{{ entry.entry_name }}</td>
+                                        <td>{{ entry.player_name }}</td>
+                                        <td class="highlighted-col-type2">{{ rounded(entry.obj_sum) }}</td>
+                                        <td class="">{{ rounded(entry.sim_mean_sum) }}</td>
+
+                                        <td>{{ rounded(entry.week_obj) }}</td>
+                                        <td>{{ rounded(entry.sim_q50) }}</td>
+                                        <!-- <td>{{ rounded(entry.week_sum) }}</td> -->
+                                        <!-- <td>{{ rounded(entry.season_sum) }}</td> -->
+                                        <td>{{ rounded(entry.total_pts, 0) }}</td>
+                                        <td>{{ rounded(entry.last_rank, 0) }}</td>
+                                        
+                                        <td>
+                                            <span class="ml-1 mr-1 p-1 chip-box" v-for="(chip,i) in entry.chip_sep" :class="'chip-' + chip">{{ chip_short[chip] + entry.chip_no[i] }}</span>
+                                        </td>
+                                        <td>{{entry.total_gw }}</td>
+                                        <!-- <td>{{ rounded(entry.obj_per_gw) }}</td> -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div v-if="compareEntries.length > 1">
+                        <div id="compare-bump">
+                            {{ comparison_data }}
+                        </div>
+                        <div id="step-race">
+                            
+                        </div>
+                        <div id="sim-results">
+                            
+                        </div>
+                    </div>
+                    <div v-else class="text-center text-muted">
+                        Choose 2 or more teams to compare!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-dark bg-squad-card text-white">
+                
+                <div class="card-body text-center p-3">
+                    <div class="text-center mb-1">Weekly Scores (with Autosub)</div>
+                    <div class="row no-gutters justify-content-center">
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw <= 1" @click="active_gw_update(-1)"><i class="fas fa-caret-left"></i></button>
+                        </div>
+                        <div class="col-10 col-lg-2">
+                            {{ 'GW ' + active_gw }}
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-dark" :disabled="active_gw >= parseInt(gw.slice(2))" @click="active_gw_update(1)"><i class="fas fa-caret-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="table-responsive mh-500" v-if="!_.isEmpty(processed_league_data)">
+                        <!-- class="table-responsivex" -->
+                        <table class="table table-sm text-white table-striped text-small" id="league_table" data-source="processed_league_data_cached">
+                            <thead>
+                                <tr>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.rank">#</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[0].entry_name">Team</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.pre_xp">pre-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.post_xp">post-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.rp">Pts</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.luck">Pts-xP</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="info.team_value">TV</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[1].entry_history.bank">ITB</th>
+                                    <th class="sortable-th" @click="sortData" data-tag="[1].active_chip">Chip</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="entry in processed_league_data_cached">
+                                    <td>{{ entry.info.rank }}</td>
+                                    <td :data-search="entry[0].entry_name + ' ' + entry[0].player_name">
+                                        <span class="team-name"><a target=_blank :href="'https://fantasy.premierleague.com/entry/'+entry[0].entry+'/event/' + active_gw">{{ entry[0].entry_name }}</a></span>
+                                        <!-- <br/><span class="player-name">{{ entry[0].player_name }}</span> -->
+                                    </td>
+                                    <td>{{ rounded(entry.info.pre_xp,3) }}</td>
+                                    <td>{{ rounded(entry.info.post_xp,3) }}</td>
+                                    <td>{{ entry.info.rp }}</td>
+                                    <td :data-order="entry.info.luck">{{ getWithSign(entry.info.luck,3) }}</td>
+                                    <td>{{ entry.info.team_value }}</td>
+                                    <td>{{ entry[1].entry_history.bank/10 }}</td>
+                                    <td>{{ entry[1].active_chip }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center d-block mx-auto" id="loading_box" v-else>
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mb-3">
+        <div class="col-12 mb-0-lg">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Expected and Projected Points Data</h5>
+                <div class="card-body field-body p-3">
+                    <div class="row justify-content-center" v-if="!_.isEmpty(team_list_sorted_entry_name)">
+                        <div class="ml-1 mr-1">
+                            <div class="form-group text-center">
+                                <label for="sel_team">Team Name</label>
+                                <select class="form-control" id="sel_team" v-model="selected_team" @input="highlight_circle">
+                                    <option v-for="m in team_list_sorted_entry_name" :value="m.entry">{{ m.entry_name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="ml-1 mr-1">
+                            <div class="form-group text-center">
+                                <label for="sel_team">Manager</label>
+                                <select class="form-control" id="sel_team" v-model="selected_team" @input="highlight_circle">
+                                    <option v-for="m in team_list_sorted_player_name" :value="m.entry">{{ m.player_name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center" v-if="selected_team">
+                        <div>
+                            <a target=_blank :href="'https://fantasy.premierleague.com/entry/'+selected_entry_ref[0].entry+'/event/' + active_gw" class="btn btn-secondary">Show Team</a>
+                        </div>
+                    </div>
+                    <div id="xp_vs_rp">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" v-cloak>
+        <div class="col-12 mb-3">
+            <div class="card border-dark bg-squad-card text-white qa">
+                <!-- <div class="card-body text-left">
+                    <h5>Note</h5>
+                    <p>Data on this page is refreshed every 6 hours. It is possible that some values/graphs do not function properly while a GW is ongoing.</p>
+                </div> -->
+                <div class="card-footer text-white disclaimer">
+                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    let season_vals = [{'gw': 1, 'entry': 1995908, 'id': 13120758, 'entry_name': 'SoyaBeanFC', 'player_name': 'Jamie Sawyer', 'week_sum': 60.06, 'week_obj': 60.11, 'chip': '', 'chip_gw': '', 'total_pts': 59, 'last_rank': 3415426, 'sim_min': 42, 'sim_q25': 54.0, 'sim_q50': 64.0, 'sim_q75': 72.25, 'sim_max': 110, 'sim_mean': 65.08, 'season_sum': 60.06, 'obj_sum': 60.11, 'sim_mean_sum': 65.08, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 974639, 'id': 39713913, 'entry_name': 'Bowen 747', 'player_name': 'callum lewis', 'week_sum': 59.23, 'week_obj': 59.23, 'chip': '', 'chip_gw': '', 'total_pts': 58, 'last_rank': 3703475, 'sim_min': 34, 'sim_q25': 55.75, 'sim_q50': 64.0, 'sim_q75': 73.25, 'sim_max': 102, 'sim_mean': 64.93, 'season_sum': 59.23, 'obj_sum': 59.23, 'sim_mean_sum': 64.93, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 640460, 'id': 4010588, 'entry_name': 'Pep roulette', 'player_name': 'Henry Gilmore', 'week_sum': 58.76, 'week_obj': 58.76, 'chip': '', 'chip_gw': '', 'total_pts': 64, 'last_rank': 2022638, 'sim_min': 36, 'sim_q25': 52.0, 'sim_q50': 60.0, 'sim_q75': 69.0, 'sim_max': 94, 'sim_mean': 61.31, 'season_sum': 58.76, 'obj_sum': 58.76, 'sim_mean_sum': 61.31, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 39284, 'id': 1057254, 'entry_name': 'Chunko FC', 'player_name': 'Jacob Williams', 'week_sum': 58.75, 'week_obj': 58.75, 'chip': '', 'chip_gw': '', 'total_pts': 58, 'last_rank': 3703475, 'sim_min': 35, 'sim_q25': 52.0, 'sim_q50': 64.0, 'sim_q75': 74.0, 'sim_max': 95, 'sim_mean': 63.62, 'season_sum': 58.75, 'obj_sum': 58.75, 'sim_mean_sum': 63.62, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 5083995, 'id': 39694362, 'entry_name': 'Sandy soldiers', 'player_name': 'Tom Scott', 'week_sum': 58.71, 'week_obj': 58.71, 'chip': '', 'chip_gw': '', 'total_pts': 63, 'last_rank': 2293867, 'sim_min': 28, 'sim_q25': 53.75, 'sim_q50': 63.0, 'sim_q75': 71.25, 'sim_max': 103, 'sim_mean': 62.82, 'season_sum': 58.71, 'obj_sum': 58.71, 'sim_mean_sum': 62.82, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 1675762, 'id': 10924622, 'entry_name': 'Heung Min Dad', 'player_name': 'Robert Read', 'week_sum': 58.51, 'week_obj': 58.51, 'chip': '', 'chip_gw': '', 'total_pts': 54, 'last_rank': 4758562, 'sim_min': 33, 'sim_q25': 57.75, 'sim_q50': 67.0, 'sim_q75': 74.0, 'sim_max': 118, 'sim_mean': 66.33, 'season_sum': 58.51, 'obj_sum': 58.51, 'sim_mean_sum': 66.33, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 46028, 'id': 1057247, 'entry_name': 'naby lad', 'player_name': 'Owen Galloway-Wood', 'week_sum': 56.38, 'week_obj': 56.38, 'chip': '', 'chip_gw': '', 'total_pts': 67, 'last_rank': 1339925, 'sim_min': 30, 'sim_q25': 53.0, 'sim_q50': 62.0, 'sim_q75': 70.0, 'sim_max': 86, 'sim_mean': 61.27, 'season_sum': 56.38, 'obj_sum': 56.38, 'sim_mean_sum': 61.27, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 489680, 'id': 3008629, 'entry_name': 'Paquetá crisps', 'player_name': 'Tom Mack', 'week_sum': 53.94, 'week_obj': 53.94, 'chip': '', 'chip_gw': '', 'total_pts': 56, 'last_rank': 3415426, 'sim_min': 27, 'sim_q25': 48.0, 'sim_q50': 57.0, 'sim_q75': 67.0, 'sim_max': 91, 'sim_mean': 58.05, 'season_sum': 53.94, 'obj_sum': 53.94, 'sim_mean_sum': 58.05, 'chip_sum': '', 'chip_gws': ''}, {'gw': 1, 'entry': 454656, 'id': 2787687, 'entry_name': 'Bobteam', 'player_name': 'Harrison Vant', 'week_sum': 52.65, 'week_obj': 52.65, 'chip': '', 'chip_gw': '', 'total_pts': 59, 'last_rank': 3415426, 'sim_min': 24, 'sim_q25': 44.75, 'sim_q50': 53.5, 'sim_q75': 62.25, 'sim_max': 96, 'sim_mean': 53.6, 'season_sum': 52.65, 'obj_sum': 52.65, 'sim_mean_sum': 53.6, 'chip_sum': '', 'chip_gws': ''}];
+    let season_file = "";
+</script>
+
+ </div>
+
+
+<div class="container mb-3">
+    <div class="row gray-bg no-gutters">
+        <div class="banner-link col-12 col-md-6" style="border: 1px solid #343436;">
+            <!-- <img src="/static/images/ffhub.png" />Partnered with Fantasy Football Hub
+            <a href="https://fantasyfootballhub.co.uk/" class="stretched-link" target="_blank"></a> -->
+        </div>
+        <div class="banner-link col-12 col-md-6" style="border: 1px solid #343436;">
+            <img src="/static/images/review.png" />EV data is courtesy of FPL Review
+            <a href="https://fplreview.com/" class="stretched-link" target="_blank"></a>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.16/svg.js" integrity="sha512-M17tsaj3tHw5m/gI+8XjDLTuPZ0cpTofhFLJUT9niFa/DK8WAhsSLW764iSaaXoAoivXEFUP6VxvpiahJPQ4fg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js" integrity="sha512-WNLxfP/8cVYL9sj8Jnp6et0BkubLP31jhTG9vhL/F5uEZmg5wEzKoXp1kJslzPQWwPT1eyMiSxlKCgzHLOTOTQ==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script>
+    Vue.config.performance = true;
+    Vue.prototype.$log = console.log;
+</script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.5/jstat.js" integrity="sha512-D5uf20+sRi7oJxHzrp6LZDaY/IrSFIKmaQ7bOQA6V1Z+Jr9DOFKodR3RyYwdeEoGUZlfz76XQlDy5/TWdyKz9Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js" integrity="sha512-tVYBzEItJit9HXaWTPo8vveXlkK62LbA+wez9IgzjTmFNLMBO1BEYladBw2wnM3YURZSMUyhayPCoLtjGh84NQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-cookies@1.7.4/vue-cookies.js" integrity="sha256-pdSyqKvUOsiAZVUhatSOyW3Wom0l7ABtO8w7LjPA3vU=" crossorigin="anonymous"></script>
+<!-- <script type="text/javascript" src="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.js')"></script> -->
+
+<!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/dataTables.responsive.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/responsive/2.2.6/js/responsive.bootstrap4.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script> -->
+<!-- <script src="https://cdn.datatables.net/searchbuilder/1.0.1/js/dataTables.searchBuilder.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.3"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.js" integrity="sha512-2ypsPur7qcA+2JjmmIJR1c4GWFqTLIe1naXXplraMg0aWyTOyAMpOk+QL+ULpzwrO/GdwA3qB3FhVyyiR8gdhw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.1/fernetBrowser.js"></script>
+
+<script>
+    let repo_name = ""
+    let season = "2023-24";
+    let gw = "GW2";
+    let next_gw = "GW2";
+    let date = "2023-08-13";
+    let lastupdate = "2023-08-13T22:09:27.164211+00:00";
+    let listdates = [
+        "2023-24 / GW2 / 2023-08-13 ", 
+        "2023-24 / GW1 / 2023-08-11 ", 
+    ];
+    let is_active = false ;
+    let active_gw = -1 ;
+</script>
+
+
+<script src="/static/js/main.js?ts=20230813220927"></script>
+
+<script src="/static/js/sampling_utils.js?ts=20230813220927"></script>
+
+<script src="/static/js/analytics_league.js?ts=20230813220927"></script>
+
+
+<script>
+    $('.alert').alert()
+</script>
+
+</body>
+
+<div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2023-08-13T22:09:27.164211+00:00</div>
+
+</html> 
