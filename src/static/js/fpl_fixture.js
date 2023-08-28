@@ -7,14 +7,14 @@ var app = new Vue({
         original_fixture_data: undefined,
         fixture_data: undefined,
         main_data: undefined,
-        fte_data: undefined,
+        season_projections: undefined,
         choice_data_source: [
-            { 'name': "538 - FDR", 'attribute': 'fdr_fte' },
-            { 'name': "538 - Defensive", 'attribute': 'fdr_off' }, // attribute is named "_off" because it is opponent's offense that defines difficulty
-            { 'name': "538 - Offensive", 'attribute': 'fdr_def' }, // attribute is named "_def" because it is opponent's defense that defines difficutly
-            { 'name': "Official FPL", 'attribute': 'fdr' }
+            { 'name': "Official FPL", 'attribute': 'fdr' },
+            { 'name': "Opponent Strength", 'attribute': 'proj_overall' },
+            { 'name': "Opponent Defense Strength", 'attribute': 'proj_off' },
+            { 'name': "Opponent Offense Strength", 'attribute': 'proj_def' }
         ],
-        option_data_source: 0,
+        option_data_source: 1,
         choice_data_type: [
             { name: "FDR", suffix: "" },
             { name: "Difference", suffix: "_diff" },
@@ -101,35 +101,91 @@ var app = new Vue({
             })
             return weeks
         },
-        fdr_fte() {
-            if (_.isEmpty(this.fte_data)) { return {}}
+        fdr_season() {
+            if (_.isEmpty(this.season_projections)) { return {} }
             let fdr = {};
-            let teams = _.uniq(app.fixture_data.map(i => i.team_h));
-            teams.forEach((team) => {
-                let f = fdr[team - 1] = {};
-                let team_name = teams_ordered[team - 1].name;
-                let entry = app.fte_data.find(i => i.name == team_name)
-                if (entry == undefined) {
-                    let team_entry = teams_ordered[team - 1]
-                    if (team_entry.long == undefined) {
-                        console.log("Cannot find", team_entry.name)
-                    }
-                    team_long = team_entry.long
-                    entry = app.fte_data.find(i => i.name == team_long)
+            let xp_data = _.cloneDeep(this.season_projections)
+            let tname_fix = {'Nottingham Forest': "Nott'm Forest", 'Tottenham': 'Spurs'}
+            // fix for team names
+            for (let e of xp_data) {
+                if (tname_fix[e['Team']] != undefined) {
+                    e['Team'] = tname_fix[e['Team']]
                 }
+            }
 
-                f['off'] = parseFloat(entry.off);
-                f['def'] = parseFloat(entry.def);
-                f['fdr'] = parseFloat(entry.off) - parseFloat(entry.def);
+            let gw_cols = _.range(1,39).map(i => 'GW' + i)
+            let sum_xp = (plist) => {
+                return _.sum(gw_cols.map(
+                    gw => _.sum(plist.map(
+                        p => parseFloat(p?.[gw] ?? 0)
+                    ))
+                ))
+            }
+            let sum_xmin = (plist) => {
+                return _.sum(gw_cols.map(
+                    gw => _.sum(plist.map(
+                        p => parseFloat(p?.[gw + '_xMin'] ?? 0)
+                    ))
+                ))
+            }
+
+            let overall_avg = sum_xp(xp_data) / sum_xmin(xp_data) * 90
+            let all_off = xp_data.filter(i => ['M', 'F'].includes(i.Pos))
+            let off_avg = sum_xp(all_off) / sum_xmin(all_off) * 90
+            let all_def = xp_data.filter(i => ['G', 'D'].includes(i.Pos))
+            let def_avg = sum_xp(all_def) / sum_xmin(all_def) * 90
+
+
+            let teams = app.main_data.teams
+            teams.forEach((team) => {
+                // find all players from team, sum EV, sum min
+                let team_players = xp_data.filter(i => i.Team == team.name)
+                let off_players = team_players.filter(i => ['M', 'F'].includes(i.Pos))
+                let def_players = team_players.filter(i => ['G', 'D'].includes(i.Pos))
+                let f = fdr[team.id - 1] = {};
+                
+                f['off'] = parseFloat(sum_xp(off_players) / sum_xmin(off_players)) * 90;
+                f['def'] = parseFloat(sum_xp(def_players) / sum_xmin(def_players)) * 90;
+                f['fdr'] = parseFloat(sum_xp(team_players) / sum_xmin(team_players)) * 90;
+
+                f['fdr_rel'] = f['fdr'] / overall_avg
+                f['off_rel'] = f['off'] / off_avg
+                f['def_rel'] = f['def'] / def_avg
+                // console.log(team.name)
             })
+
             return fdr;
         },
+        // fdr_fte() {
+        //     if (_.isEmpty(this.fte_data)) { return {}}
+        //     let fdr = {};
+        //     let teams = _.uniq(app.fixture_data.map(i => i.team_h));
+        //     teams.forEach((team) => {
+        //         let f = fdr[team - 1] = {};
+        //         let team_name = teams_ordered[team - 1].name;
+        //         let entry = app.fte_data.find(i => i.name == team_name)
+        //         if (entry == undefined) {
+        //             let team_entry = teams_ordered[team - 1]
+        //             if (team_entry.long == undefined) {
+        //                 console.log("Cannot find", team_entry.name)
+        //             }
+        //             team_long = team_entry.long
+        //             entry = app.fte_data.find(i => i.name == team_long)
+        //         }
+
+        //         f['off'] = parseFloat(entry.off);
+        //         f['def'] = parseFloat(entry.def);
+        //         f['fdr'] = parseFloat(entry.off) - parseFloat(entry.def);
+        //     })
+        //     return fdr;
+        // },
         rivals() {
-            let fdr = this.fdr_fte;
+            let fdr = this.fdr_season; // TODO
             let fd = this.fixture_data;
             let rivals = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
             let gameweeks = _.range(1,39) //_.uniq(app.fixture_data.map(i => i.event));
+            gameweeks = gameweeks.concat(null)
             teams.forEach((team) => {
                 let r = rivals[team] = {}
                 gameweeks.forEach((gw) => {
@@ -140,12 +196,18 @@ var app = new Vue({
                             'rival': teams_ordered[i.team_a - 1].short.toUpperCase(),
                             'fdr': i.team_h_difficulty,
                             'fdr_diff': i.team_h_difficulty - i.team_a_difficulty,
-                            'fdr_fte': fdr[i.team_a - 1].fdr,
-                            'fdr_fte_diff': fdr[i.team_a - 1].fdr - fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
-                            'fdr_off': fdr[i.team_a - 1].off,
-                            'fdr_off_diff': fdr[i.team_a - 1].off + fdr[i.team_h - 1].def / Math.exp(this.hfa),
-                            'fdr_def': -fdr[i.team_a - 1].def,
-                            'fdr_def_diff': -(fdr[i.team_a - 1].def + fdr[i.team_h - 1].off * Math.exp(this.hfa)),
+                            'proj_overall': fdr[i.team_a - 1].fdr_rel / Math.sqrt(Math.exp(this.hfa)),
+                            'proj_overall_diff': fdr[i.team_a - 1].fdr_rel / fdr[i.team_h - 1].fdr_rel / Math.exp(this.hfa),
+                            'proj_off': fdr[i.team_a - 1].def_rel / Math.sqrt(Math.exp(this.hfa)),
+                            'proj_off_diff': fdr[i.team_a - 1].def_rel / fdr[i.team_h - 1].off_rel / Math.exp(this.hfa),
+                            'proj_def': fdr[i.team_a - 1].off_rel / Math.sqrt(Math.exp(this.hfa)),
+                            'proj_def_diff': fdr[i.team_a - 1].off_rel / fdr[i.team_h - 1].def_rel / Math.exp(this.hfa),
+                            // 'fdr_fte': fdr[i.team_a - 1].fdr,
+                            // 'fdr_fte_diff': fdr[i.team_a - 1].fdr - fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
+                            // 'fdr_off': fdr?.[i.team_a - 1]?.off ?? 0,
+                            // 'fdr_off_diff': ((fdr?.[i.team_a - 1]?.off ?? 0) + (fdr?.[i.team_h - 1]?.def ?? 0)) / Math.exp(this.hfa),
+                            // 'fdr_def': -(fdr?.[i.team_a - 1]?.def ?? 0),
+                            // 'fdr_def_diff': -((fdr?.[i.team_a - 1]?.def ?? 0) + (fdr?.[i.team_h - 1]?.off ?? 0) * Math.exp(this.hfa)),
                         }
                     })
                     r[gw] = r[gw].concat(data);
@@ -155,15 +217,22 @@ var app = new Vue({
                             'rival': teams_ordered[i.team_h - 1].short.toLowerCase(),
                             'fdr': i.team_a_difficulty,
                             'fdr_diff': i.team_a_difficulty - i.team_h_difficulty,
-                            'fdr_fte': fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
-                            'fdr_fte_diff': fdr[i.team_h - 1].fdr * Math.exp(this.hfa) - fdr[i.team_a - 1].fdr,
-                            'fdr_off': fdr[i.team_h - 1].off * Math.exp(this.hfa),
-                            'fdr_off_diff': fdr[i.team_h - 1].off * Math.exp(this.hfa) + fdr[i.team_a - 1].def,
-                            'fdr_def': -(fdr[i.team_h - 1].def / Math.exp(this.hfa)),
-                            'fdr_def_diff': -(fdr[i.team_h - 1].def / Math.exp(this.hfa) + fdr[i.team_a - 1].off),
+                            'proj_overall': fdr[i.team_h - 1].fdr_rel * Math.sqrt(Math.exp(this.hfa)),
+                            'proj_overall_diff': fdr[i.team_h - 1].fdr_rel / fdr[i.team_a - 1].fdr_rel * Math.exp(this.hfa),
+                            'proj_off': fdr[i.team_h - 1].def_rel * Math.sqrt(Math.exp(this.hfa)),
+                            'proj_off_diff': fdr[i.team_h - 1].def_rel / fdr[i.team_a - 1].off_rel * Math.exp(this.hfa),
+                            'proj_def': fdr[i.team_h - 1].off_rel * Math.sqrt(Math.exp(this.hfa)),
+                            'proj_def_diff': fdr[i.team_h - 1].off_rel / fdr[i.team_a - 1].def_rel * Math.exp(this.hfa),
+                            // 'fdr_fte': fdr[i.team_h - 1].fdr * Math.exp(this.hfa),
+                            // 'fdr_fte_diff': fdr[i.team_h - 1].fdr * Math.exp(this.hfa) - fdr[i.team_a - 1].fdr,
+                            // 'fdr_off': (fdr?.[i.team_h - 1]?.off ?? 0) * Math.exp(this.hfa),
+                            // 'fdr_off_diff': (fdr?.[i.team_h - 1]?.off ?? 0) * Math.exp(this.hfa) + (fdr?.[i.team_a - 1]?.def ?? 0),
+                            // 'fdr_def': -((fdr?.[i.team_h - 1]?.def ?? 0) / Math.exp(this.hfa)),
+                            // 'fdr_def_diff': -((fdr?.[i.team_h - 1]?.def ?? 0) / Math.exp(this.hfa) + (fdr?.[i.team_a - 1]?.off ?? 0)),
                         }
                     })
                     r[gw] = r[gw].concat(data);
+                    // console.log(gw)
                 })
             })
             return rivals;
@@ -355,8 +424,11 @@ var app = new Vue({
             data.forEach((g) => {
                 g.original_event = g.event;
             })
-            this.original_fixture_data = _.cloneDeep(data);
-            this.fixture_data = data;
+            this.original_fixture_data = Object.freeze(_.cloneDeep(data));
+            this.fixture_data = Object.freeze(data);
+        },
+        saveSeasonProjection(data) {
+            this.season_projections = Object.freeze(data);
         },
         destroy_table() {
             $("#main_fixture").DataTable().destroy();
@@ -583,7 +655,7 @@ async function fetch_fpl_fixture() {
 
 async function fetch_fpl_main() {
     return get_fpl_main_data().then((data) => {
-        app.main_data = data;
+        app.main_data = Object.freeze(data);
         let this_gw = data.events.find(i => i.is_next).id;
         app.this_gw = this_gw;
         app.range_from = this_gw;
@@ -592,21 +664,34 @@ async function fetch_fpl_main() {
     })
 }
 
-async function fetch_fivethirtyeight() {
-    return read_local_file(data_target).then((data) => {
-        let tablevals = data.split('\n').map(i => i.split(','));
-        let keys = tablevals[0];
-        let values = tablevals.slice(1);
-        let final_data = values.map(i => _.zipObject(keys, i));
-        app.fte_data = final_data;
-    })
+// async function fetch_fivethirtyeight() {
+//     return read_local_file(data_target).then((data) => {
+//         let tablevals = data.split('\n').map(i => i.split(','));
+//         let keys = tablevals[0];
+//         let values = tablevals.slice(1);
+//         let final_data = values.map(i => _.zipObject(keys, i));
+//         app.fte_data = final_data;
+//     })
+// }
+
+// getDetailedData
+
+async function fetch_season_projection() {
+    return getSeasonProjection({ season: season })
+        .then((data) => {
+            app.saveSeasonProjection(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
 
 $(document).ready(() => {
     Promise.all([
             fetch_fpl_fixture(),
             fetch_fpl_main(),
-            fetch_fivethirtyeight()
+            fetch_season_projection()
+            // fetch_fivethirtyeight()
         ]).then((values) => {
             app.$nextTick(() => {
                 app.load_table()

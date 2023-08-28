@@ -504,6 +504,51 @@ function getXPData_Fernet({season, gw, date}) {
     })
 }
 
+
+function getDetailedData({season, gw, date}) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `data/${season}/${gw}/${date}/input/detailed-fplreview-free-planner.csv-encrypted`,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                var secret = new fernet.Secret('symZ1LvXcAtjllNsDmhSp-GT1gDNPXw0P5eijrU8ogQ=');
+                var token = new fernet.Token({
+                    secret: secret,
+                    token: data,
+                    ttl: 0
+                })
+                let raw = token.decode();
+                let csvdata = $.csv.toObjects(raw)
+                resolve(csvdata)
+            },
+            error: ()  => {
+                reject("Could not get detailed data");
+            }
+        });
+    })
+}
+
+function getSeasonProjection({season}) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `data/${season}/season_projection.csv`,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                let csvdata = $.csv.toObjects(data)
+                resolve(csvdata)
+            },
+            error: ()  => {
+                reject("Could not get detailed data");
+            }
+        });
+    })
+}
+
+
 async function read_cached_xp(req_season) {
     return $.ajax({
         type: "GET",
