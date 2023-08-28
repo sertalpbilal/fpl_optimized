@@ -16,7 +16,7 @@
     <script src="https://d3js.org/d3.v6.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
-    <link href="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.css')" rel="stylesheet" type="text/css" />
+    <!-- <link href="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.css')" rel="stylesheet" type="text/css" /> -->
 
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.0.1/css/searchBuilder.dataTables.min.css"> -->
@@ -100,7 +100,7 @@
             </div>
         </div> -->
 
-        <div class="mt-2 container">
+        <!-- <div class="mt-2 container">
             <div class="row pl-3 pr-3">
                 <div class="col-12 alert alert-warning alert-dismissible text-small fade show" role="alert">
                     <i class="fas fa-info-circle"></i> FPLOptimized is getting ready for the new season! Some functonalities may not work properly.</a>
@@ -109,7 +109,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> -->
 <!--         
         <div class="mt-2 container">
             <div class="row pl-3 pr-3">
@@ -284,9 +284,9 @@
                         
                         <div class="btn-group mb-1" role="group">
                             <a href role="button" class="btn btn-info starter-button btn-sm" aria-disabled="true" disabled>Data</a>
-                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=0; invalidate_cache()">Overall</button>
-                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=1; invalidate_cache()">Offense</button>
-                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=2; invalidate_cache()">Defense</button>
+                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=1; invalidate_cache()">Overall</button>
+                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=2; invalidate_cache()">Offense</button>
+                            <button type="button" class="btn btn-secondary btn-sm" @click="option_data_source=3; invalidate_cache()">Defense</button>
                         </div>
 
                         <div class="btn-group" role="group">
@@ -301,6 +301,7 @@
                                 <tr>
                                     <th>Team</th>
                                     <th class="text-center" v-for="gw in gameweeks" v-show="show_earlier_gws || (!show_earlier_gws && gw.no >= this_gw)" :id="gw.this_gw ? 'active_gw' : 'col_gw' + gw.no" :class="{'active_gw_col': gw.this_gw}">{{ gw.text }}</th>
+                                    <th class="text-center">Unscheduled</th>
                                     <th class="text-center">Average Difficulty</th>
                                 </tr>
                             </thead>
@@ -310,10 +311,17 @@
                                     <td class="text-center text-with-shadow" v-for="gw in gameweeks" v-show="show_earlier_gws || (!show_earlier_gws && gw.no >= this_gw)" :class="{'active_gw_col': gw.this_gw, 'multi-gw': rivals[id+1][gw.no].length > 1 && option_show_double}" :data-order="order_value(rivals[id+1][gw.no])" :style="{'background': get_color(rivals[id+1][gw.no]) }">
                                         {{ option_table_display == 0 ? rivals[id+1][gw.no].map(j => j.rival).join(' + ') : order_as_list(rivals[id+1][gw.no], true) }}
                                     </td>
+                                    <td class="text-center">
+                                        {{ option_table_display == 0 ? rivals[id+1][null].map(j => j.rival).join(' + ') : ''}}
+                                    </td>
                                     <td :data-order="team_actual_average[id+1]" class="text-center">({{ fixture_count[id+1] }}) {{ team_average[id+1].toFixed(2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div v-else class="text-center d-block mx-auto">
+                        Loading data... Please wait...
+                        <img class="mx-auto d-block" src="static/images/loading.svg">
                     </div>
                     <div class="d-flex justify-content-center" id="button-box">
 
@@ -582,7 +590,7 @@
 
 
 <script>
-    let data_target = "data/2022-23/GW38/2023-05-28/input/fivethirtyeight_spi.csv";
+    let data_target = "";
 </script>
 
  </div>
@@ -605,7 +613,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-cookies@1.7.4/vue-cookies.js" integrity="sha256-pdSyqKvUOsiAZVUhatSOyW3Wom0l7ABtO8w7LjPA3vU=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.js')"></script>
+<!-- <script type="text/javascript" src="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.js')"></script> -->
 
 <!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
@@ -625,11 +633,11 @@
 
 <script>
     let repo_name = ""
-    let season = "2022-23";
-    let gw = "GW38";
-    let next_gw = "GW38";
-    let date = "2023-05-28";
-    let lastupdate = "2023-07-24T16:22:56.792982+00:00";
+    let season = "2023-24";
+    let gw = "GW4";
+    let next_gw = "GW4";
+    let date = "2023-08-28";
+    let lastupdate = "2023-08-28T18:21:51.998881+00:00";
     let listdates = [
     ];
     let is_active = false ;
@@ -637,11 +645,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20230724162256"></script>
+<script src="/static/js/main.js?ts=20230828182151"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20230724162256"></script>
+<script src="/static/js/sampling_utils.js?ts=20230828182151"></script>
 
-<script src="/static/js/fpl_fixture.js?ts=20230724162256"></script>
+<script src="/static/js/fpl_fixture.js?ts=20230828182151"></script>
 
 
 <script>
@@ -651,6 +659,6 @@
 </body>
 
 <div class="text-muted text-center mx-auto text-small mb-1 c-footnote">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2023-07-24T16:22:56.792982+00:00</div>
+<div class="mx-auto text-center d-block text-muted text-small mb-1">Last update: 2023-08-28T18:21:51.998881+00:00</div>
 
 </html> 
