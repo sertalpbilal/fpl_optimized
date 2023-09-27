@@ -4788,7 +4788,7 @@ $(document).ready(() => {
             get_points(),
             get_eo(),
             get_fixture_data(),
-            get_538_data(),
+            // get_538_data(),
             fetch_main_data(),
             fetch_xp_data()
         ]).then((values) => {
