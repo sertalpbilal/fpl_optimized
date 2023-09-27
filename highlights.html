@@ -1455,123 +1455,7 @@
 
 
 
-    <div class="row" id="graph-section-wrapper">
-        <div class="col-12 mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Fixture Difficulty Analysis</h5>
-                <div class="scenario_detail">
-                    Fixture difficulty ratings of your picks through season using FiveThirtyEight data
-                </div>
-                <div class="card-body" v-if="ready" v-cloak>
-                    <div class="row justify-content-center mb-3">
-                        <div class="col-12 mb-1">
-                            <span class="d-block border-below-orange">Defense Difficulty</span>
-                            <div class="overflow-auto">
-                                <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" style="width: 100%">
-                                    <tr>
-                                        <th v-for="team in team_fdr_values">{{ team.short }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td v-for="team in team_fdr_values" :style="{backgroundColor: team.offense_color}">
-                                            {{ rounded(team.offense_ratio*100,0) }}%
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <span class="d-block border-below-orange">Offense Difficulty</span>
-                            <div class="overflow-auto">
-                                <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" style="width: 100%">
-                                    <tr>
-                                        <th v-for="team in team_fdr_values">{{ team.short }}</th>
-                                    </tr>
-                                    <tr>
-                                        <td v-for="team in team_fdr_values" :style="{backgroundColor: team.defense_color}">
-                                            {{ rounded(team.defense_ratio*100,0) }}%
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row justify-content-center mb-3">
-                        <div class="col-12">
-                            <span class="d-block border-below-orange">Fixture Difficulty per Player Pick</span>
-                        </div>
-                        <div class="col-12 col-lg-8">
-                            
-                            <!-- <span class="d-block border-below-orange">Total gain / loss per player</span> -->
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="all_fdr_table" style="width: 100%">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Name</th>
-                                        <th class="text-center">Pos</th>
-                                        <th class="text-center">Team</th>
-                                        <th class="text-center">Opp</th>
-                                        <th class="text-center">Diff. Ratio</th>
-                                        <th class="text-center">Points</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr v-for="p in user_fdr_values">
-                                        <td class="text-center">{{ p.gw }}</td>
-                                        <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
-                                        <td class="text-center">{{ p.position }}</td>
-                                        <td class="text-center">{{ p.self_team.short }}</td>
-                                        <td class="text-center">{{ p.opp_team.short }}</td>
-                                        <td class="text-center">{{ rounded(p.player_fdr_ratio*100,1) }}%</td>
-                                        <td class="text-center">{{ p.total }}</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                        <th class="text-center"></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="row col-8 col-lg-6 justify-content-center mb-3" id="csv_buttons5">
-                        </div>
-                        
-                    </div>
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-6">
-                            <span class="d-block border-below-orange">Distribution of Selection per FDR Tier</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" style="width: 100%">
-                                <tr>
-                                    <th>Tier</th>
-                                    <th class="text-center">GK</th>
-                                    <th class="text-center">DF</th>
-                                    <th class="text-center">MD</th>
-                                    <th class="text-center">FW</th>
-                                    <th class="text-center">Total</th>
-                                </tr>
-                                <tr v-for="(g,i) in user_fdr_tiers.groups">
-                                    <th scope="row">{{ (g-.25)*100 }}-{{ g*100 }}%</th>
-                                    <td class="text-center" v-for="p in [1,2,3,4]">{{ user_fdr_tiers.tiers[p][i] }}</td>
-                                    <td class="text-center">{{ getSum([1,2,3,4].map(j => user_fdr_tiers.tiers[j][i])) }}</td>
-                                </tr>
-                                <!-- <tr>
-                                    <td v-for="team in team_fdr_values" :style="{backgroundColor: team.defense_color}">
-                                        {{ rounded(team.defense_ratio*100,0) }}%
-                                    </td>
-                                </tr> -->
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
 
     <div class="row" id="graph-section-wrapper">
@@ -1787,7 +1671,7 @@
 </main>
 
 <script>
-    let ts = 20230927101239;
+    let ts = 20230927141553;
     let off_season = false;
 </script>
 
@@ -1857,11 +1741,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20230927101239"></script>
+<script src="/static/js/main.js?ts=20230927141553"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20230927101239"></script>
+<script src="/static/js/sampling_utils.js?ts=20230927141553"></script>
 
-<script src="/static/js/highlights.js?ts=20230927101239"></script>
+<script src="/static/js/highlights.js?ts=20230927141553"></script>
 
 
 <script>
