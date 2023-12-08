@@ -345,7 +345,8 @@ def sample_fpl_teams(gw=None, seed=None):
 
     # Part 0 - FPL Research Top Managers
     print("Sampling Top 1000 Managers")
-    managers = pd.read_csv(base_folder / 'static/json/top_managers.tsv', sep="\t")
+    # managers = pd.read_csv(base_folder / 'static/json/top_managers.tsv', sep="\t")
+    managers = pd.read_csv(base_folder / 'static/json/top_managers.csv')
     team_ids = managers['Team ID']
 
     manager_info = managers.to_dict(orient='records')
