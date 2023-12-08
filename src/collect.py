@@ -361,7 +361,8 @@ def sample_fpl_teams(gw=None, seed=None):
 
     # Part 1 - 99% Overall sampling
     print("Sampling 666 teams among overall FPL")
-    selected_ids = random.sample(range(1, total_players), 666)
+    max_id = max(total_players, 4000000)
+    selected_ids = random.sample(range(1, max_id), 666)
     # selected_ids = random.sample(range(1, total_players), 2000)
 
     random_squads = get_team_picks(selected_ids, gw)
