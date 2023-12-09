@@ -121,7 +121,10 @@ let pl_team_colors = {
     "WOL": ['#FDB913', '#231F20'],
     "FUL": ['#000000', '#FFFFFF'],
     "BOU": ['#DA291C', '#EFDBB2'],
-    "NFO": ['#E53233', '#FFFFFF']
+    "NFO": ['#E53233', '#FFFFFF'],
+    "LUT": ['#F78F1E', '#002D62'],
+    "SHU": ['#EE2737', '#000000']
+
 }
 
 let element_type = {
