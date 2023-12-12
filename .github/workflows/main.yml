@@ -5,7 +5,7 @@ on:
   push:
     branches: engine
   schedule:
-    - cron: '0 4,10,16,22 * * *'
+    - cron: "0 4,10,16,22 * * *"
 
 jobs:
   build-and-run:
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout webpage branch
         uses: actions/checkout@v2
         with:
-          ref: 'webpage'
+          ref: "webpage"
           path: ./build
       - name: Make sure data folder exists
         run: mkdir -p ./build/data
@@ -30,7 +30,7 @@ jobs:
       - name: Run docker image with optimization
         if: "!contains(github.event.commits[0].message, '[skip opt]')"
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -e FERNET_KEY=$FERNET_KEY -e REVIEW_KEY=$REVIEW_KEY -v $(pwd)/build:/app/build webapp bash -c "python3 -c \"import encrypt; encrypt.decrypt('fplreview.py'); encrypt.decrypt('simulator.py')\" && python3 run.py"
+          docker run -t --rm -e LANG=C.UTF-8 -e FERNET_KEY=$FERNET_KEY -e REVIEW_KEY=$REVIEW_KEY -e PATREON_COOKIE_REVIEW=$PATREON_COOKIE_REVIEW -v $(pwd)/build:/app/build webapp bash -c "python3 -c \"import encrypt; encrypt.decrypt('fplreview.py'); encrypt.decrypt('simulator.py')\" && python3 run.py"
         env:
           FERNET_KEY: ${{ secrets.FERNET_KEY }}
           REVIEW_KEY: ${{ secrets.REVIEW_KEY }}
