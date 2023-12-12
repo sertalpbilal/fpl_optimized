@@ -34,6 +34,7 @@ jobs:
         env:
           FERNET_KEY: ${{ secrets.FERNET_KEY }}
           REVIEW_KEY: ${{ secrets.REVIEW_KEY }}
+          PATREON_COOKIE_REVIEW: ${{ secrets.PATREON_COOKIE_REVIEW }}
       - name: Only populate pages, no optimization
         if: "contains(github.event.commits[0].message, '[skip opt]')"
         run: |
