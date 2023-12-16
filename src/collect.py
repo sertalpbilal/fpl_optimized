@@ -670,7 +670,7 @@ def cache_effective_ownership(season_folder):
             for team in data[key]:
 
                 if team['data'] is None:
-                    print(f"Team has no data {team}, skipping...")
+                    print(f"Team has no data {team['team']['id']}, skipping...")
                     continue
 
                 try:
