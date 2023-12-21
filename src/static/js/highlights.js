@@ -419,16 +419,16 @@ var app = new Vue({
                     })
                 }
                 // 2022-2023 special: World Cup Wildcard
-                else if (gw == 17) {
-                    picks.forEach((p) => {
-                        p.gw = gw
-                        p.origin = 'wildcard'
-                        p.origin_text = 'wcb'
-                        p.origin_gw = gw
-                        p.age = 0
-                        p.age_group = p.age
-                    })
-                }
+                // else if (gw == 17) {
+                //     picks.forEach((p) => {
+                //         p.gw = gw
+                //         p.origin = 'wildcard'
+                //         p.origin_text = 'wcb'
+                //         p.origin_gw = gw
+                //         p.age = 0
+                //         p.age_group = p.age
+                //     })
+                // }
                 else if (data[gw].active_chip == 'wildcard') {
                     picks.forEach((p) => {
                         p.gw = gw
@@ -509,7 +509,7 @@ var app = new Vue({
                     'initial': _.sum(all_players.filter(i => i.origin == 'initial').map(i => i.eff_points)),
                     'wc1': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1).map(i => i.eff_points)),
                     'wc2': _.sum(all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2).map(i => i.eff_points)),
-                    'wcb': _.sum(all_players.filter(i => i.origin == 'wildcard_bonus').map(i => i.eff_points)),
+                    // 'wcb': _.sum(all_players.filter(i => i.origin == 'wildcard_bonus').map(i => i.eff_points)),
                     'fh1': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1).map(i => i.eff_points)),
                     // 'fh2': _.sum(all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2).map(i => i.eff_points)),
                     'transfer': _.sum(all_players.filter(i => i.origin == 'transfer').map(i => i.eff_points))
@@ -518,7 +518,7 @@ var app = new Vue({
                     'initial': all_players.filter(i => i.origin == 'initial'),
                     'wc1': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 1),
                     'wc2': all_players.filter(i => i.origin == 'wildcard' && i.wildcard_cnt == 2),
-                    'wcb': all_players.filter(i => i.origin == 'wildcard_bonus'),
+                    // 'wcb': all_players.filter(i => i.origin == 'wildcard_bonus'),
                     'fh1': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 1),
                     // 'fh2': all_players.filter(i => i.origin == 'freehit' && i.freehit_cnt == 2),
                     'transfer': all_players.filter(i => i.origin == 'transfer')
@@ -530,7 +530,7 @@ var app = new Vue({
                 ['Initial', 'initial'],
                 ['WC 1', 'wc1'],
                 ['WC 2', 'wc2'],
-                ['WC B', 'wcb'],
+                // ['WC B', 'wcb'],
                 ['Transfers', 'transfer'],
                 ['FH', 'fh1'],
                 // ['FH 2', 'fh2']
@@ -4429,7 +4429,7 @@ function draw_point_origin_graph() {
             'wildcard': '#48baff',
             'wc1': '#48baff',
             'wc2': '#48baff',
-            'wcb': '#48baff',
+            // 'wcb': '#48baff',
             'transfer': '#93dea6',
             'freehit': '#ffdc31',
             'fh1': '#ffdc31',
