@@ -1425,6 +1425,9 @@ async function load_sample_data() {
                         if (data[1].status != 'rejected') {
                             sample_data['Prime'] = data[1].value
                         }
+                        if (data[2].status != 'rejected') {
+                            sample_data['Plank'] = data[2].value
+                        }
                         app.last_gw_data_marker = true
                         app.saveSampleData(true, sample_data);
                     }
@@ -1435,6 +1438,9 @@ async function load_sample_data() {
                 let sample_data = data[0].value
                 if (data[1].status != 'rejected') {
                     sample_data['Prime'] = data[1].value
+                }
+                if (data[2].status != 'rejected') {
+                    sample_data['Plank'] = data[2].value
                 }
                 app.last_gw_data_marker = false
                 app.saveSampleData(true, sample_data);

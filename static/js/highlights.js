@@ -3581,7 +3581,16 @@ function draw_predicted_realized_diff() {
         .attr("y", -7)
         .attr("font-size", "5pt")
         .attr("fill", "white")
-        .text("Difference to Tier Average");
+        .text(`Difference to Tier Average (${app.sample_options[app.sample_selection]})`);
+
+    titles.append("foreignObject")
+        .attr("width", 120)
+        .attr("height", 50)
+        .attr("x", 410)
+        .attr("y", -15)
+        .append("xhtml:div")
+        .style("font-size", "6px")
+        .html(`<img src="static/images/logo_128.png" width="12"><span style="margin-left: 2px;">FPL Optimized</span>`);
 
     // titles.append('text')
     //     .attr("text-anchor", "end")
@@ -4671,7 +4680,6 @@ async function get_points() {
     return read_cached_rp(app.season).then((data) => {
         app.points_data = Object.freeze(data);
     }).catch((e) => {
-        debugger
         console.log(e)
         return getSeasonRPData(parseInt(gw)).then((data) => {
             app.points_data = Object.freeze(data);
@@ -4700,6 +4708,8 @@ async function get_eo() {
         async: true,
         dataType: "json",
         success: (data) => {
+            // app.eo_data = Object.freeze(data);
+            data = _.mapValues(data, v => _.pickBy(v, (v2,key) => ['Overall', 'Prime', 'Plank'].includes(key)));
             app.eo_data = Object.freeze(data);
             let target_key = Math.max(...Object.keys(data).map(i => parseInt(i)));
             app.sample_options = Object.keys(data[target_key])

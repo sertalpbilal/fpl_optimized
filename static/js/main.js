@@ -319,7 +319,23 @@ function get_sample_data(season, target_gw) {
         });
     });
 
-    let promises = [regular_sample, prime_sample]
+    let plank_sample = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: `sample/${season}/${target_gw}/plank_managers.json`,
+            dataType: "json",
+            async: true,
+            success: function(data) {
+                resolve(data);
+            },
+            error: function() {
+                console.log("GW" + target_gw + " has no sample data");
+                reject("No data");
+            }
+        });
+    });
+
+    let promises = [regular_sample, prime_sample, plank_sample]
 
     return Promise.allSettled(promises)
 }
