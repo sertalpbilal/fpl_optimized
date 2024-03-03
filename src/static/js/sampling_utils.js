@@ -16,6 +16,8 @@ function sample_compact_number(value) {
             return "Top 1M";
         case "Prime":
             return "Prime";
+        case "Plank":
+            return "Plank";
         default:
             let new_value = compactFormatter.format(value);
             return new_value !== "NaN" ? ("Top " + new_value) : value;
@@ -26,6 +28,8 @@ function reverse_sample_name(value) {
     switch (value) {
         case "Sample - Overall":
             return "Overall";
+        case "Sample - Plank":
+            return "Plank"
         case "FPL Data":
             return "Official FPL API"
         case "Sample - Top 100":
@@ -268,6 +272,9 @@ async function get_latest_sample_data(season, gw) {
                         if (data[1].status != 'rejected') {
                             sample_data['Prime'] = data[1].value
                         }
+                        if (data[2].status != 'rejected') {
+                            sample_data['Plank'] = data[2].value
+                        }
                         resolve({gw: parseInt(gw.slice(2))-1, data: sample_data})
                     }
                 })
@@ -276,6 +283,9 @@ async function get_latest_sample_data(season, gw) {
                 let sample_data = data[0].value
                 if (data[1].status != 'rejected') {
                     sample_data['Prime'] = data[1].value
+                }
+                if (data[2].status != 'rejected') {
+                    sample_data['Plank'] = data[2].value
                 }
                 resolve({gw: gw.slice(2), data: sample_data})
             }
