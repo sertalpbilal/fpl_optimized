@@ -4716,7 +4716,7 @@ async function get_eo() {
             // default 10K
             // app.sample_selection = 0 //Object.keys(data[1]).length - 1
             if (app.sample_options.length > 1) {
-                app.sample_selection = app.sample_options.length-1;
+                app.sample_selection = 1; // app.sample_options.length-1;
             }
             else {
                 app.sample_selection = 0;
