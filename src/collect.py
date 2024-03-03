@@ -359,6 +359,15 @@ def sample_fpl_teams(gw=None, seed=None):
 
     time.sleep(1)
 
+    # Part 0.5 - Plank Rank
+
+    print("Sampling top 1000 Plank Rank Managers")
+    plank_managers = pd.read_csv(base_folder / 'static/json/plank_1000.csv').reset_index(drop=False)
+    plank_ids = plank_managers['ID']
+    plank_squads = get_team_picks(plank_ids, gw)
+    with open(input_folder / 'plank_managers.json', 'w') as file:
+        json.dump(plank_squads, file)
+
     # Part 1 - 99% Overall sampling
     print("Sampling 666 teams among overall FPL")
     max_id = max(total_players, 4000000)
@@ -387,6 +396,8 @@ def sample_fpl_teams(gw=None, seed=None):
             print(f"Sampled {len(grabbed_squads)} teams inside top {target}")
             sample_dict[target] = grabbed_squads
             time.sleep(1)
+
+
 
     with open(input_folder / 'fpl_sampled.json', 'w') as file:
         json.dump(sample_dict, file)
