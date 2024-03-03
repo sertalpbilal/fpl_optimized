@@ -698,6 +698,7 @@ def cache_effective_ownership(season_folder):
                     tier_picks[pid]['count'] += 1
                     tier_picks[pid]['multiplier'] += player['multiplier']
                     tier_picks[pid]['eo'] = round(tier_picks[pid]['multiplier'] / len(data[key]) * 100, 2)
+        
         try:
             with open(f['file'].replace("fpl_sampled", "top_managers"), 'r') as file2:
                 prime_data = json.loads(file2.read())
@@ -727,6 +728,38 @@ def cache_effective_ownership(season_folder):
                     prime_picks[pid]['eo'] = round(prime_picks[pid]['multiplier'] / len(prime_data) * 100, 2)
         except Exception as e:
             print(e)
+
+        try:
+            with open(f['file'].replace("fpl_sampled", "plank_managers"), 'r') as file2:
+                plank_data = json.loads(file2.read())
+            plank_picks = picks_dict['Plank'] = {}
+            plank_picks['meta'] = {'count': 0, 'hit_total': 0, 'teams': len(plank_data)}
+
+            # TODO: apply autosub
+
+            for team in plank_data:
+                try:
+                    hits = team['data']['entry_history']['event_transfers_cost']
+                    if hits > 0 and hits <= 60:
+                        plank_picks['meta']['count'] += 1
+                        plank_picks['meta']['hit_total'] += hits
+                except Exception as e:
+                    print(e)
+                    pass
+                try:
+                    team['data']['picks']
+                except:
+                    continue
+                for player in team['data']['picks']:
+                    pid = player['element']
+                    plank_picks[pid] = plank_picks.get(pid, {'count': 0, 'multiplier': 0, 'eo': 0})
+                    plank_picks[pid]['count'] += 1
+                    plank_picks[pid]['multiplier'] += player['multiplier']
+                    plank_picks[pid]['eo'] = round(plank_picks[pid]['multiplier'] / len(plank_data) * 100, 2)
+        except Exception as e:
+            print(e)
+
+
         season_eo[f['gw']] = picks_dict
     with open(season_folder / 'eo.json', 'w') as file:
         json.dump(season_eo, file)
