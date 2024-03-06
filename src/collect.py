@@ -318,6 +318,12 @@ def get_team_picks(team_ids, gw, info=None):
     return all_data
 
 
+def sample_all_season():
+    next_gw = get_gw()
+    for gw in range(1,next_gw):
+        print(f"Sampling GW {gw}")
+        sample_fpl_teams(gw)
+
 
 def sample_fpl_teams(gw=None, seed=None):
 
@@ -409,7 +415,6 @@ def get_team_picks_from_rank(ranks, gw):
     
     async def fetch_team_ids(ranks):
         
-
         async with aiohttp.ClientSession() as session:
             team_ids = await get_ids(session, ranks)
             team_ids = [i for i in team_ids if i is not None]

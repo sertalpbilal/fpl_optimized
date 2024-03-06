@@ -28,7 +28,12 @@ jobs:
         run: docker pull sertalpbilal/selenium_docker:latest
       - name: Run docker image
         run: |
-          docker run -t --rm -e LANG=C.UTF-8 -e GW=${{ github.event.inputs.GW }} -v $(pwd):/app sertalpbilal/selenium_docker bash -c "cd /app/scripts && python3 -m pip install -r requirements.txt && chmod +x *.sh && ./sample.sh"
+          if [ ${{ github.event.inputs.GW }} == 'season' ]; then
+            docker run -t --rm -e LANG=C.UTF-8 -v $(pwd):/app sertalpbilal/selenium_docker bash -c "cd /app/scripts && python3 -m pip install -r requirements.txt && cd /app/src && python3 -c \"import collect; collect.sample_all_season()\" "
+          else
+            docker run -t --rm -e LANG=C.UTF-8 -e GW=${{ github.event.inputs.GW }} -v $(pwd):/app sertalpbilal/selenium_docker bash -c "cd /app/scripts && python3 -m pip install -r requirements.txt && chmod +x *.sh && ./sample.sh"
+          fi
+        shell: bash
       - name: Add changes to the branch
         run: |
           cd src/build
