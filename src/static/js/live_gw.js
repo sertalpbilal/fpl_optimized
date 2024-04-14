@@ -581,6 +581,8 @@ var app = new Vue({
                     n.rp_net = rp * (multiplier - ownership / 100);
                     n.rp_original = n.rp_data.rp_original || n.rp_data.rp
 
+                    n.luck = n.rp_net - n.xp_net
+
                     n.element_type = parseInt(n.el_data.element_type);
                     n.team = team_codes[parseInt(n.el_data.team_code)];
                     n.now_cost_str = (parseFloat(n.el_data.now_cost) / 10).toFixed(1);

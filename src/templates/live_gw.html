@@ -759,6 +759,10 @@
                                 </div>
                             </div>
                         </div>
+
+
+
+
                     </div>
                     
                     <div class="table-responsive" style="max-height: 500px;">
@@ -773,6 +777,7 @@
                                     <th class="text-center sortable-th" @click="sortData" data-tag="xp_net">Exp. Gain/Loss</th>
                                     <th class="text-center sortable-th" @click="sortData" data-tag="rp_total">rP</th>
                                     <th class="text-center sortable-th" @click="sortData" data-tag="rp_net">Real. Gain/Loss</th>
+                                    <th class="text-center sortable-th" @click="sortData" data-tag="luck">Luck</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -785,6 +790,7 @@
                                     <td class="text-center">{{ getWithSign(e.xp_net) }}</td>
                                     <td class="text-center">{{ (e.rp_total).toFixed(0) }}</td>
                                     <td class="text-center">{{ getWithSign(e.rp_net) }}</td>
+                                    <td class="text-center">{{ getWithSign(e.luck) }}</td>
                                 </tr>
                             </tbody>
                         </table>
