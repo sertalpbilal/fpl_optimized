@@ -906,6 +906,15 @@ var app = new Vue({
                     data[k] = data[k].filter(i => i.data != null)
                 })
 
+                // fix for autosub
+                autosubs = Object.values(data).flat().map(i => i.data.automatic_subs).flat()
+                if (autosubs.length > 0) {
+                    app.is_using_autosub = false;
+                }
+                else {
+                    app.is_using_autosub = true;
+                }
+
                 this.sample_data = Object.freeze(data);
                 let sample_values = Object.keys(data).reverse().map(i => "Sample - " + sample_compact_number(i));
                 this.available_sources = ["Official FPL API"].concat(sample_values);
@@ -1353,8 +1362,6 @@ var app = new Vue({
 })
 
 async function load_team_data(graph_refresh = false) {
-
-    debugger
 
     if (app.team_id == -1 || app.team_id == -2) { return; }
 
