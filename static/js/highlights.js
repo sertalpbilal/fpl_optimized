@@ -987,6 +987,7 @@ var app = new Vue({
             let fixture = Object.fromEntries(this.fixture_data.map(i => [i.id, i]))
             let picks = this.user_picks_detailed.filter(i => i.identifier == 'minutes' && i.multiplier > 0)
             let fdr_values = this.team_fdr_values
+            if (_.isEmpty(fdr_values)) { return []}
             let fpl_data = this.fpl_element
             let total_points_dict = Object.fromEntries(this.user_grouped_by_fixture)
 
