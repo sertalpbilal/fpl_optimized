@@ -154,6 +154,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row justify-content-center mb-1 mt-1" v-if="ready" v-cloak>
+                        <button class="btn btn-warning mr-2" onclick="download_excel()">Download Tables as Excel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1671,10 +1674,13 @@
 </main>
 
 <script>
-    let ts = 20240625150258;
+    let ts = 20240625213023;
     let off_season = false;
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<!-- use version 0.20.2 -->
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
  </div>
 
@@ -1741,11 +1747,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20240625150258"></script>
+<script src="/static/js/main.js?ts=20240625213023"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20240625150258"></script>
+<script src="/static/js/sampling_utils.js?ts=20240625213023"></script>
 
-<script src="/static/js/highlights.js?ts=20240625150258"></script>
+<script src="/static/js/highlights.js?ts=20240625213023"></script>
 
 
 <script>
