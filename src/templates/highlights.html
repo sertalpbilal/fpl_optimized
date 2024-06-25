@@ -31,6 +31,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row justify-content-center mb-1 mt-1" v-if="ready" v-cloak>
+                        <button class="btn btn-warning mr-2" onclick="download_excel()">Download Tables as Excel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1552,5 +1555,8 @@
     let off_season = ** off_season | lower **;
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<!-- use version 0.20.2 -->
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
 "% with scripts=["main", "sampling_utils", "highlights"] %" "% include 'footer.html' %" "% endwith %"

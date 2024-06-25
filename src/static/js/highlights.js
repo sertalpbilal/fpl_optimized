@@ -1866,6 +1866,143 @@ function export_all_data() {
     downloadToFile(JSON.stringify(obj, undefined, 2), 'myFPLdata_extended.json', 'application/json')
 }
 
+function download_excel() {
+    
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+
+    // sheet 0: team info
+    let tinfo_raw = _.cloneDeep(app.team_info)
+    delete tinfo_raw['kit']
+    let tinfo = Object.entries(tinfo_raw).map(i => {return {'key': i[0], 'value': i[1]}})
+    // xlsx.utils.json_to_sheet
+    let s0 = XLSX.utils.json_to_sheet(tinfo)
+    XLSX.utils.book_append_sheet(wb, s0, "Team Info")
+
+    // sheet 1: gw rank pts chip picks
+    let td = _.cloneDeep(app.team_data)
+    let ent = Object.entries(td).map(i => { return {'gw': i[0], ...i[1]}})
+    ent.forEach((e) => {
+        for (key of Object.keys(e.entry_history)) {
+            e[key] = e.entry_history[key]
+        }
+        delete e['entry_history']
+        e['pick_ids'] = e['picks'].map(i => i.element).join(',')
+        e['pick_names'] = e['picks'].map(i => app.fpl_element[i.element].web_name).join(',')
+        delete e.picks
+    })
+    let s1 = XLSX.utils.json_to_sheet(ent)
+    XLSX.utils.book_append_sheet(wb, s1, "GW Info")
+
+    // sheet 2: team of the year
+    let toty = _.cloneDeep(app.toty_final)
+    for (let t of toty) {
+        for (let k of Object.keys(t.player)) {
+            t[k] = t.player[k]
+        }
+        delete t.player
+    }
+    let s2 = XLSX.utils.json_to_sheet(toty)
+    XLSX.utils.book_append_sheet(wb, s2, "Team of the Year")
+
+    // sheet 3: player picks
+    let td3 = _.cloneDeep(app.team_data)
+    let ent3 = Object.entries(td3).map(i => { return {'gw': i[0], ...i[1]}}) 
+    let p_picks = []
+    for (let entry of ent3) {
+        for (let pick of entry.picks) {
+            delete pick['age']
+            delete pick['age_group']
+            delete pick['origin']
+            delete pick['origin_text']
+            pick['name'] = app.fpl_element[pick['element']].web_name
+            p_picks.push(pick)
+        }
+    }
+    let s3 = XLSX.utils.json_to_sheet(p_picks)
+    XLSX.utils.book_append_sheet(wb, s3, "GW Picks")
+
+
+    // sheet 4: total realized gain/loss
+    let d4 = _.cloneDeep(app.user_ownership_gain_loss.combined_per_player)
+    d4 = d4.map(i => { return {'name': app.fpl_element[i.id].web_name, ...i}})
+    let s4 = XLSX.utils.json_to_sheet(d4)
+    XLSX.utils.book_append_sheet(wb, s4, "Player Gain - Loss")
+
+    // sheet 5: total predicted gain/loss
+    // let d5 = _.cloneDeep(app.user_ownership_gain_loss.combined_per_player_exp)
+    // d5 = d5.map(i => { return {'name': app.fpl_element[i.id].web_name, ...i}})
+    // let s5 = XLSX.utils.json_to_sheet(d5)
+    // XLSX.utils.book_append_sheet(wb, s5, "Expected Gain - Loss")
+
+    // sheet 6: total luck
+
+    // sheet 7: team picks over season? + info cols
+    
+    
+    // sheet 8: points by acquisition type (in/wc/tr/fh)
+    // sheet 9: total counts key events per GW
+    // sheet 10: point distribution per event type
+    // sheet 11: detailed points returns per event/gw
+    // sheet 12: target event ratios
+    // sheet 13: timings of ownership?
+    // sheet 14: gain analysis
+    // sheet 15: loss analysis
+    // sheet 16: predicted realized performance
+    // sheet 17: transfer quality
+    // sheet 18: formation
+
+    // // Create data for the first sheet
+    // const ws1Data = [
+    //     ["Name", "Age", "Email"],
+    //     ["John Doe", 30, "john@example.com"],
+    //     ["Jane Smith", 25, "jane@example.com"]
+    // ];
+    // // Create a worksheet from the data
+    // const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
+    // // Append the worksheet to the workbook
+    // XLSX.utils.book_append_sheet(wb, ws1, "Sheet1");
+
+    // // Create data for the second sheet
+    // const ws2Data = [
+    //     ["Product", "Price", "Quantity"],
+    //     ["Apple", 1.0, 10],
+    //     ["Banana", 0.5, 20]
+    // ];
+    // // Create a worksheet from the data
+    // const ws2 = XLSX.utils.aoa_to_sheet(ws2Data);
+    // // Append the worksheet to the workbook
+    // XLSX.utils.book_append_sheet(wb, ws2, "Sheet2");
+
+    // // Write the workbook to a file and trigger a download
+    // // XLSX.writeFile(wb, "MultiSheetExample.xlsx");
+    // // XLSX.writeFile(wb, "Presidents.xlsx", { compression: true });
+
+    // Write the workbook to a binary string
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+    // Convert the binary string to a Blob
+    function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }
+        return buf;
+    }
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+
+    // Create a link element
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'FPL_Optimized_Season_Highlights.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 function draw_player_bar_chart(div_id, id) {
 
     if (!app.is_ready) { return }
