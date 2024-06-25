@@ -23,6 +23,11 @@ let season_results = [
 
 var app = new Vue({
     el: '#app',
+    errorCaptured: function(err) {
+        debugger
+        console.log('Caught error', err.message);
+        return false;
+    },
     data: {
         season: season,
         team_id: '',
@@ -620,7 +625,7 @@ var app = new Vue({
             return gw_data
         },
         user_stats_per_gw() {
-            if (!this.is_ready) { return [] }
+            if (!this.is_ready) { return {} }
             let stats = this.stats_per_gw
             let stat_dict = Object.fromEntries(stats.map(i => [[i.key, i.gw, i.id].join("_"), i]))
                 // let picks = this.team_data.map(i => i.picks)
@@ -944,6 +949,7 @@ var app = new Vue({
             return chart_entries
         },
         team_fdr_values() {
+            if (_.isEmpty(this.fdr_data)) { return []}
             let fivethirtyeight_data = this.fdr_data
             let teams = _.cloneDeep(teams_ordered)
             teams.forEach((team, order) => {
@@ -1766,7 +1772,10 @@ var app = new Vue({
 
                 
             })
-        }
+        },
+        breakpoint() {
+            debugger
+        },
     }
 })
 
@@ -3076,6 +3085,8 @@ function draw_tree_map() {
     let d1 = app.user_player_sum
     let player_data = d1.filter(i => i['points_total'] > 0)
 
+    if (_.isEmpty(player_data)) { return }
+
     let gain = app.user_ownership_gain_loss.gains
     let player_gains = Object.fromEntries(_(gain).groupBy('id').map((i,v) => [v, getSum(i.map(j => j.net))]).value())
     player_data.forEach((e) => {
@@ -3121,7 +3132,13 @@ function draw_tree_map() {
 
     refresh_point_dist = () => {
 
-        let gain_switch = document.getElementById("actual_gain_switch").checked || false
+        let gain_switch = false
+        try {
+            gain_switch = document.getElementById("actual_gain_switch")?.checked || false
+        }
+        catch {
+            gain_switch = false
+        }
 
         let sorted_data = undefined;
         let text_func, pos_text;
@@ -3223,6 +3240,7 @@ function draw_tree_map_loss() {
     height = raw_height - margin.top - margin.bottom;
 
     let player_data = app.user_ownership_gain_loss.combined_per_player
+    if (player_data == undefined) { return }
     player_data = player_data.filter(i => i.loss > 1 || i.gain < 0)
     player_data = _.cloneDeep(player_data)
     let el_dict = app.fpl_element
@@ -4815,6 +4833,6 @@ $(document).ready(() => {
             })
         })
         .catch((error) => {
-            console.error("An error has occured: " + error);
+            console.error("An error has occured: " + JSON.stringify(error));
         });
 })
