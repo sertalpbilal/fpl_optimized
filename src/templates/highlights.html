@@ -516,7 +516,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr v-for="(value, key) in user_stats_per_gw.type_grouped" class="owned-row">
+                                    <tr v-for="(value, key) in (user_stats_per_gw?.type_grouped || [])" class="owned-row">
                                         <td class="text-center">{{ player_stat_types[key].name }}</td>
                                         <td class="text-center">{{ player_stat_types[key].pp ? value.length : "-" }}</td>
                                         <td class="text-center">{{ getSum(value.map(i => parseInt(i.value))) }}</td>
@@ -532,18 +532,18 @@
                                     </tr>
                                     <tr class="bench-row">
                                         <td class="text-center"><b>Hits</b></td>
-                                        <td class="text-center">{{ user_stats_per_gw.points.filter(i => i.hit_pts > 0).length }}</td>
-                                        <td class="text-center">{{ getSum(user_stats_per_gw.points.map(i => i.hit_pts))/4 }}</td>
+                                        <td class="text-center">{{ user_stats_per_gw.points?.filter(i => i.hit_pts > 0)?.length || '' }}</td>
+                                        <td class="text-center">{{ (getSum(user_stats_per_gw?.points?.map(i => i.hit_pts) || [0]))/4 }}</td>
                                         <td></td>
-                                        <td class="text-center">{{ -getSum(user_stats_per_gw.points.map(i => i.hit_pts)) }}</td>
-                                        <td class="text-center">{{ rounded(-getSum(user_stats_per_gw.points.map(i => i.hit_pts)) / user_stats_per_gw.overall_total * 100, 1)  }}%</td>
+                                        <td class="text-center">{{ -getSum(user_stats_per_gw?.points?.map(i => i.hit_pts) || [0]) }}</td>
+                                        <td class="text-center">{{ rounded(-getSum((user_stats_per_gw?.points?.map(i => i.hit_pts)) || [0]) / (user_stats_per_gw?.overall_total || 1) * 100, 1)  }}%</td>
                                     </tr>
                                     <tr class="nonowned-row">
                                         <td class="text-center"><b>Total</b></td>
                                         <td class="text-center"></td>
                                         <td class="text-center"></td>
                                         <td class="text-center"></td>
-                                        <td class="text-center">{{ user_stats_per_gw.overall_total }}</td>
+                                        <td class="text-center">{{ user_stats_per_gw?.overall_total || 0 }}</td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -1085,7 +1085,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data" 
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])" 
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.xp) }}</td>
@@ -1125,7 +1125,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data"
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.total_xp) }}</td>
@@ -1171,7 +1171,7 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in user_gw_results.data"
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{ Math.abs(v.skill_ratio) }}%</td>
@@ -1296,7 +1296,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="entry in Object.values(transfer_analysis.gws).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
+                                        <tr v-for="entry in Object.values(transfer_analysis?.gws || []).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
                                             <td class="text-center">{{ entry.gw }}</td>
                                             <td class="text-center">{{ entry.gw_list }}</td>
                                             <td class="text-center">{{ fpl_element[entry.sold].web_name }}</td>

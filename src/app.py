@@ -62,7 +62,10 @@ def home_page():
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
-    target = all_dates[0].split('/')
+    try:
+        target = all_dates[0].split('/')
+    except:
+        return render_template('index.html', repo_name="", ts = timestamp, page_name="", season='', gw='', date='', list_dates=[], last_update=current_time, no_ev=True)
     list_dates = ([i.split('/')[2:] for i in all_dates])
     list_dates = [' / '.join(i) for i in list_dates]
     if app.config['DEBUG']:
@@ -363,6 +366,8 @@ def highlights():
 
     # with open('static/json/fpl_analytics.json') as f:
     #     league_list = f.read()
+    if target is None:
+        return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Season Highlights", season=global_season, gw=39, off_season=True)
 
     gw = target[1].split('GW')[1]
     gw = '39' if off_season else gw
@@ -525,6 +530,7 @@ def list_one_per_gw(season_filter='*'):
         target = filtered_dates[0]
         next_gw = target[1]
     except:
+        target = None
         active_gw = -1
         next_gw = 1
     
