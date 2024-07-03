@@ -1735,7 +1735,7 @@ var app = new Vue({
             })
             calls.push(init_call)
 
-            for (gw = 1; gw < this.max_gw; gw++) {
+            for (gw = 1; gw <= this.max_gw; gw++) {
                 console.log('Fetching GW', gw);
                 let current_gw = gw;
                 let call = get_team_picks({
@@ -1911,10 +1911,6 @@ function download_excel() {
     let p_picks = []
     for (let entry of ent3) {
         for (let pick of entry.picks) {
-            delete pick['age']
-            delete pick['age_group']
-            delete pick['origin']
-            delete pick['origin_text']
             pick['name'] = app.fpl_element[pick['element']].web_name
             p_picks.push(pick)
         }
@@ -1930,27 +1926,124 @@ function download_excel() {
     XLSX.utils.book_append_sheet(wb, s4, "Player Gain - Loss")
 
     // sheet 5: total predicted gain/loss
-    // let d5 = _.cloneDeep(app.user_ownership_gain_loss.combined_per_player_exp)
-    // d5 = d5.map(i => { return {'name': app.fpl_element[i.id].web_name, ...i}})
-    // let s5 = XLSX.utils.json_to_sheet(d5)
-    // XLSX.utils.book_append_sheet(wb, s5, "Expected Gain - Loss")
-
+    // already included
     // sheet 6: total luck
-
+    // skip
     // sheet 7: team picks over season? + info cols
-    
+    // skip
     
     // sheet 8: points by acquisition type (in/wc/tr/fh)
+    let acq_values = []
+    let gw_list = _.uniq(p_picks.map(i => i.gw))
+    let origin_types = _.uniq(p_picks.map(i => i.origin))
+    for (let gw of gw_list) {
+        let gw_picks = p_picks.filter(i => i.gw == gw)
+        for (let origin of origin_types) {
+            let gw_origin = gw_picks.filter(i => i.origin == origin)
+            acq_values.push({
+                'gw': gw,
+                'origin': origin,
+                'pts': _.sum(gw_origin.map(i => i.eff_points)),
+                'lineup': gw_origin.filter(i => i.multiplier > 0).length,
+                'squad': gw_origin.length,
+            })
+        }
+    }
+    let s8 = XLSX.utils.json_to_sheet(acq_values)
+    XLSX.utils.book_append_sheet(wb, s8, "Point Origins by GW")
+
+
     // sheet 9: total counts key events per GW
+    let cnt_data = _.cloneDeep(app.user_stats_per_gw.points)
+    for (let c of cnt_data) {
+        let keys = Object.keys(c.info.type_names)
+        for (let key of keys) {
+            c[key + '_count'] = c.info.type_sums[key]
+        }
+        for (let key of keys) {
+            c[key + '_text'] = c.info.type_names[key]
+        }
+        delete c.info
+    }
+    let s9 = XLSX.utils.json_to_sheet(cnt_data)
+    XLSX.utils.book_append_sheet(wb, s9, "Event Counts per GW")
+
+
     // sheet 10: point distribution per event type
+    let event_pts = _.cloneDeep(app.user_stats_per_gw?.type_grouped)
+    let ep_list = _.map(event_pts, (value, key) => { return {'type': key, 'values': value}})
+    let ep_final = []
+    for (let ep of ep_list) {
+        let user_stats_per_gw = app.user_stats_per_gw
+
+        let key = ep.type
+        let value = ep.values
+
+        let count = player_stat_types[ep.type]?.pp ? ep.values.length : '-'
+        let total = getSum(value.map(i => parseInt(i.value)))
+        let per_player = player_stat_types[key].pp ? rounded(getSum(value.map(i => parseInt(i.value))) / user_stats_per_gw.total_picks,2) : "-"
+        let points = getSum(value.map( i=> parseInt(i.points * i.multiplier)))
+        let percentage = rounded(getSum(value.map( i=> parseInt(i.points * i.multiplier))) / user_stats_per_gw.overall_total * 100, 1)
+
+        ep_final.push({
+            'type': ep.type,
+            'count': count,
+            'total': total,
+            'per_player': per_player,
+            'points': points,
+            'percentage': percentage
+        })
+    }
+    let s10 = XLSX.utils.json_to_sheet(ep_final)
+    XLSX.utils.book_append_sheet(wb, s10, "Event Points Total")
+
     // sheet 11: detailed points returns per event/gw
+    
+    let d11 = _(detailed_point_cache).groupBy(1).map((value,key) => { return {'type': key, ...(_.fromPairs(value.map(j => [j[0] == 'Total' ? j[0] : 'GW'+j[0], j[2]] )))}}).value()
+    let s11 = XLSX.utils.json_to_sheet(d11)
+    XLSX.utils.book_append_sheet(wb, s11, "Event Points per GW")
+
+
     // sheet 12: target event ratios
+    let d12 = _.map(_.cloneDeep(app.user_picks_custom_stats), (value,key) => { return {'target': key, 'count': value.count, 'picks': value.total, 'success_ratio': _.round(100 * value.count/value.total,2), 'info': value.info}})
+    let s12 = XLSX.utils.json_to_sheet(d12)
+    XLSX.utils.book_append_sheet(wb, s12, "Target Event Ratios")
+
     // sheet 13: timings of ownership?
+    // skip: not sure
+
     // sheet 14: gain analysis
+    let d14 = _.cloneDeep(app.user_ownership_gain_loss.gains).map(i => { return {'name': app.fpl_element[i.id].web_name, ...i}})
+    let s14 = XLSX.utils.json_to_sheet(d14)
+    XLSX.utils.book_append_sheet(wb, s14, "Gain Analysis")
     // sheet 15: loss analysis
+    let d15 = _.cloneDeep(app.user_ownership_gain_loss.losses).map(i => { return {'name': app.fpl_element[i.id].web_name, ...i}})
+    let s15 = XLSX.utils.json_to_sheet(d15)
+    XLSX.utils.book_append_sheet(wb, s15, "Loss Analysis")
+
     // sheet 16: predicted realized performance
+    let d16 = Object.values(app.user_gw_results?.data)
+    let s16 = XLSX.utils.json_to_sheet(d16)
+    XLSX.utils.book_append_sheet(wb, s16, "Exp vs Real Performance")
+
     // sheet 17: transfer quality
+    let d17 = _.cloneDeep(Object.values(app.transfer_analysis.gws).flat())
+    for (let d of d17) {
+        d['bought_name'] = app.fpl_element[d.bought].web_name
+        d['sold_name'] = app.fpl_element[d.sold].web_name
+        d['best_rp'] = d['best_rp']?.web_name || '-'
+        d['best_xp'] = d['best_xp']?.web_name || '-'
+        delete d['bought_player_plays']
+        delete d['future_plays']
+        delete d['sold_player_plays']
+    }
+    let s17 = XLSX.utils.json_to_sheet(d17)
+    XLSX.utils.book_append_sheet(wb, s17, "Transfer Quality")
+
     // sheet 18: formation
+    let d18 = _.cloneDeep(app.user_formation_analysis_by_gw.sorted)
+    let s18 = XLSX.utils.json_to_sheet(d18)
+    XLSX.utils.book_append_sheet(wb, s18, "Formations")
 
     // // Create data for the first sheet
     // const ws1Data = [
@@ -2617,6 +2710,8 @@ function draw_event_heatmap() {
         let p = d3.scaleLinear().domain([0, -stmin/(stmax-stmin), 1, 100]).range(["#e19797", "#ffffff", "#7FD3D9", "#7FD3D9"])
         return p((d-stmin) / (stmax - stmin))
     }
+
+    detailed_point_cache = _.cloneDeep(data)
 
     svg.selectAll()
         .data(data)
@@ -4948,6 +5043,8 @@ let name_dict = {
 let long_name_str = n => {
     return name_dict[n] || (n.length > 10 ? n.slice(0,8) + '...' : n)
 }
+
+let detailed_point_cache = []
 
 $(document).ready(() => {
     Promise.all([
