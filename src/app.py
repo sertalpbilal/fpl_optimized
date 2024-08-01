@@ -553,6 +553,11 @@ def read_sample(path):
     return send_from_directory('build', 'sample/' + path)
 
 
+@app.route('/signup')
+def show_signup_form():
+    return render_template('signup.html')
+
+
 def get_gw():
     import requests
     r = requests.get("https://fantasy.premierleague.com/api/bootstrap-static/")
