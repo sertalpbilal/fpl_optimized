@@ -553,7 +553,7 @@ def read_sample(path):
     return send_from_directory('build', 'sample/' + path)
 
 
-@app.route('/signup')
+@app.route('/signup.html')
 def show_signup_form():
     return render_template('signup.html')
 
