@@ -870,8 +870,10 @@ def cache_points_main():
 # TODO: fbref?
 
 if __name__ == "__main__":
+    
     input_folder, output_folder, season_folder = create_folders()
     generate_intermediate_layer(input_folder, page='free-planner')
+
     # get_fpl_analytics_league(input_folder)
     # get_all_data()
     # r = get_single_team_data(2221044, 16)
