@@ -1084,8 +1084,8 @@
                             <tbody>
                                 <tr v-for="i in selected_game_info.players.home.concat(selected_game_info.players.away)" v-if="i.xp > 0 || i.rp > 0 || i.ownership > 0">
                                     <td :class="{'owned-player': i.multiplier >0}">{{ i.web_name }}</td>
-                                    <td class="text-center">{{ i.data.team.short }}</td>
-                                    <td class="text-center">{{ element_type[i.data.element_type].short }}</td>
+                                    <td class="text-center">{{ i.data.team?.short }}</td>
+                                    <td class="text-center">{{ element_type[i.data.element_type]?.short }}</td>
                                     <td class="text-center">{{ i.data.now_cost_str }}</td>
                                     <td class="text-center">{{ (i.xp).toFixed(2) }}</td>
                                     <td class="text-center">{{ getWithSign(i.xp_net) }}</td>
@@ -1239,7 +1239,7 @@
                             <tr v-for="i in team_data_with_metadata" :class="{'owned-row': i.multiplier > 0, 'bench-row': i.multiplier==0, 'selected-transfer': target_player && target_player.id == i.id}">
                                 <td :class="{'captain_color': i.is_captain }">{{ i.is_captain ? (i.multiplier == 3 ? "TC" : "C") : (i.multiplier > 0 ? "L" : "B") }}</td>
                                 <td><span v-if="i.autosub" class="mr-1"><i class="fas fa-exclamation-triangle autosub"></i></span>{{ i.name }}</td>
-                                <td>{{element_type[i.element_type].short}}</td>
+                                <td>{{element_type[i.element_type]?.short}}</td>
                                 <td class="text-right">{{ i.now_cost_str }}</td>
                                 <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
                                 <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
@@ -1286,7 +1286,7 @@
                             <tbody>
                                 <tr v-for="i in potential_targets" v-if="!i.is_squad">
                                     <td>{{ i.name }}</td>
-                                    <td>{{element_type[i.element_type].short}}</td>
+                                    <td>{{element_type[i.element_type]?.short}}</td>
                                     <td class="text-right">{{ i.now_cost_str }}</td>
                                     <td class="text-right">{{parseFloat(i.xp).toFixed(1)}}</td>
                                     <td class="text-right">{{ parseInt(i.ownership).toFixed(1) }}%</td>
@@ -1608,7 +1608,7 @@
                         <tr class="addNewRp">
                             <td>
                                 <select class="form-control text-small p-0" v-model="dropdown_select">
-                                    <option v-for="i in sorted_ownership_cache" :value="i.id">{{ i.name }} ({{ i.team.short }})</option>
+                                    <option v-for="i in sorted_ownership_cache" :value="i.id">{{ i.name }} ({{ i.team?.short }})</option>
                                 </select>
                             </td>
                             <td>{{ dropdown_select == '' ? '-' : element_data_combined[dropdown_select] && rounded(element_data_combined[dropdown_select].xp) || 'N/A' }} /

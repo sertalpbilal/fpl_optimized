@@ -1206,7 +1206,7 @@ function read_scenario(order = 0) {
         app.active_sc = order
         app.sc_details = Object.freeze($.csv.toObjects(d))
         let details_file = file.replace("/scenarios.csv", "/scenario_details.json?ts=" + ts)
-        read_local_file(details_file).then(e => {
+        return read_local_file(details_file).then(e => {
             app.sc_game_details = Object.freeze(e)
         }).catch(e => {
             console.log("No details")
