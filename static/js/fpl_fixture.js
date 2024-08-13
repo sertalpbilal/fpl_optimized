@@ -113,7 +113,8 @@ var app = new Vue({
                 }
             }
 
-            let gw_cols = _.range(1,39).map(i => 'GW' + i)
+            // let gw_cols = _.range(1,39).map(i => 'GW' + i)
+            let gw_cols = _.range(1,39).map(i => i + '_Pts')
             let sum_xp = (plist) => {
                 return _.sum(gw_cols.map(
                     gw => _.sum(plist.map(
@@ -122,7 +123,7 @@ var app = new Vue({
                 ))
             }
             let sum_xmin = (plist) => {
-                return _.sum(gw_cols.map(
+                return _.sum(_.range(1,39).map(
                     gw => _.sum(plist.map(
                         p => parseFloat(p?.[gw + '_xMin'] ?? 0)
                     ))
@@ -181,6 +182,7 @@ var app = new Vue({
         // },
         rivals() {
             let fdr = this.fdr_season; // TODO
+            if (_.isEmpty(fdr)) { return {} }
             let fd = this.fixture_data;
             let rivals = {};
             let teams = _.uniq(app.fixture_data.map(i => i.team_h));
