@@ -919,7 +919,7 @@ var app = new Vue({
                 let sample_values = Object.keys(data).reverse().map(i => "Sample - " + sample_compact_number(i));
                 this.available_sources = ["Official FPL API"].concat(sample_values);
                 if (this.ownership_source == this.available_sources[0]) {
-                    this.ownership_source = this.available_sources[1];
+                    this.ownership_source = this.available_sources[2];
                 }
             } else {
                 this.sample_data = [];
