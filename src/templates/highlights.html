@@ -45,6 +45,223 @@
         </tr>
     </table> -->
 
+
+    <div class="row" id="graph-section-wrapper">
+        <div class="col-12 mb-3">
+            <div class="card card-field border-dark bg-squad-card text-white">
+                <h5 class="card-header border-complement text-center scenario_title">Predicted / Realized Performance</h5>
+                <div class="scenario_detail">
+                    Decision making quality compared to actual outcome
+                </div>
+                <div class="card-body" v-if="ready" v-cloak>
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-12">
+                            <div class="text-center">
+                                <span class="svg-legend-text mr-2">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
+                                </span>
+                                <span class="svg-legend-text mr-2">
+                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
+                                </span>
+                            </div>
+
+                            <div id="season-xp-real-diff-plot">
+                                
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-lg-8 mb-3 text-small">
+                            <span class="text-smaller d-block">
+                                In the tables below, it is assumed that the FPLReview predicted values are true expectations.
+                                Therefore, any outcome up to the predictions is measured as "skill" and remaining difference (above or below) is measured as "luck" even though this might not be actually true.
+                                The aim here is to evaluate decision making quality, and see how much unpredicted outcomes have affected your season, either good or bad.
+                            </span>
+                            <span class="text-smaller d-block">
+                                "Diff" refers to point difference between you and the tier average you have selected.
+                                Even if GW ends up with more or less points than predicted, we expect difference to be around the pre-GW prediction.
+                            </span>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-center">
+                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
+                                    <input type="checkbox" class="custom-control-input" id="all_gw_switch" v-model="show_all_season">
+                                    <label class="custom-control-label highlighted-checkbox" for="all_gw_switch">Show All GWs</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="text-center text-small">GW-by-GW values</div>
+                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                                id="gw_history">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">GW Rank</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])" 
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
+                                        <td class="text-center">{{ v.gw }}</td>
+                                        <td class="text-center">{{ rounded(v.xp) }}</td>
+                                        <td class="text-center">{{        (v.rp) }}</td>
+                                        <td class="text-center">{{ rounded(v.exp_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.real_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.luck) }}</td>
+                                        <td class="text-center">{{ team_data[v.gw].entry_history.rank }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr v-if="show_all_season">
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">GW Rank</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="text-center text-small">Total values</div>
+                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                                id="gw_history_total">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">Luck</th>
+                                        <th class="text-center">OR</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
+                                        <td class="text-center">{{ v.gw }}</td>
+                                        <td class="text-center">{{ rounded(v.total_xp) }}</td>
+                                        <td class="text-center">{{        (v.total_rp) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_exp_diff) }}</td>
+                                        <td class="text-center">{{ rounded(v.total_real_diff) }}</td>
+                                        <td class="text-center">
+                                            <span v-if="v.luck > 0"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
+                                            <span v-if="v.luck < 0"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
+                                            {{ rounded(v.total_exp_real_diff) }}
+                                        </td>
+                                        <td class="text-center">
+                                            <span v-if="v.gw > 1 && team_data[v.gw].entry_history.overall_rank < team_data[parseInt(v.gw)-1].entry_history.overall_rank"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
+                                            <span v-else-if="v.gw > 1"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
+                                            {{ team_data[v.gw].entry_history.overall_rank }}
+                                        </td>                                    
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr v-if="show_all_season">
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">Pred. Pts</th>
+                                        <th class="text-center">Real. Pts</th>
+                                        <th class="text-center">Pred. Diff</th>
+                                        <th class="text-center">Real. Diff</th>
+                                        <th class="text-center">Luck</th>
+                                        <th class="text-center">OR</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="text-center text-small">Skill/Luck Magnitude Proportion</div>
+                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                                id="gw_history_skill">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">GW Skill</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">Total Skill</th>
+                                        <th class="text-center">Total Luck</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-cloak>
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
+                                        v-if="show_all_season || (key == user_gw_results.finish)">
+                                        <td class="text-center">{{ v.gw }}</td>
+                                        <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{ Math.abs(v.skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.luck_ratio<0">(-) </span>{{ Math.abs(v.luck_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_skill_ratio<0">(-) </span>{{ Math.abs(v.total_skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_luck_ratio<0">(-) </span>{{ Math.abs(v.total_luck_ratio) }}%</td>
+                                        
+                                </tbody>
+                                <tfoot>
+                                    <tr v-if="show_all_season">
+                                        <th class="text-center">GW</th>
+                                        <th class="text-center">GW Skill</th>
+                                        <th class="text-center">GW Luck</th>
+                                        <th class="text-center">Total Skill</th>
+                                        <th class="text-center">Total Luck</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- <div class="row justify-content-center mb-3">
+                        <div class="col-12 mt-2" v-if="season_targets && sample_selection==6 && final_outcome != undefined">
+                            <div class="col-12">
+                                <span class="d-block border-below-orange">What-if Luck-Meter</span>
+                            </div>
+                            <div class="text-center text-small">
+                                You have finished season with {{ _.round(final_outcome.total_real_diff,1) }} relative points compared  Prime Sample. To get OR #1 you needed {{ season_targets[0][2] }}.<br/>
+                                Move the Luck Slider below to see where you could have ended!<br/>
+                                It shows the magnitude weight of luck (variance) compared to sum of skill (predicted) and luck (variance) and calculates your final difference to tier average.
+                            </div>
+                            <div class="mt-3 mb-1 text-center">
+                                <div class="m-2">
+                                    <input type="range" class="col-12 col-md-6 form-range p-0" min="-99.9" max="99.9" step="0.1" v-model.number="luck_input" >
+                                    <span class="d-block" >{{ _.round(luck_input,1) }}%</span>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-6 row justify-content-center">
+                                    <div class="col text-center">
+                                        <div class="xp-bg text-black">Skill</div><div>{{ _.round(final_outcome.total_exp_diff,1) }}</div>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <div class="">+</div><div>&nbsp;</div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <div class="rp-bg text-black">Luck</div><div>{{ _.round(calculated_luck,1) }}</div>
+                                    </div>
+                                    <div class="col-1 text-center">
+                                        <div class="">=</div><div>&nbsp;</div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <div class="outcome-bg text-black">Total</div><div>{{ _.round(calculated_total,1) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-6 d-flex flex-column">
+                                    <div class="text-center text-small">With this result, you would finish in OR</div>
+                                    <div class="text-center">{{ potential_result }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
@@ -1029,220 +1246,7 @@
         </div>
     </div>
 
-    <div class="row" id="graph-section-wrapper">
-        <div class="col-12 mb-3">
-            <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Predicted / Realized Performance</h5>
-                <div class="scenario_detail">
-                    Decision making quality compared to actual outcome
-                </div>
-                <div class="card-body" v-if="ready" v-cloak>
-                    <div class="row justify-content-center mb-3">
-                        <div class="col-12">
-                            <div class="text-center">
-                                <span class="svg-legend-text mr-2">
-                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
-                                </span>
-                                <span class="svg-legend-text mr-2">
-                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
-                                </span>
-                            </div>
-
-                            <div id="season-xp-real-diff-plot">
-                                
-                            </div>
-
-                        </div>
-                        <div class="col-12 col-lg-8 mb-3 text-small">
-                            <span class="text-smaller d-block">
-                                In the tables below, it is assumed that the FPLReview predicted values are true expectations.
-                                Therefore, any outcome up to the predictions is measured as "skill" and remaining difference (above or below) is measured as "luck" even though this might not be actually true.
-                                The aim here is to evaluate decision making quality, and see how much unpredicted outcomes have affected your season, either good or bad.
-                            </span>
-                            <span class="text-smaller d-block">
-                                "Diff" refers to point difference between you and the tier average you have selected.
-                                Even if GW ends up with more or less points than predicted, we expect difference to be around the pre-GW prediction.
-                            </span>
-                        </div>
-                        <div class="col-12">
-                            <div class="text-center">
-                                <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="all_gw_switch" v-model="show_all_season">
-                                    <label class="custom-control-label highlighted-checkbox" for="all_gw_switch">Show All GWs</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="text-center text-small">GW-by-GW values</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
-                                id="gw_history">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Pred. Pts</th>
-                                        <th class="text-center">Real. Pts</th>
-                                        <th class="text-center">Pred. Diff</th>
-                                        <th class="text-center">Real. Diff</th>
-                                        <th class="text-center">GW Luck</th>
-                                        <th class="text-center">GW Rank</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])" 
-                                        v-if="show_all_season || (key == user_gw_results.finish)">
-                                        <td class="text-center">{{ v.gw }}</td>
-                                        <td class="text-center">{{ rounded(v.xp) }}</td>
-                                        <td class="text-center">{{        (v.rp) }}</td>
-                                        <td class="text-center">{{ rounded(v.exp_diff) }}</td>
-                                        <td class="text-center">{{ rounded(v.real_diff) }}</td>
-                                        <td class="text-center">{{ rounded(v.luck) }}</td>
-                                        <td class="text-center">{{ team_data[v.gw].entry_history.rank }}</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr v-if="show_all_season">
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Pred. Pts</th>
-                                        <th class="text-center">Real. Pts</th>
-                                        <th class="text-center">Pred. Diff</th>
-                                        <th class="text-center">Real. Diff</th>
-                                        <th class="text-center">GW Luck</th>
-                                        <th class="text-center">GW Rank</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="text-center text-small">Total values</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
-                                id="gw_history_total">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Pred. Pts</th>
-                                        <th class="text-center">Real. Pts</th>
-                                        <th class="text-center">Pred. Diff</th>
-                                        <th class="text-center">Real. Diff</th>
-                                        <th class="text-center">Luck</th>
-                                        <th class="text-center">OR</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
-                                        v-if="show_all_season || (key == user_gw_results.finish)">
-                                        <td class="text-center">{{ v.gw }}</td>
-                                        <td class="text-center">{{ rounded(v.total_xp) }}</td>
-                                        <td class="text-center">{{        (v.total_rp) }}</td>
-                                        <td class="text-center">{{ rounded(v.total_exp_diff) }}</td>
-                                        <td class="text-center">{{ rounded(v.total_real_diff) }}</td>
-                                        <td class="text-center">
-                                            <span v-if="v.luck > 0"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
-                                            <span v-if="v.luck < 0"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
-                                            {{ rounded(v.total_exp_real_diff) }}
-                                        </td>
-                                        <td class="text-center">
-                                            <span v-if="v.gw > 1 && team_data[v.gw].entry_history.overall_rank < team_data[parseInt(v.gw)-1].entry_history.overall_rank"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
-                                            <span v-else-if="v.gw > 1"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
-                                            {{ team_data[v.gw].entry_history.overall_rank }}
-                                        </td>                                    
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr v-if="show_all_season">
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">Pred. Pts</th>
-                                        <th class="text-center">Real. Pts</th>
-                                        <th class="text-center">Pred. Diff</th>
-                                        <th class="text-center">Real. Diff</th>
-                                        <th class="text-center">Luck</th>
-                                        <th class="text-center">OR</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="text-center text-small">Skill/Luck Magnitude Proportion</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
-                                id="gw_history_skill">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">GW Skill</th>
-                                        <th class="text-center">GW Luck</th>
-                                        <th class="text-center">Total Skill</th>
-                                        <th class="text-center">Total Luck</th>
-                                    </tr>
-                                </thead>
-                                <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
-                                        v-if="show_all_season || (key == user_gw_results.finish)">
-                                        <td class="text-center">{{ v.gw }}</td>
-                                        <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{ Math.abs(v.skill_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.luck_ratio<0">(-) </span>{{ Math.abs(v.luck_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.total_skill_ratio<0">(-) </span>{{ Math.abs(v.total_skill_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.total_luck_ratio<0">(-) </span>{{ Math.abs(v.total_luck_ratio) }}%</td>
-                                        
-                                </tbody>
-                                <tfoot>
-                                    <tr v-if="show_all_season">
-                                        <th class="text-center">GW</th>
-                                        <th class="text-center">GW Skill</th>
-                                        <th class="text-center">GW Luck</th>
-                                        <th class="text-center">Total Skill</th>
-                                        <th class="text-center">Total Luck</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- <div class="row justify-content-center mb-3">
-                        <div class="col-12 mt-2" v-if="season_targets && sample_selection==6 && final_outcome != undefined">
-                            <div class="col-12">
-                                <span class="d-block border-below-orange">What-if Luck-Meter</span>
-                            </div>
-                            <div class="text-center text-small">
-                                You have finished season with {{ _.round(final_outcome.total_real_diff,1) }} relative points compared  Prime Sample. To get OR #1 you needed {{ season_targets[0][2] }}.<br/>
-                                Move the Luck Slider below to see where you could have ended!<br/>
-                                It shows the magnitude weight of luck (variance) compared to sum of skill (predicted) and luck (variance) and calculates your final difference to tier average.
-                            </div>
-                            <div class="mt-3 mb-1 text-center">
-                                <div class="m-2">
-                                    <input type="range" class="col-12 col-md-6 form-range p-0" min="-99.9" max="99.9" step="0.1" v-model.number="luck_input" >
-                                    <span class="d-block" >{{ _.round(luck_input,1) }}%</span>
-                                </div>
-                            </div>
-                            <div class="row justify-content-center mb-3">
-                                <div class="col-6 row justify-content-center">
-                                    <div class="col text-center">
-                                        <div class="xp-bg text-black">Skill</div><div>{{ _.round(final_outcome.total_exp_diff,1) }}</div>
-                                    </div>
-                                    <div class="col-1 text-center">
-                                        <div class="">+</div><div>&nbsp;</div>
-                                    </div>
-                                    <div class="col text-center">
-                                        <div class="rp-bg text-black">Luck</div><div>{{ _.round(calculated_luck,1) }}</div>
-                                    </div>
-                                    <div class="col-1 text-center">
-                                        <div class="">=</div><div>&nbsp;</div>
-                                    </div>
-                                    <div class="col text-center">
-                                        <div class="outcome-bg text-black">Total</div><div>{{ _.round(calculated_total,1) }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row justify-content-center mb-3">
-                                <div class="col-6 d-flex flex-column">
-                                    <div class="text-center text-small">With this result, you would finish in OR</div>
-                                    <div class="text-center">{{ potential_result }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
