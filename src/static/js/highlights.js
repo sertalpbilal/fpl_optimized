@@ -4960,7 +4960,7 @@ async function get_eo() {
         dataType: "json",
         success: (data) => {
             // app.eo_data = Object.freeze(data);
-            data = _.mapValues(data, v => _.pickBy(v, (v2,key) => ['Overall', 'Prime', 'Plank'].includes(key)));
+            data = _.mapValues(data, v => _.pickBy(v, (v2,key) => ['Overall', 'Prime'].includes(key)));
             app.eo_data = Object.freeze(data);
             let target_key = Math.max(...Object.keys(data).map(i => parseInt(i)));
             app.sample_options = Object.keys(data[target_key])
