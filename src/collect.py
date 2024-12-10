@@ -243,8 +243,8 @@ def get_team_picks(team_ids, gw, info=None):
         urls = [f"https://fantasy.premierleague.com/api/entry/{i}/event/{gw}/picks/" for i in id_list]
         man_url = [f"https://fantasy.premierleague.com/api/entry/{i}/" for i in id_list]
 
-        chunk_size = 20
-        wait_length = 1.2
+        chunk_size = 50
+        wait_length = 0.2
 
         pick_chunks = [urls[i:i+chunk_size] for i in range(len(urls))[::chunk_size]]
         info_chunks = [man_url[i:i+chunk_size] for i in range(len(man_url))[::chunk_size]]
@@ -289,7 +289,9 @@ def get_team_picks(team_ids, gw, info=None):
                 # print(f"{url} done")
                 return await response.json()
             else:
-                print(f"Response {response.status} -- {url}")
+                print(f" > Response {response.status} -- {url}")
+                if response.status == 429:
+                    time.sleep(0.1)
                 return None
 
     def silence_event_loop_closed(func):
@@ -365,14 +367,16 @@ def sample_fpl_teams(gw=None, seed=None):
 
     time.sleep(1)
 
-    # Part 0.5 - Plank Rank
+    # RIP Plank Sample 2024-2024
 
-    print("Sampling top 1000 Plank Rank Managers")
-    plank_managers = pd.read_csv(base_folder / 'static/json/plank_1000.csv').reset_index(drop=False)
-    plank_ids = plank_managers['ID']
-    plank_squads = get_team_picks(plank_ids, gw)
-    with open(input_folder / 'plank_managers.json', 'w') as file:
-        json.dump(plank_squads, file)
+    # # Part 0.5 - Plank Rank
+
+    # print("Sampling top 1000 Plank Rank Managers")
+    # plank_managers = pd.read_csv(base_folder / 'static/json/plank_1000.csv').reset_index(drop=False)
+    # plank_ids = plank_managers['ID']
+    # plank_squads = get_team_picks(plank_ids, gw)
+    # with open(input_folder / 'plank_managers.json', 'w') as file:
+    #     json.dump(plank_squads, file)
 
     # Part 1 - 99% Overall sampling
     print("Sampling 666 teams among overall FPL")
@@ -403,12 +407,42 @@ def sample_fpl_teams(gw=None, seed=None):
             sample_dict[target] = grabbed_squads
             time.sleep(1)
 
+    # Custom Leagues
+    # TODO Needs to be updated every season
 
+    # Target Mini-Leagues
+    target_mini_leagues = {
+        'Analytics Elite 64': 776436,
+        'Elite 64': 228374,
+        'Bullet Wisdom': 7639,
+        'Analytics Elite Qualifier': 1184641
+        }
+    
+    for (key,value) in target_mini_leagues.items():
+        team_ids = get_league_team_ids(value)
+        print("Team IDs", team_ids)
+        league_squads = get_team_picks(team_ids, gw)
+        print("Sampled", len(league_squads), "out of", len(team_ids), "teams in league", key)
+        sample_dict[key] = league_squads
 
     with open(input_folder / 'fpl_sampled.json', 'w') as file:
         json.dump(sample_dict, file)
     
     print('Took', time.time()-t0, 'seconds')
+
+
+def get_league_team_ids(league_id):
+    page = 1
+    team_ids = []
+    while True:
+        response = requests.get(f"https://fantasy.premierleague.com/api/leagues-classic/{league_id}/standings/?page_standings={page}").json()
+        team_ids.extend([i['entry'] for i in response['standings']['results']])
+        if not response['standings']['has_next']:
+            break
+        else:
+            page += 1
+    return team_ids
+
 
 
 def get_team_picks_from_rank(ranks, gw):
@@ -869,8 +903,12 @@ def cache_points_main():
 
 # TODO: fbref?
 
+
 if __name__ == "__main__":
-    
+
+    # sample_fpl_teams(1)
+    # exit(0)
+
     input_folder, output_folder, season_folder = create_folders()
     generate_intermediate_layer(input_folder, page='free-planner')
 
