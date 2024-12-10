@@ -456,8 +456,8 @@ def get_team_picks_from_rank(ranks, gw):
 
     async def get_ids(session, ranks):
 
-        chunk_size = 20
-        wait_length = 1.2
+        chunk_size = 50
+        wait_length = 0.2
 
         URLS = []
         ORDERS = []
@@ -905,6 +905,9 @@ def cache_points_main():
 
 
 if __name__ == "__main__":
+
+    # sample_all_season()
+    # exit(0)
 
     # sample_fpl_teams(1)
     # exit(0)
