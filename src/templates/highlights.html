@@ -54,6 +54,18 @@
                     Decision making quality compared to actual outcome
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
+
+                    <div class="row justify-content-center mb-1">
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label>Sample tier</label>
+                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row justify-content-center mb-3">
                         <div class="col-12">
                             <div class="text-center">
@@ -944,7 +956,7 @@
                                 <label>Sample tier</label>
                                 <div class="input-group">
                                     <select class="custom-select" id="sample_selection" v-model="sample_selection">
-                                        <option v-for="(p, index) in sample_options" :value="index">{{ (p != 'Overall' && p != 'Prime') ? 'Top ' : ''}}{{ p }}</option>
+                                        <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
                                     </select>
                                     <div class="input-group-append">
                                         <button class="btn btn-secondary" type="button" @click="invalidate_cache(); redraw_graphs();">Select</button>
@@ -1152,7 +1164,7 @@
                             <div class="form-group">
                                 <label>Sample tier</label>
                                 <select class="custom-select" id="sample_selection-2" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
-                                    <option v-for="(p, index) in sample_options" :value="index">{{ p != 'Overall' ? 'Top ' : ''}}{{ p }}</option>
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
                                 </select>
                             </div>
                         </div>
