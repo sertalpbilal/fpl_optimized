@@ -48,7 +48,7 @@ function reverse_sample_name(value) {
         case "Prime":
             return "Prime";
         default:
-            return value;
+            return value.includes("Sample - ") ? value.replace("Sample - ", "") : value;
     }
 }
 
