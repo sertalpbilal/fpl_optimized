@@ -125,7 +125,9 @@ let pl_team_colors = {
     "BOU": ['#DA291C', '#EFDBB2'],
     "NFO": ['#E53233', '#FFFFFF'],
     "LUT": ['#F78F1E', '#002D62'],
-    "SHU": ['#EE2737', '#000000']
+    "SHU": ['#EE2737', '#000000'],
+    "IPS": ['#DE2C37', '#3A64A3'],
+    "WBA": ['#122F67', '#FFFFFF'],
 
 }
 
