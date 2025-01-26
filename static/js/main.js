@@ -133,7 +133,8 @@ let element_type = {
     1: { name: "Goalkeeper", "short": "GK", "id": 1, "min": 1, "max": 1, "cnt": 2 },
     2: { name: "Defender", "short": "DF", "id": 2, "min": 3, "max": 5, "cnt": 5 },
     3: { name: "Midfielder", "short": "MD", "id": 3, "min": 2, "max": 5, "cnt": 5 },
-    4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3, "cnt": 3 }
+    4: { name: "Forward", "short": "FW", "id": 4, "min": 1, "max": 3, "cnt": 3 },
+    5: { name: "Managers ", "short": "MNG", "id": 5, "min": 0, "max": 1, "cnt": 1 },
 }
 
 let stat_types = {
