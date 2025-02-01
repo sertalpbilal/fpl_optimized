@@ -614,22 +614,33 @@ var app = new Vue({
             const el_data_combined = this.element_data_combined;
             if (_.isEmpty(el_data_combined)) { return []; }
             let picks = _.cloneDeep(this.team_data.picks);
-            let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 'B': 1 }
+            let pos_ctr = { 1: 1, 2: 1, 3: 1, 4: 1, 5: 0, 'B': 1 }
             picks.forEach((e) => {
                 e.data = el_data_combined[e.element];
                 let el_info = e.data.el_data;
                 Object.assign(e, e.data);
             })
 
+            // If AM is among picks, move bench by 1
+            let has_am = 0
+            if (picks.some(i => i.element_type == 5)) {
+                pos_ctr['B'] += 1
+                has_am = 1
+            }
+
             picks.forEach((player) => {
                 let data = player.data;
                 let cnt = picks.filter(j => j.element_type == data.element_type).filter(j => j.multiplier > 0).length;
-                if (data.multiplier > 0) {
+                if (data.element_type == 5) { // AM
+                    player.x = 122 / (5 + has_am) * 1 - 17;
+                    player.y = 138.5;
+                }
+                else if (data.multiplier > 0) {
                     player.x = 122 / (cnt + 1) * pos_ctr[parseInt(player.element_type)] - 17;
                     player.y = (parseInt(player.element_type) - 1) * 35 + 3;
                     pos_ctr[parseInt(player.element_type)] += 1;
                 } else {
-                    player.x = 122 / 5 * pos_ctr['B'] - 17;
+                    player.x = 122 / (5+has_am) * pos_ctr['B'] - 17;
                     pos_ctr['B'] += 1;
                     player.y = 138.5;
                 }
