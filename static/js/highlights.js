@@ -709,13 +709,19 @@ var app = new Vue({
                     [75, 'Budget'],
                     [100, 'Mid-Price'],
                     [150, 'Premium']
+                ],
+                5: [
+                    [8, 'Budget'],
+                    [11, 'Mid-Price'],
+                    [15, 'Premium']
                 ]
             }
             let grouped_vals = {
                 1: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
                 2: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
                 3: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
-                4: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 }
+                4: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 },
+                5: { 'Budget': 0, 'Mid-Price': 0, 'Premium': 0 }
             }
             values.forEach((v) => {
                 let type = v.eltype
@@ -1167,6 +1173,7 @@ var app = new Vue({
             let xp_sum = (el,weeks) => _.sum(weeks.map(i => xp_val(el,i.gw) * i.mult))
             let rp_sum = (el,weeks) => _.sum(weeks.map(i => rp_val(el,i.gw) * i.mult))
             let find_best_xp = (el_type, cost, weeks, exclude, target_week) => {
+                if (cost == undefined) { return undefined}
                 if (weeks.length == 0) { return undefined}
                 let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[target_week + '_' + i.id]).filter(i => parseFloat(gw_ref[target_week + '_' + i.id].price) <= parseFloat(cost))
                     .filter(i => !exclude.includes(i.id))
@@ -1177,7 +1184,8 @@ var app = new Vue({
                 return best
             }
             let find_best_rp = (el_type, cost, weeks, exclude, target_week) => {
-                if (weeks.length == 0) { return undefined}
+                if (cost == undefined) { return undefined }
+                if (weeks.length == 0) { return undefined }
                 let candidates = el_data.filter(i => i.element_type==el_type).filter(i => gw_ref[target_week + '_' + i.id]).filter(i => parseFloat(gw_ref[target_week + '_' + i.id].price) <= parseFloat(cost))
                     .filter(i => !exclude.includes(i.id))
                 let totals = candidates.map(i => { return {...i, 'rp_total': rp_sum(i.id, weeks)}})
@@ -1244,7 +1252,7 @@ var app = new Vue({
                         xp_ratio = rounded(xp_ratio_raw,1) + '%'
 
                     }
-                    let best_rp = find_best_rp(elements[p.id].element_type, gw_ref[w + '_' + match.id].price, future_plays, last_gw_team, w)
+                    let best_rp = find_best_rp(elements[p.id].element_type, gw_ref[w + '_' + match.id]?.price, future_plays, last_gw_team, w)
                     if (best_rp != undefined) {
                         best_rp.xp_diff = best_rp.xp_total - sold_xp_total
                         best_rp.rp_diff = best_rp.rp_total - sold_rp_total
@@ -1256,8 +1264,8 @@ var app = new Vue({
                         gw_list,
                         future_plays, bought_player_plays, sold_player_plays, 
                         xp_diff, rp_diff,
-                        'sold_price': gw_ref[w + '_' + p.id].price,
-                        'bought_price': gw_ref[w + '_' + match.id].price,
+                        'sold_price': gw_ref[w + '_' + p.id]?.price ?? 0,
+                        'bought_price': gw_ref[w + '_' + match.id]?.price ?? 0,
                         best_xp, best_rp,
                         hs_optimal, fs_optimal,
                         'best_xp_tr': false, 'best_rp_tr': false,
