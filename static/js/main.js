@@ -150,7 +150,14 @@ let stat_types = {
     saves: { name: "Saves", icon: "far fa-hand-paper" },
     red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
     yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" },
-    bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" }
+    bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" },
+    mng_win: {name: 'AM Win', icon: "fas fa-trophy"},
+    mng_draw: {name: 'AM Draw', icon: "fas fa-trophy"},
+    mng_loss: {name: 'AM Loss', icon: "fas fa-trophy"},
+    mng_underdog_win: {name: 'AM Underdog Win', icon: "fas fa-trophy"},
+    mng_underdog_draw: {name: 'AM Underdog Draw', icon: "fas fa-trophy"},
+    mng_clean_sheets: {name: 'AM Clean Sheet', icon: "fas fa-trophy"},
+    mng_goals_scored: {name: 'AM Goals Scored', icon: "fas fa-trophy"},
 }
 
 let player_stat_types = {
