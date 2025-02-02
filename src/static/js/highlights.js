@@ -473,6 +473,14 @@ var app = new Vue({
                             p.age_group = p.age > 10 ? '11+' : p.age
                             p.wildcard_cnt = last_entry.wildcard_cnt
                         }
+                        else if (p.element_type == 5) { // AM
+                            p.gw = gw
+                            p.origin = 'manager'
+                            p.origin_text = 'manager'
+                            p.origin_gw = gw
+                            p.age = 0
+                            p.age_group = p.age
+                        }
                         else {
                             p.gw = gw
                             p.origin = 'transfer'
@@ -2630,9 +2638,9 @@ function draw_event_heatmap() {
     if (!app.is_ready) { return }
 
     const raw_width = 500;
-    const raw_height = 200;
+    const raw_height = 270;
 
-    const margin = { top: 20, right: 10, bottom: 20, left: 60 },
+    const margin = { top: 20, right: 10, bottom: 20, left: 70 },
         width = raw_width - margin.left - margin.right,
         height = raw_height - margin.top - margin.bottom;
 
@@ -2735,6 +2743,7 @@ function draw_event_heatmap() {
             if (d[0] == 'Total' && d[1] == 'Total') { return 'orange'}
             else if (d[0] == 'Total') { return totColor(d[2])}
             else if (d[1] ==  'Total') { return gwColor(d[2])}
+            else if (d[2] == 0) { return 'darkgray' }
             else { return sColor(d[2])}
         })
         .style("stroke-width", 4)
@@ -4277,19 +4286,24 @@ function draw_point_origin_graph() {
             'Initial': 'initial',
             'Wildcard': 'wildcard',
             'Transfers': 'transfer',
-            'Free Hit': 'freehit'
+            'Free Hit': 'freehit',
+            'Assistant Manager': 'manager'
         }
         let cat_keys = Object.keys(categories)
 
         let all_values = []
 
         let box_value = 10
-        let row_count = 4
+        let row_count = 5
         let col_start = 0
+
+        // AM fix
+        
 
         cat_keys.forEach((c) => {
             let t_value = local_data[categories[c]]
             let col_count = Math.ceil(t_value/box_value/row_count)
+            
             entry = {
                 'cat': c,
                 'total_score': t_value,
@@ -4335,7 +4349,7 @@ function draw_point_origin_graph() {
             .data((d,g) => d.col_boxes.map((val, inner_col) => {return {'val': val, 'inner_col': inner_col, 'group': g}}))
             .enter()
 
-        type_cols = ['#d65544', '#48baff', '#93dea6', '#ffdc31']
+        type_cols = ['#d65544', '#48baff', '#93dea6', '#ffdc31', 'purple']
 
         let single_node = box_holders.selectAll()
             .data(d => d.val.map((k,r) => {return {'val': k, 'row': r, 'col': d.inner_col, 'group': d.group}}) )

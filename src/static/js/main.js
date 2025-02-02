@@ -165,7 +165,14 @@ let player_stat_types = {
     "own_goals": {'name': "Own Goals", 'pp': false},
     "yellow_cards": {'name': "Yellow Cards", 'pp': false},
     "red_cards": {'name': "Red Cards", 'pp': false},
-    "penalties_missed": {'name': "Penalties Missed", 'pp': false}
+    "penalties_missed": {'name': "Penalties Missed", 'pp': false},
+    "mng_win": {'name': 'AM Win', 'pp': false},
+    "mng_draw": {'name': 'AM Draw', 'pp': false},
+    "mng_loss": {'name': 'AM Loss', 'pp': false},
+    "mng_underdog_win": {'name': 'AM Underdog Win', 'pp': false},
+    "mng_underdog_draw": {'name': 'AM Underdog Draw', 'pp': false},
+    "mng_clean_sheets": {'name': 'AM Clean Sheets', 'pp': false},
+    "mng_goals_scored": {'name': 'AM Goals Scored', 'pp': false},
 }
 
 function rounded(val, digits = 2) {
