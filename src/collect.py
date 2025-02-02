@@ -690,7 +690,7 @@ def cache_realized_points_data(season_folder):
         r = requests.get(FPL_API['live'].format(GW=gw))
         if r.status_code == 200:
             raw_data = r.json()
-            gw_data[gw] = [{'id': i['id'], 'e': i['explain']} for i in raw_data['elements'] if i['stats']['minutes']!=0]
+            gw_data[gw] = [{'id': i['id'], 'e': i['explain']} for i in raw_data['elements'] if i['stats']['minutes']!=0 or i['stats']['total_points'] != 0]
     with open(season_folder / "points.json", "w") as file:
         json.dump(gw_data, file)
     print("Cache file generated")
@@ -883,6 +883,9 @@ if __name__ == "__main__":
 
     input_folder, output_folder, season_folder = create_folders()
     generate_intermediate_layer(input_folder, page='free-planner')
+
+    # get_all_data()
+    # cache_realized_points_data('')
 
     # get_fpl_analytics_league(input_folder)
     # get_all_data()

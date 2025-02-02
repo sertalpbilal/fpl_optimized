@@ -332,9 +332,9 @@ var app = new Vue({
             // calculate viz positions
             let gw_player_dict = {}
             let gw_order_dict = {}
-            let eltypes = [1,2,3,4]
-            let el_lowest = {1: 1, 2: 3, 3: 8, 4: 13}
-            let el_highest = {1: 2, 2: 7, 3: 12, 4: 15}
+            let eltypes = [1,2,3,4,5]
+            let el_lowest = {1: 1, 2: 3, 3: 8, 4: 13, 5: 16}
+            let el_highest = {1: 2, 2: 7, 3: 12, 4: 15, 5: 16}
             // let order = _.range(1,16)
 
             let gws = _.sortedUniq(picks.map(i => i.gw)).map(i => parseInt(i))
@@ -711,9 +711,9 @@ var app = new Vue({
                     [150, 'Premium']
                 ],
                 5: [
-                    [8, 'Budget'],
-                    [11, 'Mid-Price'],
-                    [15, 'Premium']
+                    [9, 'Budget'],
+                    [12, 'Mid-Price'],
+                    [16, 'Premium']
                 ]
             }
             let grouped_vals = {
@@ -2293,7 +2293,7 @@ function draw_type_heatmap() {
         height = raw_height - margin.top - margin.bottom;
 
     let data = app.user_points_by_eltype
-    let xvals = ["GK", "DF", "MD", "FW", "Total"]
+    let xvals = ["GK", "DF", "MD", "FW", "MNG", "Total"]
     let yvals = ['Budget', 'Mid-Price', 'Premium', 'Total']
     let valmax = Math.max(...data.map(i => i[2]))
     let total = getSum(data.map(i => i[2]))
@@ -3925,7 +3925,7 @@ function draw_team_season_visual() {
         })
     }
 
-    let xvals = _.range(1, 16)
+    let xvals = _.range(1, 17)
     let x = d3.scaleBand()
         .range([p2_left, width])
         .domain(xvals)
@@ -4002,6 +4002,7 @@ function draw_team_season_visual() {
         {'name': 'DF', 'start': 3, 'finish': 7},
         {'name': 'MD', 'start': 8, 'finish': 12},
         {'name': 'FW', 'start': 13, 'finish': 15},
+        {'name': 'MNG', 'start': 16, 'finish': 16},
     ]
 
     let pos_grp = body.append('g')
