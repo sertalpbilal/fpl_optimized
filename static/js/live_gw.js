@@ -203,7 +203,8 @@ var app = new Vue({
                 p.rp_original = total_score
                 try {
                     p.games_finished = p.explain.map(i => fixture.find(j => j.id == i.fixture).finished_provisional).every(i => i);
-                    if (p.games_finished && p.stats.minutes == 0) {
+                    const p_type = app.el_by_id[p.id].element_type
+                    if (p.games_finished && p.stats.minutes == 0 && p_type != 5) {
                         p.autosub = true;
                     } else {
                         p.autosub = false;
