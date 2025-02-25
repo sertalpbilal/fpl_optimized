@@ -165,7 +165,7 @@ async function get_points() {
         success: (data) => {
             Object.values(data).forEach((w) => w.forEach((p) => {
                 p.player = elements.find(i => i.id == p.id)
-                p.minutes = p.e.map(i => i.stats.find(j => j.identifier == 'minutes').value)
+                p.minutes = p.e.map(i => i.stats?.find(j => j.identifier == 'minutes')?.value ?? 90)
                 p.total_min = getSum(p.minutes)
                 p.full_time = p.total_min == p.e.length * 90
                 p.total_pts = getSum(p.e.map(i => i.stats.map(j => j.points)).flat())
