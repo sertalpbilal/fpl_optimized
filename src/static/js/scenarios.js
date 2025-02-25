@@ -109,8 +109,7 @@ var app = new Vue({
                 p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
-            let bench = picks.filter(i => (i.multiplier == 0) | (i.element_type == 5))
-            bench = _.orderBy(bench, i => i.element_type == 5 ? 0 : i.position)
+            let bench = [...picks.filter(i => i.element_type == 5), ...picks.filter(i => i.multiplier == 0)]
             const total_bench = bench.length
             lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
@@ -140,8 +139,7 @@ var app = new Vue({
                 p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
-            let bench = picks.filter(i => (i.multiplier == 0) | (i.element_type == 5))
-            bench = _.orderBy(bench, i => i.element_type == 5 ? 0 : i.position)
+            let bench = [...picks.filter(i => i.element_type == 5), ...picks.filter(i => i.multiplier == 0)]
             const total_bench = bench.length
             lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
@@ -957,7 +955,8 @@ var app = new Vue({
                         1: { 'count': picks.filter(i => i.data.element_type == 1 && i.multiplier > 0).length, 'max': 1, 'min': 1 },
                         2: { 'count': picks.filter(i => i.data.element_type == 2 && i.multiplier > 0).length, 'max': 5, 'min': 3 },
                         3: { 'count': picks.filter(i => i.data.element_type == 3 && i.multiplier > 0).length, 'max': 5, 'min': 2 },
-                        4: { 'count': picks.filter(i => i.data.element_type == 4 && i.multiplier > 0).length, 'max': 3, 'min': 1 }
+                        4: { 'count': picks.filter(i => i.data.element_type == 4 && i.multiplier > 0).length, 'max': 3, 'min': 1 },
+                        5: { 'count': picks.filter(i => i.data.element_type == 5 && i.multiplier > 0).length, 'max': 1, 'min': 0 }
                     }
 
                     if (el_type == 1) {
