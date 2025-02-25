@@ -105,19 +105,20 @@ var app = new Vue({
             let picks = td.picks
             picks.forEach(p => {
                 p.data = app.elements.find(i => i.id == p.element)
-                debugger
                 // p.img = "https://resources.premierleague.com/premierleague/photos/players/110x140/p" + p.data.photo.replace(".jpg", ".png")
                 p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
-            let bench = picks.filter(i => i.multiplier == 0)
+            let bench = picks.filter(i => (i.multiplier == 0) | (i.element_type == 5))
+            bench = _.orderBy(bench, i => i.element_type == 5 ? 0 : i.position)
+            const total_bench = bench.length
             lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
                 p.y = (p.data.element_type - 1) * 34 + 5
 
             })
             bench.forEach((p, idx) => {
-                p.x = this.get_bench_x(idx)
+                p.x = this.get_bench_x(idx, total_bench)
                 p.y = 4 * 35 + 2
             })
             return picks
@@ -139,13 +140,15 @@ var app = new Vue({
                 p.img = `https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_${p.data.team_code}${p.data.element_type == 1 ? '_1' : ''}-110.png`
             })
             let lineup = picks.filter(i => i.multiplier > 0)
-            let bench = picks.filter(i => i.multiplier == 0)
+            let bench = picks.filter(i => (i.multiplier == 0) | (i.element_type == 5))
+            bench = _.orderBy(bench, i => i.element_type == 5 ? 0 : i.position)
+            const total_bench = bench.length
             lineup.forEach((p, idx) => {
                 p.x = this.get_lineup_x(lineup, p, idx)
                 p.y = (p.data.element_type - 1) * 34 + 5
             })
             bench.forEach((p, idx) => {
-                p.x = this.get_bench_x(idx)
+                p.x = this.get_bench_x(idx, total_bench)
                 p.y = 4 * 35 + 2
             })
             return picks
@@ -535,7 +538,8 @@ var app = new Vue({
                 1: { 'min': 1, 'max': 1 },
                 2: { 'min': 3, 'max': 5 },
                 3: { 'min': 2, 'max': 5 },
-                4: { 'min': 1, 'max': 3 }
+                4: { 'min': 1, 'max': 3 },
+                5: { 'min': 0, 'max': 1 }
             }
             grouped_scenarios.forEach((s, i) => {
                 let sc_picks = _.cloneDeep(picks.map(i => { return {...i } }))
@@ -564,6 +568,7 @@ var app = new Vue({
                 // Autosub
                 sc_picks.filter(i => i.autosub_out).forEach(p => {
                     let pos = p.data.element_type
+                    if (pos == 5) { return }
                     let pos_playing = sc_picks.filter(i => i.data.element_type == pos && i.played).length
                     if (pos_playing < position_bounds[pos].min) {
                         // can only replace with same type
@@ -725,8 +730,8 @@ var app = new Vue({
             let this_pos = list.slice(0, order).filter(i => i.data.element_type == current.data.element_type).length + 1
             return 122 / (total_pos + 1) * this_pos - 14;
         },
-        get_bench_x(order) {
-            let total_pos = 4
+        get_bench_x(order, total) {
+            let total_pos = total
             let this_pos = order + 1
             return 122 / (total_pos + 1) * this_pos - 14;
         },
