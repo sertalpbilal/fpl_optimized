@@ -1221,6 +1221,7 @@ var app = new Vue({
                 let bought = _.cloneDeep(_.difference(this_gw_team, last_gw_team).map(i => elements[i]))
                 let gw_transfer = []
                 sold.forEach((p) => {
+                    if (p.element_type == 5) { return }
                     let match = bought.find(i => i.used==undefined && i.element_type == p.element_type)
                     match.used = true
                     let new_p = match.id
