@@ -7,7 +7,7 @@ Object.fromEntries = Object.fromEntries || function(arr) {
     }, {});
 };
 
-let proxy = "http://209.38.168.209:8080"
+let proxy = "https://cors2.fploptimized.com"
 // let proxy = "https://cors.alpscode.com"
 // let proxy = "https://cors.fploptimized.com"
 
