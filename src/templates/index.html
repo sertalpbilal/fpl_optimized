@@ -2,52 +2,213 @@
 
 <!-- <meta http-equiv="refresh" content="0; url=/signup.html" /> -->
 
+<style>
+:root {
+    --bg-primary: #1a1a1c;
+    --bg-secondary: #2d2d30;
+    --bg-card: #3a3a3d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --accent: #B81636;
+    --accent-hover: #5bbbb6;
+    --border-color: #4a4a4d;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #2d2d30;
+    --text-secondary: #6b6b6b;
+    --accent: #B81636;
+    --accent-hover: #5bbbb6;
+    --border-color: #e0e0e0;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.modern-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border-color: var(--accent);
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+}
+
+.tool-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.external-link-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.tool-card:hover .external-link-indicator {
+    opacity: 1;
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(91, 187, 182, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.tool-card:hover::before {
+    left: 100%;
+}
+
+.tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border-color: var(--accent-hover);
+}
+
+.tool-icon {
+    font-size: 2.5rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.tool-card:hover .tool-icon {
+    color: var(--accent-hover);
+}
+
+.tool-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.tool-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.disabled-tool {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.badge-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .tool-icon {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<div class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="theme-icon"></i>
+    <span id="theme-text">Dark</span>
+</div>
+
 <main class="container">
 
-    <div class="row no-gutters justify-content-center" id="homepage">
+    <div class="row justify-content-center" id="homepage">
+
+        <!-- Tools Section -->
+        <div class="col-12">
+            <div class="modern-card">
+                <h2 class="section-title">Tools</h2>
+                <div class="row">
 
 
-        <div class="col-12 col-lg-9 mb-1">
-            <div class="card card-field border-dark bg-squad-card text-white" id="tools-column">
-                <div class="card-header border-complement text-center scenario_title">Tools</div>
-                <div class="card-body p-2 row">
-
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option"> 
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-chart-line"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Live Gameweek Tracker</h5>
-                                        <p class="card-text">Expected and actual points with live tracking.</p>
-                                    </div>
-                                </div>
-                                <a href="live_gw.html" class="stretched-link"></a>
-                                <!-- <a href="#" class="stretched-link"></a> -->
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="live_gw.html" class="tool-card">
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-chart-line"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">Live GW Tracker</h5>
+                            <p class="tool-description">Expected and actual points with live tracking</p>
+                        </a>
                     </div>
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-project-diagram"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Gameweek Expectation</h5>
-                                        <p class="card-text">Expected and actual point comparison with a focus on players.</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="team_summary.html" class="stretched-link"></a>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- <div class="card mb-2" style="max-width: 540px;">
                         <div class="row no-gutters index-card index-option">
@@ -66,40 +227,16 @@
 
                     
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-dice-d20"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Simulated Scenarios</h5>
-                                        <p class="card-text">Simulations for next GW using the latest projections</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="scenarios.html?sorted=1&team=91,3,311,495,17,181,199,328,366,401,453,201,129,116,291&cap=401&vicecap=328" class="stretched-link"></a>
-                            </div>
-                        </div>
-                    </div>
 
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-binoculars"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Season Highlights</h5>
-                                        <p class="card-text">An overlook of your entire season and top players</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="highlights.html" class="stretched-link"></a>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <div class="tool-card disabled-tool">
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-binoculars"></i>
                             </div>
+                            <h5 class="tool-title">Season Highlights</h5>
+                            <p class="tool-description">An overlook of your entire season and top players</p>
+                            <span class="badge-new">Coming Soon</span>
                         </div>
                     </div>
 
@@ -139,22 +276,14 @@
                         </div>
                     </div> -->
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-calculator"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Expected Point Calculator</h5>
-                                        <p class="card-text">Expected points distribution calculator</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="calculator.html" class="stretched-link"></a>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="calculator.html" class="tool-card">
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-calculator"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">EV Calculator</h5>
+                            <p class="tool-description">Expected points distribution calculator</p>
+                        </a>
                     </div>
 
                     
@@ -176,180 +305,39 @@
 
                     
 
-                </div>
-            </div>
-        </div>
 
-        <div class="col-6 col-lg-3 mb-1">
-            <!-- https://fploptimized.transistor.fm/subscribe -->
-            <div class="card card-field border-dark bg-squad-card text-white ml-1 h-100" id="data-column">
-                <div class="card-header border-complement text-center scenario_title">Podcast 🎙</div>
-                <div class="card-body p-2 row" style="position: relative; min-height: 200px;">
 
-                    <div class="col-12 mb-1 vertically-aligned w-100 h-100" >
-                        <div class="text-center" style="width:90%; height: 90%;">
-                            <img src="/static/images/logo_400_tr.png" style="margin-top: 4px; max-width:100%; max-height:100%">
-                            <!-- <a href="#" class="stretched-link"></a> -->
-                            <a href="https://fploptimized.transistor.fm/subscribe" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-12 mb-1">
-            <div class="card card-field border-dark bg-squad-card text-white" id="data-column">
-                <div class="card-header border-complement text-center scenario_title">Data</div>
-                <div class="card-body p-2 row">
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img far fa-calendar-alt"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Fixture</h5>
-                                        <p class="card-text">Details and visualization of FPL fixture data.</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="fpl_fixture.html" class="stretched-link"></a>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="who_played.html" class="tool-card">
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-question"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">Who Played</h5>
+                            <p class="tool-description">Previous gameweeks minutes played information</p>
+                        </a>
                     </div>
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-question"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Who Played?</h5>
-                                        <p class="card-text">Previous gameweeks minutes played information</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="who_played.html" class="stretched-link"></a>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="ownership_rates.html" class="tool-card">
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-percent"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">Ownership Rates</h5>
+                            <p class="tool-description">Last GW ownership rates of every player with FPL trends</p>
+                        </a>
                     </div>
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-percent"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Ownership Rates</h5>
-                                        <p class="card-text">Last GW ownership rates of every player with FPL trends</p>
-                                    </div>
-                                </div>
-                                <!-- <a href="#" class="stretched-link"></a> -->
-                                <a href="ownership_rates.html" class="stretched-link"></a>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option disabled-card">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-list-ol"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Optimal Squads</h5>
-                                        <p class="card-text">6 different optimal squads with daily forecasts.</p>
-                                        <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
-                                    </div>
-                                </div>
-                                <a href="#" class="stretched-link"></a>
-                                <!-- <a href="week.html" class="stretched-link"></a> -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option disabled-card">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-upload"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Data Load <sup class="text-small" style="color: #fff256">Beta</sup></h5>
-                                        <p class="card-text">Load your own data to be used in other pages.</p>
-                                        <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
-                                    </div>
-                                </div>
-                                <a href="#" class="stretched-link"></a>
-                                <!-- <a href="load.html" class="stretched-link"></a> -->
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
         </div>
 
-        <div class="col-12 mb-1">
-            <div class="card card-field border-dark bg-squad-card text-white" id="misc-column">
-                <div class="card-header border-complement text-center scenario_title">Misc</div>
-                <div class="card-body p-2 row">
-                
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option disabled-card">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-medal"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Analytics League</h5>
-                                        <p class="card-text">Comparison of data and analytics focused FPL managers.</p>
-                                    </div>
-                                </div>
-                                <a href="#" class="stretched-link"></a>
-                                <!-- <a href="analytics_league.html" class="stretched-link"></a> -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-puzzle-piece"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">FPL Puzzle</h5>
-                                        <!-- <sup style="color: #fff256">New!</sup> -->
-                                        <p class="card-text">Daily FPL puzzles using historical data!</p>
-                                    </div>
-                                </div>
-                                <a href="puzzle.html" class="stretched-link"></a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-12 mb-1">
-
-            <div class="card card-field border-dark bg-squad-card text-white" id="blog-column">
-                <div class="card-header border-complement text-center scenario_title">Blog Posts</div>
-                <div class="card-body p-2 row">
+        <!-- Blog Posts Section (Hidden for now) -->
+        <div class="col-12" style="display: none;">
+            <div class="modern-card">
+                <h2 class="section-title">Blog Posts</h2>
+                <div class="row">
 
                     <div class="col-12 col-md-4 mb-1">
                         <div class="card" style="max-width: 540px;">
@@ -461,125 +449,70 @@
 
                 </div>
             </div>
-
         </div>
 
+        <!-- Resources Section -->
+        <div class="col-12">
+            <div class="modern-card">
+                <h2 class="section-title">External Resources</h2>
+                <div class="row">
 
 
-        <div class="col-12 mb-1">
-
-            <div class="card card-field border-dark bg-squad-card text-white" id="resource-column">
-                <div class="card-header border-complement text-center scenario_title">Resources</div>
-                <div class="card-body p-2 row">
-
-
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option-plain flex-grow-1">
-                                <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/youtube_1.jpg') **" />
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Optimization for FPL with <span class="text-blue">Python</span> and <span class="text-yellow">sasoptpy</span></h5>
-                                        <div class="list-group">
-                                            <a href="https://youtu.be/DFXCXoR6Dvw" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.1: Intro & GK Problem</a>
-                                            <a href="https://youtu.be/JceM_YUFHtk" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.2: Single-period FPL Problem</a>
-                                            <a href="https://youtu.be/Prv8M7hE3vk" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.3: Multi-period FPL Problem</a>
-                                            <a href="https://youtu.be/4_ac7qEcts0" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.4: Alternative Solns and Multi-Obj Optimization</a>
-                                            <a href="https://youtu.be/LTkHBn3jHoU" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.5: Bench decisions</a>
-                                            <a href="https://youtu.be/CF9IH0UyLiM" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.6: Auto-bench weights</a>
-                                            <a href="https://youtu.be/qJh3hRcM_7g" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.7: Noise in EV and Sensitivity Analysis</a>
-                                            <a href="https://youtu.be/w47baOXRhq4" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.8: Data with FPL Login and Wildcard Prep</a>
-                                            <a href="https://youtu.be/4PNcDUoRQOE" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.9: Wildcard Optimization</a>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="https://cheatography.com/sertalpbilal/cheat-sheets/fpl-api-endpoints/" class="tool-card" target="_blank">
+                            <i class="fas fa-external-link-alt external-link-indicator"></i>
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-code"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">API Endpoints</h5>
+                            <p class="tool-description">All available FPL API endpoints</p>
+                        </a>
                     </div>
 
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option-plain flex-grow-1">
-                                <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/youtube_1.jpg') **" />
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">Optimization for FPL with <span class="text-green">Excel</span> and <span class="text-red">OpenSolver</span></h5>
-                                        <div class="list-group">
-                                            <a href="https://youtu.be/4oWH3aOsjNI" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.1: Intro & GK Problem</a>
-                                            <a href="https://youtu.be/yKx_C-Nwwes" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.2: Single-period FPL Problem</a>
-                                            <a href="https://youtu.be/MHZEUlHNR3k" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Ep.3: Multi-period FPL Problem</a>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="https://github.com/sertalpbilal/FPL-Optimization-Tools" class="tool-card" target="_blank">
+                            <i class="fas fa-external-link-alt external-link-indicator"></i>
+                            <div class="tool-icon text-center">
+                                <i class="fab fa-python"></i>
                             </div>
-                        </div>
-
-
-                        <div class="card mt-1" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option flex-grow-1">
-                                <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/repo.jpg') **" />
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">FPL Optimization Tools</h5>
-                                        <p class="card-text">Source code of all tutorials and ready-to-use scripts.</p>
-                                    </div>
-                                </div>
-                                <a href="https://github.com/sertalpbilal/FPL-Optimization-Tools" class="stretched-link"></a>
-                            </div>
-                        </div>
-
-                        <div class="card mt-1" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option flex-grow-1">
-                                <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/repo.jpg') **" />
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">FPLOptimized GitHub Repo</h5>
-                                        <p class="card-text">Source code of this website and automated GitHub actions.</p>
-                                    </div>
-                                </div>
-                                <a href="https://github.com/sertalpbilal/fpl_optimized" class="stretched-link"></a>
-                            </div>
-                        </div>
+                            <h5 class="tool-title">Python Solver</h5>
+                            <p class="tool-description">FPL Optimization Tools on GitHub</p>
+                        </a>
                     </div>
 
-                    
-                
-                    <div class="col-12 col-md-4 mb-1">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row no-gutters index-card index-option flex-grow-1">
-                                <div class="col-4 text-center my-auto">
-                                    <i class="link-img fas fa-code"></i>
-                                </div>
-                                <div class="col-8">
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title">FPL API Endpoints</h5>
-                                        <p class="card-text">A list of all available endpoints that Official FPL API provides.</p>
-                                    </div>
-                                </div>
-                                <a href="https://cheatography.com/sertalpbilal/cheat-sheets/fpl-api-endpoints/" class="stretched-link"></a>
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="https://colab.research.google.com/drive/1fwYcG28zpIOJf7R8yx31bDL_kJG1JRLu" class="tool-card" target="_blank">
+                            <i class="fas fa-external-link-alt external-link-indicator"></i>
+                            <div class="tool-icon text-center">
+                                <i class="fas fa-laptop-code"></i>
                             </div>
-                        </div>
+                            <h5 class="tool-title">Colab Solver</h5>
+                            <p class="tool-description">Google Colab optimization notebook</p>
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                        <a href="https://www.youtube.com/@SolioAnalytics" class="tool-card" target="_blank">
+                            <i class="fas fa-external-link-alt external-link-indicator"></i>
+                            <div class="tool-icon text-center">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <h5 class="tool-title">Solio Analytics Podcast</h5>
+                            <p class="tool-description">FPL analytics content on YouTube</p>
+                        </a>
                     </div>
 
                     
 
                 </div>
             </div>
-
         </div>
 
-        <div class="col-12 mb-1">
-            <div class="card card-field border-dark bg-squad-card text-white" id="tools-column">
-                <div class="card-header border-complement text-center scenario_title">Links</div>
-                <div class="card-body p-2 row">
+        <!-- Links Section (Hidden for now) -->
+        <div class="col-12" style="display: none;">
+            <div class="modern-card">
+                <h2 class="section-title">Links</h2>
+                <div class="row">
 
                     <div class="col-12 col-md-4 mb-1">
                         <div class="card" style="max-width: 540px;">
@@ -664,10 +597,45 @@
             </div>
         </div>
 
-
-
-
     </div>
+
+<script>
+function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    const text = document.getElementById('theme-text');
+    const currentTheme = html.getAttribute('data-theme');
+    
+    if (currentTheme === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        icon.className = 'fas fa-moon';
+        text.textContent = 'Dark';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        html.setAttribute('data-theme', 'light');
+        icon.className = 'fas fa-sun';
+        text.textContent = 'Light';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Load saved theme or default to dark
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const icon = document.getElementById('theme-icon');
+    const text = document.getElementById('theme-text');
+    
+    if (savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        icon.className = 'fas fa-sun';
+        text.textContent = 'Light';
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        icon.className = 'fas fa-moon';
+        text.textContent = 'Dark';
+    }
+});
+</script>
 
 
     <!-- <h2>Useful Links</h2>
