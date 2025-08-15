@@ -2295,10 +2295,12 @@ function init_timeline() {
     synced_mark(e, graph_id);
   });
 
-  let left_offset =
-    document.querySelector("#now").getBoundingClientRect().x -
-    window.innerWidth / 2;
-  $("#d3-timeline").scrollLeft(left_offset);
+  try {
+    let left_offset =
+      document.querySelector("#now").getBoundingClientRect().x -
+      window.innerWidth / 2;
+    $("#d3-timeline").scrollLeft(left_offset);
+  } catch {}
 }
 
 async function draw_user_graph(options = {}) {

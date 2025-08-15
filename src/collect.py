@@ -62,6 +62,8 @@ def get_all_data():
     #     generate_intermediate_layer(input_folder, page='free-planner')
         # get_fivethirtyeight_data(input_folder)
 
+    generate_intermediate_layer(input_folder)
+
     cache_effective_ownership(season_folder)
     # get_fivethirtyeight_data(season_folder)
     cache_realized_points_data(season_folder)
@@ -161,7 +163,12 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     element_df = pd.read_csv(target_folder / "element.csv")
     # prediction_df = pd.read_csv(target_folder / f"fplreview-{page}.csv").drop_duplicates()
     # try:
-    prediction_df = pd.read_csv(f"static/projection/gw{start_gw}.csv").drop_duplicates()
+    try:
+        prediction_df = pd.read_csv(f"static/projection/gw{start_gw}.csv").drop_duplicates()
+    except:
+        # try last available data
+        print("Using last available data")
+        prediction_df = pd.read_csv(f"static/projection/gw{start_gw-1}.csv").drop_duplicates()
     # except:
     #     prediction_df = pd.read_csv(f"../static/projection/gw{start_gw}.csv").drop_duplicates()
 
@@ -176,7 +183,7 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     combined_games = pd.concat([home_games, away_games], sort=False)
 
     element_df = pd.merge(element_df, team_df.rename(columns={'id': 'team_id', 'name': 'team_name'}), how='left', left_on=['team'], right_on=['team_id'])
-    element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
+    # element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
     element_df = pd.merge(element_df, prediction_df, how='left', left_on=['id'], right_on=['ID'])
     full_element_gameweek_df = pd.merge(left=element_df.rename(columns={'id': 'player_id'}).assign(key=1), right=pd.DataFrame(weeks, columns=['event']).assign(key=1), on='key', how='inner').drop(["key"], axis=1)
 
@@ -360,20 +367,20 @@ def sample_fpl_teams(gw=None, seed=None):
     input_folder.mkdir(parents=True, exist_ok=True)
 
     # Part 0 - FPL Research Top Managers
-    print("Sampling Top 1000 Managers")
-    # managers = pd.read_csv(base_folder / 'static/json/top_managers.tsv', sep="\t")
-    managers = pd.read_csv(base_folder / 'static/json/top_managers.csv')
-    team_ids = managers['Team ID']
+    # print("Sampling Top 1000 Managers")
+    # # managers = pd.read_csv(base_folder / 'static/json/top_managers.tsv', sep="\t")
+    # managers = pd.read_csv(base_folder / 'static/json/top_managers.csv')
+    # team_ids = managers['Team ID']
 
-    manager_info = managers.to_dict(orient='records')
-    top_picks = get_team_picks(team_ids, gw, manager_info)
+    # manager_info = managers.to_dict(orient='records')
+    # top_picks = get_team_picks(team_ids, gw, manager_info)
 
-    print(f"Sampled top managers: {len(top_picks)}")
+    # print(f"Sampled top managers: {len(top_picks)}")
 
-    with open(input_folder / 'top_managers.json', 'w') as file:
-        json.dump(top_picks, file)
+    # with open(input_folder / 'top_managers.json', 'w') as file:
+    #     json.dump(top_picks, file)
 
-    time.sleep(1)
+    # time.sleep(1)
 
     # RIP Plank Sample 2024-2024
 
@@ -420,10 +427,11 @@ def sample_fpl_teams(gw=None, seed=None):
 
     # Target Mini-Leagues
     target_mini_leagues = {
-        'Analytics Elite 64': 776436,
-        'Elite 64': 228374,
-        'Bullet Wisdom': 7639,
-        'Analytics Elite Qualifier': 1184641
+        # 'Analytics Elite 64': 776436,
+        # 'Elite 64': 228374,
+        'Bullet Wisdom': 36590,
+        'Solio Analytics': 708475,
+        # 'Analytics Elite Qualifier': 1184641
         }
     
     for (key,value) in target_mini_leagues.items():
@@ -442,10 +450,18 @@ def sample_fpl_teams(gw=None, seed=None):
 def get_league_team_ids(league_id):
     page = 1
     team_ids = []
+    target_group = 'standings'
     while True:
-        response = requests.get(f"https://fantasy.premierleague.com/api/leagues-classic/{league_id}/standings/?page_standings={page}").json()
-        team_ids.extend([i['entry'] for i in response['standings']['results']])
-        if not response['standings']['has_next']:
+        response = requests.get(f"https://fantasy.premierleague.com/api/leagues-classic/{league_id}/standings/?page_{target_group}={page}").json()
+        
+        if len(response['standings']['results']) > 0:
+            team_ids.extend([i['entry'] for i in response['standings']['results']])
+        else:
+            if len(response['new_entries']['results']) > 0:
+                team_ids.extend([i['entry'] for i in response['new_entries']['results']])
+                target_group = 'new_entries'
+        
+        if not response[target_group]['has_next']:
             break
         else:
             page += 1
@@ -892,6 +908,7 @@ if __name__ == "__main__":
     input_folder, output_folder, season_folder = create_folders()
     get_all_data()
     generate_intermediate_layer(input_folder, page='free-planner')
+    sample_fpl_teams(1)
 
     # get_all_data()
     # cache_realized_points_data('')

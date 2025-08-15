@@ -217,6 +217,7 @@ def live_gw_page():
                 season=global_season, gw="GW1", date="TBD", list_dates=[], next_gw=1, 
                 is_active='false', active_gw=1, no_data=True, last_update=current_time, league_list="{}")
 
+    print("Target is not none")
 
 
     with open('static/json/league.json') as f:
@@ -524,7 +525,8 @@ def list_one_per_gw(season_filter='*'):
             is_active_gw = 'true'
             active_gw = gws[0]['id']
 
-    all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/fplreview-free-planner.csv-encrypted')
+    # all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/fplreview-free-planner.csv-encrypted')
+    all_dates = glob.glob('build/data/' + season_filter + '/*/*/input/team.csv')
     all_dates.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_dates = [i.replace('\\', '/') for i in all_dates]
@@ -585,8 +587,8 @@ def get_gw():
 
 
 if __name__ == "__main__":
-    app.config['DEBUG']=False
-    from app import app
-    app.run(host='0.0.0.0', port=8001, debug=True)
+    # app.config['DEBUG']=True
+    # from app import app
+    app.run(host='0.0.0.0', port=8001, debug=True, use_reloader=True)
 
 
