@@ -5,8 +5,8 @@
 }
 
 body {
-    background-color: #343436;
-    color: lightgray;
+    background-color: var(--bg-primary, #343436);
+    color: var(--text-primary, lightgray);
 }
 
 .vertically-aligned {
@@ -55,7 +55,7 @@ body {
 }
 
 .bg-squad-card {
-    background-color: #474747;
+    background-color: var(--bg-squad-card, #474747);
 }
 
 .border-complement {

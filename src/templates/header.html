@@ -61,6 +61,12 @@
             --accent-hover: #5bbbb6;
             --border-color: #4a4a4d;
             --border-complement: #B81636;
+            --svg-bg: #5a5d5c;
+            --svg-text: #ffffff;
+            --svg-stroke: #ffffff;
+            --chart-goal: #40c8de;
+            --chart-assist: #ff9650;
+            --chart-cs: #97b070;
         }
 
         [data-theme="light"] {
@@ -74,6 +80,12 @@
             --accent-hover: #5bbbb6;
             --border-color: #e0e0e0;
             --border-complement: #B81636;
+            --svg-bg: #e8e8e8;
+            --svg-text: #2d2d30;
+            --svg-stroke: #2d2d30;
+            --chart-goal: #2196F3;
+            --chart-assist: #FF6B35;
+            --chart-cs: #4CAF50;
         }
 
         body {
@@ -84,6 +96,7 @@
 
         .bg-squad-card {
             background-color: var(--bg-squad-card) !important;
+            color: var(--text-primary) !important;
         }
 
         .border-complement {
@@ -91,21 +104,72 @@
         }
 
         .card {
-            background-color: var(--bg-card);
-            color: var(--text-primary);
+            background-color: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .card-header {
+            background-color: var(--bg-squad-card) !important;
+            color: var(--text-primary) !important;
         }
 
         .table {
-            color: var(--text-primary);
+            color: var(--text-primary) !important;
+            background-color: var(--bg-card) !important;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: var(--bg-secondary) !important;
         }
 
         .table-dark {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
         }
 
         .modal-content {
-            background-color: var(--bg-card);
+            background-color: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .form-control {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .form-control:focus {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--accent) !important;
+            color: var(--text-primary) !important;
+            box-shadow: 0 0 0 0.2rem rgba(184, 22, 54, 0.25) !important;
+        }
+
+        .input-group-text {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            border-color: var(--border-color);
             color: var(--text-primary);
         }
 
@@ -138,6 +202,18 @@
 
         [data-theme="light"] .theme-toggle-btn:hover {
             background: rgba(0, 0, 0, 0.05);
+        }
+
+        .major-display-box {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border: var(--border-color) 1px solid !important;
+        }
+
+        .minor-display-box {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border: var(--border-color) 1px solid !important;
         }
     </style>
 
@@ -277,6 +353,9 @@
                     text.textContent = 'Light';
                     localStorage.setItem('theme', 'light');
                 }
+
+                // Trigger theme change event for charts
+                document.dispatchEvent(new CustomEvent('themeChanged'));
             }
 
             // Update icon after DOM loads

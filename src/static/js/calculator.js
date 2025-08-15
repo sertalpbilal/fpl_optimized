@@ -1,4 +1,19 @@
 
+// Helper function to get theme-aware colors
+function getThemeColors() {
+    const computedStyle = getComputedStyle(document.documentElement);
+    const colors = {
+        svgBg: computedStyle.getPropertyValue('--svg-bg').trim(),
+        svgText: computedStyle.getPropertyValue('--svg-text').trim(),
+        svgStroke: computedStyle.getPropertyValue('--svg-stroke').trim(),
+        chartGoal: computedStyle.getPropertyValue('--chart-goal').trim(),
+        chartAssist: computedStyle.getPropertyValue('--chart-assist').trim(),
+        chartCs: computedStyle.getPropertyValue('--chart-cs').trim()
+    };
+    console.log('Theme colors:', colors); // Debug log
+    return colors;
+}
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -20,7 +35,7 @@ var app = new Vue({
         // player_goal: 40,
         // player_assist: 28,
         // player_cs: 39,
-        colors: ["#40c8de", "#ff9650", "#97b070"], // goal, assist, cs
+        colors: [], // Will be set dynamically from CSS variables
         point_rates: {
             1: {'goal': 6, 'assist': 3, 'cs': 4, '2gc': -1},
             2: {'goal': 6, 'assist': 3, 'cs': 4, '2gc': -1},
@@ -57,8 +72,37 @@ var app = new Vue({
     },
     computed: {
     },
+    mounted() {
+        // Initialize colors from CSS variables
+        this.updateColorsFromCSS();
+        
+        // Listen for theme changes
+        document.addEventListener('themeChanged', () => {
+            this.updateColorsFromCSS();
+            // Clear existing charts and redraw if they exist
+            if (this.players_cached.length > 0) {
+                // Clear all chart containers
+                d3.select("#ev_graph").selectAll("*").remove();
+                d3.select("#goal_prob_graph").selectAll("*").remove();
+                d3.select("#assist_prob_graph").selectAll("*").remove();
+                d3.select("#cs_prob_graph").selectAll("*").remove();
+                d3.select("#gc_prob_graph").selectAll("*").remove();
+                
+                // Reset first_draw flag to ensure fresh charts
+                this.first_draw = true;
+                this.calculate();
+            }
+        });
+    },
     methods: {
+        updateColorsFromCSS() {
+            const themeColors = getThemeColors();
+            this.colors = [themeColors.chartGoal, themeColors.chartAssist, themeColors.chartCs];
+        },
         calculate() {
+            // Update colors in case theme changed
+            this.updateColorsFromCSS();
+            
             // clear existing data
             this.printed_name = {}
             this.goal_rate = {}
@@ -364,11 +408,12 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
     let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     let content = svg.append('g').attr('id', 'graph-content')
     let grayrect = content.append('g').attr('class', 'brush');
+    const themeColors = getThemeColors();
     grayrect.append('rect')
-        .attr('fill', '#5a5d5c')
+        .attr('fill', themeColors.svgBg)
         .attr('width', width)
         .attr('height', height)
-        .attr("stroke", "white")
+        .attr("stroke", themeColors.svgStroke)
         .attr("stroke-width", "0.5");
 
     data.forEach((d,i) => {
@@ -410,7 +455,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .attr("x", width / 2)
         .attr("y", height + 20)
         .attr("font-size", font_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text("Points");
 
     // Axis-y
@@ -424,7 +469,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
 
     svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
+            .attr("fill", themeColors.svgText))
         .call(g => g.selectAll(".tick line")
             .attr("stroke-dasharray", "3,1")
             .attr("stroke-width", 0.5)
@@ -439,7 +484,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .attr("x", -margin.left)
         .attr("y", -5)
         .attr("font-size", font_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text("Probability %");
 
     svg.call(g => g.selectAll(".tick")
@@ -454,7 +499,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .attr("x", width / 2)
         .attr("y", -8)
         .attr("font-size", title_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text("Point Probability Distribution") // + (name != '' ? ` (${name})` : ''));
 
     // Data plot
@@ -472,7 +517,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .attr("class", "probability-bars")
         .attr("fill", d => colors(d.player_no))
         // .attr("fill-opacity", 0.5)
-        .attr("stroke", "white")
+        .attr("stroke", themeColors.svgStroke)
         .attr("stroke-width", 0.5)
         .attr("x", (d) => x(d.points) + x_sub(d.player_no))
         .attr("y", (d) => y(d.probability))
@@ -488,7 +533,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr("x2", d => avg_place(d))
             .attr("y1", y(y_high))
             .attr("y2", y(y_low))
-            .attr("stroke", "white")
+            .attr("stroke", themeColors.svgStroke)
     let avg_text = together.append('text')
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "baseline")
@@ -507,7 +552,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr('width', 40)
             .attr('height', 7*(player_names.length+0.5))
             .attr("fill", "#5a5d5c")
-            .attr("stroke", "white")
+            .attr("stroke", themeColors.svgStroke)
             .attr("stroke-width", 0.5)
     let  legend_entry = legend.selectAll().data(player_names).enter().append('g')
     legend_entry.append("rect")
@@ -517,7 +562,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr('width', 10)
             .attr('height', 3)
             .attr('fill', (d,i) => colors(i))
-            .attr('stroke', 'white')
+            .attr('stroke', themeColors.svgStroke)
             .attr('stroke-width', 0.5)
     legend_entry.append('text')
         .attr("class", "legend-text")
@@ -527,7 +572,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         .attr("x", 14)
         .attr("y", (d,i) => 2 + 7*i + 3)
         .attr("font-size", "4pt")
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text(d => d)
 
 
@@ -556,7 +601,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr('width', 10)
             .attr('height', 3)
             .attr('fill', (d,i) => colors(i))
-            .attr('stroke', 'white')
+            .attr('stroke', themeColors.svgStroke)
             .attr('stroke-width', 0.5)
         let new_legend_text = legend.selectAll(".legend-text").data(new_names)
         new_legend_text.exit().remove()
@@ -572,7 +617,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr("x", 14)
             .attr("y", (d,i) => 2 + 7*i + 3)
             .attr("font-size", "4pt")
-            .attr("fill", "white")
+            .attr("fill", themeColors.svgText)
             .text(d => d)
 
         x.domain(new_x_domain)
@@ -621,7 +666,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr("height", (d) => y(0)-y(d.probability))
             .attr("class", "probability-bars")
             .attr("fill", d => colors(d.player_no))
-            .attr("stroke", "white")
+            .attr("stroke", themeColors.svgStroke)
             .attr("stroke-width", 0.5)
 
             // .attr("fill", "#f4afff")
@@ -632,7 +677,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
         // AXIS UPDATE
 
         svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
+            .attr("fill", themeColors.svgText))
             .call(g => g.selectAll(".tick line")
                 .attr("stroke-dasharray", "3,1")
                 .attr("stroke-width", 0.5)
@@ -655,7 +700,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr("x2", d => new_avg_place(d))
             .attr("y1", y(new_y_high))
             .attr("y2", y(0))
-            .attr("stroke", "white")
+            .attr("stroke", themeColors.svgStroke)
         new_avg_grp.transition().duration(1000).select('text')
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "baseline")
@@ -671,7 +716,7 @@ function draw_ev_graph(data, avg_value, player_names, colors) {
             .attr("x2", d => new_avg_place(d))
             .attr("y1", y(new_y_high))
             .attr("y2", y(0))
-            .attr("stroke", "white")
+            .attr("stroke", themeColors.svgStroke)
         new_together.append('text')
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "baseline")
@@ -727,11 +772,12 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
     let svg = cnv.append('g').attr('class', 'svg-actual').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     let content = svg.append('g').attr('id', 'graph-content')
     let grayrect = content.append('g').attr('class', 'brush');
+    const themeColors = getThemeColors();
     grayrect.append('rect')
-        .attr('fill', '#5a5d5c')
+        .attr('fill', themeColors.svgBg)
         .attr('width', width)
         .attr('height', height)
-        .attr("stroke", "white")
+        .attr("stroke", themeColors.svgStroke)
         .attr("stroke-width", "0.5");
 
     
@@ -758,7 +804,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("x", width / 2)
         .attr("y", height + 20)
         .attr("font-size", font_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text(x_title);
 
     // Axis-y
@@ -772,7 +818,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .call(g => g.selectAll(".tick:first-of-type line").style("display", "none"));
 
     svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
+            .attr("fill", themeColors.svgText))
         .call(g => g.selectAll(".tick line")
             .attr("stroke-dasharray", "3,1")
             .attr("stroke-width", 0.5)
@@ -787,7 +833,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("x", -margin.left)
         .attr("y", -5)
         .attr("font-size", font_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text(y_title);
 
     svg.call(g => g.selectAll(".tick")
@@ -802,7 +848,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("x", width / 2)
         .attr("y", -8)
         .attr("font-size", title_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
         .text(title);
 
     let holder = svg.append('g')
@@ -829,7 +875,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         .attr("alignment-baseline", "baseline")
         .attr("dominant-baseline", "baseline")
         .attr("font-size", font_size)
-        .attr("fill", "white")
+        .attr("fill", themeColors.svgText)
 
 
     let update_func = (new_data, new_name) => {
@@ -858,7 +904,7 @@ function draw_generic({selector, title, x_title, y_title, data, color} = {}) {
         // AXIS UPDATE
 
         svg.call(g => g.selectAll(".tick text")
-            .attr("fill", "white"))
+            .attr("fill", themeColors.svgText))
             .call(g => g.selectAll(".tick line")
                 .attr("stroke-dasharray", "3,1")
                 .attr("stroke-width", 0.5)
