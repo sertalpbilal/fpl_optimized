@@ -8,14 +8,20 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="description" content="Optimized squads for Fantasy Premier League -- everyday!" />
-    <meta name="keywords" content="fantasy, football, soccer, premier league, mathematics, optimization, analytics, sports" />
+    <meta name="keywords"
+        content="fantasy, football, soccer, premier league, mathematics, optimization, analytics, sports" />
     <meta name="author" content="Sertalp B. Cay (sertalpbilal@gmail.com)" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <script src="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js" integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/js/fontawesome.min.js"
+        integrity="sha256-TMRxGf3NaZhrxTfD8y/NGiyE4UXBA3udH1l+Co8JDVU=" crossorigin="anonymous"></script>
     <script src="https://d3js.org/d3.v6.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js" integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ==" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css" integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-interpolate/1.3.0/d3-interpolate.js"
+        integrity="sha512-KcUKnCgVgjA6pyyyN33d5S1IHk9hFUaldkL8BmKvqR+7q9HyZj3jmWJemF6IJuLkcj3biCNzdGgXNPJCjurXnQ=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css"
+        integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU=" crossorigin="anonymous">
     <!-- <link href="url_for('static', filename='3rdparty/vis-timeline-graph2d.min.css')" rel="stylesheet" type="text/css" /> -->
 
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
@@ -25,7 +31,8 @@
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css"> -->
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.6/css/responsive.bootstrap4.min.css"> -->
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/fc-3.3.2/fh-3.1.7/r-2.2.6/sp-1.2.2/datatables.min.css" />
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L07T8LS957"></script>
@@ -41,6 +48,106 @@
 
     <link rel="stylesheet" href="** repo_name **** url_for('static', filename='css/styles.css') **">
     <link rel="stylesheet" href="** repo_name **** url_for('static', filename='css/svg.css') **">
+
+    <style>
+        :root {
+            --bg-primary: #1a1a1c;
+            --bg-secondary: #2d2d30;
+            --bg-card: #3a3a3d;
+            --bg-squad-card: #474747;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #B81636;
+            --accent-hover: #5bbbb6;
+            --border-color: #4a4a4d;
+            --border-complement: #B81636;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-squad-card: #fafafa;
+            --text-primary: #2d2d30;
+            --text-secondary: #6b6b6b;
+            --accent: #B81636;
+            --accent-hover: #5bbbb6;
+            --border-color: #e0e0e0;
+            --border-complement: #B81636;
+        }
+
+        body {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-squad-card {
+            background-color: var(--bg-squad-card) !important;
+        }
+
+        .border-complement {
+            border-color: var(--border-complement) !important;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-dark {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #e0e0e0;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+
+        [data-theme="light"] .theme-toggle-btn {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            /*color: #2d2d30;
+            background: white;*/
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-hover);
+        }
+
+        [data-theme="light"] .theme-toggle-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+    </style>
+
+    <script>
+        // Apply theme immediately to prevent flash
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
 
     <link rel="manifest" href="** url_for('static', filename='asset/manifest.json') **">
     <link rel="apple-touch-icon" href="** url_for('static', filename='asset/apple_logo_114.png') **">
@@ -60,7 +167,12 @@
         <header class="bg-dark-gray mb-1">
             <div class="container">
                 <nav class="navbar navbar-collapse navbar-dark container-fluid pl-0 pr-0">
-                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3 mr-auto flex-grow-1" href="/" aria-label="Bootstrap"><img src="/static/images/logo_128.png" height="33" /> FPL Optimized</a>
+                    <a class="navbar-brand ml-0 ml-md-3 mr-0 mr-md-3 mr-auto" href="/" aria-label="Bootstrap"><img
+                            src="/static/images/logo_128.png" height="33" /> FPL Optimized</a>
+                    <button class="theme-toggle-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="theme-icon"></i>
+                        <span id="theme-text">Dark</span>
+                    </button>
                     <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuToggler" aria-controls="menuToggler" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -110,7 +222,7 @@
                 </div>
             </div>
         </div> -->
-<!--         
+        <!--         
         <div class="mt-2 container">
             <div class="row pl-3 pr-3">
                 <div class="col-12 alert alert-success alert-dismissible text-small fade show" role="alert">
@@ -127,14 +239,15 @@
             <div class="row pl-3 pr-3">
                 <div class="col-12 alert alert-success alert-dismissible text-small fade show" role="alert">
                     <!-- <i class="fas fa-info-circle"></i> <a href="https://fpl-optimized.beehiiv.com/subscribe" >Signup for our email newsletter</a> about our upcoming FPL Tool project!</a> -->
-                    <i class="fas fa-info-circle"></i> Join the next part of our journey at <a href="https://solioanalytics.com">solioanalytics.com</a>
+                    <i class="fas fa-info-circle"></i> Join the next part of our journey at <a
+                        href="https://solioanalytics.com">solioanalytics.com</a>
                     <button type="button" class="close top-close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <!-- <div class="mt-2 container">
             <div class="row pl-3 pr-3">
                 <div class="col-12 alert alert-warning alert-dismissible text-small fade show" role="alert">
@@ -145,3 +258,39 @@
                 </div>
             </div>
         </div> -->
+
+        <script>
+            function toggleTheme() {
+                const html = document.documentElement;
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                const currentTheme = html.getAttribute('data-theme');
+
+                if (currentTheme === 'light') {
+                    html.setAttribute('data-theme', 'dark');
+                    icon.className = 'fas fa-moon';
+                    text.textContent = 'Dark';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                    icon.className = 'fas fa-sun';
+                    text.textContent = 'Light';
+                    localStorage.setItem('theme', 'light');
+                }
+            }
+
+            // Update icon after DOM loads
+            document.addEventListener('DOMContentLoaded', function () {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+
+                if (savedTheme === 'light') {
+                    icon.className = 'fas fa-sun';
+                    text.textContent = 'Light';
+                } else {
+                    icon.className = 'fas fa-moon';
+                    text.textContent = 'Dark';
+                }
+            });
+        </script>
