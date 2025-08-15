@@ -500,6 +500,10 @@ function getXPData({ season, gw, date }) {
 }
 
 function getXPData_Fernet({season, gw, date}) {
+    // For 2025-26 season, use local projection data
+    if (season == "2025-26") {
+        return getProjectionData({season, gw, date})
+    }
     if (season == "2020-21") {
         return getXPData({season, gw, date})
     }
@@ -525,6 +529,41 @@ function getXPData_Fernet({season, gw, date}) {
             }
         });
     })
+}
+
+function getProjectionData({season, gw, date}) {
+    return new Promise((resolve, reject) => {
+        let gwNum = parseInt(gw.replace('GW', ''));
+        $.ajax({
+            type: "GET",
+            url: `static/projection/gw${gwNum}.csv`,
+            dataType: "text",
+            async: true,
+            success: (data) => {
+                try {
+                    let csvdata = $.csv.toObjects(data);
+                    // Convert projection format to expected element_gameweek format
+                    let convertedData = csvdata.map(row => ({
+                        player_id: parseInt(row.ID),
+                        event: gwNum,
+                        event_id: gwNum, // Using GW number as event_id for now
+                        web_name: row.Name,
+                        points_md: parseFloat(row[`${gwNum}_Pts`] || 0),
+                        xmins_md: parseFloat(row[`${gwNum}_xMins`] || 0),
+                        team: row.Team,
+                        opp_team: '' // Not available in projection data
+                    }));
+                    resolve(convertedData);
+                } catch (error) {
+                    console.error('Error parsing projection data:', error);
+                    reject("Could not parse projection data");
+                }
+            },
+            error: () => {
+                reject("Could not get projection data");
+            }
+        });
+    });
 }
 
 

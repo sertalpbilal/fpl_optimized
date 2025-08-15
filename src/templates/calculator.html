@@ -71,9 +71,9 @@
                     </div> -->
 
 
-                    <div class="text-center mb-2 text-small">
+                    <!-- <div class="text-center mb-2 text-small">
                         Sample values are available on <a href="https://fplreview.com/raw-free-model-data/" target=_blank>FPLReview</a> and <a href="https://www.drafthound.com/football/premier-league/players" target=_blank>DraftHound</a>.
-                    </div>
+                    </div> -->
 
                     <div class="text-center mb-2 text-small">
                         <div class="custom-control custom-switch text-small d-inline-block mr-3">
@@ -82,7 +82,8 @@
                         </div>
                     </div>
 
-                    <div class="controls-top row justify-content-center text-small mb-3" v-for="p in _.range(player_count)">
+                    <div class="controls-top row justify-content-center text-small mb-3"
+                        v-for="p in _.range(player_count)">
 
 
                         <!-- player_name -->
@@ -91,7 +92,8 @@
                             <div class="form-group mb-0">
                                 <label for="select-2">Player Name</label>
                                 <div class="input-group mb-1 no-wrap">
-                                    <input type="text" class="form-control small-inner-text" id="select-name" v-model="players[p].name">
+                                    <input type="text" class="form-control small-inner-text" id="select-name"
+                                        v-model="players[p].name">
                                 </div>
                             </div>
                         </div>
@@ -99,7 +101,8 @@
                         <div class="col-4 col-sm-2">
                             <div class="form-group mb-0">
                                 <label for="select-1">Player Position</label>
-                                <select class="form-control small-inner-text" id="select-1" v-model="players[p].position">
+                                <select class="form-control small-inner-text" id="select-1"
+                                    v-model="players[p].position">
                                     <option value="1">GK</option>
                                     <option value="2">DF</option>
                                     <option value="3">MD</option>
@@ -123,7 +126,9 @@
                                 <div v-if="!show_rates">
                                     <label for="select-2" :style="{color: colors[0]}">Anytime Goal %</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-2" v-model.number="players[p].goal">
+                                        <input type="number" step="0.1" min="0" max="100"
+                                            class="form-control small-inner-text" id="select-2"
+                                            v-model.number="players[p].goal">
                                         <div class="input-group-append">
                                             <span class="input-group-text small-perc">%</span>
                                         </div>
@@ -132,7 +137,9 @@
                                 <div v-else>
                                     <label for="comp-2" :style="{color: colors[0]}">Avg. Goal Rate</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text goal_rates" id="comp-2" @change="update_goal" :data-order="p">
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control small-inner-text goal_rates" id="comp-2"
+                                            @change="update_goal" :data-order="p">
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +149,9 @@
                                 <div v-if="!show_rates">
                                     <label for="select-3" :style="{color: colors[1]}">Anytime Assist %</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-3" v-model.number="players[p].assist">
+                                        <input type="number" step="0.1" min="0" max="100"
+                                            class="form-control small-inner-text" id="select-3"
+                                            v-model.number="players[p].assist">
                                         <div class="input-group-append">
                                             <span class="input-group-text small-perc">%</span>
                                         </div>
@@ -151,7 +160,9 @@
                                 <div v-else>
                                     <label for="comp-3" :style="{color: colors[1]}">Avg. Assist Rate</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text assist_rates" id="comp-3" @change="update_assist" :data-order="p">
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control small-inner-text assist_rates" id="comp-3"
+                                            @change="update_assist" :data-order="p">
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +172,9 @@
                                 <div v-if="!show_rates">
                                     <label for="select-4" :style="{color: colors[2]}">Clean Sheet %</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.1" min="0" max="100" class="form-control small-inner-text" id="select-4" v-model.number="players[p].cs">
+                                        <input type="number" step="0.1" min="0" max="100"
+                                            class="form-control small-inner-text" id="select-4"
+                                            v-model.number="players[p].cs">
                                         <div class="input-group-append">
                                             <span class="input-group-text small-perc">%</span>
                                         </div>
@@ -170,17 +183,22 @@
                                 <div v-else>
                                     <label for="comp-4" :style="{color: colors[2]}">Avg. Goals Conceded</label>
                                     <div class="input-group mb-1 no-wrap">
-                                        <input type="number" step="0.01" min="0" class="form-control small-inner-text gc_rates" id="comp-4" @change="update_gc" :data-order="p">
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control small-inner-text gc_rates" id="comp-4"
+                                            @change="update_gc" :data-order="p">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-0 d-flex align-items-end">
-                            <button :style="{'visibility': player_count > 1 || p > 0 ? 'visible': 'hidden'}" class="btn btn-secondary text-small mb-1" @click="remove_player(players[p])"><i class="fas fa-times"></i></button>
+                            <button :style="{'visibility': player_count > 1 || p > 0 ? 'visible': 'hidden'}"
+                                class="btn btn-secondary text-small mb-1" @click="remove_player(players[p])"><i
+                                    class="fas fa-times"></i></button>
                         </div>
                     </div>
                     <div class="controls-top row justify-content-center text-small">
-                        <button class="btn btn-secondary text-small mb-1" @click="add_player" v-show="player_count < 4"><i class="fas fa-plus"></i></button>
+                        <button class="btn btn-secondary text-small mb-1" @click="add_player"
+                            v-show="player_count < 4"><i class="fas fa-plus"></i></button>
                     </div>
                     <div class="text-center">
                         <button class="btn btn-primary text-small" @click="calculate">Calculate</button>
@@ -198,222 +216,237 @@
 
                     <div class="row justify-content-center mb-3" v-if="players_cached.length == 2">
                         <div class="minor-display-box m-1 p-3">
-                            <div class="minor-box-title">{{ players_cached[0].name }} > {{ players_cached[1].name }}</div>
+                            <div class="minor-box-title">{{ players_cached[0].name }} > {{ players_cached[1].name }}
+                            </div>
                             <div class="minor-box-value pb-2">{{ (comparison.p1_better * 100).toFixed(2) }}%</div>
                         </div>
                         <div class="minor-display-box m-1 p-3">
-                            <div class="minor-box-title">{{ players_cached[0].name }} = {{ players_cached[1].name }}</div>
+                            <div class="minor-box-title">{{ players_cached[0].name }} = {{ players_cached[1].name }}
+                            </div>
                             <div class="minor-box-value pb-2">{{ (comparison.players_equal * 100).toFixed(2) }}%</div>
                         </div>
                         <div class="minor-display-box m-1 p-3">
-                            <div class="minor-box-title">{{ players_cached[0].name }} < {{ players_cached[1].name }}</div>
-                            <div class="minor-box-value pb-2">{{ (comparison.p2_better * 100).toFixed(2) }}%</div>
+                            <div class="minor-box-title">{{ players_cached[0].name }} < {{ players_cached[1].name
+                                    }}</div>
+                                    <div class="minor-box-value pb-2">{{ (comparison.p2_better * 100).toFixed(2) }}%
+                                    </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row justify-content-center mb-3" v-for="(value,key) in players_cached">
-                        <div class="col-4">
-                            <div class="minor-display-box">
-                                <div class="minor-box-title" :style="{color: colors[0]}">Average Goals Scored {{ value.name ? '(' + value.name + ')' : '' }}</div>
-                                <div class="minor-box-value red-border-bottom pb-2">{{ goal_rate[key].toFixed(2) }}</div>
-                                <div class="minor-box-title" :style="{color: colors[0]}">Average Goal Points</div>
-                                <div class="minor-box-value">{{ goal_points[key].toFixed(2) }}</div>
-                                <div class="minor-box-footnote">*Assuming 90 mins</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="minor-display-box">
-                                <div class="minor-box-title" :style="{color: colors[1]}">Average Assists Made {{ value.name ? '(' + value.name + ')' : '' }}</div>
-                                <div class="minor-box-value red-border-bottom pb-2">{{ assist_rate[key].toFixed(2) }}</div>
-                                <div class="minor-box-title" :style="{color: colors[1]}">Average Assist Points</div>
-                                <div class="minor-box-value">{{ assist_points[key].toFixed(2) }}</div>
-                                <div class="minor-box-footnote">*Assuming 90 mins</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="minor-display-box">
-                                <div class="minor-box-title" :style="{color: colors[2]}">Average Conceded {{ value.name ? '(' + value.name + ')' : '' }}</div>
-                                <div class="minor-box-value red-border-bottom pb-2">{{ gc_rate[key].toFixed(2) }}</div>
-                                <div class="minor-box-title" :style="{color: colors[2]}">Average CS-GC Points</div>
-                                <div class="minor-box-value">{{ csgc_points[key].toFixed(2) }}</div>
-                                <div class="minor-box-footnote">*Assuming 90 mins</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div id="ev_graph">
-                            
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="card-body red-border-bottom">
-                    <div class="metric-self">
-                        <div class="text-center mb-1" :style="{color: colors[0]}">Goals</div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th v-for="g in _.range(0,11)">
-                                                    {{ g }}
-                                                </th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Prob.</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ ((goal_probs[0][g] || 0) * 100).toFixed(2) }}%
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Points</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['goal'] || 0) * g }}
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>EV</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['goal'] * goal_probs[0][g] * g || 0).toFixed(2) }}
-                                                </td>
-                                                <td>{{ goal_points[0].toFixed(2) }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                        <div class="row justify-content-center mb-3" v-for="(value,key) in players_cached">
+                            <div class="col-4">
+                                <div class="minor-display-box">
+                                    <div class="minor-box-title" :style="{color: colors[0]}">Average Goals Scored {{
+                                        value.name ? '(' + value.name + ')' : '' }}</div>
+                                    <div class="minor-box-value red-border-bottom pb-2">{{ goal_rate[key].toFixed(2) }}
+                                    </div>
+                                    <div class="minor-box-title" :style="{color: colors[0]}">Average Goal Points</div>
+                                    <div class="minor-box-value">{{ goal_points[key].toFixed(2) }}</div>
+                                    <div class="minor-box-footnote">*Assuming 90 mins</div>
                                 </div>
-                                <div id="goal_prob_graph">
-
+                            </div>
+                            <div class="col-4">
+                                <div class="minor-display-box">
+                                    <div class="minor-box-title" :style="{color: colors[1]}">Average Assists Made {{
+                                        value.name ? '(' + value.name + ')' : '' }}</div>
+                                    <div class="minor-box-value red-border-bottom pb-2">{{ assist_rate[key].toFixed(2)
+                                        }}</div>
+                                    <div class="minor-box-title" :style="{color: colors[1]}">Average Assist Points</div>
+                                    <div class="minor-box-value">{{ assist_points[key].toFixed(2) }}</div>
+                                    <div class="minor-box-footnote">*Assuming 90 mins</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="minor-display-box">
+                                    <div class="minor-box-title" :style="{color: colors[2]}">Average Conceded {{
+                                        value.name ? '(' + value.name + ')' : '' }}</div>
+                                    <div class="minor-box-value red-border-bottom pb-2">{{ gc_rate[key].toFixed(2) }}
+                                    </div>
+                                    <div class="minor-box-title" :style="{color: colors[2]}">Average CS-GC Points</div>
+                                    <div class="minor-box-value">{{ csgc_points[key].toFixed(2) }}</div>
+                                    <div class="minor-box-footnote">*Assuming 90 mins</div>
                                 </div>
                             </div>
                         </div>
+
+                        <div>
+                            <div id="ev_graph">
+
+                            </div>
+                        </div>
+
                     </div>
+                    <div class="card-body red-border-bottom">
+                        <div class="metric-self">
+                            <div class="text-center mb-1" :style="{color: colors[0]}">Goals</div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th v-for="g in _.range(0,11)">
+                                                        {{ g }}
+                                                    </th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Prob.</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ ((goal_probs[0][g] || 0) * 100).toFixed(2) }}%
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Points</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['goal'] || 0) * g }}
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>EV</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['goal'] * goal_probs[0][g] * g ||
+                                                        0).toFixed(2) }}
+                                                    </td>
+                                                    <td>{{ goal_points[0].toFixed(2) }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="goal_prob_graph">
 
-                    <div class="metric-self">
-                        <div class="text-center mb-1" :style="{color: colors[1]}">Assists</div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th v-for="g in _.range(0,11)">
-                                                    {{ g }}
-                                                </th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Prob.</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ ((assist_probs[0][g] || 0) * 100).toFixed(2) }}%
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Points</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['assist'] || 0) * g }}
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>EV</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['assist'] * assist_probs[0][g] * g || 0).toFixed(2) }}
-                                                </td>
-                                                <td>{{ assist_points[0].toFixed(2) }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div id="assist_prob_graph">
-
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="metric-self">
-                        <div class="text-center mb-1" :style="{color: colors[2]}">Clean Sheet - Goals Conceded</div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th v-for="g in _.range(0,11)">
-                                                    {{ g }}
-                                                </th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Prob.</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ ((gc_probs[0][g] || 0) * 100).toFixed(2) }}%
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>CS Points</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['cs'] || 0) * (g==0) }}
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>GC Points</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ (active_rates[0]['2gc'] || 0) * (Math.floor(g/2)) }}
-                                                </td>
-                                                <td>-</td>
-                                            </tr>
-                                            <tr>
-                                                <td>EV</td>
-                                                <td v-for="g in _.range(0,11)">
-                                                    {{ ((gc_probs[0][g] || 0) * ((active_rates[0]['cs'] || 0) * (g==0) + (active_rates[0]['2gc'] || 0) * (Math.floor(g/2)))).toFixed(2) }}
-                                                </td>
-                                                <td>{{ csgc_points[0].toFixed(2) }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-2" id="cs_prob_graph">
+                        <div class="metric-self">
+                            <div class="text-center mb-1" :style="{color: colors[1]}">Assists</div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th v-for="g in _.range(0,11)">
+                                                        {{ g }}
+                                                    </th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Prob.</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ ((assist_probs[0][g] || 0) * 100).toFixed(2) }}%
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Points</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['assist'] || 0) * g }}
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>EV</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['assist'] * assist_probs[0][g] * g ||
+                                                        0).toFixed(2) }}
+                                                    </td>
+                                                    <td>{{ assist_points[0].toFixed(2) }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="assist_prob_graph">
 
-                                </div>
-                                <div class="mt-4" id="gc_prob_graph">
-                                            
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                        <div class="metric-self">
+                            <div class="text-center mb-1" :style="{color: colors[2]}">Clean Sheet - Goals Conceded</div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th v-for="g in _.range(0,11)">
+                                                        {{ g }}
+                                                    </th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Prob.</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ ((gc_probs[0][g] || 0) * 100).toFixed(2) }}%
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>CS Points</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['cs'] || 0) * (g==0) }}
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>GC Points</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ (active_rates[0]['2gc'] || 0) * (Math.floor(g/2)) }}
+                                                    </td>
+                                                    <td>-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>EV</td>
+                                                    <td v-for="g in _.range(0,11)">
+                                                        {{ ((gc_probs[0][g] || 0) * ((active_rates[0]['cs'] || 0) *
+                                                        (g==0) + (active_rates[0]['2gc'] || 0) *
+                                                        (Math.floor(g/2)))).toFixed(2) }}
+                                                    </td>
+                                                    <td>{{ csgc_points[0].toFixed(2) }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="mt-2" id="cs_prob_graph">
+
+                                    </div>
+                                    <div class="mt-4" id="gc_prob_graph">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row" v-cloak>
-        <div class="col-12 mb-3">
-            <div class="card border-dark bg-squad-card qa">
-                <div class="card-footer disclaimer">
-                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+        <div class="row" v-cloak>
+            <div class="col-12 mb-3">
+                <div class="card border-dark bg-squad-card qa">
+                    <div class="card-footer disclaimer">
+                        The information contained on this website is for general information purposes only. Any reliance
+                        you place on this information is strictly at your own risk.
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 </main>
 

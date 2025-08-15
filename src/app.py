@@ -198,15 +198,26 @@ def live_gw_page():
 
     target, list_dates, next_gw, is_active_gw, active_gw, _ = list_one_per_gw(season_filter=global_season)
 
-    # with open('static/json/fpl_analytics.json') as f:
-    #     league_list = f.read()
-
     print("LIVE GW")
     print(target)
     print(list_dates)
     print(next_gw)
     print(is_active_gw)
     print(active_gw)
+    print(global_season)
+
+    # Handle case when no data exists for the season
+    if target is None:
+        if app.config['DEBUG']:
+            return render_template(page_name, repo_name="/..", ts = timestamp, page_name="Live GW", 
+                season=global_season, gw="GW1", date="TBD", list_dates=[], next_gw=1, 
+                is_active='false', active_gw=1, no_data=True, last_update=current_time, league_list="{}")
+        else:
+            return render_template(page_name, repo_name="", ts = timestamp, page_name="Live GW", 
+                season=global_season, gw="GW1", date="TBD", list_dates=[], next_gw=1, 
+                is_active='false', active_gw=1, no_data=True, last_update=current_time, league_list="{}")
+
+
 
     with open('static/json/league.json') as f:
         league_list = f.read()

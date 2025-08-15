@@ -56,10 +56,10 @@ def get_all_data():
     input_folder, output_folder, season_folder = create_folders()
     get_fixture(season_folder)
     get_data_fpl_api(input_folder, season_folder)
-    if next_gw != 39:
-        from fplreview import get_data_fplreview
-        get_data_fplreview(input_folder, page='free-planner', rename='free-planner', method='legacy')
-        generate_intermediate_layer(input_folder, page='free-planner')
+    # if next_gw != 39:
+    #     from fplreview import get_data_fplreview
+    #     get_data_fplreview(input_folder, page='free-planner', rename='free-planner', method='legacy')
+    #     generate_intermediate_layer(input_folder, page='free-planner')
         # get_fivethirtyeight_data(input_folder)
 
     cache_effective_ownership(season_folder)
@@ -154,12 +154,20 @@ def get_data_fpl_api(target_folder, season_folder=None):
 def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     """Generates intermediate data layer to be consumed in optimization"""
 
+    start_gw = get_gw()
+
     team_df = pd.read_csv(target_folder / "team.csv")
     fixture_df = pd.read_csv(target_folder / "fixture.csv")
     element_df = pd.read_csv(target_folder / "element.csv")
-    prediction_df = pd.read_csv(target_folder / f"fplreview-{page}.csv").drop_duplicates()
+    # prediction_df = pd.read_csv(target_folder / f"fplreview-{page}.csv").drop_duplicates()
+    # try:
+    prediction_df = pd.read_csv(f"static/projection/gw{start_gw}.csv").drop_duplicates()
+    # except:
+    #     prediction_df = pd.read_csv(f"../static/projection/gw{start_gw}.csv").drop_duplicates()
 
     weeks =  [i.split('_')[0] for i in list(filter(lambda x: '_Pts' in x, prediction_df.columns.tolist()))]
+    
+    # weeks = range(start_gw, min(39, start_gw+13))
 
     filtered_fixture = fixture_df[(fixture_df['event'] >= int(weeks[0])) & (fixture_df['event'] <= int(weeks[-1]))]
     filtered_fixture = filtered_fixture[['event', 'id', 'team_a', 'team_h']]
@@ -168,7 +176,7 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     combined_games = pd.concat([home_games, away_games], sort=False)
 
     element_df = pd.merge(element_df, team_df.rename(columns={'id': 'team_id', 'name': 'team_name'}), how='left', left_on=['team'], right_on=['team_id'])
-    # element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
+    element_df = pd.merge(element_df, prediction_df, how='left', left_on=['web_name', 'team_name'], right_on=['Name', 'Team'])
     element_df = pd.merge(element_df, prediction_df, how='left', left_on=['id'], right_on=['ID'])
     full_element_gameweek_df = pd.merge(left=element_df.rename(columns={'id': 'player_id'}).assign(key=1), right=pd.DataFrame(weeks, columns=['event']).assign(key=1), on='key', how='inner').drop(["key"], axis=1)
 
@@ -882,6 +890,7 @@ if __name__ == "__main__":
     # exit(0)
 
     input_folder, output_folder, season_folder = create_folders()
+    get_all_data()
     generate_intermediate_layer(input_folder, page='free-planner')
 
     # get_all_data()

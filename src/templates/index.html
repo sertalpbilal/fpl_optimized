@@ -3,136 +3,135 @@
 <!-- <meta http-equiv="refresh" content="0; url=/signup.html" /> -->
 
 <style>
+    .modern-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
 
-.modern-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
+    .modern-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: var(--accent);
+    }
 
-.modern-card:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    border-color: var(--accent);
-}
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 0.5rem;
+    }
 
-.section-title {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 0.5rem;
-}
+    .tool-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1.25rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
 
-.tool-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 1.25rem;
-    height: 100%;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-    position: relative;
-    overflow: hidden;
-}
-
-.external-link-indicator {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.tool-card:hover .external-link-indicator {
-    opacity: 1;
-}
-
-.tool-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(91, 187, 182, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.tool-card:hover::before {
-    left: 100%;
-}
-
-.tool-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    border-color: var(--accent-hover);
-}
-
-.tool-icon {
-    font-size: 2.5rem;
-    color: var(--accent);
-    margin-bottom: 1rem;
-    transition: color 0.3s ease;
-}
-
-.tool-card:hover .tool-icon {
-    color: var(--accent-hover);
-}
-
-.tool-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.tool-description {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.4;
-}
-
-.disabled-tool {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.badge-new {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--accent);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .theme-toggle {
+    .external-link-indicator {
+        position: absolute;
         top: 10px;
         right: 10px;
-        padding: 6px 12px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
     }
-    
-    .section-title {
-        font-size: 1.5rem;
+
+    .tool-card:hover .external-link-indicator {
+        opacity: 1;
     }
-    
+
+    .tool-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(91, 187, 182, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .tool-card:hover::before {
+        left: 100%;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        border-color: var(--accent-hover);
+    }
+
     .tool-icon {
-        font-size: 2rem;
+        font-size: 2.5rem;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        transition: color 0.3s ease;
     }
-}
+
+    .tool-card:hover .tool-icon {
+        color: var(--accent-hover);
+    }
+
+    .tool-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .tool-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+
+    .disabled-tool {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .badge-new {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--accent);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .theme-toggle {
+            top: 10px;
+            right: 10px;
+            padding: 6px 12px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+        }
+    }
 </style>
 
 <main class="container">
@@ -147,13 +146,14 @@
 
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="live_gw.html" class="tool-card">
+                        <div class="tool-card disabled-tool" style="opacity: 0.6; cursor: not-allowed;">
                             <div class="tool-icon text-center">
                                 <i class="fas fa-chart-line"></i>
                             </div>
                             <h5 class="tool-title">Live GW Tracker</h5>
                             <p class="tool-description">Expected and actual points with live tracking</p>
-                        </a>
+                            <span class="badge-new">Coming Soon</span>
+                        </div>
                     </div>
 
 
@@ -172,7 +172,7 @@
                         </div>
                     </div> -->
 
-                    
+
 
 
 
@@ -187,8 +187,8 @@
                         </div>
                     </div>
 
-                    
-                    
+
+
 
                     <!-- <div class="card mb-2" style="max-width: 540px;">
                         <div class="row no-gutters index-card index-option">
@@ -233,7 +233,7 @@
                         </a>
                     </div>
 
-                    
+
 
                     <!-- <div class="card mb-2" style="max-width: 540px;">
                         <div class="row no-gutters index-card index-option">
@@ -250,28 +250,31 @@
                         </div>
                     </div> -->
 
-                    
+
 
 
 
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="who_played.html" class="tool-card">
+                        <a href="who_played.html" class="tool-card disabled-tool">
                             <div class="tool-icon text-center">
                                 <i class="fas fa-question"></i>
                             </div>
                             <h5 class="tool-title">Who Played</h5>
                             <p class="tool-description">Previous gameweeks minutes played information</p>
+                            <span class="badge-new">Coming Soon</span>
                         </a>
+
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="ownership_rates.html" class="tool-card">
+                        <a href="ownership_rates.html" class="tool-card disabled-tool">
                             <div class="tool-icon text-center">
                                 <i class="fas fa-percent"></i>
                             </div>
                             <h5 class="tool-title">Ownership Rates</h5>
                             <p class="tool-description">Last GW ownership rates of every player with FPL trends</p>
+                            <span class="badge-new">Coming Soon</span>
                         </a>
                     </div>
 
@@ -290,7 +293,8 @@
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog6.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog6.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
@@ -307,7 +311,8 @@
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog5.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog5.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
@@ -324,12 +329,14 @@
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog4.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog4.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
                                         <h5 class="card-title">Hindsight Optimization</h5>
-                                        <p class="card-text">Optimizing entire 2019-2020 season using hindsight values</p>
+                                        <p class="card-text">Optimizing entire 2019-2020 season using hindsight values
+                                        </p>
                                     </div>
                                 </div>
                                 <a href="https://alpscode.com/blog/hindsight-optimization/" class="stretched-link"></a>
@@ -341,7 +348,8 @@
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog1.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog1.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
@@ -353,12 +361,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-12 col-md-4 mb-1">
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog2.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog2.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
@@ -375,12 +384,14 @@
                         <div class="card" style="max-width: 540px;">
                             <div class="row no-gutters index-card index-option">
                                 <div class="col-4 text-center my-auto">
-                                    <img class="card-img link-img w-100" src="** url_for('static', filename='images/blog3.jpg') **" />
+                                    <img class="card-img link-img w-100"
+                                        src="** url_for('static', filename='images/blog3.jpg') **" />
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-2">
                                         <h5 class="card-title">On Ownership Ratios</h5>
-                                        <p class="card-text">Role of ownership ratios in FPL data and how to exploit it. Can algorithms learn from FPL managers?</p>
+                                        <p class="card-text">Role of ownership ratios in FPL data and how to exploit it.
+                                            Can algorithms learn from FPL managers?</p>
                                     </div>
                                 </div>
                                 <a href="https://alpscode.com/blog/fpl-ownership-weight/" class="stretched-link"></a>
@@ -388,11 +399,11 @@
                         </div>
                     </div>
 
-                    
 
 
 
-                    
+
+
 
                 </div>
             </div>
@@ -406,7 +417,8 @@
 
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="https://cheatography.com/sertalpbilal/cheat-sheets/fpl-api-endpoints/" class="tool-card" target="_blank">
+                        <a href="https://cheatography.com/sertalpbilal/cheat-sheets/fpl-api-endpoints/"
+                            class="tool-card" target="_blank">
                             <i class="fas fa-external-link-alt external-link-indicator"></i>
                             <div class="tool-icon text-center">
                                 <i class="fas fa-code"></i>
@@ -417,7 +429,8 @@
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="https://github.com/sertalpbilal/FPL-Optimization-Tools" class="tool-card" target="_blank">
+                        <a href="https://github.com/sertalpbilal/FPL-Optimization-Tools" class="tool-card"
+                            target="_blank">
                             <i class="fas fa-external-link-alt external-link-indicator"></i>
                             <div class="tool-icon text-center">
                                 <i class="fab fa-python"></i>
@@ -428,7 +441,8 @@
                     </div>
 
                     <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <a href="https://colab.research.google.com/drive/1fwYcG28zpIOJf7R8yx31bDL_kJG1JRLu" class="tool-card" target="_blank">
+                        <a href="https://colab.research.google.com/drive/1fwYcG28zpIOJf7R8yx31bDL_kJG1JRLu"
+                            class="tool-card" target="_blank">
                             <i class="fas fa-external-link-alt external-link-indicator"></i>
                             <div class="tool-icon text-center">
                                 <i class="fas fa-laptop-code"></i>
@@ -449,7 +463,7 @@
                         </a>
                     </div>
 
-                    
+
 
                 </div>
             </div>
@@ -471,18 +485,42 @@
                                     <div class="card-body p-2">
                                         <h5 class="card-title">FPL Tools / Reference</h5>
                                         <div class="list-group">
-                                            <a href="https://fplreview.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPLReview</a>
-                                            <a href="https://fantasyfootballhub.co.uk/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Fantasy Football Hub</a>
-                                            <a href="https://www.fantasyfootballscout.co.uk/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FantasyFootballScout</a>
-                                            <a href="https://www.livefpl.net/rank" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">LiveFPL</a>
-                                            <a href="https://www.fplgameweek.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPLGameweek</a>
-                                            <a href="https://www.fplbot.app/search" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPLBot Search</a>
-                                            <a href="https://www.premierfantasytools.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Premier Fantasy Tools</a>
-                                            <a href="https://www.fplanalytics.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPL Analytics</a>
-                                            <a href="https://www.anewpla.net/fpl/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPL Tools</a>
-                                            <a href="https://jumpersforgoalposts.info" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Jumpers for Goalposts</a>
-                                            <a href="https://livefpltables.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Live FPL Tables</a>
-                                            <a href="https://fpl.team/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPL.team Planner</a>
+                                            <a href="https://fplreview.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPLReview</a>
+                                            <a href="https://fantasyfootballhub.co.uk/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Fantasy Football Hub</a>
+                                            <a href="https://www.fantasyfootballscout.co.uk/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FantasyFootballScout</a>
+                                            <a href="https://www.livefpl.net/rank"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">LiveFPL</a>
+                                            <a href="https://www.fplgameweek.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPLGameweek</a>
+                                            <a href="https://www.fplbot.app/search"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPLBot Search</a>
+                                            <a href="https://www.premierfantasytools.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Premier Fantasy Tools</a>
+                                            <a href="https://www.fplanalytics.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPL Analytics</a>
+                                            <a href="https://www.anewpla.net/fpl/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPL Tools</a>
+                                            <a href="https://jumpersforgoalposts.info"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Jumpers for Goalposts</a>
+                                            <a href="https://livefpltables.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Live FPL Tables</a>
+                                            <a href="https://fpl.team/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPL.team Planner</a>
                                         </div>
                                     </div>
                                 </div>
@@ -500,14 +538,28 @@
                                     <div class="card-body p-2">
                                         <h5 class="card-title">Podcasts/Media</h5>
                                         <div class="list-group">
-                                            <a href="https://plinkhq.com/i/1623503791?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FPL Optimized</a>
-                                            <a href="https://plinkhq.com/i/1526017149?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Above Average FPL</a>
-                                            <a href="https://plinkhq.com/i/1032157163?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Always Cheating</a>
-                                            <a href="https://anchor.fm/corridor-of-uncertainty/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Corridor of Uncertainty</a>
-                                            <a href="https://plinkhq.com/i/1121866859?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Double Pivot</a>
-                                            <a href="https://plinkhq.com/i/1522157387?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">The Football Fanalytics Podcast</a>
-                                            <a href="https://plinkhq.com/i/1244718735?to=page" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Who Got The Assist?</a>
-                                            
+                                            <a href="https://plinkhq.com/i/1623503791?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FPL Optimized</a>
+                                            <a href="https://plinkhq.com/i/1526017149?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Above Average FPL</a>
+                                            <a href="https://plinkhq.com/i/1032157163?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Always Cheating</a>
+                                            <a href="https://anchor.fm/corridor-of-uncertainty/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Corridor of Uncertainty</a>
+                                            <a href="https://plinkhq.com/i/1121866859?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Double Pivot</a>
+                                            <a href="https://plinkhq.com/i/1522157387?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">The Football Fanalytics Podcast</a>
+                                            <a href="https://plinkhq.com/i/1244718735?to=page"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Who Got The Assist?</a>
+
                                         </div>
                                     </div>
                                 </div>
@@ -525,11 +577,21 @@
                                     <div class="card-body p-2">
                                         <h5 class="card-title">Data Sources</h5>
                                         <div class="list-group">
-                                            <a href="https://fbref.com/en/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">fbref</a>
-                                            <a href="https://www.whoscored.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">WhoScored</a>
-                                            <a href="https://github.com/statsbomb/open-data" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">StatsBomb</a>
-                                            <a href="https://understat.com/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">Understat</a>
-                                            <a href="https://projects.fivethirtyeight.com/soccer-predictions/premier-league/" class="p-1 list-group-item list-group-item-action list-group-item-secondary" target="_blank">FiveThirtyEight PL</a>
+                                            <a href="https://fbref.com/en/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">fbref</a>
+                                            <a href="https://www.whoscored.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">WhoScored</a>
+                                            <a href="https://github.com/statsbomb/open-data"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">StatsBomb</a>
+                                            <a href="https://understat.com/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">Understat</a>
+                                            <a href="https://projects.fivethirtyeight.com/soccer-predictions/premier-league/"
+                                                class="p-1 list-group-item list-group-item-action list-group-item-secondary"
+                                                target="_blank">FiveThirtyEight PL</a>
                                         </div>
                                     </div>
                                 </div>
@@ -538,7 +600,7 @@
                     </div>
 
 
-                    
+
 
                 </div>
             </div>
