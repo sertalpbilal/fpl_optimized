@@ -308,21 +308,21 @@ var app = new Vue({
         );
         p.rp = total_score;
         p.rp_original = total_score;
-        // try {
-        //   p.games_finished = p.explain
-        //     .map(
-        //       (i) => fixture.find((j) => j.id == i.fixture).finished_provisional
-        //     )
-        //     .every((i) => i);
-        //   const p_type = app.el_by_id[p.id].element_type;
-        //   if (p.games_finished && p.stats.minutes == 0 && p_type != 5) {
-        //     p.autosub = true;
-        //   } else {
-        //     p.autosub = false;
-        //   }
-        // } catch (e) {
-        //   console.log("Player game_finished error", e);
-        // }
+        try {
+          p.games_finished = p.explain
+            .map(
+              (i) => fixture.find((j) => j.id == i.fixture).finished_provisional
+            )
+            .every((i) => i);
+          const p_type = app.el_by_id[p.id].element_type;
+          if (p.games_finished && p.stats.minutes == 0 && p_type != 5) {
+            p.autosub = true;
+          } else {
+            p.autosub = false;
+          }
+        } catch (e) {
+          console.log("Player game_finished error", e);
+        }
       });
       let rp_obj = Object.fromEntries(
         _.cloneDeep(rp_original.map((i) => [i.id, i]))
