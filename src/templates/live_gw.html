@@ -102,15 +102,12 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="show_team_info = !show_team_info">Toggle Team Info {{
                                                     show_team_info ? ": On" : ": Off" }}</button>
-                                                <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button"
-                                                    @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ":
-                                                    Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
-                                                    @click="toggleAutoSub">Toggle Autosub {{ is_using_autosub ? ": On" :
-                                                    ": Off" }}</button>
+                                                    @click="toggleHit">Toggle Hit Points</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
-                                                    @click="toggleWhiteSpace">Toggle Compact Mode {{ no_white_space ? ":
-                                                    On" : ": Off" }}</button> -->
+                                                    @click="toggleAutoSub">Toggle Autosub</button>
+                                                <button class="dropdown-item btn btn-secondary btn-sm d-block"
+                                                    type="button" @click="toggleWhiteSpace">Toggle Compact Mode</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="$('#autosubModal').modal('show')"
@@ -1056,7 +1053,7 @@
             </div>
             <div class="modal-body">
 
-                <div class="text-black">
+                <div class="">
                     <div class="form-group">
                         <label for="teamIdEnter">Enter your team ID
                             <!-- <button class="text-muted btn pt-0 text-small align-baseline" @click="show_league=true">-or-
@@ -1089,7 +1086,7 @@
                 </div>
 
                 <!-- <div>
-                    <div class="form-group text-black">
+                    <div class="form-group ">
                         <label for="fpl_analytics_league_select">-OR- Choose a team among FPL Analytics League</label>
                         <select class="form-control" id="fpl_analytics_league_select" @change="selectLeagueTeam">
                             <option></option>
@@ -1232,7 +1229,7 @@
                 </div>
                 <div v-if="is_ready && modal_selected_game !== undefined">
                     <div>
-                        <h5 class="text-black">All Players</h5>
+                        <h5 class="">All Players</h5>
                     </div>
                     <div>
                         <table class="table table-sm table-striped table-responsive" id="match_report_all">
@@ -1465,7 +1462,7 @@
                     </table>
                 </div>
                 <div v-if="is_ready && target_player !== undefined" class="mt-3">
-                    <div class="text-small text-black">
+                    <div class="text-small ">
                         Choose a player below to swap with {{ target_player.name }}
                     </div>
                     <div>
@@ -1733,7 +1730,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-black">
+            <div class="modal-body ">
                 <div class="">
                     <div>
                         <h6>Bench Substitutions</h6>
@@ -1804,7 +1801,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-black">
+            <div class="modal-body ">
                 <table class="table table-striped table-sm">
                     <thead>
                         <tr>
@@ -1839,7 +1836,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body text-black">
+            <div class="modal-body ">
 
                 <table class="table table-sm table-striped text-small narrow-td text-center">
                     <thead>

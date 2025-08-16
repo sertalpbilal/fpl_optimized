@@ -2037,3 +2037,113 @@ table.sticky-left tr th:first-child {
 .hover-blue:hover {
     color: turquoise;
 }
+
+/* Dark mode styles for dropdown menu */
+body:not([data-theme="light"]) .dropdown-menu {
+    background-color: var(--bg-secondary, #2d2d30);
+    border-color: var(--border-color, #4a4a4d);
+}
+
+body:not([data-theme="light"]) .dropdown-item {
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .dropdown-item:hover,
+body:not([data-theme="light"]) .dropdown-item:focus {
+    background-color: var(--bg-card, #3a3a3d);
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .dropdown-item.disabled,
+body:not([data-theme="light"]) .dropdown-item:disabled {
+    color: var(--text-secondary, #6b6b6b);
+}
+
+body:not([data-theme="light"]) .dropdown-divider {
+    border-color: var(--border-color, #4a4a4d);
+}
+
+/* Dark mode styles for modals */
+body:not([data-theme="light"]) .modal-content {
+    background-color: var(--bg-secondary, #2d2d30);
+    border-color: var(--border-color, #4a4a4d);
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-header {
+    background-color: var(--bg-card, #3a3a3d);
+    border-bottom-color: var(--border-color, #4a4a4d);
+}
+
+body:not([data-theme="light"]) .modal-body {
+    background-color: var(--bg-secondary, #2d2d30);
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-footer {
+    /* background-color: var(--bg-card, #3a3a3d); */
+    /* border-top-color: var(--border-color, #4a4a4d); */
+}
+
+body:not([data-theme="light"]) h5.modal-title {
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-metric {
+    background-color: var(--bg-card, #3a3a3d);
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-metric-title {
+    color: var(--text-primary, #e0e0e0);
+    background-color: #4a2c2c;
+}
+
+body:not([data-theme="light"]) .wait-modal {
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .close {
+    color: var(--text-primary, #e0e0e0);
+    opacity: 0.8;
+}
+
+body:not([data-theme="light"]) .close:hover {
+    color: var(--text-primary, #e0e0e0);
+    opacity: 1;
+}
+
+/* Dark mode styles for form controls in modals */
+body:not([data-theme="light"]) .modal-content .form-control,
+body:not([data-theme="light"]) .modal-content .custom-select {
+    background-color: var(--bg-primary, #1a1a1c);
+    border-color: var(--border-color, #4a4a4d);
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-content .form-control:focus,
+body:not([data-theme="light"]) .modal-content .custom-select:focus {
+    background-color: var(--bg-primary, #1a1a1c);
+    border-color: var(--accent, #B81636);
+    color: var(--text-primary, #e0e0e0);
+    box-shadow: 0 0 0 0.2rem rgba(184, 22, 54, 0.25);
+}
+
+body:not([data-theme="light"]) .modal-content .custom-control-label {
+    color: var(--text-primary, #e0e0e0);
+}
+
+body:not([data-theme="light"]) .modal-content .custom-control-input:checked~.custom-control-label::before {
+    background-color: var(--accent, #B81636);
+    border-color: var(--accent, #B81636);
+}
+
+
+html[data-theme="light"] .setting-value {
+    background: #eeeeee;
+}
+
+html[data-theme="light"] .nav-tabs.main-blocks .nav-link {
+    background: #eeeeee;
+    color: black;
+}

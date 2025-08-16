@@ -2,10 +2,10 @@ name: Populate-Website
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: engine
-  # schedule:
-  #   - cron: "0 4,10,16,22 * * *"
+  push:
+    branches: engine
+  schedule:
+    - cron: "0 4,10,16,22 * * *"
 
 jobs:
   build-and-run:
