@@ -3,8 +3,30 @@ autosub_stats = {};
 
 let current_season = "2025_2026";
 
+Vue.config.devtools = true;
+Vue.config.productionTip = false;
+Vue.config.silent = false;
+Vue.config.errorHandler = (err, vm, info) => {
+  console.error("[Vue error]", info, err);
+  debugger;
+};
+Vue.config.warnHandler = (msg, vm, trace) => {
+  console.warn("[Vue warn]", msg, trace);
+};
+window.onerror = (m, s, l, c, e) => {
+  console.error("[window.onerror]", m, s + ":" + l);
+  debugger;
+};
+window.addEventListener("unhandledrejection", (e) => {
+  console.error("[unhandledrejection]", e.reason);
+  debugger;
+});
+
 var app = new Vue({
   el: "#app",
+  //   render(h) {
+  //     return h("div", "Vue mounted OK");
+  //   },
   data: {
     cnt: 0,
     season: season,
@@ -286,21 +308,21 @@ var app = new Vue({
         );
         p.rp = total_score;
         p.rp_original = total_score;
-        try {
-          p.games_finished = p.explain
-            .map(
-              (i) => fixture.find((j) => j.id == i.fixture).finished_provisional
-            )
-            .every((i) => i);
-          const p_type = app.el_by_id[p.id].element_type;
-          if (p.games_finished && p.stats.minutes == 0 && p_type != 5) {
-            p.autosub = true;
-          } else {
-            p.autosub = false;
-          }
-        } catch (e) {
-          console.log("Player game_finished error", e);
-        }
+        // try {
+        //   p.games_finished = p.explain
+        //     .map(
+        //       (i) => fixture.find((j) => j.id == i.fixture).finished_provisional
+        //     )
+        //     .every((i) => i);
+        //   const p_type = app.el_by_id[p.id].element_type;
+        //   if (p.games_finished && p.stats.minutes == 0 && p_type != 5) {
+        //     p.autosub = true;
+        //   } else {
+        //     p.autosub = false;
+        //   }
+        // } catch (e) {
+        //   console.log("Player game_finished error", e);
+        // }
       });
       let rp_obj = Object.fromEntries(
         _.cloneDeep(rp_original.map((i) => [i.id, i]))
@@ -1263,7 +1285,7 @@ var app = new Vue({
         this.sample_data = Object.freeze(data);
         let sample_values = Object.keys(data)
           .reverse()
-          .map((i) => "Sample - " + sample_compact_number(i));
+          .map((i) => "" + sample_compact_number(i));
         this.available_sources = ["Official FPL API"].concat(sample_values);
         if (this.ownership_source == this.available_sources[0]) {
           this.ownership_source = this.available_sources[2];
@@ -1940,9 +1962,9 @@ async function load_sample_data() {
               app.saveSampleData(false, []);
             } else {
               let sample_data = data[0].value;
-              if (data[1].status != "rejected") {
-                sample_data["Prime"] = data[1].value;
-              }
+              //   if (data[1].status != "rejected") {
+              //     sample_data["Prime"] = data[1].value;
+              //   }
               app.last_gw_data_marker = true;
               app.saveSampleData(true, sample_data);
             }
@@ -1951,9 +1973,9 @@ async function load_sample_data() {
         //app.saveSampleData(false, []);
       } else {
         let sample_data = data[0].value;
-        if (data[1].status != "rejected") {
-          sample_data["Prime"] = data[1].value;
-        }
+        // if (data[1].status != "rejected") {
+        //   sample_data["Prime"] = data[1].value;
+        // }
         app.last_gw_data_marker = false;
         app.saveSampleData(true, sample_data);
       }

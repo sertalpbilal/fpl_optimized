@@ -1,31 +1,11 @@
 "% include 'header.html' %"
 
-"% if no_data %"
-<main class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-dark bg-squad-card text-white mt-5">
-                <div class="card-body text-center p-5">
-                    <h2 class="card-title mb-4">No Data Available</h2>
-                    <p class="card-text mb-4">
-                        No data is available for the {{ season }} season yet.
-                        The Live GW tracker will be available once the season data is collected.
-                    </p>
-                    <p class="text-muted">
-                        Data collection can take a few days at the beginning of the season.
-                    </p>
-                    <a href="/" class="btn btn-primary mt-3">Back to Home</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-"% else %"
+
 
 
 
 <main class="" :class="{'container-fluid': fill_width, 'container': !fill_width}">
-    <div class="row sticky-top mb-3" v-cloak>
+    <div class="row sticky-top mb-3">
         <div class="col-12">
             <div class="card border-dark bg-squad-card text-white">
                 <div class="card-body text-center p-3">
@@ -105,8 +85,6 @@
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="resetTeamData">Reset Team</button>
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button"
-                                                    @click="loadOptimal">Load Optimal</button>
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm d-none d-md-block"
                                                     type="button" @click="fill_width = !fill_width">Fill Width {{
@@ -124,7 +102,7 @@
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="show_team_info = !show_team_info">Toggle Team Info {{
                                                     show_team_info ? ": On" : ": Off" }}</button>
-                                                <button class="dropdown-item btn btn-secondary btn-sm" type="button"
+                                                <!-- <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="toggleHit">Toggle Hit Points {{ is_using_hits ? ": On" : ":
                                                     Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
@@ -132,7 +110,7 @@
                                                     ": Off" }}</button>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="toggleWhiteSpace">Toggle Compact Mode {{ no_white_space ? ":
-                                                    On" : ": Off" }}</button>
+                                                    On" : ": Off" }}</button> -->
                                                 <div class="dropdown-divider"></div>
                                                 <button class="dropdown-item btn btn-secondary btn-sm" type="button"
                                                     @click="$('#autosubModal').modal('show')"
@@ -1017,8 +995,9 @@
                 <div class="card-body text-left">
                     <h5>Q/A</h5>
                     <b>What is the source of expected values?</b>
-                    <p class="answer"><a href="https://fplreview.com">FPL Review</a>. For questions, check <a
-                            href="https://twitter.com/fplreview">Twitter</a>.</p>
+                    <p class="answer"><a href="https://solioanalytics.com">Solio Analytics FPL Tool</a>. For questions,
+                        use
+                        info [at] solioanalytics.com.</p>
                     <b>How do you calculate expected gain and expected loss?</b>
                     <p>Expected gain is calculated using (Expected Points) * (1-Ownership Ratio). Similarly expected
                         loss is (Expected Points) * (Ownership Ratio).<br />The logic behind this calculation is simple:
@@ -1080,8 +1059,8 @@
                 <div class="text-black">
                     <div class="form-group">
                         <label for="teamIdEnter">Enter your team ID
-                            <button class="text-muted btn pt-0 text-small align-baseline" @click="show_league=true">-or-
-                                Choose from Analytics League</button>
+                            <!-- <button class="text-muted btn pt-0 text-small align-baseline" @click="show_league=true">-or-
+                                Choose from Analytics League</button> -->
                         </label>
                         <input type="number" class="form-control" id="teamIdEnter" v-model.lazy="current_team_id"
                             placeholder="Team ID">
@@ -1945,6 +1924,5 @@
         default ("{}") | tojson ** );
 </script>
 
-"% endif %"
 
 "% with scripts=["main", "sampling_utils", "live_gw"] %" "% include 'footer.html' %" "% endwith %"
