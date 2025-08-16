@@ -2147,3 +2147,23 @@ html[data-theme="light"] .nav-tabs.main-blocks .nav-link {
     background: #eeeeee;
     color: black;
 }
+
+html[data-theme="light"] #game_table_gw tr th:first-child {
+    background: whitesmoke;
+}
+
+html[data-theme="light"] #game_table_gw tr td:first-child {
+    background: whitesmoke;
+}
+
+html[data-theme="light"] .legend-box {
+    background: whitesmoke;
+}
+
+html[data-theme="light"] .scenario_detail {
+    color: darkslategray;
+}
+
+html[data-theme="light"] #ownership_table th {
+    background: whitesmoke;
+}
