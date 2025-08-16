@@ -534,7 +534,7 @@ function getXPData({ season, gw, date }) {
 function getXPData_Fernet({ season, gw, date }) {
   // For 2025-26 season, use local projection data
   if (season == "2025-26") {
-    return getProjectionData({ season, gw, date });
+    return getXPData({ season, gw, date });
   }
   if (season == "2020-21") {
     return getXPData({ season, gw, date });

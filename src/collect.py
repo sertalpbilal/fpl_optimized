@@ -157,6 +157,8 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     """Generates intermediate data layer to be consumed in optimization"""
 
     start_gw = get_gw()
+    vals = read_static()
+    season = vals['season']
 
     team_df = pd.read_csv(target_folder / "team.csv")
     fixture_df = pd.read_csv(target_folder / "fixture.csv")
@@ -164,11 +166,11 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     # prediction_df = pd.read_csv(target_folder / f"fplreview-{page}.csv").drop_duplicates()
     # try:
     try:
-        prediction_df = pd.read_csv(f"static/projection/gw{start_gw}.csv").drop_duplicates()
+        prediction_df = pd.read_csv(f"static/projection/{season}/gw{start_gw}.csv").drop_duplicates()
     except:
         # try last available data
         print("Using last available data")
-        prediction_df = pd.read_csv(f"static/projection/gw{start_gw-1}.csv").drop_duplicates()
+        prediction_df = pd.read_csv(f"static/projection/{season}/gw{start_gw-1}.csv").drop_duplicates()
     # except:
     #     prediction_df = pd.read_csv(f"../static/projection/gw{start_gw}.csv").drop_duplicates()
 

@@ -58,7 +58,7 @@ var app = new Vue({
     original_team_data: undefined,
     el_data: undefined,
     xp_data: undefined,
-    xp_source: "FPLReview - Free",
+    xp_source: "Solio",
     rp_data: undefined,
     original_xp: undefined,
     xp_storage: undefined,
@@ -419,6 +419,7 @@ var app = new Vue({
         let players_in_this_game = xp_data
           .filter((i) => i.event_list.includes(game.id))
           .map((i) => i.player_id);
+
         game.player_list = players_in_this_game;
         let player_with_data = players_in_this_game.map((i) =>
           Object.fromEntries([["id", parseInt(i)]])
@@ -1164,7 +1165,7 @@ var app = new Vue({
         this.useNewXP();
       } else {
         this.original_xp = undefined;
-        this.xp_source = "FPLReview - Free";
+        this.xp_source = "Solio";
       }
     },
     useNewXP() {
@@ -1207,7 +1208,7 @@ var app = new Vue({
       if (_.isEmpty(this.original_xp)) {
         return;
       }
-      this.xp_source = "FPLReview - Free";
+      this.xp_source = "Solio";
       this.xp_data = Object.freeze(_.cloneDeep(this.original_xp));
       this.original_xp = undefined;
       refresh_all_graphs();
@@ -2732,10 +2733,7 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_low) + 1)
         .attr("y", y(y_high) + 20)
         .attr("font-size", "3pt")
-        .attr(
-          "fill",
-          app.xp_source == "FPLReview - Free" ? "#ffffff65" : "#81ff008a"
-        )
+        .attr("fill", app.xp_source == "Solio" ? "#ffffff65" : "#81ff008a")
         .style("pointer-events", "none")
         .text("xP Data: " + app.xp_source);
 
