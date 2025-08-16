@@ -2000,12 +2000,74 @@ async function load_fixture_data() {
 let axis_functions = {};
 let target_stat = {};
 
+// Theme-aware color function
+function getThemeColors() {
+  const isLightMode =
+    document.documentElement.getAttribute("data-theme") === "light" ||
+    document.body.getAttribute("data-theme") === "light";
+
+  if (isLightMode) {
+    return {
+      background: "#f5f5f5",
+      graphBackground: "#ededed",
+      text: "#2d2d30",
+      gridLines: "#e0e0e0",
+      axisText: "#2d2d30",
+
+      // Line colors for light mode (darker, more saturated)
+      lineExpected: "#4CAF50", // Green
+      lineRealized: "#2196F3", // Blue
+      lineProjected: "#6366F1", // Indigo
+      lineAverage: "#EC4899", // Pink
+      lineYourTeam: "#F59E0B", // Amber
+      lineFieldAvg: "#EF4444", // Red
+
+      // Additional colors
+      nowLine: "#10B981", // Emerald
+      zeroLine: "#DC2626", // Red
+      markerLine: "#8B5CF6", // Purple
+
+      // Opacity values
+      lineOpacity: 1,
+      gridOpacity: 0.3,
+      textOpacity: 0.8,
+    };
+  } else {
+    return {
+      background: "#5a5d5c",
+      graphBackground: "#5a5d5c",
+      text: "white",
+      gridLines: "#f1f1f1",
+      axisText: "white",
+
+      // Line colors for dark mode (original colors)
+      lineExpected: "#dbf7b4",
+      lineRealized: "#6fcfd6",
+      lineProjected: "#587ee0b5",
+      lineAverage: "#e482baa8",
+      lineYourTeam: "#ffc356",
+      lineFieldAvg: "#de6363",
+
+      // Additional colors
+      nowLine: "#60ffc9",
+      zeroLine: "#4c0000",
+      markerLine: "#f9aeff91",
+
+      // Opacity values
+      lineOpacity: 0.8,
+      gridOpacity: 0.5,
+      textOpacity: 0.65,
+    };
+  }
+}
+
 function init_timeline() {
   if (!app.is_fixture_ready) {
     return;
   }
 
   let graph_id = "timeline";
+  const colors = getThemeColors();
 
   var margin = { top: 9, right: 5, bottom: 20, left: 5 },
     width = 450 - margin.left - margin.right,
@@ -2034,7 +2096,7 @@ function init_timeline() {
   let grayrect = svg.append("g");
   grayrect
     .append("rect")
-    .attr("fill", "#5a5d5c")
+    .attr("fill", colors.graphBackground)
     .attr("width", width)
     .attr("height", height);
 
@@ -2088,12 +2150,12 @@ function init_timeline() {
   axis_functions[graph_id].y = y;
 
   svg
-    .call((g) => g.selectAll(".tick text").attr("fill", "white"))
+    .call((g) => g.selectAll(".tick text").attr("fill", colors.axisText))
     .call((g) =>
       g
         .selectAll(".tick line")
         .attr("stroke-dasharray", "4,2")
-        .attr("stroke", "#f1f1f1")
+        .attr("stroke", colors.gridLines)
         .attr("stroke-width", 0.5)
         .attr("opacity", 0.3)
         .style("pointer-events", "none")
@@ -2107,7 +2169,7 @@ function init_timeline() {
     .attr("x", width / 2)
     .attr("y", height + 17)
     .attr("font-size", "4pt")
-    .attr("fill", "white")
+    .attr("fill", colors.text)
     .text("Date/Time");
 
   svg.call((s) => s.selectAll(".tick").attr("font-size", "4pt"));
@@ -2227,7 +2289,7 @@ function init_timeline() {
     .attr("height", y.bandwidth())
     .attr("opacity", 0.7)
     .attr("fill", (d, i) => game_color(i))
-    .attr("stroke", "#d2d2d2")
+    .attr("stroke", colors.gridLines)
     .attr("stroke-width", 0.5)
     .attr("data-index", (d, i) => i)
     .style("pointer-events", "all")
@@ -2252,7 +2314,7 @@ function init_timeline() {
       Math.max(Math.min(Math.round((7 * 1e9) / (x_high - x_low)) / 16, 7), 2) +
         "pt"
     )
-    .attr("fill", "white")
+    .attr("fill", colors.text)
     .style("pointer-events", "none")
     .text((d, i) => i + 1); //"ID: " + (i + 1));
 
@@ -2274,7 +2336,7 @@ function init_timeline() {
           4
         ) + "pt"
       )
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .style("pointer-events", "none")
       .text((d) => d.players_owned);
   }
@@ -2291,7 +2353,7 @@ function init_timeline() {
     .attr("y1", y.range()[0])
     .attr("x2", x(now_time))
     .attr("y2", y.range()[1] - 2)
-    .style("stroke", "#60ffc9")
+    .style("stroke", colors.nowLine)
     .style("stroke-dasharray", "2,0.5")
     .style("stroke-width", 1)
     .style("stroke-opacity", 0.7);
@@ -2302,7 +2364,7 @@ function init_timeline() {
     .attr("x", x(now_time))
     .attr("y", -6)
     .attr("font-size", "3pt")
-    .attr("fill", "white")
+    .attr("fill", colors.text)
     .text("Now");
 
   grayrect.on("mouseenter.foo", (e) => {
@@ -2336,6 +2398,7 @@ async function draw_user_graph(options = {}) {
 
     let graph_id = "graph-" + options.stat;
     target_stat[graph_id] = options.stat;
+    const colors = getThemeColors();
 
     var margin = { top: 25, right: 5, bottom: 20, left: 15 },
       width = 250 - margin.left - margin.right,
@@ -2362,7 +2425,7 @@ async function draw_user_graph(options = {}) {
     let grayrect = svg.append("g");
     grayrect
       .append("rect")
-      .attr("fill", "#5a5d5c")
+      .attr("fill", colors.graphBackground)
       .attr("width", width)
       .attr("height", height);
 
@@ -2484,12 +2547,12 @@ async function draw_user_graph(options = {}) {
     axis_functions[graph_id].y = y;
 
     svg
-      .call((g) => g.selectAll(".tick text").attr("fill", "white"))
+      .call((g) => g.selectAll(".tick text").attr("fill", colors.axisText))
       .call((g) =>
         g
           .selectAll(".tick line")
           .attr("stroke-dasharray", "4,2")
-          .attr("stroke", "#f1f1f1")
+          .attr("stroke", colors.gridLines)
           .attr("stroke-width", 0.5)
           .attr("opacity", 0.1)
           .style("pointer-events", "none")
@@ -2503,7 +2566,7 @@ async function draw_user_graph(options = {}) {
       .attr("x", width / 2)
       .attr("y", height + 17)
       .attr("font-size", "4pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text("Date/Time");
 
     svg.call((s) => s.selectAll(".tick").attr("font-size", "4pt"));
@@ -2515,7 +2578,7 @@ async function draw_user_graph(options = {}) {
       .attr("y1", y(0))
       .attr("x2", x(x_high))
       .attr("y2", y(0))
-      .style("stroke", "#4c0000")
+      .style("stroke", colors.zeroLine)
       .style("stroke-opacity", 0.4)
       .style("stroke-width", 1)
       .style("pointer-events", "none");
@@ -2545,7 +2608,7 @@ async function draw_user_graph(options = {}) {
       .attr("y1", y(y_low))
       .attr("x2", x(now_time))
       .attr("y2", y(y_high))
-      .style("stroke", "#60ffc9")
+      .style("stroke", colors.nowLine)
       .style("stroke-dasharray", "2,0.5")
       .style("opacity", 0.3)
       .style("stroke-width", 1)
@@ -2566,7 +2629,7 @@ async function draw_user_graph(options = {}) {
       .attr("x", width / 2)
       .attr("y", -15)
       .attr("font-size", "5pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text(options.title);
 
     grayrect.on("mouseenter.foo", (e) => {
@@ -2588,8 +2651,8 @@ async function draw_user_graph(options = {}) {
       .append("path")
       .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "#dbf7b4")
-      .attr("stroke-opacity", 0.8)
+      .attr("stroke", colors.lineExpected)
+      .attr("stroke-opacity", colors.lineOpacity)
       .style("stroke-dasharray", "2,0.5")
       .attr("stroke-width", 1)
       .style("pointer-events", "none")
@@ -2611,8 +2674,8 @@ async function draw_user_graph(options = {}) {
       .append("path")
       .datum(realized_data)
       .attr("fill", "none")
-      .attr("stroke", "#6fcfd6")
-      .attr("stroke-opacity", 0.8)
+      .attr("stroke", colors.lineRealized)
+      .attr("stroke-opacity", colors.lineOpacity)
       .attr("stroke-width", 1)
       .style("pointer-events", "none")
       .attr(
@@ -2632,8 +2695,8 @@ async function draw_user_graph(options = {}) {
       .append("path")
       .datum(future_data)
       .attr("fill", "none")
-      .attr("stroke", "#587ee0b5")
-      .attr("stroke-opacity", 0.8)
+      .attr("stroke", colors.lineProjected)
+      .attr("stroke-opacity", colors.lineOpacity)
       .attr("stroke-dasharray", "5,1")
       .attr("stroke-width", 1)
       .style("pointer-events", "none")
@@ -2650,8 +2713,8 @@ async function draw_user_graph(options = {}) {
         .append("path")
         .datum(future_data)
         .attr("fill", "none")
-        .attr("stroke", "#e482baa8")
-        .attr("stroke-opacity", 0.8)
+        .attr("stroke", colors.lineAverage)
+        .attr("stroke-opacity", colors.lineOpacity)
         .attr("stroke-dasharray", "5,1")
         .attr("stroke-width", 1)
         .style("pointer-events", "none")
@@ -2667,8 +2730,8 @@ async function draw_user_graph(options = {}) {
         .append("path")
         .datum(data)
         .attr("fill", "none")
-        .attr("stroke", "#ffc356")
-        .attr("stroke-opacity", 0.8)
+        .attr("stroke", colors.lineYourTeam)
+        .attr("stroke-opacity", colors.lineOpacity)
         .style("stroke-dasharray", "2,0.5")
         .attr("stroke-width", 1)
         .style("pointer-events", "none")
@@ -2684,8 +2747,8 @@ async function draw_user_graph(options = {}) {
         .append("path")
         .datum(realized_data)
         .attr("fill", "none")
-        .attr("stroke", "#de6363")
-        .attr("stroke-opacity", 0.8)
+        .attr("stroke", colors.lineFieldAvg)
+        .attr("stroke-opacity", colors.lineOpacity)
         .attr("stroke-width", 1)
         .style("pointer-events", "none")
         .attr(
@@ -2706,7 +2769,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_low) + 1)
         .attr("y", y(y_high) + 5)
         .attr("font-size", "3pt")
-        .attr("fill", "#ffffff65")
+        .attr("fill", colors.text)
+        .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Data: " + app.ownership_source);
       text_info
@@ -2715,7 +2779,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_low) + 1)
         .attr("y", y(y_high) + 10)
         .attr("font-size", "3pt")
-        .attr("fill", "#ffffff65")
+        .attr("fill", colors.text)
+        .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Hits: " + (app.is_using_hits ? "On" : "Off"));
       text_info
@@ -2724,7 +2789,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_low) + 1)
         .attr("y", y(y_high) + 15)
         .attr("font-size", "3pt")
-        .attr("fill", "#ffffff65")
+        .attr("fill", colors.text)
+        .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
       text_info
@@ -2733,7 +2799,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_low) + 1)
         .attr("y", y(y_high) + 20)
         .attr("font-size", "3pt")
-        .attr("fill", app.xp_source == "Solio" ? "#ffffff65" : "#81ff008a")
+        .attr("fill", app.xp_source == "Solio" ? colors.text : "#81ff00")
+        .attr("opacity", app.xp_source == "Solio" ? colors.textOpacity : 0.8)
         .style("pointer-events", "none")
         .text("xP Data: " + app.xp_source);
 
@@ -2756,7 +2823,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_high) - 3)
         .attr("y", y(y_high) + 10)
         .attr("font-size", "3pt")
-        .attr("fill", "#82f1ffbd")
+        .attr("fill", colors.text)
+        .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Played: " + played_text);
       text_info
@@ -2765,7 +2833,8 @@ async function draw_user_graph(options = {}) {
         .attr("x", x(x_high) - 3)
         .attr("y", y(y_high) + 15)
         .attr("font-size", "3pt")
-        .attr("fill", "#ffb6bfd6")
+        .attr("fill", colors.text)
+        .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Avg Played: " + avg_text);
     }
@@ -2782,6 +2851,7 @@ function draw_tier_ownership_graph() {
       resolve("Not ready");
     }
 
+    const colors = getThemeColors();
     var margin = { top: 20, bottom: 20, left: 10, right: 10 },
       width = 250 - margin.left - margin.right,
       height = 150;
@@ -2809,10 +2879,10 @@ function draw_tier_ownership_graph() {
     let grayrect = svg.append("g");
     grayrect
       .append("rect")
-      .attr("fill", "#5a5d5c")
+      .attr("fill", colors.graphBackground)
       .attr("width", width)
       .attr("height", height)
-      .attr("stroke", "white")
+      .attr("stroke", colors.gridLines)
       .attr("stroke-width", "0.5");
 
     // Min max values
@@ -2847,7 +2917,7 @@ function draw_tier_ownership_graph() {
       .attr("x", width / 2)
       .attr("y", height + 15)
       .attr("font-size", "4pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text("Effective Ownership % (Log)");
 
     // Axis -y
@@ -2862,7 +2932,7 @@ function draw_tier_ownership_graph() {
       );
 
     svg
-      .call((g) => g.selectAll(".tick text").attr("fill", "white"))
+      .call((g) => g.selectAll(".tick text").attr("fill", colors.axisText))
       .call((g) =>
         g
           .selectAll(".tick line")
@@ -2880,7 +2950,7 @@ function draw_tier_ownership_graph() {
       .attr("x", -margin.left)
       .attr("y", -5)
       .attr("font-size", "4pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text("Expected Points");
 
     // Title
@@ -2892,7 +2962,7 @@ function draw_tier_ownership_graph() {
       .attr("x", width / 2)
       .attr("y", -15)
       .attr("font-size", "4.5pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text("Expected Points versus Effective Ownership (Log)");
 
     svg.call((s) => s.selectAll(".tick").attr("font-size", "4pt"));
@@ -2916,7 +2986,7 @@ function draw_tier_ownership_graph() {
         .attr("y", parseFloat(t.attr("cy")) - 5)
         .attr("font-size", "3pt")
         .style("pointer-events", "none")
-        .attr("fill", "white")
+        .attr("fill", colors.text)
         .text(entry.name);
     };
 
@@ -3047,6 +3117,7 @@ function update_graph_hover_values(x_raw, gid, reset = false) {
 function synced_enter(e, d) {
   let x_now = d3.pointer(e)[0];
   let x_raw = axis_functions[d].x.invert(x_now);
+  const colors = getThemeColors();
 
   $("svg.active-graph").each((i, svg) => {
     let gid = svg.id;
@@ -3060,7 +3131,7 @@ function synced_enter(e, d) {
       .attr("y1", y.range()[0])
       .attr("x2", x(x_raw))
       .attr("y2", y.range()[1])
-      .style("stroke", "yellow")
+      .style("stroke", colors.markerLine)
       .style("stroke-dasharray", "3,1")
       .style("opacity", 0.5)
       .attr("pointer-events", "none");
@@ -3071,7 +3142,7 @@ function synced_enter(e, d) {
       .attr("x", x(x_raw))
       .attr("y", -2)
       .attr("font-size", "3pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text(new Date(x_raw).toLocaleString());
 
     if (gid == "timeline") {
@@ -3118,6 +3189,7 @@ function synced_mark(e, d) {
   let x_now = d3.pointer(e)[0];
   let x_raw = axis_functions[d].x.invert(x_now);
   app.marked_dt = x_raw;
+  const colors = getThemeColors();
   $("svg.active-graph").each((i, svg) => {
     let gid = svg.id;
     let x = axis_functions[gid].x;
@@ -3130,7 +3202,7 @@ function synced_mark(e, d) {
       .attr("y1", y.range()[0])
       .attr("x2", x(x_raw))
       .attr("y2", y.range()[1])
-      .style("stroke", "#f9aeff91")
+      .style("stroke", colors.markerLine)
       .style("stroke-dasharray", "3,1")
       .style("opacity", 0.7)
       .attr("pointer-events", "none");
@@ -3141,7 +3213,7 @@ function synced_mark(e, d) {
       .attr("x", x(x_raw))
       .attr("y", -2)
       .attr("font-size", "3pt")
-      .attr("fill", "white")
+      .attr("fill", colors.text)
       .text(new Date(x_raw).toLocaleString());
 
     if (gid == "timeline") {
