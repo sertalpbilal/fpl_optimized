@@ -468,7 +468,7 @@ def who_played():
         return render_template(page_name, repo_name="", ts = timestamp, page_name="Who Played", season=target[0], gw=gw, gameweeks=list(range(1,int(gw)+1)), elements=json.dumps(elements), no_ev=True)
 
 
-@app.route('/scenarios.html')
+# @app.route('/scenarios.html')
 def scenario_page():
     page_name = 'scenarios.html'
 
