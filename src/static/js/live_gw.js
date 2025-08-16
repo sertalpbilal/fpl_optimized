@@ -1090,6 +1090,42 @@ var app = new Vue({
       }
       return saved_settings;
     },
+    legendColors() {
+      // Get theme-aware colors for consistency with graphs
+      const isLightMode =
+        document.documentElement.getAttribute("data-theme") === "light" ||
+        document.body.getAttribute("data-theme") === "light";
+
+      if (isLightMode) {
+        return {
+          lineExpected: "#4CAF50", // Green
+          lineRealized: "#2196F3", // Blue
+          lineProjected: "#6366F1", // Indigo
+          lineAverage: "#EC4899", // Pink
+          lineYourTeam: "#F59E0B", // Amber
+          lineFieldAvg: "#EF4444", // Red
+        };
+      } else {
+        return {
+          lineExpected: "#dbf7b4",
+          lineRealized: "#6fcfd6",
+          lineProjected: "#587ee0b5",
+          lineAverage: "#e482baa8",
+          lineYourTeam: "#ffc356",
+          lineFieldAvg: "#de6363",
+        };
+      }
+    },
+  },
+  watch: {
+    // Watch for theme changes to trigger reactivity for legend colors
+    legendColors: {
+      handler() {
+        // Force update to ensure legend colors are updated
+        this.$forceUpdate();
+      },
+      deep: true,
+    },
   },
   methods: {
     initEmptyData() {
@@ -2793,16 +2829,16 @@ async function draw_user_graph(options = {}) {
         .attr("opacity", colors.textOpacity)
         .style("pointer-events", "none")
         .text("Autosub: " + (app.is_using_autosub ? "On" : "Off"));
-      text_info
-        .append("text")
-        .attr("text-anchor", "start")
-        .attr("x", x(x_low) + 1)
-        .attr("y", y(y_high) + 20)
-        .attr("font-size", "3pt")
-        .attr("fill", app.xp_source == "Solio" ? colors.text : "#81ff00")
-        .attr("opacity", app.xp_source == "Solio" ? colors.textOpacity : 0.8)
-        .style("pointer-events", "none")
-        .text("xP Data: " + app.xp_source);
+      //   text_info
+      //     .append("text")
+      //     .attr("text-anchor", "start")
+      //     .attr("x", x(x_low) + 1)
+      //     .attr("y", y(y_high) + 20)
+      //     .attr("font-size", "3pt")
+      //     .attr("fill", app.xp_source == "Solio" ? colors.text : "#81ff00")
+      //     .attr("opacity", app.xp_source == "Solio" ? colors.textOpacity : 0.8)
+      //     .style("pointer-events", "none")
+      //     .text("xP Data: " + app.xp_source);
 
       let pc = app.player_counts;
       let played_text = pc.your_played + "/" + pc.your_total;
@@ -3420,4 +3456,15 @@ $(document).ready(function () {
       });
     });
   });
+
+  // Listen for theme toggle button clicks and refresh graphs
+  $(document).on(
+    "click",
+    "[data-theme-toggle], .theme-toggle-btn, #theme-toggle",
+    function () {
+      setTimeout(() => {
+        refresh_all_graphs();
+      }, 100);
+    }
+  );
 });
