@@ -15,6 +15,7 @@ if __name__ == "__main__":
     if opts != "skip-opt":
         from collect import get_all_data, encrypt_files
         # from simulator import generate_simulations
+        print("Step 1: Get All Data")
         input_folder, output_folder, next_gw = get_all_data()
         # if next_gw != 39:
             # solve_all(input_folder, output_folder)

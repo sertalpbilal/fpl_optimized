@@ -53,8 +53,11 @@ FPL_API = {
 def get_all_data():
     """Checks and collects missing data from multiple resources"""
     next_gw = get_gw()
+    print("Step 1.1: Creating folders")
     input_folder, output_folder, season_folder = create_folders()
+    print("Step 1.2: Getting fixture")
     get_fixture(season_folder)
+    print("Step 1.3: Getting data from FPL API")
     get_data_fpl_api(input_folder, season_folder)
     # if next_gw != 39:
     #     from fplreview import get_data_fplreview
@@ -62,11 +65,15 @@ def get_all_data():
     #     generate_intermediate_layer(input_folder, page='free-planner')
         # get_fivethirtyeight_data(input_folder)
 
+    print("Step 1.4: Creating intermediate layer")
     generate_intermediate_layer(input_folder)
 
+    print("Step 1.5: Caching effective ownership")
     cache_effective_ownership(season_folder)
     # get_fivethirtyeight_data(season_folder)
+    print("Step 1.6: Caching Realized Points")
     cache_realized_points_data(season_folder)
+    print("Step 1.7: Caching Projected Points")
     cache_projected_points(season_folder)
 
     # from xp_league import detect_missing_entries_and_fill, cache_xp_ranks
@@ -816,7 +823,7 @@ def cache_projected_points(season_folder):
     
     vals = read_static()
     season = vals['season']
-    all_gw_files = glob.glob('build/data/' + season + '/*/*/input/fplreview-free-planner.csv-encrypted')
+    all_gw_files = glob.glob('build/data/' + season + '/*/*/input/element_gameweek.csv')
     all_gw_files.sort(key=folder_order, reverse=True)
     if sys.platform == 'win32':
         all_gw_files = [i.replace('\\', '/') for i in all_gw_files]
@@ -848,12 +855,17 @@ def cache_projected_points(season_folder):
         game_cnt = {i['id']: len(i['e']) for i in gw_rp}
         if f'GW{gw}' in gw_dict:
             val = gw_dict[f'GW{gw}']
-            file_e = f'build/data/{season}/{val[1]}/{val[2]}/input/fplreview-free-planner.csv'
-            print(file_e)
-            decrypt(file_e, 'REVIEW_KEY')
-            file_d = f'build/data/{season}/{val[1]}/{val[2]}/input/fplreview-free-planner.csv'
             new_loc = tmp_folder / f"GW{gw}.csv"
-            shutil.move(file_e, tmp_folder / f"GW{gw}.csv")
+            try:
+                file_e = f'build/static/projection/{season}/gw{gw}.csv'
+                shutil.copy(file_e, tmp_folder / f"GW{gw}.csv")
+            except:
+                try:
+                    file_e = f'build/static/projection/{season}/gw{gw-1}.csv'
+                    shutil.copy(file_e, tmp_folder / f"GW{gw}.csv")
+                except:
+                    pass
+
             df = pd.read_csv(new_loc)
             if 'ID' not in df.columns:
                 df['ID'] = df.index + 1
@@ -879,8 +891,9 @@ def cache_projected_points(season_folder):
             vertical_frames.append(df[['ID', 'Name', 'Team', 'Pos', 'price', 'gw', 'xp', 'xmin', 'rp', 'rmin', 'games']])
     try:
         dataframes.insert(0, df[['ID', 'Name', 'Team', 'Pos']])
-    except:
+    except Exception as e:
         print("No df items -- new season?")
+        print(e)
 
     try:
         combined = pd.concat(dataframes, axis=1)
