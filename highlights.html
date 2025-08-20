@@ -392,9 +392,11 @@
                     <div class="row no-gutters justify-content-center">
                         <div class="col-lg-4 col-8">
                             <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id" :disabled="loading">
+                                <input type="number" class="form-control" placeholder="Team ID" v-model.lazy="team_id"
+                                    :disabled="loading">
                                 <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks" :disabled="loading">Generate</button>
+                                    <button class="btn btn-primary" type="button" @click="fetch_team_picks"
+                                        :disabled="loading">Generate</button>
                                 </div>
                             </div>
                         </div>
@@ -403,12 +405,15 @@
                         <div class="col-lg-3 col-8">
                             <span class="text-muted text-xs">Loading the data can take a few seconds.</span>
                             <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: completed/gw*100 + '%' }" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                    :style="{ width: completed/gw*100 + '%' }" aria-valuemin="0" aria-valuemax="100">
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="row justify-content-center mb-1 mt-1" v-if="ready" v-cloak>
-                        <button class="btn btn-warning mr-2" onclick="download_excel()">Download Tables as Excel</button>
+                        <button class="btn btn-warning mr-2" onclick="download_excel()">Download Tables as
+                            Excel</button>
                     </div>
                 </div>
             </div>
@@ -425,7 +430,8 @@
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Predicted / Realized Performance</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Predicted / Realized Performance
+                </h5>
                 <div class="scenario_detail">
                     Decision making quality compared to actual outcome
                 </div>
@@ -435,7 +441,8 @@
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
                                 <label>Sample tier</label>
-                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
+                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection"
+                                    @change="invalidate_cache(); redraw_graphs();">
                                     <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
                                 </select>
                             </div>
@@ -446,40 +453,42 @@
                         <div class="col-12">
                             <div class="text-center">
                                 <span class="svg-legend-text mr-2">
-                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line></g></svg> Predicted
+                                    <svg width="20" height="10">
+                                        <g>
+                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5"
+                                                stroke="#dbf7b4" stroke-dasharray="4,1" fill="none"></line>
+                                        </g>
+                                    </svg> Predicted
                                 </span>
                                 <span class="svg-legend-text mr-2">
-                                    <svg width="20" height="10"><g><line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5" stroke="#6fcfd6" fill="none"></line></g></svg> Realized
+                                    <svg width="20" height="10">
+                                        <g>
+                                            <line id="svg_1" y2="5" x2="20" y1="5" x1="0" stroke-width="1.5"
+                                                stroke="#6fcfd6" fill="none"></line>
+                                        </g>
+                                    </svg> Realized
                                 </span>
                             </div>
 
                             <div id="season-xp-real-diff-plot">
-                                
+
                             </div>
 
-                        </div>
-                        <div class="col-12 col-lg-8 mb-3 text-small">
-                            <span class="text-smaller d-block">
-                                In the tables below, it is assumed that the FPLReview predicted values are true expectations.
-                                Therefore, any outcome up to the predictions is measured as "skill" and remaining difference (above or below) is measured as "luck" even though this might not be actually true.
-                                The aim here is to evaluate decision making quality, and see how much unpredicted outcomes have affected your season, either good or bad.
-                            </span>
-                            <span class="text-smaller d-block">
-                                "Diff" refers to point difference between you and the tier average you have selected.
-                                Even if GW ends up with more or less points than predicted, we expect difference to be around the pre-GW prediction.
-                            </span>
                         </div>
                         <div class="col-12">
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="all_gw_switch" v-model="show_all_season">
-                                    <label class="custom-control-label highlighted-checkbox" for="all_gw_switch">Show All GWs</label>
+                                    <input type="checkbox" class="custom-control-input" id="all_gw_switch"
+                                        v-model="show_all_season">
+                                    <label class="custom-control-label highlighted-checkbox" for="all_gw_switch">Show
+                                        All GWs</label>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="text-center text-small">GW-by-GW values</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                            <table
+                                class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders"
                                 id="gw_history">
                                 <thead>
                                     <tr>
@@ -493,11 +502,12 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])" 
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}"
+                                        v-for="(v, key) in (user_gw_results?.data || [])"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.xp) }}</td>
-                                        <td class="text-center">{{        (v.rp) }}</td>
+                                        <td class="text-center">{{ (v.rp) }}</td>
                                         <td class="text-center">{{ rounded(v.exp_diff) }}</td>
                                         <td class="text-center">{{ rounded(v.real_diff) }}</td>
                                         <td class="text-center">{{ rounded(v.luck) }}</td>
@@ -519,7 +529,8 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="text-center text-small">Total values</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                            <table
+                                class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders"
                                 id="gw_history_total">
                                 <thead>
                                     <tr>
@@ -533,23 +544,29 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}"
+                                        v-for="(v, key) in (user_gw_results?.data || [])"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
                                         <td class="text-center">{{ rounded(v.total_xp) }}</td>
-                                        <td class="text-center">{{        (v.total_rp) }}</td>
+                                        <td class="text-center">{{ (v.total_rp) }}</td>
                                         <td class="text-center">{{ rounded(v.total_exp_diff) }}</td>
                                         <td class="text-center">{{ rounded(v.total_real_diff) }}</td>
                                         <td class="text-center">
-                                            <span v-if="v.luck > 0"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
-                                            <span v-if="v.luck < 0"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
+                                            <span v-if="v.luck > 0"><i class="fas fa-caret-up"
+                                                    style="color: rgb(0, 217, 0);"></i> </span>
+                                            <span v-if="v.luck < 0"><i class="fas fa-caret-down"
+                                                    style="color: rgb(255, 0, 90);"></i> </span>
                                             {{ rounded(v.total_exp_real_diff) }}
                                         </td>
                                         <td class="text-center">
-                                            <span v-if="v.gw > 1 && team_data[v.gw].entry_history.overall_rank < team_data[parseInt(v.gw)-1].entry_history.overall_rank"><i class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
-                                            <span v-else-if="v.gw > 1"><i class="fas fa-caret-down" style="color: rgb(255, 0, 90);"></i> </span>
+                                            <span
+                                                v-if="v.gw > 1 && team_data[v.gw].entry_history.overall_rank < team_data[parseInt(v.gw)-1].entry_history.overall_rank"><i
+                                                    class="fas fa-caret-up" style="color: rgb(0, 217, 0);"></i> </span>
+                                            <span v-else-if="v.gw > 1"><i class="fas fa-caret-down"
+                                                    style="color: rgb(255, 0, 90);"></i> </span>
                                             {{ team_data[v.gw].entry_history.overall_rank }}
-                                        </td>                                    
+                                        </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
@@ -567,7 +584,8 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="text-center text-small">Skill/Luck Magnitude Proportion</div>
-                            <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders" 
+                            <table
+                                class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td no-row-borders"
                                 id="gw_history_skill">
                                 <thead>
                                     <tr>
@@ -579,14 +597,19 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}" v-for="(v, key) in (user_gw_results?.data || [])"
+                                    <tr :class="{'owned-row': v.luck > 0, 'nonowned-row': v.luck < 0}"
+                                        v-for="(v, key) in (user_gw_results?.data || [])"
                                         v-if="show_all_season || (key == user_gw_results.finish)">
                                         <td class="text-center">{{ v.gw }}</td>
-                                        <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{ Math.abs(v.skill_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.luck_ratio<0">(-) </span>{{ Math.abs(v.luck_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.total_skill_ratio<0">(-) </span>{{ Math.abs(v.total_skill_ratio) }}%</td>
-                                        <td class="text-center"><span v-if="v.total_luck_ratio<0">(-) </span>{{ Math.abs(v.total_luck_ratio) }}%</td>
-                                        
+                                        <td class="text-center"><span v-if="v.skill_ratio<0">(-) </span>{{
+                                            Math.abs(v.skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.luck_ratio<0">(-) </span>{{
+                                            Math.abs(v.luck_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_skill_ratio<0">(-) </span>{{
+                                            Math.abs(v.total_skill_ratio) }}%</td>
+                                        <td class="text-center"><span v-if="v.total_luck_ratio<0">(-) </span>{{
+                                            Math.abs(v.total_luck_ratio) }}%</td>
+
                                 </tbody>
                                 <tfoot>
                                     <tr v-if="show_all_season">
@@ -643,7 +666,7 @@
                             </div>
                         </div>
                     </div> -->
-                    
+
                 </div>
             </div>
         </div>
@@ -663,49 +686,80 @@
                             <div class="col-12">
                                 <div class="text-center">
                                     <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                        <input type="checkbox" class="custom-control-input" id="toty_relative_s" v-model="toty_relative">
-                                        <label class="custom-control-label highlighted-checkbox" for="toty_relative_s">Show Relative Gain</label>
+                                        <input type="checkbox" class="custom-control-input" id="toty_relative_s"
+                                            v-model="toty_relative">
+                                        <label class="custom-control-label highlighted-checkbox"
+                                            for="toty_relative_s">Show Relative Gain</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="lineup gray-bg">
-                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709" style="max-height: 700px">
+                                <svg class="mx-auto d-block" viewBox="0 0 112.44791 168.72709"
+                                    style="max-height: 700px">
                                     <svg class="field">
                                         <g class="g_field">
-                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702" y="3.8053379" />
-                                            <path class="field-common" d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
-                                            <path class="field-common" id="right_top_corner" d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z" transform="rotate(90)" />
-                                            <path class="field-common" id="right_bottom_corner" d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z" transform="scale(-1)" />
-                                            <path class="field-common" id="left_bottom_corner" d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z" transform="rotate(-90)" />
-                                            <rect class="field-common" id="top_penalty_box" width="46.726002" height="21.884615" x="32.992699" y="3.852963" />
-                                            <rect class="field-common" id="top_inner_box" width="24.50474" height="11.328758" x="44.101284" y="3.828212" />
-                                            <path class="field-common" id="top_arch" d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
-                                            <path class="field-common" id="bottom_arch" d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z" transform="scale(-1)" />
-                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002" height="21.884615" x="-79.962532" y="-140.46913" transform="scale(-1)" />
-                                            <rect class="field-common" id="bottom_inner_box" width="24.50474" height="11.328759" x="-68.851799" y="-140.42613" transform="scale(-1)" />
-                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208" r="14.196868" />
-                                            <path class="field-common field-last-path" d="M 4.1010416,71.569791 H 108.51143" id="center_line" inkscape:connector-curvature="0"/>
-                                            <rect class="field-common" id="bench_box" width="104.4753" height="24.503908" x="4.0935702" y="140.51396" />
+                                            <rect class="field-common" width="104.4753" height="136.70862" x="4.0935702"
+                                                y="3.8053379" />
+                                            <path class="field-common"
+                                                d="M 9.7876973,3.8053379 A 5.6941271,5.6941271 0 0 1 4.0935704,9.499465 l -2e-7,-5.6941271 z" />
+                                            <path class="field-common" id="right_top_corner"
+                                                d="m 9.499465,-108.56887 a 5.6941271,5.6941271 0 0 1 -5.6941269,5.69413 l -2e-7,-5.69413 z"
+                                                transform="rotate(90)" />
+                                            <path class="field-common" id="right_bottom_corner"
+                                                d="m -102.87474,-140.51396 a 5.6941271,5.6941271 0 0 1 -5.69413,5.69413 l 0,-5.69413 z"
+                                                transform="scale(-1)" />
+                                            <path class="field-common" id="left_bottom_corner"
+                                                d="m -134.81983,4.0935702 a 5.6941271,5.6941271 0 0 1 -5.69413,5.6941271 l 0,-5.6941271 z"
+                                                transform="rotate(-90)" />
+                                            <rect class="field-common" id="top_penalty_box" width="46.726002"
+                                                height="21.884615" x="32.992699" y="3.852963" />
+                                            <rect class="field-common" id="top_inner_box" width="24.50474"
+                                                height="11.328758" x="44.101284" y="3.828212" />
+                                            <path class="field-common" id="top_arch"
+                                                d="m 65.686854,25.720037 a 9.4620543,6.1092615 0 0 1 -4.731027,5.290776 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.290776 l 9.462054,0 z" />
+                                            <path class="field-common" id="bottom_arch"
+                                                d="m -47.240994,-118.62238 a 9.4620543,6.1092615 0 0 1 -4.731028,5.29077 9.4620543,6.1092615 0 0 1 -9.462054,0 9.4620543,6.1092615 0 0 1 -4.731027,-5.29077 l 9.462054,0 z"
+                                                transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_penalty_box" width="46.726002"
+                                                height="21.884615" x="-79.962532" y="-140.46913"
+                                                transform="scale(-1)" />
+                                            <rect class="field-common" id="bottom_inner_box" width="24.50474"
+                                                height="11.328759" x="-68.851799" y="-140.42613"
+                                                transform="scale(-1)" />
+                                            <circle class="field-common" id="kick_off" cx="55.893227" cy="71.70208"
+                                                r="14.196868" />
+                                            <path class="field-common field-last-path"
+                                                d="M 4.1010416,71.569791 H 108.51143" id="center_line"
+                                                inkscape:connector-curvature="0" />
+                                            <rect class="field-common" id="bench_box" width="104.4753"
+                                                height="24.503908" x="4.0935702" y="140.51396" />
                                         </g>
                                     </svg>
-                                <svg v-for="player in toty_final" :x="player.x" :y="player.y">
-                                        <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}" style="transform:translate(-20px,-35px)">
-                                            <path  d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z" class="jersey-regular"/>
-                                            <g >
-                                                <path class="jersey-regular" d="m 24.461842,40.986418 1.07576,2.642627"   />
-                                                <path class="jersey-regular" d="m 25.186811,40.518696 0.748355,1.91766"  />
+                                    <svg v-for="player in toty_final" :x="player.x" :y="player.y">
+                                        <g class="g_jersey" :class="{jersey_bench: player.multiplier == 0}"
+                                            style="transform:translate(-20px,-35px)">
+                                            <path
+                                                d="m 23.22238,41.75816 5.79975,-3.461141 h 6.010222 l 5.986838,3.484525 -1.520095,3.624845 -2.081363,-0.724969 V 54.784206 H 26.870609 V 44.634647 l -2.221678,0.888672 z"
+                                                class="jersey-regular" />
+                                            <g>
+                                                <path class="jersey-regular"
+                                                    d="m 24.461842,40.986418 1.07576,2.642627" />
+                                                <path class="jersey-regular"
+                                                    d="m 25.186811,40.518696 0.748355,1.91766" />
                                             </g>
-                                            <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)" >
-                                                <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627"   />
-                                                <path class="jersey-regular" d="m 35.16062,41.067378 0.748355,1.91766"   />
+                                            <g transform="matrix(-1,0,0,1,74.133883,-0.39756341)">
+                                                <path class="jersey-regular" d="m 34.435651,41.5351 1.07576,2.642627" />
+                                                <path class="jersey-regular"
+                                                    d="m 35.16062,41.067378 0.748355,1.91766" />
                                             </g>
-                                            <path d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712" class="jersey-regular" />
+                                            <path d="m 29.02213,38.297019 3.042062,3.308712 2.96816,-3.308712"
+                                                class="jersey-regular" />
                                             <g clip-path="url(#clipPath867)" transform="translate(22.73135,-236.63834)">
                                                 <g><text y="285.37598" x="9.281539" class="jersey-regular-text">
-                                                        <tspan
-                                                            class="jersey-xp-text"
-                                                            y="285.37598" x="9.281539"  ><tspan style="font-size:5px" >{{ player.points_total }}</tspan>
+                                                        <tspan class="jersey-xp-text" y="285.37598" x="9.281539">
+                                                            <tspan style="font-size:5px">{{ player.points_total }}
+                                                            </tspan>
                                                         </tspan>
                                                     </text>
                                                     <!-- <text  y="289.78659" x="9.3432751" class="jersey-regular-text jersey-team-text">
@@ -713,22 +767,24 @@
                                                             class="jersey-captain-star"
                                                             y="281.28659" x="11.3432751"  >★</tspan>
                                                     </text> -->
-                                                    <rect y="291.74704" x="0.028824098" height="3.1975782" width="18.470304" class="jersey-name-bg" />
-                                                    <rect y="294.94461" x="0.028824052" height="2.0213056" width="18.470306" class="jersey-team-bg" />
-                                                    <text  y="294.1311" x="9.3312988" class="jersey-regular-text"
+                                                    <rect y="291.74704" x="0.028824098" height="3.1975782"
+                                                        width="18.470304" class="jersey-name-bg" />
+                                                    <rect y="294.94461" x="0.028824052" height="2.0213056"
+                                                        width="18.470306" class="jersey-team-bg" />
+                                                    <text y="294.1311" x="9.3312988" class="jersey-regular-text"
                                                         xml:space="preserve">
-                                                        <tspan
-                                                            class="jersey-player-name"
-                                                            y="294.1311" x="9.3312988" >{{ player.player.name }}</tspan>
+                                                        <tspan class="jersey-player-name" y="294.1311" x="9.3312988">{{
+                                                            player.player.name }}</tspan>
                                                     </text>
                                                     <text y="296.74948" x="9.2921124" class="jersey-regular-text"
                                                         xml:space="preserve">
-                                                        <tspan
-                                                            class="jersey-team-name"
-                                                            y="296.74948" x="9.2921124" >{{ teams_ordered[player.player.raw.team-1].name }}</tspan>
+                                                        <tspan class="jersey-team-name" y="296.74948" x="9.2921124">{{
+                                                            teams_ordered[player.player.raw.team-1].name }}</tspan>
                                                     </text>
                                                     <text class="jersey-cost-text" xml:space="preserve">
-                                                        <tspan style="text-align:center" y="289.74948" x="9.2921124" style="font-size:2px; fill: black" v-if="player.cap_count > 0"  >Cap: {{
+                                                        <tspan style="text-align:center" y="289.74948" x="9.2921124"
+                                                            style="font-size:2px; fill: black"
+                                                            v-if="player.cap_count > 0">Cap: {{
                                                             player.cap_count }}</tspan>
                                                     </text>
                                                 </g>
@@ -741,7 +797,9 @@
                         </div>
                         <div class="col-12 col-lg-6" id="top_players_list" v-if="ready">
                             <span class="d-block border-below-orange">All squad players and their point returns</span>
-                            <table class="p-0 col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="top_players_table">
+                            <table
+                                class="p-0 col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="top_players_table">
                                 <thead>
                                     <tr>
                                         <th class="text-muted sticky-col">ID</th>
@@ -789,15 +847,16 @@
                     Impact of each player on your season - realized and predicted
                 </div>
                 <div class="card-body" v-if="ready" v-cloak>
-                    <div class="text-center text-small mb-1">
-                        The prediction values are courtesy of FPLReview Free Model
-                    </div>
+
                     <div class="row justify-content-center">
                         <div class="col-12 col-md-6">
                             <div class="row justify-content-center mb-3">
                                 <div class="col-12">
-                                    <span class="d-block border-below-orange">Total realized gain / loss per player</span>
-                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
+                                    <span class="d-block border-below-orange">Total realized gain / loss per
+                                        player</span>
+                                    <table
+                                        class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                        id="total_gain_loss_table" style="width: 100%">
                                         <thead>
                                             <tr>
                                                 <!-- <th class="text-center text-muted">ID</th> -->
@@ -812,11 +871,14 @@
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player" :class="{'owned-row': p.net>0, 'nonowned-row': p.net < 0}">
+                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player"
+                                                :class="{'owned-row': p.net>0, 'nonowned-row': p.net < 0}">
                                                 <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
                                                 <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
-                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
-                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short
+                                                    }}</td>
+                                                <td class="text-center">{{
+                                                    element_type[fpl_element[p.id].element_type].short }}</td>
                                                 <td class="text-center">{{ p.points }}</td>
                                                 <td class="text-center">{{ rounded(p.gain) }}</td>
                                                 <td class="text-center">{{ rounded(p.loss) }}</td>
@@ -847,8 +909,11 @@
                         <div class="col-12 col-md-6">
                             <div class="row justify-content-center mb-3">
                                 <div class="col-12">
-                                    <span class="d-block border-below-orange">Total predicted gain / loss per player</span>
-                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_exp_gain_loss_table" style="width: 100%">
+                                    <span class="d-block border-below-orange">Total predicted gain / loss per
+                                        player</span>
+                                    <table
+                                        class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                        id="total_exp_gain_loss_table" style="width: 100%">
                                         <thead>
                                             <tr>
                                                 <!-- <th class="text-center text-muted">ID</th> -->
@@ -863,11 +928,14 @@
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player_exp" :class="{'owned-row': p.xnet>0, 'nonowned-row': p.xnet < 0}">
+                                            <tr v-for="p in user_ownership_gain_loss.combined_per_player_exp"
+                                                :class="{'owned-row': p.xnet>0, 'nonowned-row': p.xnet < 0}">
                                                 <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
                                                 <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
-                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
-                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short
+                                                    }}</td>
+                                                <td class="text-center">{{
+                                                    element_type[fpl_element[p.id].element_type].short }}</td>
                                                 <td class="text-center">{{ rounded(p.xpoints) }}</td>
                                                 <td class="text-center">{{ rounded(p.xgain) }}</td>
                                                 <td class="text-center">{{ rounded(p.xloss) }}</td>
@@ -899,7 +967,9 @@
                             <div class="row justify-content-center mb-3">
                                 <div class="col-12">
                                     <span class="d-block border-below-orange">Total luck per player</span>
-                                    <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_player_luck_table" style="width: 100%">
+                                    <table
+                                        class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                        id="total_player_luck_table" style="width: 100%">
                                         <thead>
                                             <tr>
                                                 <!-- <th class="text-center text-muted">ID</th> -->
@@ -913,14 +983,18 @@
                                             </tr>
                                         </thead>
                                         <tbody v-cloak>
-                                            <tr v-for="p in user_ownership_gain_loss.comb_per_player_luck" :class="{'owned-row': p.luck>0, 'nonowned-row': p.luck < 0}">
+                                            <tr v-for="p in user_ownership_gain_loss.comb_per_player_luck"
+                                                :class="{'owned-row': p.luck>0, 'nonowned-row': p.luck < 0}">
                                                 <!-- <td class="text-center text-muted">{{ p.id }}</td> -->
                                                 <td class="text-center">{{ fpl_element[p.id].web_name }}</td>
-                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short }}</td>
-                                                <td class="text-center">{{ element_type[fpl_element[p.id].element_type].short }}</td>
+                                                <td class="text-center">{{ team_codes[fpl_element[p.id].team_code].short
+                                                    }}</td>
+                                                <td class="text-center">{{
+                                                    element_type[fpl_element[p.id].element_type].short }}</td>
                                                 <td class="text-center">{{ rounded(p.net) }}</td>
                                                 <td class="text-center">{{ rounded(p.xnet) }}</td>
-                                                <td class="text-center highlighted-text-col">{{ getWithSign(p.luck) }}</td>
+                                                <td class="text-center highlighted-text-col">{{ getWithSign(p.luck) }}
+                                                </td>
                                                 <td class="text-center">{{ rounded(p.luckimpact) }}%</td>
                                             </tr>
                                         </tbody>
@@ -966,16 +1040,22 @@
                         <div class="col-12">
                             <div class="text-center text-small">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="show_info_tog" v-model="show_info_ts" @change="draw_team_season_visual()">
-                                    <label class="custom-control-label highlighted-checkbox" for="show_info_tog">Show Info Cols</label>
+                                    <input type="checkbox" class="custom-control-input" id="show_info_tog"
+                                        v-model="show_info_ts" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="show_info_tog">Show
+                                        Info Cols</label>
                                 </div>
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="show_pts_tog" v-model="show_pts_on_ts" @change="draw_team_season_visual()">
-                                    <label class="custom-control-label highlighted-checkbox" for="show_pts_tog">Show Points</label>
+                                    <input type="checkbox" class="custom-control-input" id="show_pts_tog"
+                                        v-model="show_pts_on_ts" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="show_pts_tog">Show
+                                        Points</label>
                                 </div>
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="team_col_tog" v-model="use_team_colors" @change="draw_team_season_visual()">
-                                    <label class="custom-control-label highlighted-checkbox" for="team_col_tog">Use Team Colors</label>
+                                    <input type="checkbox" class="custom-control-input" id="team_col_tog"
+                                        v-model="use_team_colors" @change="draw_team_season_visual()">
+                                    <label class="custom-control-label highlighted-checkbox" for="team_col_tog">Use Team
+                                        Colors</label>
                                 </div>
                             </div>
                             <div id="team_season_visual">
@@ -1007,7 +1087,8 @@
     <div class="row">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Points by Acquisition Type and Decision Age</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Points by Acquisition Type and
+                    Decision Age</h5>
                 <div class="scenario_detail">
                     Details about where points originated with decision age details
                 </div>
@@ -1026,7 +1107,7 @@
                                 </div>
                             </div> -->
                             <div id="point_origin_visual">
-                                
+
                             </div>
                         </div>
                         <!-- <div class="col-12 col-md-8 mt-3">
@@ -1054,7 +1135,7 @@
             </div>
         </div>
     </div>
-    
+
 
 
 
@@ -1069,7 +1150,9 @@
                     <div class="row">
                         <div class="col-12 col-lg-6 mb-2">
                             <span class="d-block border-below-orange">Total counts of key events per GW</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="gw_points_table" v-if="ready">
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="gw_points_table" v-if="ready">
                                 <thead>
                                     <tr>
                                         <th>GW</th>
@@ -1085,20 +1168,26 @@
                                     <tr v-for="p in user_stats_per_gw.points" class="owned-row">
                                         <td class="text-center">{{ p.gw }}</td>
                                         <td :data-order=" p.info.type_sums['clean_sheets'] || 0">
-                                            <span class="gw_detail_number">{{ p.info.type_sums['clean_sheets'] || 0 }}</span>
-                                            <span class="gw_detail_players">{{ p.info.type_names['clean_sheets'] || '' }}</span>
+                                            <span class="gw_detail_number">{{ p.info.type_sums['clean_sheets'] || 0
+                                                }}</span>
+                                            <span class="gw_detail_players">{{ p.info.type_names['clean_sheets'] || ''
+                                                }}</span>
                                         </td>
                                         <td :data-order="p.info.type_sums['goals_scored'] || 0">
-                                            <span class="gw_detail_number">{{ p.info.type_sums['goals_scored'] || 0 }}</span>
-                                            <span class="gw_detail_players">{{ p.info.type_names['goals_scored'] || '' }}</span>
+                                            <span class="gw_detail_number">{{ p.info.type_sums['goals_scored'] || 0
+                                                }}</span>
+                                            <span class="gw_detail_players">{{ p.info.type_names['goals_scored'] || ''
+                                                }}</span>
                                         </td>
                                         <td :data-order="p.info.type_sums['assists'] || 0">
                                             <span class="gw_detail_number">{{ p.info.type_sums['assists'] || 0 }}</span>
-                                            <span class="gw_detail_players">{{ p.info.type_names['assists'] || '' }}</span>
+                                            <span class="gw_detail_players">{{ p.info.type_names['assists'] || ''
+                                                }}</span>
                                         </td>
                                         <td :data-order="p.info.type_sums['bonus'] || 0">
                                             <span class="gw_detail_number">{{ p.info.type_sums['bonus'] || 0 }}</span>
-                                            <span class="gw_detail_players">{{ p.info.type_names['bonus'] || '' }}</span>
+                                            <span class="gw_detail_players">{{ p.info.type_names['bonus'] || ''
+                                                }}</span>
                                         </td>
                                         <td>
                                             <span class="gw_detail_number">{{ p.hit_pts/4 }}</span>
@@ -1112,7 +1201,9 @@
                         </div>
                         <div class="col-12 col-lg-6">
                             <span class="d-block border-below-orange">Point distribution per event type</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="type_points_table" v-if="ready">
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="type_points_table" v-if="ready">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Type</th>
@@ -1124,27 +1215,36 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <tr v-for="(value, key) in (user_stats_per_gw?.type_grouped || [])" class="owned-row">
+                                    <tr v-for="(value, key) in (user_stats_per_gw?.type_grouped || [])"
+                                        class="owned-row">
                                         <td class="text-center">{{ player_stat_types[key].name }}</td>
-                                        <td class="text-center">{{ player_stat_types[key].pp ? value.length : "-" }}</td>
+                                        <td class="text-center">{{ player_stat_types[key].pp ? value.length : "-" }}
+                                        </td>
                                         <td class="text-center">{{ getSum(value.map(i => parseInt(i.value))) }}</td>
                                         <td class="text-center">
-                                            {{ player_stat_types[key].pp ? rounded(getSum(value.map(i => parseInt(i.value))) / user_stats_per_gw.total_picks,2) : "-" }}
+                                            {{ player_stat_types[key].pp ? rounded(getSum(value.map(i =>
+                                            parseInt(i.value))) / user_stats_per_gw.total_picks,2) : "-" }}
                                         </td>
                                         <td class="text-center">
                                             {{ getSum(value.map( i=> parseInt(i.points * i.multiplier))) }}
                                         </td>
                                         <td class="text-center">
-                                            {{ rounded(getSum(value.map( i=> parseInt(i.points * i.multiplier))) / user_stats_per_gw.overall_total * 100, 1)  }}%
+                                            {{ rounded(getSum(value.map( i=> parseInt(i.points * i.multiplier))) /
+                                            user_stats_per_gw.overall_total * 100, 1) }}%
                                         </td>
                                     </tr>
                                     <tr class="bench-row">
                                         <td class="text-center"><b>Hits</b></td>
-                                        <td class="text-center">{{ user_stats_per_gw.points?.filter(i => i.hit_pts > 0)?.length || '' }}</td>
-                                        <td class="text-center">{{ (getSum(user_stats_per_gw?.points?.map(i => i.hit_pts) || [0]))/4 }}</td>
+                                        <td class="text-center">{{ user_stats_per_gw.points?.filter(i => i.hit_pts >
+                                            0)?.length || '' }}</td>
+                                        <td class="text-center">{{ (getSum(user_stats_per_gw?.points?.map(i =>
+                                            i.hit_pts) || [0]))/4 }}</td>
                                         <td></td>
-                                        <td class="text-center">{{ -getSum(user_stats_per_gw?.points?.map(i => i.hit_pts) || [0]) }}</td>
-                                        <td class="text-center">{{ rounded(-getSum((user_stats_per_gw?.points?.map(i => i.hit_pts)) || [0]) / (user_stats_per_gw?.overall_total || 1) * 100, 1)  }}%</td>
+                                        <td class="text-center">{{ -getSum(user_stats_per_gw?.points?.map(i =>
+                                            i.hit_pts) || [0]) }}</td>
+                                        <td class="text-center">{{ rounded(-getSum((user_stats_per_gw?.points?.map(i =>
+                                            i.hit_pts)) || [0]) / (user_stats_per_gw?.overall_total || 1) * 100, 1) }}%
+                                        </td>
                                     </tr>
                                     <tr class="nonowned-row">
                                         <td class="text-center"><b>Total</b></td>
@@ -1162,13 +1262,14 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 mb-2">
-                            <span class="d-block border-below-orange">Detailed points returns per event type and GW</span>
+                            <span class="d-block border-below-orange">Detailed points returns per event type and
+                                GW</span>
                             <div id="event_heatmap">
 
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -1185,7 +1286,9 @@
 
                     <div class="row justify-content-center mb-2">
                         <div class="col-12 col-lg-8">
-                            <table class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="key_events_ratio_table">
+                            <table
+                                class="col-12 table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="key_events_ratio_table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Target</th>
@@ -1200,7 +1303,8 @@
                                         <td class="text-center">{{ key }}</td>
                                         <td class="text-center">{{ v.count }}</td>
                                         <td class="text-center">{{ v.total }}</td>
-                                        <td class="text-center highlighted-col">{{ rounded(v.count / v.total * 100, 2) }}%</td>
+                                        <td class="text-center highlighted-col">{{ rounded(v.count / v.total * 100, 2)
+                                            }}%</td>
                                         <td class="text-center">{{ v.info }}</td>
                                     </tr>
                                 </tbody>
@@ -1210,27 +1314,31 @@
                     <div class="row justify-content-center">
                         <div class="col-12 col-lg-8 row justify-content-center">
                             <div id="manager_comparison" class="col-12">
-                                
+
                             </div>
                             <div class="col-10 col-lg-8">
                                 <span class="text-small">Enter a team ID to compare</span>
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" placeholder="Team ID" id="new_id">
                                     <div class="input-group-append">
-                                      <button class="btn btn-secondary" type="button" @click="add_ID_to_compare">Compare</button>
+                                        <button class="btn btn-secondary" type="button"
+                                            @click="add_ID_to_compare">Compare</button>
                                     </div>
                                     <div class="input-group-append">
-                                        <button class="btn btn-danger" type="button" @click="clear_rivals">Clear</button>
+                                        <button class="btn btn-danger" type="button"
+                                            @click="clear_rivals">Clear</button>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 col-lg-8">
                             <span class="d-block border-below-orange">Success and returns out of key stats</span>
-                            <table class="col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive p-0" id="all_picks_per_stat">
+                            <table
+                                class="col-12 table table-sm text-white text-small m-data-table mt-1 mb-1 custom-table-responsive p-0"
+                                id="all_picks_per_stat">
                                 <thead>
                                     <tr>
                                         <th class="text-center text-muted text-xs">GID</th>
@@ -1243,8 +1351,10 @@
                                     </tr>
                                 </thead>
                                 <tbody v-cloak>
-                                    <template v-for="(v, key) in user_picks_custom_stats" v-if="v.hasOwnProperty('values')">
-                                        <tr :class="{'owned-row': p.success, 'nonowned-row': !p.success}" v-for="p in v.values">
+                                    <template v-for="(v, key) in user_picks_custom_stats"
+                                        v-if="v.hasOwnProperty('values')">
+                                        <tr :class="{'owned-row': p.success, 'nonowned-row': !p.success}"
+                                            v-for="p in v.values">
                                             <td class="text-center text-muted text-xs">{{ p.fixture }}</td>
                                             <td class="text-center">{{ p.gw }}</td>
                                             <td class="text-center">{{ p.name }}</td>
@@ -1292,21 +1402,29 @@
 
                                 <div class="col-8 col-lg-6 input-group mb-3">
                                     <select class="custom-select" id="new_player_id">
-                                        <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{ p.points_total }})</option>
+                                        <option v-for="p in user_player_sum" :value="p.id">{{ p.name }} ({{
+                                            p.points_total }})</option>
                                     </select>
                                     <div class="input-group-append">
-                                        <button class="btn btn-secondary" type="button" @click="add_player_plot">Plot</button>
+                                        <button class="btn btn-secondary" type="button"
+                                            @click="add_player_plot">Plot</button>
                                     </div>
                                 </div>
 
                             </div>
                             <div class="text-center">
-                                <span class="svg-legend-text mr-2"><svg width="20" height="20"><g>
-                                    <rect x="0" y="0" width="20" height="20" fill="#6fcfd6" opacity="0.3"></rect></g>
-                                </svg> Lineup</span>
-                                <span class="svg-legend-text"><svg width="20" height="20"><g>
-                                    <rect x="0" y="0" width="20" height="20" fill="#b995d2" opacity="0.3"></rect></g>
-                                </svg> Bench</span>
+                                <span class="svg-legend-text mr-2"><svg width="20" height="20">
+                                        <g>
+                                            <rect x="0" y="0" width="20" height="20" fill="#6fcfd6" opacity="0.3">
+                                            </rect>
+                                        </g>
+                                    </svg> Lineup</span>
+                                <span class="svg-legend-text"><svg width="20" height="20">
+                                        <g>
+                                            <rect x="0" y="0" width="20" height="20" fill="#b995d2" opacity="0.3">
+                                            </rect>
+                                        </g>
+                                    </svg> Bench</span>
                             </div>
                             <div id="player_charts">
 
@@ -1321,7 +1439,8 @@
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Ownership / Differential Analysis</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Ownership / Differential Analysis
+                </h5>
                 <div class="scenario_detail">
                     Gains and losses from key players
                 </div>
@@ -1335,10 +1454,11 @@
                                         <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
                                     </select>
                                     <div class="input-group-append">
-                                        <button class="btn btn-secondary" type="button" @click="invalidate_cache(); redraw_graphs();">Select</button>
+                                        <button class="btn btn-secondary" type="button"
+                                            @click="invalidate_cache(); redraw_graphs();">Select</button>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -1356,25 +1476,35 @@
                     <div class="row justify-content-center mb-3">
                         <div class="col-12">
                             <div class="text-center">
-                                <span class="svg-legend-text mr-2"><svg width="20" height="20"><g>
-                                    <rect x="0" y="0" width="20" height="20" fill="#6fcfd6" opacity="0.9"></rect></g>
-                                </svg> Gain</span>
-                                <span class="svg-legend-text"><svg width="20" height="20"><g>
-                                    <rect x="0" y="0" width="20" height="20" fill="#de6363" opacity="0.9"></rect></g>
-                                </svg> Loss</span>
+                                <span class="svg-legend-text mr-2"><svg width="20" height="20">
+                                        <g>
+                                            <rect x="0" y="0" width="20" height="20" fill="#6fcfd6" opacity="0.9">
+                                            </rect>
+                                        </g>
+                                    </svg> Gain</span>
+                                <span class="svg-legend-text"><svg width="20" height="20">
+                                        <g>
+                                            <rect x="0" y="0" width="20" height="20" fill="#de6363" opacity="0.9">
+                                            </rect>
+                                        </g>
+                                    </svg> Loss</span>
                             </div>
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="cumulative_switch" checked @change="refresh_y_axis()">
-                                    <label class="custom-control-label highlighted-checkbox" for="cumulative_switch">Cumulative</label>
+                                    <input type="checkbox" class="custom-control-input" id="cumulative_switch" checked
+                                        @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox"
+                                        for="cumulative_switch">Cumulative</label>
                                 </div>
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="net_switch" @change="refresh_y_axis()">
-                                    <label class="custom-control-label highlighted-checkbox" for="net_switch">Net Change</label>
+                                    <input type="checkbox" class="custom-control-input" id="net_switch"
+                                        @change="refresh_y_axis()">
+                                    <label class="custom-control-label highlighted-checkbox" for="net_switch">Net
+                                        Change</label>
                                 </div>
                             </div>
                             <div id="benefit-candlestick-chart">
-                                
+
                             </div>
                             <div class="row flex-grow-1 no-gutters text-small mb-1 pt-1 pb-1">
                                 <div class="col-4 col-lg-2 mb-1" v-cloak>
@@ -1383,10 +1513,11 @@
                                             <div class="legend-box text-center">
                                                 GW
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="hover_gw">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1397,10 +1528,11 @@
                                             <div class="legend-box text-center">
                                                 GW Gain
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="hover_gw_gain">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1411,10 +1543,11 @@
                                             <div class="legend-box text-center">
                                                 GW Loss
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="hover_gw_loss">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1425,10 +1558,11 @@
                                             <div class="legend-box text-center">
                                                 Top Gains
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="hover_top_gains">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1439,10 +1573,11 @@
                                             <div class="legend-box text-center">
                                                 Top Losses
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="hover_top_losses">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1453,7 +1588,9 @@
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
                             <span class="d-block border-below-orange">Gain Analysis</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="gain_table">
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                id="gain_table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">GW</th>
@@ -1487,14 +1624,19 @@
                             </table>
                         </div>
                         <div class="col-12 col-lg-8">
-                            <span class="text-smaller">This table shows your lineup picks, their corresponding points per week and your relative gain. Gain is equal to points multiplied with your ownership rate (Multiplier * 100 - EO), which shows you the relative gain compared to field average.</span>
+                            <span class="text-smaller">This table shows your lineup picks, their corresponding points
+                                per week and your relative gain. Gain is equal to points multiplied with your ownership
+                                rate (Multiplier * 100 - EO), which shows you the relative gain compared to field
+                                average.</span>
                         </div>
                     </div>
 
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
                             <span class="d-block border-below-orange">Loss Analysis (Key Players)</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="loss_table">
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                id="loss_table">
                                 <thead>
                                     <tr>
                                         <th class="text-center">GW</th>
@@ -1525,7 +1667,10 @@
                             </table>
                         </div>
                         <div class="col-12 col-lg-8">
-                            <span class="text-smaller">This table shows players you haven't picked, their corresponding points per week and your relative loss. Loss is equal to points multiplied with effective ownership rate (EO), which shows you the relative loss compared to field average.</span>
+                            <span class="text-smaller">This table shows players you haven't picked, their corresponding
+                                points per week and your relative loss. Loss is equal to points multiplied with
+                                effective ownership rate (EO), which shows you the relative loss compared to field
+                                average.</span>
                         </div>
                     </div>
 
@@ -1539,7 +1684,8 @@
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
                                 <label>Sample tier</label>
-                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection" @change="invalidate_cache(); redraw_graphs();">
+                                <select class="custom-select" id="sample_selection-2" v-model="sample_selection"
+                                    @change="invalidate_cache(); redraw_graphs();">
                                     <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
                                 </select>
                             </div>
@@ -1558,10 +1704,11 @@
                                             <div class="legend-box text-center">
                                                 GW
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="risk_hover_gw">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1572,10 +1719,11 @@
                                             <div class="legend-box text-center">
                                                 Differential Rate <!-- Total your ownership divided by 1200% -->
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="risk_hover_diff_rate">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1586,10 +1734,11 @@
                                             <div class="legend-box text-center">
                                                 Change <!-- Gain minus loss -->
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="risk_hover_reward">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1600,10 +1749,11 @@
                                             <div class="legend-box text-center">
                                                 Top Bets For
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="risk_top_bets_for">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1614,10 +1764,11 @@
                                             <div class="legend-box text-center">
                                                 Top Bets Against
                                             </div>
-                                        </div> 
-                                        <div class="setting-value text-center p-0 d-flex flex-row justify-content-center">
+                                        </div>
+                                        <div
+                                            class="setting-value text-center p-0 d-flex flex-row justify-content-center">
                                             <span class="setting-value-text" id="risk_top_bets_against">
-                                                
+
                                             </span>
                                         </div>
                                     </div>
@@ -1625,7 +1776,10 @@
                             </div>
                         </div>
                         <div class="col-12 col-lg-8">
-                            <span class="text-smaller">This scatter plot shows your relative change to average and your differential (risk) percentage. This value is calculated based on how different your lineup compared to tier effective ownership. It is a measure of how much you are betting against the template.</span>
+                            <span class="text-smaller">This scatter plot shows your relative change to average and your
+                                differential (risk) percentage. This value is calculated based on how different your
+                                lineup compared to tier effective ownership. It is a measure of how much you are betting
+                                against the template.</span>
                         </div>
                     </div>
 
@@ -1634,7 +1788,7 @@
         </div>
     </div>
 
-    
+
 
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
@@ -1656,26 +1810,34 @@
                             </div> -->
 
                             <div id="transfer-quality-plot">
-                                
+
                             </div>
 
                         </div>
-                        
+
                         <div class="col-12 col-md-9">
-                            <div class="text-center text-smaller">Comparison of predicted/realized points in following 5 GWs (excluding hits)</div>
+                            <div class="text-center text-smaller">Comparison of predicted/realized points in following 5
+                                GWs (excluding hits)</div>
                             <div v-if="transfer_analysis" class="row mt-1 mb-2">
-                                <div class="col-4 text-center text-small">Hindsight Optimal Ratio <br><span class="rp-color">{{ transfer_analysis.hs_ratio }}</span></div>
-                                <div class="col-4 text-center text-small">Foresight Optimal Ratio <br><span class="xp-color">{{ transfer_analysis.fs_ratio }}</span></div>
-                                <div class="col-4 text-center text-small">Avg. Transfer xP Optimality <br><span class="outcome-color">{{ rounded(transfer_analysis.tr_optimality,1) }}%</span></div>
+                                <div class="col-4 text-center text-small">Hindsight Optimal Ratio <br><span
+                                        class="rp-color">{{ transfer_analysis.hs_ratio }}</span></div>
+                                <div class="col-4 text-center text-small">Foresight Optimal Ratio <br><span
+                                        class="xp-color">{{ transfer_analysis.fs_ratio }}</span></div>
+                                <div class="col-4 text-center text-small">Avg. Transfer xP Optimality <br><span
+                                        class="outcome-color">{{ rounded(transfer_analysis.tr_optimality,1) }}%</span>
+                                </div>
                             </div>
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="show_all_transfers" v-model="show_all_transfers">
-                                    <label class="custom-control-label highlighted-checkbox" for="show_all_transfers">Show All Transfers</label>
+                                    <input type="checkbox" class="custom-control-input" id="show_all_transfers"
+                                        v-model="show_all_transfers">
+                                    <label class="custom-control-label highlighted-checkbox"
+                                        for="show_all_transfers">Show All Transfers</label>
                                 </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td table-striped" 
+                                <table
+                                    class="table table-sm text-white text-small mt-1 mb-1 custom-table-responsive p-0 narrow-td table-striped"
                                     id="transfer_quality">
                                     <thead>
                                         <tr>
@@ -1691,26 +1853,33 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="entry in Object.values(transfer_analysis?.gws || []).flat()" v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
+                                        <tr v-for="entry in Object.values(transfer_analysis?.gws || []).flat()"
+                                            v-if="show_all_transfers || (entry.best_xp_tr || entry.best_rp_tr) || (entry.hs_optimal && entry.fs_optimal)">
                                             <td class="text-center">{{ entry.gw }}</td>
                                             <td class="text-center">{{ entry.gw_list }}</td>
                                             <td class="text-center">{{ fpl_element[entry.sold].web_name }}</td>
                                             <td class="text-center">
                                                 <div>{{ fpl_element[entry.bought].web_name }}</div>
-                                                <div v-if="entry.best_xp" class="xp-color text-smaller">{{ entry.bought == entry.best_xp.id ? "FS Optimal" : "" }}</div>
-                                                <div v-if="entry.best_rp" class="rp-color text-smaller">{{ entry.bought == entry.best_rp.id ? "HS Optimal" : "" }}</div>
+                                                <div v-if="entry.best_xp" class="xp-color text-smaller">{{ entry.bought
+                                                    == entry.best_xp.id ? "FS Optimal" : "" }}</div>
+                                                <div v-if="entry.best_rp" class="rp-color text-smaller">{{ entry.bought
+                                                    == entry.best_rp.id ? "HS Optimal" : "" }}</div>
                                             </td>
                                             <td class="text-center rp-color">{{ getWithSign(entry.rp_diff,0) }}</td>
                                             <td class="text-center xp-color">{{ getWithSign(entry.xp_diff,1) }}</td>
                                             <td class="text-center">
                                                 <div v-if="entry.best_rp">{{ entry.best_rp.web_name }}</div>
-                                                <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{ getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
-                                                <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff, 1) }}</div>
+                                                <div v-if="entry.best_rp"><b>rp Diff: <span class="rp-color">{{
+                                                            getWithSign(entry.best_rp.rp_diff, 0) }}</span></b></div>
+                                                <div v-if="entry.best_rp">xP Diff: {{ getWithSign(entry.best_rp.xp_diff,
+                                                    1) }}</div>
                                             </td>
                                             <td class="text-center">
                                                 <div v-if="entry.best_xp">{{ entry.best_xp.web_name }}</div>
-                                                <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff, 0) }}</div>
-                                                <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{ getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
+                                                <div v-if="entry.best_xp">rp Diff: {{ getWithSign(entry.best_xp.rp_diff,
+                                                    0) }}</div>
+                                                <div v-if="entry.best_xp"><b>xP Diff: <span class="xp-color">{{
+                                                            getWithSign(entry.best_xp.xp_diff, 1) }}</span></b></div>
                                             </td>
                                             <td class="text-center">{{ entry.xp_ratio }}</td>
                                         </tr>
@@ -1719,7 +1888,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -1727,7 +1896,7 @@
 
 
 
-    
+
 
 
     <div class="row" id="graph-section-wrapper">
@@ -1742,7 +1911,9 @@
                         <div class="row justify-content-center mb-3">
                             <div class="col-12">
                                 <!-- <span class="d-block border-below-orange">Team Picks</span> -->
-                                <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages" id="total_gain_loss_table" style="width: 100%">
+                                <table
+                                    class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive better_pages"
+                                    id="total_gain_loss_table" style="width: 100%">
                                     <thead>
                                         <tr>
                                             <!-- <th class="text-center text-muted">ID</th> -->
@@ -1787,7 +1958,8 @@
     <div class="row" id="graph-section-wrapper">
         <div class="col-12 mb-3">
             <div class="card card-field border-dark bg-squad-card text-white">
-                <h5 class="card-header border-complement text-center scenario_title">Position / Price Category Analysis</h5>
+                <h5 class="card-header border-complement text-center scenario_title">Position / Price Category Analysis
+                </h5>
                 <div class="scenario_detail">
                     Total points per position and price category
                 </div>
@@ -1795,11 +1967,12 @@
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
                             <div id="type_heatmap">
-                                
+
                             </div>
                         </div>
                         <div class="text-xs text-center">
-                            Price categories (Budget, Mid-Price, Premieum) are as follows: GK Below 5, 5-5.5, Above 5.5 - DF Below 5, 5-6, Above 6 - MD Below 7.5, 7.5-10, Above 10 - FW Below 7.5, 7.5-10, Above 10
+                            Price categories (Budget, Mid-Price, Premieum) are as follows: GK Below 5, 5-5.5, Above 5.5
+                            - DF Below 5, 5-6, Above 6 - MD Below 7.5, 7.5-10, Above 10 - FW Below 7.5, 7.5-10, Above 10
                         </div>
                     </div>
                     <div class="row justify-content-center mb-3">
@@ -1807,8 +1980,10 @@
                             <span class="d-block border-below-orange">Point Distribution Treemap (Gain)</span>
                             <div class="text-center">
                                 <div class="custom-control custom-switch text-small d-inline-block mr-3">
-                                    <input type="checkbox" class="custom-control-input" id="actual_gain_switch" @change="refresh_point_dist()">
-                                    <label class="custom-control-label highlighted-checkbox" for="actual_gain_switch">Gain (Effective Points)</label>
+                                    <input type="checkbox" class="custom-control-input" id="actual_gain_switch"
+                                        @change="refresh_point_dist()">
+                                    <label class="custom-control-label highlighted-checkbox"
+                                        for="actual_gain_switch">Gain (Effective Points)</label>
                                 </div>
                             </div>
                             <div id="points_tree_map">
@@ -1816,7 +1991,8 @@
                             </div>
                         </div>
                         <div class="text-xs text-center">
-                            Gain is equal to points multiplied with your ownership rate (Multiplier * 100 - EO), which shows you the relative gain compared to field average.
+                            Gain is equal to points multiplied with your ownership rate (Multiplier * 100 - EO), which
+                            shows you the relative gain compared to field average.
                         </div>
                     </div>
                     <div class="row justify-content-center mb-3">
@@ -1827,7 +2003,8 @@
                             </div>
                         </div>
                         <div class="text-xs text-center">
-                            Loss is equal to points against multiplied with effective ownership rate, which shows you the relative loss compared to field average.
+                            Loss is equal to points against multiplied with effective ownership rate, which shows you
+                            the relative loss compared to field average.
                         </div>
                     </div>
                 </div>
@@ -1835,7 +2012,7 @@
         </div>
     </div>
 
-    
+
 
 
     <div class="row" id="graph-section-wrapper">
@@ -1848,7 +2025,9 @@
                 <div class="card-body" v-if="ready" v-cloak>
                     <div class="row justify-content-center mb-3">
                         <div class="col-12 col-lg-8">
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_table" v-if="ready">
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="formation_analysis_table" v-if="ready">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Position</th>
@@ -1872,17 +2051,20 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="text-center avg-formation">Average Formation: 
+                            <div class="text-center avg-formation">Average Formation:
                                 <span v-for="(value, key) in user_formation_analysis_by_eltype" v-if="key != 1">
-                                    {{ rounded(value.avg_pick,2)  }} <span v-if="key != 4">-</span>
+                                    {{ rounded(value.avg_pick,2) }} <span v-if="key != 4">-</span>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-12 col-lg-8">
-                            <span class="d-block border-below-orange">Performance per formation type (after auto-sub)</span>
-                            <table class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive" id="formation_analysis_sum_table" v-if="ready">
+                            <span class="d-block border-below-orange">Performance per formation type (after
+                                auto-sub)</span>
+                            <table
+                                class="table table-sm text-white table-striped text-small m-data-table mt-1 mb-1 custom-table-responsive"
+                                id="formation_analysis_sum_table" v-if="ready">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Formation</th>
@@ -1921,7 +2103,7 @@
     </div>
 
 
-    
+
 
 
     <!-- user_stats_per_gw -->
@@ -1934,7 +2116,8 @@
                     <p>Data on this page is refreshed every 6 hours. It is possible that some values/graphs do not function properly while a GW is ongoing.</p>
                 </div> -->
                 <div class="card-footer text-white disclaimer">
-                    The information contained on this website is for general information purposes only. Any reliance you place on this information is strictly at your own risk.
+                    The information contained on this website is for general information purposes only. Any reliance you
+                    place on this information is strictly at your own risk.
                 </div>
             </div>
         </div>
@@ -1943,7 +2126,7 @@
 </main>
 
 <script>
-    let ts = 20250819220359;
+    let ts = 20250820003312;
     let off_season = false;
 </script>
 
@@ -2030,11 +2213,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20250819220359"></script>
+<script src="/static/js/main.js?ts=20250820003312"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20250819220359"></script>
+<script src="/static/js/sampling_utils.js?ts=20250820003312"></script>
 
-<script src="/static/js/highlights.js?ts=20250819220359"></script>
+<script src="/static/js/highlights.js?ts=20250820003312"></script>
 
 
 <script>

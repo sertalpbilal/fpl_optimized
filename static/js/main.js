@@ -161,6 +161,7 @@ let pl_team_colors = {
   SHU: ["#EE2737", "#000000"],
   IPS: ["#DE2C37", "#3A64A3"],
   WBA: ["#122F67", "#FFFFFF"],
+  SUN: ["#E10600", "#FFFFFF"],
 };
 
 let element_type = {
@@ -168,7 +169,7 @@ let element_type = {
   2: { name: "Defender", short: "DF", id: 2, min: 3, max: 5, cnt: 5 },
   3: { name: "Midfielder", short: "MD", id: 3, min: 2, max: 5, cnt: 5 },
   4: { name: "Forward", short: "FW", id: 4, min: 1, max: 3, cnt: 3 },
-  5: { name: "Managers ", short: "MNG", id: 5, min: 0, max: 1, cnt: 1 },
+  // 5: { name: "Managers ", short: "MNG", id: 5, min: 0, max: 1, cnt: 1 },
 };
 
 let stat_types = {
@@ -183,13 +184,13 @@ let stat_types = {
   red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
   yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" },
   bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" },
-  mng_win: { name: "AM Win", icon: "fas fa-trophy" },
-  mng_draw: { name: "AM Draw", icon: "fas fa-trophy" },
-  mng_loss: { name: "AM Loss", icon: "fas fa-trophy" },
-  mng_underdog_win: { name: "AM Underdog Win", icon: "fas fa-trophy" },
-  mng_underdog_draw: { name: "AM Underdog Draw", icon: "fas fa-trophy" },
-  mng_clean_sheets: { name: "AM Clean Sheet", icon: "fas fa-trophy" },
-  mng_goals_scored: { name: "AM Goals Scored", icon: "fas fa-trophy" },
+  // mng_win: { name: "AM Win", icon: "fas fa-trophy" },
+  // mng_draw: { name: "AM Draw", icon: "fas fa-trophy" },
+  // mng_loss: { name: "AM Loss", icon: "fas fa-trophy" },
+  // mng_underdog_win: { name: "AM Underdog Win", icon: "fas fa-trophy" },
+  // mng_underdog_draw: { name: "AM Underdog Draw", icon: "fas fa-trophy" },
+  // mng_clean_sheets: { name: "AM Clean Sheet", icon: "fas fa-trophy" },
+  // mng_goals_scored: { name: "AM Goals Scored", icon: "fas fa-trophy" },
 };
 
 let player_stat_types = {
@@ -205,13 +206,13 @@ let player_stat_types = {
   yellow_cards: { name: "Yellow Cards", pp: false },
   red_cards: { name: "Red Cards", pp: false },
   penalties_missed: { name: "Penalties Missed", pp: false },
-  mng_win: { name: "AM Win", pp: false },
-  mng_draw: { name: "AM Draw", pp: false },
-  mng_loss: { name: "AM Loss", pp: false },
-  mng_underdog_win: { name: "AM Underdog Win", pp: false },
-  mng_underdog_draw: { name: "AM Underdog Draw", pp: false },
-  mng_clean_sheets: { name: "AM Clean Sheets", pp: false },
-  mng_goals_scored: { name: "AM Goals Scored", pp: false },
+  // mng_win: { name: "AM Win", pp: false },
+  // mng_draw: { name: "AM Draw", pp: false },
+  // mng_loss: { name: "AM Loss", pp: false },
+  // mng_underdog_win: { name: "AM Underdog Win", pp: false },
+  // mng_underdog_draw: { name: "AM Underdog Draw", pp: false },
+  // mng_clean_sheets: { name: "AM Clean Sheets", pp: false },
+  // mng_goals_scored: { name: "AM Goals Scored", pp: false },
 };
 
 function rounded(val, digits = 2) {
