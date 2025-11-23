@@ -7284,28 +7284,28 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 746,746,Morrison,Liverpool,M,4.5,11,0.0,0.0,0.0,0.0,0.0
 747,747,Mayers,West Ham,D,4.0,11,0.0,0.0,0.0,0.0,0.0
 748,748,Dasilva,Brentford,M,5.0,11,0.0,0.0,0.0,0.0,0.0
-1,1,Raya,Arsenal,G,5.9,12,4.23,89.1,0.0,0.0,0.0
+1,1,Raya,Arsenal,G,5.9,12,4.23,89.1,2.0,90.0,1.0
 2,2,Arrizabalaga,Arsenal,G,4.2,12,0.05,1.2,0.0,0.0,0.0
 4,4,Setford,Arsenal,G,4.0,12,0.0,0.0,0.0,0.0,0.0
 5,5,Gabriel,Arsenal,D,6.5,12,0.0,0.0,0.0,0.0,0.0
-6,6,Saliba,Arsenal,D,6.0,12,4.47,87.45,0.0,0.0,0.0
-7,7,Calafiori,Arsenal,D,5.8,12,4.34,76.8,0.0,0.0,0.0
-8,8,J.Timber,Arsenal,D,6.2,12,4.4,80.4,0.0,0.0,0.0
-10,10,Lewis-Skelly,Arsenal,D,5.1,12,1.06,24.6,0.0,0.0,0.0
+6,6,Saliba,Arsenal,D,6.0,12,4.47,87.45,2.0,90.0,1.0
+7,7,Calafiori,Arsenal,D,5.8,12,4.34,76.8,2.0,90.0,1.0
+8,8,J.Timber,Arsenal,D,6.2,12,4.4,80.4,5.0,90.0,1.0
+10,10,Lewis-Skelly,Arsenal,D,5.1,12,1.06,24.6,1.0,1.0,1.0
 11,11,White,Arsenal,D,5.3,12,0.67,13.5,0.0,0.0,0.0
 12,12,Zinchenko,Nott'm Forest,D,4.9,12,0.0,0.0,0.0,0.0,0.0
 13,13,Clarke,Arsenal,D,3.8,12,0.0,0.0,0.0,0.0,0.0
 15,15,Nichols,Arsenal,D,3.9,12,0.0,0.0,0.0,0.0,0.0
-16,16,Saka,Arsenal,M,10.1,12,6.18,84.15,0.0,0.0,0.0
+16,16,Saka,Arsenal,M,10.1,12,6.18,84.15,4.0,90.0,1.0
 17,17,Ødegaard,Arsenal,M,7.8,12,0.83,14.55,0.0,0.0,0.0
-18,18,Madueke,Arsenal,M,6.8,12,0.14,2.25,0.0,0.0,0.0
+18,18,Madueke,Arsenal,M,6.8,12,0.14,2.25,1.0,12.0,1.0
 19,19,Martinelli,Arsenal,M,6.8,12,0.11,1.65,0.0,0.0,0.0
-20,20,Trossard,Arsenal,M,6.9,12,4.37,78.15,0.0,0.0,0.0
-21,21,Rice,Arsenal,M,6.9,12,4.53,84.75,0.0,0.0,0.0
-22,22,Merino,Arsenal,M,5.9,12,4.86,80.55,0.0,0.0,0.0
+20,20,Trossard,Arsenal,M,6.9,12,4.37,78.15,12.0,77.0,1.0
+21,21,Rice,Arsenal,M,6.9,12,4.53,84.75,6.0,90.0,1.0
+22,22,Merino,Arsenal,M,5.9,12,4.86,80.55,5.0,87.0,1.0
 24,24,Nørgaard,Arsenal,M,5.2,12,0.56,13.2,0.0,0.0,0.0
-25,25,Nwaneri,Arsenal,M,5.1,12,1.0,18.9,0.0,0.0,0.0
-26,26,Zubimendi,Arsenal,M,5.4,12,3.09,80.25,0.0,0.0,0.0
+25,25,Nwaneri,Arsenal,M,5.1,12,1.0,18.9,1.0,2.0,1.0
+26,26,Zubimendi,Arsenal,M,5.4,12,3.09,80.25,2.0,90.0,1.0
 27,27,Nelson,Brentford,M,4.8,12,0.17,3.45,0.0,0.0,0.0
 30,30,Havertz,Arsenal,F,7.3,12,0.14,2.4,0.0,0.0,0.0
 31,31,G.Jesus,Arsenal,F,6.4,12,0.58,9.15,0.0,0.0,0.0
@@ -7320,7 +7320,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 42,42,A.García,Aston Villa,D,3.9,12,0.0,0.0,0.0,0.0,0.0
 44,44,Bogarde,Aston Villa,D,4.0,12,0.32,9.3,1.0,6.0,1.0
 45,45,Sousa,Aston Villa,D,3.9,12,0.01,0.3,0.0,0.0,0.0
-47,47,Rogers,Aston Villa,M,6.8,12,3.74,85.35,12.0,90.0,1.0
+47,47,Rogers,Aston Villa,M,6.8,12,3.74,85.35,15.0,90.0,1.0
 48,48,Tielemans,Aston Villa,M,5.9,12,2.18,50.25,2.0,83.0,1.0
 50,50,Buendía,Aston Villa,M,5.3,12,1.9,35.1,1.0,45.0,1.0
 52,52,J.Ramsey,Newcastle,M,5.3,12,0.63,16.5,0.0,0.0,0.0
@@ -7363,7 +7363,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 105,105,Valdimarsson,Brentford,G,3.9,12,0.03,0.9,0.0,0.0,0.0
 106,106,Collins,Brentford,D,4.9,12,3.35,88.95,1.0,90.0,1.0
 107,107,Lewis-Potter,Brentford,D,4.9,12,0.71,17.85,0.0,25.0,1.0
-108,108,Ajer,Brentford,D,4.4,12,2.26,69.0,2.0,79.0,1.0
+108,108,Ajer,Brentford,D,4.4,12,2.26,69.0,4.0,79.0,1.0
 109,109,Henry,Brentford,D,4.3,12,0.34,9.3,0.0,0.0,0.0
 110,110,Kayode,Brentford,D,4.5,12,2.63,82.65,1.0,90.0,1.0
 111,111,Pinnock,Brentford,D,4.3,12,0.41,10.2,0.0,0.0,0.0
@@ -7486,7 +7486,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 262,262,Chadi Riad,Crystal Palace,D,4.0,12,0.0,0.0,0.0,0.0,0.0
 263,263,Clyne,Crystal Palace,D,3.9,12,0.48,11.7,0.0,0.0,0.0
 265,265,Kporha,Crystal Palace,D,4.0,12,0.0,0.0,0.0,0.0,0.0
-266,266,Eze,Arsenal,M,7.6,12,4.16,76.35,0.0,0.0,0.0
+266,266,Eze,Arsenal,M,7.6,12,4.16,76.35,20.0,90.0,1.0
 267,267,Sarr,Crystal Palace,M,6.7,12,4.91,83.25,3.0,90.0,1.0
 268,268,Doucouré,Crystal Palace,M,4.9,12,0.0,0.0,0.0,0.0,0.0
 269,269,Esse,Crystal Palace,M,4.7,12,0.32,6.3,0.0,0.0,0.0
@@ -7558,11 +7558,11 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 351,351,Gnonto,Leeds United,M,5.2,12,1.2,25.95,0.0,10.0,1.0
 352,352,Harrison,Leeds United,M,5.2,12,0.78,16.95,0.0,0.0,0.0
 353,353,James,Leeds United,M,5.3,12,1.02,20.85,1.0,19.0,1.0
-354,354,Ampadu,Leeds United,M,4.9,12,2.9,84.75,3.0,90.0,1.0
+354,354,Ampadu,Leeds United,M,4.9,12,2.9,84.75,4.0,90.0,1.0
 356,356,Gruev,Leeds United,M,4.8,12,0.43,12.45,0.0,0.0,0.0
 358,358,Tanaka,Leeds United,M,4.8,12,1.23,33.6,2.0,47.0,1.0
 362,362,Piroe,Leeds United,F,5.0,12,0.54,9.9,1.0,10.0,1.0
-365,365,Nmecha,Leeds United,F,5.0,12,1.39,28.2,6.0,70.0,1.0
+365,365,Nmecha,Leeds United,F,5.0,12,1.39,28.2,8.0,70.0,1.0
 366,366,A.Becker,Liverpool,G,5.4,12,3.69,89.1,2.0,90.0,1.0
 367,367,Mamardashvili,Liverpool,G,4.3,12,0.03,0.9,0.0,0.0,0.0
 368,368,Pécsi,Liverpool,G,3.9,12,0.0,0.0,0.0,0.0,0.0
@@ -7719,32 +7719,32 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 560,560,Isidor,Sunderland,F,5.6,12,3.22,71.55,2.0,63.0,1.0
 561,561,Mayenda,Sunderland,F,5.4,12,0.58,12.15,1.0,1.0,1.0
 562,562,Abdullahi,Sunderland,F,4.3,12,0.03,0.6,0.0,0.0,0.0
-565,565,Vicario,Spurs,G,5.0,12,2.51,89.1,0.0,0.0,0.0
+565,565,Vicario,Spurs,G,5.0,12,2.51,89.1,1.0,90.0,1.0
 566,566,Austin,Spurs,G,3.9,12,0.0,0.0,0.0,0.0,0.0
 567,567,Kinsky,Spurs,G,3.9,12,0.03,0.9,0.0,0.0,0.0
-568,568,Pedro Porro,Spurs,D,5.5,12,2.4,79.2,0.0,0.0,0.0
-569,569,Romero,Spurs,D,5.0,12,2.55,86.7,0.0,0.0,0.0
-570,570,Danso,Spurs,D,4.3,12,0.37,10.05,0.0,0.0,0.0
+568,568,Pedro Porro,Spurs,D,5.5,12,2.4,79.2,0.0,12.0,1.0
+569,569,Romero,Spurs,D,5.0,12,2.55,86.7,1.0,90.0,1.0
+570,570,Danso,Spurs,D,4.3,12,0.37,10.05,0.0,45.0,1.0
 571,571,Davies,Spurs,D,4.3,12,0.05,1.5,0.0,0.0,0.0
 572,572,Dragusin,Spurs,D,4.5,12,0.03,0.9,0.0,0.0,0.0
-573,573,Spence,Spurs,D,4.5,12,1.66,63.75,0.0,0.0,0.0
-574,574,Udogie,Spurs,D,4.4,12,1.1,37.2,0.0,0.0,0.0
-575,575,Van de Ven,Spurs,D,4.8,12,2.18,86.7,0.0,0.0,0.0
+573,573,Spence,Spurs,D,4.5,12,1.66,63.75,0.0,77.0,1.0
+574,574,Udogie,Spurs,D,4.4,12,1.1,37.2,0.0,90.0,1.0
+575,575,Van de Ven,Spurs,D,4.8,12,2.18,86.7,0.0,90.0,1.0
 577,577,Takai,Spurs,D,4.0,12,0.02,0.6,0.0,0.0,0.0
-580,580,Johnson,Spurs,M,6.6,12,1.42,37.35,0.0,0.0,0.0
+580,580,Johnson,Spurs,M,6.6,12,1.42,37.35,1.0,12.0,1.0
 581,581,Maddison,Spurs,M,6.8,12,0.0,0.0,0.0,0.0,0.0
-582,582,Kudus,Spurs,M,6.5,12,2.99,83.55,0.0,0.0,0.0
+582,582,Kudus,Spurs,M,6.5,12,2.99,83.55,2.0,77.0,1.0
 583,583,Kulusevski,Spurs,M,6.4,12,0.0,0.0,0.0,0.0,0.0
 584,584,Tel,Spurs,M,6.3,12,1.0,24.0,0.0,0.0,0.0
-585,585,Bentancur,Spurs,M,5.3,12,2.13,60.15,0.0,0.0,0.0
+585,585,Bentancur,Spurs,M,5.3,12,2.13,60.15,1.0,65.0,1.0
 586,586,Bergvall,Spurs,M,5.4,12,0.91,27.75,0.0,0.0,0.0
 587,587,Bissouma,Spurs,M,5.2,12,0.0,0.0,0.0,0.0,0.0
-588,588,Odobert,Spurs,M,5.3,12,1.27,32.1,0.0,0.0,0.0
+588,588,Odobert,Spurs,M,5.3,12,1.27,32.1,2.0,65.0,1.0
 591,591,Gray,Spurs,M,4.8,12,0.3,9.6,0.0,0.0,0.0
-593,593,P.M.Sarr,Spurs,M,4.8,12,1.5,42.6,0.0,0.0,0.0
+593,593,P.M.Sarr,Spurs,M,4.8,12,1.5,42.6,1.0,24.0,1.0
 595,595,Olusesi,Spurs,M,4.4,12,0.01,0.3,0.0,0.0,0.0
 596,596,Solanke,Spurs,F,7.2,12,0.0,0.0,0.0,0.0,0.0
-597,597,Richarlison,Spurs,F,6.4,12,1.6,40.05,0.0,0.0,0.0
+597,597,Richarlison,Spurs,F,6.4,12,1.6,40.05,7.0,90.0,1.0
 599,599,Scarlett,Spurs,F,4.3,12,0.03,0.75,0.0,0.0,0.0
 600,600,Areola,West Ham,G,4.3,12,2.74,89.1,9.0,90.0,1.0
 602,602,Hegyi,West Ham,G,3.9,12,0.0,0.0,0.0,0.0,0.0
@@ -7794,7 +7794,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 659,659,Walker-Peters,West Ham,D,4.3,12,1.14,34.5,0.0,45.0,1.0
 660,660,Stach,Leeds United,M,4.9,12,2.74,68.4,4.0,22.0,1.0
 661,661,Ekitiké,Liverpool,F,8.6,12,4.73,80.4,1.0,35.0,1.0
-662,662,Mosquera,Arsenal,D,5.4,12,2.45,50.25,0.0,0.0,0.0
+662,662,Mosquera,Arsenal,D,5.4,12,2.45,50.25,1.0,2.0,1.0
 663,663,J.Arias,Wolves,M,5.1,12,2.94,67.8,1.0,15.0,1.0
 664,664,Lecomte,Fulham,G,3.9,12,0.04,0.9,0.0,0.0,0.0
 665,665,Perri,Leeds United,G,4.5,12,3.38,89.1,1.0,90.0,1.0
@@ -7805,7 +7805,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 670,670,Roefs,Sunderland,G,4.7,12,3.29,89.1,3.0,90.0,1.0
 671,671,Wilson,West Ham,F,5.8,12,3.1,75.6,12.0,51.0,1.0
 672,672,Hato,Chelsea,D,4.7,12,0.41,9.3,0.0,0.0,0.0
-673,673,J.Palhinha,Spurs,M,5.5,12,2.75,86.1,0.0,0.0,0.0
+673,673,J.Palhinha,Spurs,M,5.5,12,2.75,86.1,7.0,90.0,1.0
 674,674,Ramsdale,Newcastle,G,4.8,12,0.03,0.9,0.0,0.0,0.0
 675,675,Gunn,Nott'm Forest,G,4.0,12,0.0,0.0,0.0,0.0,0.0
 676,676,Ugochukwu,Burnley,M,5.0,12,2.34,68.7,2.0,71.0,1.0
@@ -7847,7 +7847,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 714,714,Woltemade,Newcastle,F,7.4,12,3.97,82.65,2.0,84.0,1.0
 715,715,John,Nott'm Forest,G,4.0,12,0.02,0.9,0.0,0.0,0.0
 716,716,Savona,Nott'm Forest,D,4.5,12,2.17,82.5,12.0,90.0,1.0
-717,717,Xavi,Spurs,M,6.7,12,2.67,71.7,0.0,0.0,0.0
+717,717,Xavi,Spurs,M,6.7,12,2.67,71.7,1.0,45.0,1.0
 718,718,S.Magassa,West Ham,M,5.0,12,0.59,17.7,0.0,0.0,0.0
 719,719,Lindelöf,Aston Villa,D,4.5,12,0.68,18.45,0.0,0.0,0.0
 720,720,Tolu,Wolves,F,5.5,12,0.93,19.05,1.0,65.0,1.0
@@ -7855,8 +7855,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 722,722,Florentino,Burnley,M,5.0,12,3.43,87.0,2.0,83.0,1.0
 723,723,Canvot,Crystal Palace,D,4.5,12,0.35,7.05,1.0,7.0,1.0
 724,724,Geertruida,Sunderland,D,4.5,12,2.9,66.0,2.0,90.0,1.0
-725,725,Hincapie,Arsenal,D,5.4,12,2.67,50.7,0.0,0.0,0.0
-726,726,Kolo Muani,Spurs,F,6.9,12,2.5,71.1,0.0,0.0,0.0
+725,725,Hincapie,Arsenal,D,5.4,12,2.67,50.7,2.0,87.0,1.0
+726,726,Kolo Muani,Spurs,F,6.9,12,2.5,71.1,1.0,24.0,1.0
 727,727,Chukwueze,Fulham,M,5.3,12,0.85,17.1,4.0,26.0,1.0
 728,728,Röhl,Everton,M,5.0,12,0.0,0.0,0.0,0.0,0.0
 730,730,Brobbey,Sunderland,F,5.5,12,0.88,17.55,1.0,26.0,1.0
