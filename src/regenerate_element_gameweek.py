@@ -79,25 +79,43 @@ def get_element_event_expected_minutes(r):
 def get_existing_data_folders(season):
     """Find all existing data folders for the season"""
     base_folder = get_base_folder()
-    all_folders = glob.glob(str(base_folder / f'build/data/{season}/GW*/*/'))
-    if sys.platform == 'win32':
-        all_folders = [i.replace('\\', '/') for i in all_folders]
+    # Use absolute path and look specifically in build/data/{season}/
+    search_path = base_folder / 'build' / 'data' / season / 'GW*' / '*'
+    all_folders = glob.glob(str(search_path))
     
     folder_dict = {}
     for folder in all_folders:
-        parts = folder.split('/')
-        if len(parts) >= 5:
-            gw = parts[3]  # GW{X}
-            date = parts[4]  # date
-            gw_num = int(gw.replace('GW', ''))
+        folder_path = pathlib.Path(folder)
+        # Verify this is actually a directory
+        if not folder_path.is_dir():
+            continue
+        
+        # Extract GW and date from path
+        # Expected structure: .../build/data/{season}/GW{X}/{date}/
+        parts = folder_path.parts
+        
+        # Find the GW part
+        gw_str = None
+        date_str = None
+        for i, part in enumerate(parts):
+            if part.startswith('GW') and part[2:].isdigit():
+                gw_str = part
+                if i + 1 < len(parts):
+                    date_str = parts[i + 1]
+                break
+        
+        if gw_str and date_str:
+            gw_num = int(gw_str.replace('GW', ''))
+            input_folder = folder_path / 'input'
+            
             if gw_num not in folder_dict:
                 folder_dict[gw_num] = []
             folder_dict[gw_num].append({
                 'gw': gw_num,
-                'gw_str': gw,
-                'date': date,
-                'path': folder,
-                'input_folder': pathlib.Path(base_folder / folder / 'input')
+                'gw_str': gw_str,
+                'date': date_str,
+                'path': str(folder_path),
+                'input_folder': input_folder
             })
     
     # Sort by date for each GW, take the latest
