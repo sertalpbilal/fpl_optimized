@@ -1,0 +1,79 @@
+name: Regenerate Element Gameweek Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      gw:
+        description: "Gameweek number to regenerate (leave empty to process all available projections)"
+        required: false
+        type: string
+      force_new:
+        description: "Force creation of new folder even if one exists"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  regenerate:
+    name: Regenerate element_gameweek.csv files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout engine branch
+        uses: actions/checkout@v2
+        with:
+          ref: engine
+
+      - name: Checkout webpage branch
+        uses: actions/checkout@v2
+        with:
+          ref: webpage
+          path: ./build
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy pytz
+
+      - name: Run regeneration script (all GWs)
+        if: ${{ github.event.inputs.gw == '' && !github.event.inputs.force_new }}
+        run: |
+          cd src
+          python regenerate_element_gameweek.py
+
+      - name: Run regeneration script (specific GW)
+        if: ${{ github.event.inputs.gw != '' && !github.event.inputs.force_new }}
+        run: |
+          cd src
+          python regenerate_element_gameweek.py --gw ${{ github.event.inputs.gw }}
+
+      - name: Run regeneration script (all GWs, force new)
+        if: ${{ github.event.inputs.gw == '' && github.event.inputs.force_new }}
+        run: |
+          cd src
+          python regenerate_element_gameweek.py --force-new
+
+      - name: Run regeneration script (specific GW, force new)
+        if: ${{ github.event.inputs.gw != '' && github.event.inputs.force_new }}
+        run: |
+          cd src
+          python regenerate_element_gameweek.py --gw ${{ github.event.inputs.gw }} --force-new
+
+      - name: Commit and push changes
+        run: |
+          cd build
+          git config user.name "Github Action"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Regenerate element_gameweek data (GW: ${{ github.event.inputs.gw || 'all' }}) [skip ci]"
+            git push
+            echo "Changes pushed successfully"
+          fi
