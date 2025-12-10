@@ -29,10 +29,17 @@ FPL_API = {
 
 def read_static():
     """Reads user-specified static values from JSON file"""
-    base_folder = pathlib.Path().resolve()
-    with open(base_folder / 'static-values.json') as f:
+    # Get the src directory (where this script is located)
+    src_folder = pathlib.Path(__file__).parent
+    with open(src_folder / 'static-values.json') as f:
         data = json.load(f)
     return data
+
+
+def get_base_folder():
+    """Get the repository root folder (parent of src/)"""
+    src_folder = pathlib.Path(__file__).parent
+    return src_folder.parent
 
 
 def get_element_event_expected_points(r):
@@ -71,8 +78,8 @@ def get_element_event_expected_minutes(r):
 
 def get_existing_data_folders(season):
     """Find all existing data folders for the season"""
-    base_folder = pathlib.Path().resolve()
-    all_folders = glob.glob(f'build/data/{season}/GW*/*/')
+    base_folder = get_base_folder()
+    all_folders = glob.glob(str(base_folder / f'build/data/{season}/GW*/*/'))
     if sys.platform == 'win32':
         all_folders = [i.replace('\\', '/') for i in all_folders]
     
@@ -104,8 +111,8 @@ def get_existing_data_folders(season):
 
 def find_available_projections(season):
     """Find all available projection files"""
-    base_folder = pathlib.Path().resolve()
-    projection_folder = pathlib.Path(base_folder / f'static/projection/{season}')
+    src_folder = pathlib.Path(__file__).parent
+    projection_folder = pathlib.Path(src_folder / f'static/projection/{season}')
     
     if not projection_folder.exists():
         print(f"Projection folder not found: {projection_folder}")
@@ -228,7 +235,7 @@ def create_new_folder_from_projection(season, gw, projection_file):
         gw: Gameweek number
         projection_file: Path to projection file
     """
-    base_folder = pathlib.Path().resolve()
+    base_folder = get_base_folder()
     date = datetime.datetime.now(pytz.timezone('EST')).date().isoformat()
     
     input_folder = pathlib.Path(base_folder / f"build/data/{season}/GW{gw}/{date}/input/")
@@ -351,7 +358,7 @@ def main():
         
         if args.date:
             # Use specific date
-            base_folder = pathlib.Path().resolve()
+            base_folder = get_base_folder()
             target_folder = pathlib.Path(
                 base_folder / f"build/data/{season}/GW{gw_num}/{args.date}/input/"
             )
