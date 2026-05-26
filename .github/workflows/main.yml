@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: engine
-  schedule:
-    - cron: "0 4,10,16,22 * * *"
+  # Periodic builds disabled for the off-season — re-enable for next season.
+  # schedule:
+  #   - cron: "0 4,10,16,22 * * *"
 
 jobs:
   build-and-run:
