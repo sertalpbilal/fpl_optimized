@@ -196,10 +196,10 @@ let stat_types = {
 let player_stat_types = {
   minutes: { name: "Minutes", pp: true },
   clean_sheets: { name: "Clean Sheets", pp: false },
-  defensive_contribution: { name: "Def Con", pp: true },
   goals_scored: { name: "Goals", pp: true },
   assists: { name: "Assists", pp: true },
   bonus: { name: "Bonus", pp: true },
+  defensive_contribution: { name: "Def Con", pp: true },
   saves: { name: "Saves", pp: true },
   penalties_saved: { name: "Penalties Saved", pp: false },
   goals_conceded: { name: "Goals Conceded", pp: true },

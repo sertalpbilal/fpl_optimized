@@ -2983,7 +2983,7 @@ function draw_player_bar_chart(div_id, id) {
   let min_y = Math.min(0, Math.min(...pts_data.map((i) => i[1])));
   let max_y = Math.max(Math.max(...pts_data.map((i) => i[1])) + 4, 6);
   // let max_x = Math.max(Math.max(...pts_data.map(i => i[0])), parseInt(gw))
-  let max_x = 39;
+  let max_x = 38;
 
   let team_pick_gws = app.user_player_gws;
   let user_gws = team_pick_gws.filter((i) => i.id == id);
@@ -3417,6 +3417,7 @@ function draw_radar_map() {
 
   const maxvals = {
     "Clean Sheet": 60,
+    "Def Con": 60,
     Goal: 60,
     Assist: 40,
     Bonus: 60,
@@ -6450,10 +6451,12 @@ async function get_eo() {
       app.eo_data = Object.freeze(data);
       let target_key = Math.max(...Object.keys(data).map((i) => parseInt(i)));
       app.sample_options = Object.keys(data[target_key]);
-      // default 10K
-      // app.sample_selection = 0 //Object.keys(data[1]).length - 1
-      if (app.sample_options.length > 1) {
-        app.sample_selection = 1; // app.sample_options.length-1;
+      // default to Solio Analytics if available, otherwise first non-Overall tier
+      let solio_idx = app.sample_options.indexOf("Solio Analytics");
+      if (solio_idx >= 0) {
+        app.sample_selection = solio_idx;
+      } else if (app.sample_options.length > 1) {
+        app.sample_selection = 1;
       } else {
         app.sample_selection = 0;
       }
