@@ -443,7 +443,7 @@
                                 <label>Sample tier</label>
                                 <select class="custom-select" id="sample_selection-2" v-model="sample_selection"
                                     @change="invalidate_cache(); redraw_graphs();">
-                                    <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ sample_label(p) }}</option>
                                 </select>
                             </div>
                         </div>
@@ -1157,6 +1157,7 @@
                                     <tr>
                                         <th>GW</th>
                                         <th class="text-center">Clean Sheet</th>
+                                        <th class="text-center">Def Con</th>
                                         <th class="text-center">Goal</th>
                                         <th class="text-center">Assist</th>
                                         <th class="text-center">Bonus</th>
@@ -1172,6 +1173,12 @@
                                                 }}</span>
                                             <span class="gw_detail_players">{{ p.info.type_names['clean_sheets'] || ''
                                                 }}</span>
+                                        </td>
+                                        <td :data-order="p.info.type_sums['defensive_contribution'] || 0">
+                                            <span class="gw_detail_number">{{
+                                                p.info.type_sums['defensive_contribution'] || 0 }}</span>
+                                            <span class="gw_detail_players">{{
+                                                p.info.type_names['defensive_contribution'] || '' }}</span>
                                         </td>
                                         <td :data-order="p.info.type_sums['goals_scored'] || 0">
                                             <span class="gw_detail_number">{{ p.info.type_sums['goals_scored'] || 0
@@ -1451,7 +1458,7 @@
                                 <label>Sample tier</label>
                                 <div class="input-group">
                                     <select class="custom-select" id="sample_selection" v-model="sample_selection">
-                                        <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
+                                        <option v-for="(p, index) in sample_options" :value="index">{{ sample_label(p) }}</option>
                                     </select>
                                     <div class="input-group-append">
                                         <button class="btn btn-secondary" type="button"
@@ -1686,7 +1693,7 @@
                                 <label>Sample tier</label>
                                 <select class="custom-select" id="sample_selection-2" v-model="sample_selection"
                                     @change="invalidate_cache(); redraw_graphs();">
-                                    <option v-for="(p, index) in sample_options" :value="index">{{ p }}</option>
+                                    <option v-for="(p, index) in sample_options" :value="index">{{ sample_label(p) }}</option>
                                 </select>
                             </div>
                         </div>
@@ -2126,7 +2133,7 @@
 </main>
 
 <script>
-    let ts = 20260526171710;
+    let ts = 20260526184958;
     let off_season = false;
 </script>
 
@@ -2213,11 +2220,11 @@
 </script>
 
 
-<script src="/static/js/main.js?ts=20260526171710"></script>
+<script src="/static/js/main.js?ts=20260526184958"></script>
 
-<script src="/static/js/sampling_utils.js?ts=20260526171710"></script>
+<script src="/static/js/sampling_utils.js?ts=20260526184958"></script>
 
-<script src="/static/js/highlights.js?ts=20260526171710"></script>
+<script src="/static/js/highlights.js?ts=20260526184958"></script>
 
 
 <script>

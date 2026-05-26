@@ -969,7 +969,12 @@ var app = new Vue({
         let type_names = {};
         for (let key in gw_grouped[gw]) {
           let t = gw_grouped[gw][key];
-          type_sums[key] = getSum(t.map((i) => i.value));
+          // for defensive contribution the value is the CBIT action count, so
+          // count the number of returns instead of summing the raw actions
+          type_sums[key] =
+            key == "defensive_contribution"
+              ? t.length
+              : getSum(t.map((i) => i.value));
           type_names[key] = t
             .map(
               (ev) =>
@@ -1042,21 +1047,19 @@ var app = new Vue({
           [100, "Mid-Price"],
           [150, "Premium"],
         ],
-        5: [
-          [9, "Budget"],
-          [12, "Mid-Price"],
-          [16, "Premium"],
-        ],
       };
       let grouped_vals = {
         1: { Budget: 0, "Mid-Price": 0, Premium: 0 },
         2: { Budget: 0, "Mid-Price": 0, Premium: 0 },
         3: { Budget: 0, "Mid-Price": 0, Premium: 0 },
         4: { Budget: 0, "Mid-Price": 0, Premium: 0 },
-        5: { Budget: 0, "Mid-Price": 0, Premium: 0 },
       };
       values.forEach((v) => {
         let type = v.eltype;
+        // skip element types without a price category (e.g. managers)
+        if (!price_categories[type]) {
+          return;
+        }
         let price_cat = "";
         for (let c of price_categories[type]) {
           if (v.cost < c[0]) {
@@ -2107,6 +2110,13 @@ var app = new Vue({
     draw_pos_heatmap() {
       draw_type_heatmap();
     },
+    sample_label(key) {
+      // numeric sample tiers (e.g. "100", "1000") are overall-rank cutoffs
+      if (key != "" && !isNaN(Number(key))) {
+        return "Top " + formatnumber(Number(key));
+      }
+      return key;
+    },
     draw_radar_svg() {
       draw_radar_map();
     },
@@ -2571,6 +2581,36 @@ function get_team_stats_picks(picks) {
     info: "Rate of assist returns out of all MD and FW",
   };
 
+  let defcon_count = picked_stats.filter(
+    (i) =>
+      i.eltype >= 2 &&
+      i.identifier == "defensive_contribution" &&
+      i.multiplier > 0
+  );
+  let defcon_picks = _.cloneDeep(
+    picked_stats.filter(
+      (i) => i.eltype >= 2 && i.identifier == "minutes" && i.multiplier > 0
+    )
+  );
+  for (let p of defcon_picks) {
+    let match = defcon_count.filter(
+      (i) => i.id == p.id && i.gw == p.gw && i.fixture == p.fixture
+    );
+    if (match.length != 0) {
+      p.success = true;
+      p.returns = match[0].total_points;
+    } else {
+      p.success = false;
+      p.returns = 0;
+    }
+  }
+  let defcon_stat = {
+    count: defcon_count.length,
+    total: defcon_picks.length,
+    values: defcon_picks,
+    info: "Rate of defensive contribution returns out of all outfield players",
+  };
+
   let bonus_count = picked_stats.filter(
     (i) => i.identifier == "bonus" && i.multiplier > 0
   );
@@ -2624,6 +2664,7 @@ function get_team_stats_picks(picks) {
 
   return {
     "Clean Sheet": cs_stat,
+    "Def Con": defcon_stat,
     Goal: goal_stat,
     Assist: assist_stat,
     Bonus: bonus_stat,
@@ -5124,7 +5165,9 @@ function draw_predicted_realized_diff() {
     .attr("font-size", "5pt")
     .attr("fill", "white")
     .text(
-      `Difference to Tier Average (${app.sample_options[app.sample_selection]})`
+      `Difference to Tier Average (${app.sample_label(
+        app.sample_options[app.sample_selection]
+      )})`
     );
 
   titles
@@ -6404,9 +6447,6 @@ async function get_eo() {
     success: (data) => {
       // app.eo_data = Object.freeze(data);
       // data = _.mapValues(data, v => _.pickBy(v, (v2,key) => ['Overall', 'Prime'].includes(key)));
-      data = _.mapValues(data, (v) =>
-        _.pickBy(v, (v2, key) => isNaN(Number(key)))
-      );
       app.eo_data = Object.freeze(data);
       let target_key = Math.max(...Object.keys(data).map((i) => parseInt(i)));
       app.sample_options = Object.keys(data[target_key]);
