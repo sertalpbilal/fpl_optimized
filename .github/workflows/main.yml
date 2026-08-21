@@ -33,7 +33,9 @@ jobs:
         run: python3 projections.py --gameweeks 5
         env:
           SOLIO_TOKEN: ${{ secrets.SOLIO_TOKEN }}
+          # Either name works; projections.py prefers SOLIO_API_URL
           SOLIO_API_URL: ${{ secrets.SOLIO_API_URL }}
+          SOLIO_ENDPOINT: ${{ secrets.SOLIO_ENDPOINT }}
       - name: Warn if the projection fetch failed
         if: steps.projections.outcome != 'success'
         run: echo "::warning::Projection fetch failed -- building with the last committed projection file"
