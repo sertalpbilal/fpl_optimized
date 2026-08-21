@@ -34,6 +34,9 @@ jobs:
         env:
           SOLIO_TOKEN: ${{ secrets.SOLIO_TOKEN }}
           SOLIO_API_URL: ${{ secrets.SOLIO_API_URL }}
+      - name: Warn if the projection fetch failed
+        if: steps.projections.outcome != 'success'
+        run: echo "::warning::Projection fetch failed -- building with the last committed projection file"
       - name: Commit projections to engine branch
         if: steps.projections.outcome == 'success'
         run: |
