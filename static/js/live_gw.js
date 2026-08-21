@@ -1,7 +1,7 @@
 // non-reactive values
 autosub_stats = {};
 
-let current_season = "2025_2026";
+let current_season = "2026_2027";
 
 Vue.config.devtools = true;
 Vue.config.productionTip = false;
