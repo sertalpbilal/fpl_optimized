@@ -435,8 +435,8 @@ def sample_fpl_teams(gw=None, seed=None):
     target_mini_leagues = {
         # 'Analytics Elite 64': 776436,
         # 'Elite 64': 228374,
-        'Bullet Wisdom': 36590,
-        'Solio Analytics': 708475,
+        'Bullet Wisdom': 340309,
+        'Solio Analytics': 1524,
         # 'Analytics Elite Qualifier': 1184641
         }
     
