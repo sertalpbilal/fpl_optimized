@@ -382,11 +382,9 @@ function get_cached_element_data({ season, gw, date }) {
       dataType: "text",
       async: true,
       success: function (data) {
-        tablevals = data.split("\n").map((i) => i.split(","));
-        keys = tablevals[0];
-        values = tablevals.slice(1);
-        let el_data = values.map((i) => _.zipObject(keys, i));
-        resolve(el_data);
+        // Proper CSV parsing: element.csv has quoted fields containing
+        // commas (price_change_projections), which a naive split breaks.
+        resolve($.csv.toObjects(data));
       },
       error: function (xhr, status, error) {
         console.log(error);
@@ -521,10 +519,7 @@ function getXPData({ season, gw, date }) {
       dataType: "text",
       async: true,
       success: (data) => {
-        tablevals = data.split("\n").map((i) => i.split(","));
-        keys = tablevals[0];
-        values = tablevals.slice(1);
-        let xp_data = values.map((i) => _.zipObject(keys, i));
+        let xp_data = $.csv.toObjects(data);
         let filtered_data = xp_data.filter((i) => i.event == gw.slice(2));
         resolve(filtered_data);
       },
