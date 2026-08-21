@@ -103,6 +103,9 @@ let season_teams = [
   "TOT",
 ];
 
+// Index must match the FPL team id (teams_ordered[team_id - 1] is used
+// throughout), which FPL assigns by sorting its `name` field -- note that
+// puts Spurs before Sunderland. Regenerate from bootstrap-static each season.
 let teams_ordered = [
   { name: "Arsenal", short: "ARS" },
   { name: "Aston Villa", short: "AVL" },
@@ -122,8 +125,8 @@ let teams_ordered = [
   { name: "Man Utd", short: "MUN", long: "Manchester United" },
   { name: "Newcastle", short: "NEW" },
   { name: "Nott'm Forest", short: "NFO", long: "Nottingham Forest" },
-  { name: "Sunderland", short: "SUN" },
   { name: "Spurs", short: "TOT", long: "Tottenham Hotspur" },
+  { name: "Sunderland", short: "SUN" },
 ];
 
 let pl_team_colors = {
