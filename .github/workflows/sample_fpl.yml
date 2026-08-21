@@ -17,11 +17,20 @@ jobs:
         run: pwd
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Read the current season
+        id: season
+        run: |
+          echo "season=$(python3 -c "import json; print(json.load(open('src/static-values.json'))['season'])")" >> $GITHUB_OUTPUT
       - name: Checkout webpage branch
-        uses: actions/checkout@v2
+        # The sampler only writes to sample/{season}, so fetch just that folder
+        # rather than the whole branch, which is several hundred megabytes.
+        uses: actions/checkout@v4
         with:
           ref: 'webpage'
           path: ./src/build
+          filter: blob:none
+          sparse-checkout: sample/${{ steps.season.outputs.season }}
+          sparse-checkout-cone-mode: true
       - name: Make sure data folder exists
         run: mkdir -p ./src/build/sample
       - name: Pull docker image

@@ -44,11 +44,24 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/static/projection
           git diff --cached --quiet || (git commit -m "Update projections $GITHUB_RUN_ID [skip ci]" && git push)
+      - name: Read the current season
+        id: season
+        run: |
+          echo "season=$(python3 -c "import json; print(json.load(open('src/static-values.json'))['season'])")" >> $GITHUB_OUTPUT
       - name: Checkout webpage branch
-        uses: actions/checkout@v2
+        # Only the current season's samples are read by the build, so skip the
+        # older ones -- they are several hundred megabytes and stay untouched
+        # in the branch either way.
+        uses: actions/checkout@v4
         with:
           ref: "webpage"
           path: ./build
+          filter: blob:none
+          sparse-checkout: |
+            data
+            static
+            sample/${{ steps.season.outputs.season }}
+          sparse-checkout-cone-mode: true
       - name: Make sure data folder exists
         run: mkdir -p ./build/data
       - name: Build docker image
