@@ -853,17 +853,17 @@ def cache_projected_points(season_folder):
         if f'GW{gw}' in gw_dict:
             val = gw_dict[f'GW{gw}']
             new_loc = tmp_folder / f"GW{gw}.csv"
-            try:
-                file_e = f'build/static/projection/{season}/gw{gw}.csv'
-                shutil.copy(file_e, tmp_folder / f"GW{gw}.csv")
-            except:
-                try:
-                    file_e = f'build/static/projection/{season}/gw{gw-1}.csv'
-                    shutil.copy(file_e, tmp_folder / f"GW{gw}.csv")
-                except:
-                    pass
+            file_e = find_projection_file(season, gw, base_folder='build/static/projection')
+            if file_e is None:
+                print(f"No projection file for GW{gw} -- skipping")
+                continue
+            shutil.copy(file_e, new_loc)
 
             df = pd.read_csv(new_loc)
+            if f'{gw}_Pts' not in df.columns:
+                # Closest projection file does not reach this gameweek
+                print(f"{file_e} does not cover GW{gw} -- skipping")
+                continue
             if 'ID' not in df.columns:
                 df['ID'] = df.index + 1
             if 'Price' not in df.columns:
