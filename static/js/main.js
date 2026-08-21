@@ -70,6 +70,8 @@ let team_codes = {
   21: { name: "West Ham", short: "WHU" },
   39: { name: "Wolves", short: "WOL" },
   102: { name: "Luton", short: "LUT" },
+  9: { name: "Coventry", short: "COV" },
+  88: { name: "Hull", short: "HUL" },
 };
 
 let team_short_dict = _.fromPairs(
@@ -81,14 +83,16 @@ let team_short_dict = _.fromPairs(
 let season_teams = [
   "ARS",
   "AVL",
-  "BUR",
   "BOU",
   "BRE",
   "BHA",
   "CHE",
+  "COV",
   "CRY",
   "EVE",
   "FUL",
+  "HUL",
+  "IPS",
   "LEE",
   "LIV",
   "MCI",
@@ -97,40 +101,29 @@ let season_teams = [
   "NFO",
   "SUN",
   "TOT",
-  "WHU",
-  "WOL",
 ];
 
 let teams_ordered = [
   { name: "Arsenal", short: "ARS" },
   { name: "Aston Villa", short: "AVL" },
-  { name: "Burnley", short: "BUR" },
   { name: "Bournemouth", short: "BOU", long: "AFC Bournemouth" },
   { name: "Brentford", short: "BRE" },
   { name: "Brighton", short: "BHA", long: "Brighton and Hove Albion" },
-  // { name: "Burnley", short: "BUR" },
   { name: "Chelsea", short: "CHE" },
+  { name: "Coventry", short: "COV", long: "Coventry City" },
   { name: "Crystal Palace", short: "CRY" },
   { name: "Everton", short: "EVE" },
   { name: "Fulham", short: "FUL" },
-  // { name: "Ipswich", short: "IPS" },
-  // { name: "Leicester", short: "LEI", long: "Leicester City" },
+  { name: "Hull", short: "HUL", long: "Hull City" },
+  { name: "Ipswich", short: "IPS", long: "Ipswich Town" },
   { name: "Leeds", short: "LEE", long: "Leeds United" },
   { name: "Liverpool", short: "LIV" },
-  // { name: "Luton", short: "LUT" },
   { name: "Man City", short: "MCI", long: "Manchester City" },
   { name: "Man Utd", short: "MUN", long: "Manchester United" },
   { name: "Newcastle", short: "NEW" },
   { name: "Nott'm Forest", short: "NFO", long: "Nottingham Forest" },
   { name: "Sunderland", short: "SUN" },
-  // { name: "Norwich", short: "NOR", long: "Norwich City" },
-  // { name: "Sheffield Utd", short: "SHU", long: "Sheffield United" },
-  // { name: "Southampton", short: "SOU" },
   { name: "Spurs", short: "TOT", long: "Tottenham Hotspur" },
-  // { name: "Watford", short: "WAT" },
-  // { name: "West Brom", short: "WBA", long: "West Bromwich Albion" },
-  { name: "West Ham", short: "WHU", long: "West Ham United" },
-  { name: "Wolves", short: "WOL", long: "Wolverhampton" },
 ];
 
 let pl_team_colors = {
@@ -162,6 +155,8 @@ let pl_team_colors = {
   IPS: ["#DE2C37", "#3A64A3"],
   WBA: ["#122F67", "#FFFFFF"],
   SUN: ["#E10600", "#FFFFFF"],
+  COV: ["#78D0F3", "#1C2C5B"],
+  HUL: ["#F5A12D", "#000000"],
 };
 
 let element_type = {
