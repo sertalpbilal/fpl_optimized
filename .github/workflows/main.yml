@@ -4,21 +4,43 @@ on:
   workflow_dispatch:
   push:
     branches: engine
-  # Periodic builds disabled for the off-season — re-enable for next season.
-  # schedule:
-  #   - cron: "0 4,10,16,22 * * *"
+  schedule:
+    - cron: "0 4,10,16,22 * * *"
 
 jobs:
   build-and-run:
     name: Run the automated Docker build
     runs-on: ubuntu-latest
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    permissions:
+      contents: write
 
     steps:
       - name: Check current directory
         run: pwd
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies for the projection fetch
+        run: pip install requests pandas
+      - name: Fetch projections from Solio API
+        id: projections
+        continue-on-error: true
+        working-directory: ./src
+        run: python3 projections.py --gameweeks 5
+        env:
+          SOLIO_TOKEN: ${{ secrets.SOLIO_TOKEN }}
+          SOLIO_API_URL: ${{ secrets.SOLIO_API_URL }}
+      - name: Commit projections to engine branch
+        if: steps.projections.outcome == 'success'
+        run: |
+          git config user.name "Github Action"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/static/projection
+          git diff --cached --quiet || (git commit -m "Update projections $GITHUB_RUN_ID [skip ci]" && git push)
       - name: Checkout webpage branch
         uses: actions/checkout@v2
         with:

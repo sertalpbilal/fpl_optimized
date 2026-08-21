@@ -9,6 +9,8 @@ services:
       - PYTHONUNBUFFERED=1
       - LANG=C.UTF-8
     ports:
-      - "8001:5000"
+      - "8001:8001"
     volumes:
       - ./src:/app
+      # Local checkout of the `webpage` branch (git worktree at ../fpl_optimized_build)
+      - ../fpl_optimized_build:/app/build

@@ -9,3 +9,7 @@ fplreview.py
 simulator.py
 *.tmp.*
 
+
+# Local scratch / API experiments (may contain tokens)
+research/
+.env

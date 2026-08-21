@@ -535,12 +535,11 @@ function getXPData({ season, gw, date }) {
   });
 }
 
+// Seasons where element_gameweek.csv is stored unencrypted
+const UNENCRYPTED_SEASONS = ["2020-21", "2025-26", "2026-27"];
+
 function getXPData_Fernet({ season, gw, date }) {
-  // For 2025-26 season, use local projection data
-  if (season == "2025-26") {
-    return getXPData({ season, gw, date });
-  }
-  if (season == "2020-21") {
+  if (UNENCRYPTED_SEASONS.includes(season)) {
     return getXPData({ season, gw, date });
   }
   return new Promise((resolve, reject) => {

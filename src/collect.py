@@ -29,6 +29,7 @@ from sys import platform
 from concurrent.futures import ProcessPoolExecutor
 import glob
 from encrypt import encrypt, decrypt
+from projections import find_projection_file
 
 import aiohttp
 import asyncio
@@ -171,15 +172,11 @@ def generate_intermediate_layer(target_folder, page="massive-data-planner"):
     fixture_df = pd.read_csv(target_folder / "fixture.csv")
     element_df = pd.read_csv(target_folder / "element.csv")
     # prediction_df = pd.read_csv(target_folder / f"fplreview-{page}.csv").drop_duplicates()
-    # try:
-    try:
-        prediction_df = pd.read_csv(f"static/projection/{season}/gw{start_gw}.csv").drop_duplicates()
-    except:
-        # try last available data
-        print("Using last available data")
-        prediction_df = pd.read_csv(f"static/projection/{season}/gw{start_gw-1}.csv").drop_duplicates()
-    # except:
-    #     prediction_df = pd.read_csv(f"../static/projection/gw{start_gw}.csv").drop_duplicates()
+    projection_file = find_projection_file(season, start_gw)
+    if projection_file is None:
+        raise FileNotFoundError(f"No projection file found for {season} GW{start_gw}")
+    print(f"Using projection file {projection_file}")
+    prediction_df = pd.read_csv(projection_file).drop_duplicates()
 
     weeks =  [i.split('_')[0] for i in list(filter(lambda x: '_Pts' in x, prediction_df.columns.tolist()))]
     

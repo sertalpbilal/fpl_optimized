@@ -30,7 +30,7 @@ jinja_options.update(dict(
 ))
 app.jinja_options = jinja_options
 
-global_season = "2025-26"
+global_season = "2026-27"
 current_time = str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
