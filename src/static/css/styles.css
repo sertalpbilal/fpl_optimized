@@ -1185,11 +1185,18 @@ tbody tr:last-child td.highlighted-col {
     border: 0px solid black;
 }
 
+#match_report_all thead tr,
+#match_report_all tbody tr {
+    background-color: var(--bg-card);
+}
+
 #match_report_all tr td:first-child, #match_report_all tr th:first-child {
     position: sticky;
     left: 0;
-    /* background-color: #434343; */
-    background-color: white;
+    /* A sticky cell needs an opaque background so the columns it overlaps do
+       not show through. Inheriting the row's colour keeps it in step with
+       table-striped rows and with both themes. */
+    background-color: inherit;
     padding: 0px;
     z-index: 2;
 }
