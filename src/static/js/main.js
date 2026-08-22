@@ -372,6 +372,23 @@ function get_sample_data(season, target_gw) {
   return Promise.allSettled(promises);
 }
 
+// FPL awards real bonus once a fixture reaches finished_provisional, which is
+// hours before `finished` flips on the overnight update. Provisional bonus
+// derived from BPS must only be applied while no real bonus exists yet,
+// otherwise it is added on top of the real thing and counted twice.
+function needsProvisionalBonus(game) {
+  if (!game.started || game.finished || game.finished_provisional) {
+    return false;
+  }
+  var awarded = game.stats.find(function (i) {
+    return i.identifier == "bonus";
+  });
+  if (awarded && (awarded.h.length > 0 || awarded.a.length > 0)) {
+    return false;
+  }
+  return true;
+}
+
 function get_cached_element_data({ season, gw, date }) {
   return new Promise((resolve, reject) => {
     $.ajax({

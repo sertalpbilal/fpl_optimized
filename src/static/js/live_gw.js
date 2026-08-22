@@ -427,7 +427,7 @@ var app = new Vue({
 
         let bps_provisional = {};
 
-        if (game.started && !game.finished) {
+        if (needsProvisionalBonus(game)) {
           try {
             let bps_stats = _.cloneDeep(
               game.stats.find((i) => i.identifier == "bps")
@@ -971,7 +971,7 @@ var app = new Vue({
       games.forEach((game) => {
         let bps_provisional = {};
 
-        if (game.started && !game.finished) {
+        if (needsProvisionalBonus(game)) {
           try {
             let bps_stats = game.stats.find((i) => i.identifier == "bps");
             let all_players = bps_stats.h.concat(bps_stats.a);
