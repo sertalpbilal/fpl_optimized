@@ -162,6 +162,12 @@ let pl_team_colors = {
   HUL: ["#F5A12D", "#000000"],
 };
 
+// Defensive contribution banks 2 points once a player reaches the threshold
+// for their position: 10 for defenders (clearances, blocks, interceptions,
+// tackles), 12 for midfielders and forwards, whose count also includes ball
+// recoveries. Goalkeepers are not eligible.
+let defcon_thresholds = { 2: 10, 3: 12, 4: 12 };
+
 let element_type = {
   1: { name: "Goalkeeper", short: "GK", id: 1, min: 1, max: 1, cnt: 2 },
   2: { name: "Defender", short: "DF", id: 2, min: 3, max: 5, cnt: 5 },
@@ -182,6 +188,7 @@ let stat_types = {
   red_cards: { name: "Red Cards", icon: "fas fa-door-closed" },
   yellow_cards: { name: "Yellow Cards", icon: "fas fa-door-open" },
   bps_provisional: { name: "BPS (Live)", icon: "fas fa-calculator" },
+  defensive_contribution: { name: "Def Con", icon: "fas fa-shield-alt" },
   // mng_win: { name: "AM Win", icon: "fas fa-trophy" },
   // mng_draw: { name: "AM Draw", icon: "fas fa-trophy" },
   // mng_loss: { name: "AM Loss", icon: "fas fa-trophy" },

@@ -549,15 +549,28 @@ var app = new Vue({
         game_info.data = {};
         for (let i of game_info.stats) {
           let j = (game_info.data[i.identifier] = {});
+          // Def Con arrives as a running count for every player with at least
+          // one action, so keep only those who have reached the threshold for
+          // their position and banked the points.
+          let scored = (w) => {
+            if (i.identifier != "defensive_contribution") {
+              return true;
+            }
+            let el = el_by_id[w.element];
+            let target = el
+              ? defcon_thresholds[parseInt(el.element_type)]
+              : undefined;
+            return target !== undefined && w.value >= target;
+          };
           j["home"] = i.h
-            .filter((w) => xp_by_id[w.element] !== undefined)
+            .filter((w) => xp_by_id[w.element] !== undefined && scored(w))
             .map(
               (w) =>
                 xp_by_id[w.element].web_name +
                 (w.value > 1 ? ` (${w.value})` : "")
             );
           j["away"] = i.a
-            .filter((w) => xp_by_id[w.element] !== undefined)
+            .filter((w) => xp_by_id[w.element] !== undefined && scored(w))
             .map(
               (w) =>
                 xp_by_id[w.element].web_name +
