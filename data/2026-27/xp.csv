@@ -656,13 +656,13 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 442,442,Pope,Newcastle,G,5.0,2,0.0,0.0,0.0,0.0,0.0
 443,443,Gillespie,Newcastle,G,4.5,2,0.0,0.0,0.0,0.0,0.0
 444,444,Jaouen,Newcastle,G,4.5,2,0.06,1.65,0.0,0.0,0.0
-567,567,Horníček,Newcastle,G,5.0,2,3.01,88.48,0.0,0.0,0.0
+567,567,Horníček,Newcastle,G,5.0,2,3.01,88.48,7.0,90.0,1.0
 467,467,Sels,Nott'm Forest,G,5.0,2,2.58,89.1,1.0,90.0,1.0
 468,468,John,Nott'm Forest,G,4.5,2,0.02,0.27,0.0,0.0,0.0
 590,590,Benda,Nott'm Forest,G,4.5,2,0.0,0.0,0.0,0.0,0.0
 494,494,Vicario,Spurs,G,4.5,2,0.0,0.0,0.0,0.0,0.0
 495,495,Austin,Spurs,G,4.0,2,0.0,0.0,0.0,0.0,0.0
-496,496,Kinsky,Spurs,G,4.5,2,3.08,88.18,0.0,0.0,0.0
+496,496,Kinsky,Spurs,G,4.5,2,3.08,88.18,1.0,90.0,1.0
 497,497,Dubravka,Spurs,G,4.0,2,0.07,1.81,0.0,0.0,0.0
 529,529,Roefs,Sunderland,G,5.0,2,3.63,89.99,0.0,0.0,0.0
 530,530,Patterson,Sunderland,G,4.0,2,0.0,0.0,0.0,0.0,0.0
@@ -826,14 +826,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 423,423,Shaw,Man Utd,D,4.5,2,3.89,79.35,0.0,0.0,0.0
 424,424,Amass,Man Utd,D,4.0,2,0.1,1.17,0.0,0.0,0.0
 425,425,Fredricson,Man Utd,D,4.0,2,0.0,0.0,0.0,0.0,0.0
-445,445,Thiaw,Newcastle,D,5.0,2,3.43,87.0,0.0,0.0,0.0
+445,445,Thiaw,Newcastle,D,5.0,2,3.43,87.0,6.0,90.0,1.0
 446,446,Schär,Newcastle,D,5.0,2,0.73,6.6,0.0,0.0,0.0
-447,447,Botman,Newcastle,D,5.0,2,3.78,85.95,0.0,0.0,0.0
+447,447,Botman,Newcastle,D,5.0,2,3.78,85.95,5.0,90.0,1.0
 448,448,Burn,Newcastle,D,5.0,2,0.0,0.0,0.0,0.0,0.0
-449,449,Hall,Newcastle,D,5.0,2,3.27,85.8,0.0,0.0,0.0
+449,449,Hall,Newcastle,D,5.0,2,3.27,85.8,11.0,90.0,1.0
 450,450,Livramento,Newcastle,D,5.0,2,0.47,13.14,0.0,0.0,0.0
 451,451,A.Murphy,Newcastle,D,4.0,2,0.0,0.0,0.0,0.0,0.0
-593,593,Dedić,Newcastle,D,4.5,2,2.86,74.7,0.0,0.0,0.0
+593,593,Dedić,Newcastle,D,4.5,2,2.86,74.7,11.0,90.0,1.0
 609,609,Shahar,Newcastle,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 469,469,N.Williams,Nott'm Forest,D,5.0,2,2.97,87.96,6.0,90.0,1.0
 470,470,Morato,Nott'm Forest,D,5.0,2,0.42,9.84,0.0,0.0,0.0
@@ -847,15 +847,15 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 478,478,Netz,Nott'm Forest,D,4.5,2,0.4,2.16,1.0,4.0,1.0
 479,479,Bindon,Nott'm Forest,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 581,581,Diomande,Nott'm Forest,D,5.5,2,1.81,55.8,0.0,0.0,0.0
-112,112,Van Hecke,Spurs,D,5.0,2,3.66,84.6,0.0,0.0,0.0
+112,112,Van Hecke,Spurs,D,5.0,2,3.66,84.6,1.0,90.0,1.0
 498,498,Senesi,Spurs,D,6.0,2,1.11,24.39,0.0,0.0,0.0
-499,499,Pedro Porro,Spurs,D,5.5,2,3.85,85.35,0.0,0.0,0.0
+499,499,Pedro Porro,Spurs,D,5.5,2,3.85,85.35,1.0,90.0,1.0
 500,500,Romero,Spurs,D,5.0,2,0.0,0.0,0.0,0.0,0.0
 501,501,Danso,Spurs,D,5.0,2,0.53,4.1,0.0,0.0,0.0
-502,502,Robertson,Spurs,D,4.5,2,2.91,70.2,0.0,0.0,0.0
-503,503,Van de Ven,Spurs,D,5.0,2,2.67,77.4,0.0,0.0,0.0
+502,502,Robertson,Spurs,D,4.5,2,2.91,70.2,2.0,67.0,1.0
+503,503,Van de Ven,Spurs,D,5.0,2,2.67,77.4,0.0,90.0,1.0
 505,505,Spence,Spurs,D,4.5,2,0.0,0.0,0.0,0.0,0.0
-506,506,Udogie,Spurs,D,4.5,2,1.08,15.93,0.0,0.0,0.0
+506,506,Udogie,Spurs,D,4.5,2,1.08,15.93,1.0,22.0,1.0
 507,507,Phillips,Spurs,D,4.5,2,0.0,0.0,0.0,0.0,0.0
 508,508,Davies,Spurs,D,4.0,2,0.07,0.53,0.0,0.0,0.0
 509,509,Byfield,Spurs,D,4.0,2,0.0,0.0,0.0,0.0,0.0
@@ -903,7 +903,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 160,160,Garnacho,Aston Villa,M,6.0,2,2.61,57.0,0.0,0.0,0.0
 607,607,Lynch,Aston Villa,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 67,67,Rayan,Bournemouth,M,6.5,2,3.99,81.6,2.0,90.0,1.0
-68,68,Tavernier,Bournemouth,M,6.0,2,4.67,83.79,3.0,90.0,1.0
+68,68,Tavernier,Bournemouth,M,6.0,2,4.67,83.79,1.0,90.0,1.0
 69,69,Scott,Bournemouth,M,6.0,2,4.25,84.0,12.0,86.0,1.0
 70,70,Kluivert,Bournemouth,M,6.0,2,4.26,74.55,3.0,80.0,1.0
 71,71,Cook,Bournemouth,M,5.0,2,1.4,21.96,3.0,68.0,1.0
@@ -986,12 +986,12 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 236,236,Dewsbury-Hall,Everton,M,6.5,2,3.72,84.62,2.0,90.0,1.0
 237,237,Ndiaye,Everton,M,6.0,2,4.05,82.65,4.0,90.0,1.0
 239,239,Garner,Everton,M,6.0,2,2.73,66.0,1.0,61.0,1.0
-240,240,Iroegbunam,Everton,M,5.0,2,0.0,0.0,1.0,3.0,1.0
+240,240,Iroegbunam,Everton,M,5.0,2,0.0,0.0,1.0,4.0,1.0
 242,242,George,Everton,M,5.5,2,2.25,52.5,2.0,61.0,1.0
-243,243,Alcaraz,Everton,M,5.0,2,0.4,4.42,0.0,3.0,1.0
+243,243,Alcaraz,Everton,M,5.0,2,0.4,4.42,0.0,4.0,1.0
 244,244,Armstrong,Everton,M,5.0,2,1.69,43.35,2.0,86.0,1.0
 245,245,Dibling,Everton,M,5.5,2,0.24,4.3,0.0,0.0,0.0
-246,246,Röhl,Everton,M,5.0,2,2.66,76.2,2.0,86.0,1.0
+246,246,Röhl,Everton,M,5.0,2,2.66,76.2,2.0,85.0,1.0
 247,247,Hackney,Everton,M,5.5,2,2.17,51.75,1.0,28.0,1.0
 261,261,Iwobi,Fulham,M,5.5,2,3.51,83.85,0.0,0.0,0.0
 262,262,Smith Rowe,Fulham,M,5.5,2,1.41,25.32,0.0,0.0,0.0
@@ -1093,16 +1093,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 436,436,Collyer,Man Utd,M,5.0,2,0.0,0.0,0.0,0.0,0.0
 437,437,Bendito Mantato,Man Utd,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 438,438,Fletcher,Man Utd,M,4.5,2,0.07,0.28,0.0,0.0,0.0
-405,405,N.Gonzalez,Newcastle,M,5.5,2,0.0,0.0,0.0,0.0,0.0
-453,453,Barnes,Newcastle,M,6.0,2,3.83,72.3,0.0,0.0,0.0
-454,454,Elanga,Newcastle,M,6.0,2,3.3,68.85,0.0,0.0,0.0
-456,456,J.Ramsey,Newcastle,M,5.0,2,1.06,21.06,0.0,0.0,0.0
-457,457,J.Murphy,Newcastle,M,6.0,2,1.5,29.55,0.0,0.0,0.0
+405,405,N.Gonzalez,Newcastle,M,5.5,2,0.0,0.0,2.0,70.0,1.0
+453,453,Barnes,Newcastle,M,6.0,2,3.83,72.3,3.0,90.0,1.0
+454,454,Elanga,Newcastle,M,6.0,2,3.3,68.85,8.0,81.0,1.0
+456,456,J.Ramsey,Newcastle,M,5.0,2,1.06,21.06,1.0,8.0,1.0
+457,457,J.Murphy,Newcastle,M,6.0,2,1.5,29.55,1.0,8.0,1.0
 458,458,Joelinton,Newcastle,M,5.5,2,0.0,0.0,0.0,0.0,0.0
-459,459,L.Miley,Newcastle,M,5.5,2,1.55,39.06,0.0,0.0,0.0
-460,460,Willock,Newcastle,M,5.0,2,1.18,25.2,0.0,0.0,0.0
-461,461,Touré,Newcastle,M,6.0,2,1.18,20.79,0.0,0.0,0.0
-462,462,Steur,Newcastle,M,5.0,2,1.42,37.65,0.0,0.0,0.0
+459,459,L.Miley,Newcastle,M,5.5,2,1.55,39.06,3.0,90.0,1.0
+460,460,Willock,Newcastle,M,5.0,2,1.18,25.2,3.0,70.0,1.0
+461,461,Touré,Newcastle,M,6.0,2,1.18,20.79,1.0,1.0,1.0
+462,462,Steur,Newcastle,M,5.0,2,1.42,37.65,1.0,19.0,1.0
 559,559,Bamba,Newcastle,M,5.0,2,0.94,20.7,0.0,0.0,0.0
 480,480,Gibbs-White,Nott'm Forest,M,8.0,2,3.54,78.15,13.0,90.0,1.0
 482,482,Hudson-Odoi,Nott'm Forest,M,6.0,2,1.23,19.21,1.0,1.0,1.0
@@ -1115,21 +1115,21 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 489,489,Yates,Nott'm Forest,M,4.5,2,0.21,2.8,0.0,0.0,0.0
 558,558,Schlager,Nott'm Forest,M,5.0,2,1.75,46.95,4.0,90.0,1.0
 403,403,Sávio,Spurs,M,6.5,2,3.9,72.0,0.0,0.0,0.0
-455,455,Tonali,Spurs,M,5.5,2,3.5,81.9,0.0,0.0,0.0
-512,512,Kudus,Spurs,M,6.5,2,0.75,12.9,0.0,0.0,0.0
+455,455,Tonali,Spurs,M,5.5,2,3.5,81.9,2.0,74.0,1.0
+512,512,Kudus,Spurs,M,6.5,2,0.75,12.9,1.0,22.0,1.0
 513,513,Xavi,Spurs,M,6.0,2,0.0,0.0,0.0,0.0,0.0
-514,514,Tel,Spurs,M,6.0,2,2.86,51.3,0.0,0.0,0.0
+514,514,Tel,Spurs,M,6.0,2,2.86,51.3,2.0,67.0,1.0
 515,515,Maddison,Spurs,M,6.5,2,0.0,0.0,0.0,0.0,0.0
-516,516,Bentancur,Spurs,M,5.5,2,0.93,11.63,0.0,0.0,0.0
+516,516,Bentancur,Spurs,M,5.5,2,0.93,11.63,2.0,90.0,1.0
 517,517,Odobert,Spurs,M,5.5,2,0.0,0.0,0.0,0.0,0.0
 518,518,P.M.Sarr,Spurs,M,4.9,2,0.27,1.56,0.0,0.0,0.0
 519,519,Gallagher,Spurs,M,5.5,2,3.74,81.0,0.0,0.0,0.0
 520,520,Bergvall,Spurs,M,5.5,2,0.65,9.12,0.0,0.0,0.0
 521,521,Kulusevski,Spurs,M,6.5,2,0.0,0.0,0.0,0.0,0.0
-522,522,Gray,Spurs,M,5.0,2,0.44,6.3,0.0,0.0,0.0
-523,523,Moore,Spurs,M,5.0,2,0.43,4.38,0.0,0.0,0.0
+522,522,Gray,Spurs,M,5.0,2,0.44,6.3,2.0,67.0,1.0
+523,523,Moore,Spurs,M,5.0,2,0.43,4.38,1.0,22.0,1.0
 524,524,Olusesi,Spurs,M,4.5,2,0.0,0.0,0.0,0.0,0.0
-525,525,Fernandes,Spurs,M,6.0,2,3.88,78.9,0.0,0.0,0.0
+525,525,Fernandes,Spurs,M,6.0,2,3.88,78.9,2.0,90.0,1.0
 601,601,Williams-Barnett,Spurs,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 542,542,E.Le Fée,Sunderland,M,6.0,2,4.3,82.5,0.0,0.0,0.0
 543,543,Diarra,Sunderland,M,5.5,2,1.44,23.01,0.0,0.0,0.0
@@ -1201,16 +1201,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 439,439,Šeško,Man Utd,F,7.0,2,3.33,46.95,0.0,0.0,0.0
 440,440,Zirkzee,Man Utd,F,5.5,2,0.44,4.8,0.0,0.0,0.0
 441,441,Obi,Man Utd,F,4.5,2,0.0,0.0,0.0,0.0,0.0
-463,463,Woltemade,Newcastle,F,6.0,2,2.79,54.6,0.0,0.0,0.0
-464,464,Wissa,Newcastle,F,6.0,2,4.25,78.9,0.0,0.0,0.0
+463,463,Woltemade,Newcastle,F,6.0,2,2.79,54.6,4.0,19.0,1.0
+464,464,Wissa,Newcastle,F,6.0,2,4.25,78.9,7.0,81.0,1.0
 465,465,Osula,Newcastle,F,6.0,2,0.0,0.0,0.0,0.0,0.0
 466,466,Neave,Newcastle,F,4.5,2,0.16,4.2,0.0,0.0,0.0
 167,167,Delap,Nott'm Forest,F,5.5,2,0.56,0.81,1.0,24.0,1.0
 490,490,Wood,Nott'm Forest,F,6.0,2,1.34,14.27,0.0,0.0,0.0
 491,491,Igor Jesus,Nott'm Forest,F,6.0,2,3.19,73.35,1.0,90.0,1.0
 493,493,Kalimuendo,Nott'm Forest,F,5.5,2,0.49,2.3,0.0,0.0,0.0
-401,401,Marmoush,Spurs,F,7.0,2,0.0,0.0,0.0,0.0,0.0
-526,526,Solanke,Spurs,F,6.0,2,4.24,68.4,0.0,0.0,0.0
+401,401,Marmoush,Spurs,F,7.0,2,0.0,0.0,2.0,90.0,1.0
+526,526,Solanke,Spurs,F,6.0,2,4.24,68.4,1.0,15.0,1.0
 527,527,Richarlison,Spurs,F,6.0,2,2.1,32.53,0.0,0.0,0.0
 528,528,Scarlett,Spurs,F,4.5,2,0.0,0.0,0.0,0.0,0.0
 552,552,Brobbey,Sunderland,F,6.0,2,4.22,74.4,0.0,0.0,0.0
