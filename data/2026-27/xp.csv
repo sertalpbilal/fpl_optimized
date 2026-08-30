@@ -602,16 +602,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 1,1,Raya,Arsenal,G,6.0,2,3.98,89.09,0.0,0.0,0.0
 2,2,Arrizabalaga,Arsenal,G,5.0,2,0.05,0.91,0.0,0.0,0.0
 3,3,Meslier,Arsenal,G,5.0,2,0.0,0.0,0.0,0.0,0.0
-28,28,Martinez,Aston Villa,G,5.0,2,0.0,0.0,0.0,0.0,0.0
+28,28,Martinez,Aston Villa,G,5.0,2,0.0,0.0,2.0,78.0,1.0
 29,29,M.Bizot,Aston Villa,G,4.5,2,0.13,4.54,0.0,0.0,0.0
 597,597,Suzuki,Aston Villa,G,5.0,2,2.62,85.41,0.0,0.0,0.0
 57,57,Petrović,Bournemouth,G,4.5,2,3.54,89.1,3.0,90.0,1.0
 58,58,Forster,Bournemouth,G,4.0,2,0.0,0.0,0.0,0.0,0.0
 59,59,Dennis,Bournemouth,G,4.0,2,0.0,0.0,0.0,0.0,0.0
 615,615,Di Gregorio,Bournemouth,G,4.5,2,0.05,0.91,0.0,0.0,0.0
-82,82,Kelleher,Brentford,G,5.0,2,3.45,89.09,0.0,0.0,0.0
+82,82,Kelleher,Brentford,G,5.0,2,3.45,89.09,6.0,78.0,1.0
 83,83,Valdimarsson,Brentford,G,4.5,2,0.04,0.97,0.0,0.0,0.0
-109,109,Verbruggen,Brighton,G,4.5,2,2.64,89.09,0.0,0.0,0.0
+109,109,Verbruggen,Brighton,G,4.5,2,2.64,89.09,0.0,78.0,1.0
 111,111,Steele,Brighton,G,4.0,2,0.03,0.91,0.0,0.0,0.0
 140,140,Sánchez,Chelsea,G,5.0,2,3.37,83.7,0.0,0.0,0.0
 141,141,Jörgensen,Chelsea,G,5.0,2,0.0,0.0,0.0,0.0,0.0
@@ -625,7 +625,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 226,226,Pickford,Everton,G,5.5,2,3.2,90.0,3.0,90.0,1.0
 227,227,Travers,Everton,G,5.0,2,0.01,0.01,0.0,0.0,0.0
 228,228,King,Everton,G,4.5,2,0.0,0.0,0.0,0.0,0.0
-250,250,Leno,Fulham,G,4.5,2,3.35,89.09,0.0,0.0,0.0
+250,250,Leno,Fulham,G,4.5,2,3.35,89.09,2.0,83.0,1.0
 251,251,Lecomte,Fulham,G,4.0,2,0.04,0.91,0.0,0.0,0.0
 252,252,McNally,Fulham,G,4.0,2,0.0,0.0,0.0,0.0,0.0
 273,273,Phillips,Hull City,G,4.0,2,0.0,0.0,0.0,0.0,0.0
@@ -639,7 +639,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 554,554,Van Oevelen,Ipswich Town,G,4.5,2,0.0,0.0,0.0,0.0,0.0
 564,564,Scherpen,Ipswich Town,G,4.5,2,2.78,89.1,0.0,0.0,0.0
 326,326,Perri,Leeds,G,4.5,2,0.04,0.91,0.0,0.0,0.0
-385,385,Trafford,Leeds,G,5.0,2,3.31,89.09,0.0,0.0,0.0
+385,385,Trafford,Leeds,G,5.0,2,3.31,89.09,3.0,78.0,1.0
 350,350,A.Becker,Liverpool,G,5.5,2,3.89,89.09,0.0,90.0,1.0
 351,351,Mamardashvili,Liverpool,G,5.0,2,0.04,0.91,0.0,0.0,0.0
 352,352,Woodman,Liverpool,G,4.0,2,0.0,0.0,0.0,0.0,0.0
@@ -664,7 +664,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 495,495,Austin,Spurs,G,4.0,2,0.0,0.0,0.0,0.0,0.0
 496,496,Kinsky,Spurs,G,4.5,2,3.08,88.18,1.0,90.0,1.0
 497,497,Dubravka,Spurs,G,4.0,2,0.07,1.81,0.0,0.0,0.0
-529,529,Roefs,Sunderland,G,5.0,2,3.63,89.99,0.0,0.0,0.0
+529,529,Roefs,Sunderland,G,5.0,2,3.63,89.99,6.0,83.0,1.0
 530,530,Patterson,Sunderland,G,4.0,2,0.0,0.0,0.0,0.0,0.0
 531,531,Ellborg,Sunderland,G,4.5,2,0.01,0.01,0.0,0.0,0.0
 4,4,Gabriel,Arsenal,D,8.0,2,4.94,87.75,0.0,0.0,0.0
@@ -695,40 +695,40 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 66,66,Soler,Bournemouth,D,4.0,2,0.2,2.09,0.0,0.0,0.0
 566,566,Silva,Bournemouth,D,5.0,2,4.47,83.1,4.0,90.0,1.0
 573,573,Sanchez,Bournemouth,D,4.5,2,2.31,46.95,0.0,0.0,0.0
-84,84,Collins,Brentford,D,5.5,2,4.13,88.35,0.0,0.0,0.0
+84,84,Collins,Brentford,D,5.5,2,4.13,88.35,10.0,78.0,1.0
 85,85,Van den Berg,Brentford,D,5.0,2,0.0,0.0,0.0,0.0,0.0
-87,87,Ajer,Brentford,D,4.5,2,3.85,82.5,0.0,0.0,0.0
-88,88,Kayode,Brentford,D,4.6,2,3.32,86.49,0.0,0.0,0.0
+87,87,Ajer,Brentford,D,4.5,2,3.85,82.5,7.0,78.0,1.0
+88,88,Kayode,Brentford,D,4.6,2,3.32,86.49,6.0,78.0,1.0
 89,89,Henry,Brentford,D,4.5,2,0.84,10.62,0.0,0.0,0.0
 90,90,Hickey,Brentford,D,4.5,2,0.63,6.7,0.0,0.0,0.0
 92,92,Ji-soo,Brentford,D,4.5,2,0.0,0.0,0.0,0.0,0.0
 93,93,Schuster,Brentford,D,4.5,2,0.67,14.8,0.0,0.0,0.0
-113,113,F.Kadıoğlu,Brighton,D,4.5,2,2.0,73.95,0.0,0.0,0.0
-114,114,Boscagli,Brighton,D,4.5,2,2.1,66.15,0.0,0.0,0.0
-115,115,De Cuyper,Brighton,D,4.6,2,3.46,76.5,0.0,0.0,0.0
-116,116,Dunk,Brighton,D,4.5,2,1.31,46.05,0.0,0.0,0.0
+113,113,F.Kadıoğlu,Brighton,D,4.5,2,2.0,73.95,0.0,78.0,1.0
+114,114,Boscagli,Brighton,D,4.5,2,2.1,66.15,0.0,78.0,1.0
+115,115,De Cuyper,Brighton,D,4.6,2,3.46,76.5,0.0,78.0,1.0
+116,116,Dunk,Brighton,D,4.5,2,1.31,46.05,-1.0,78.0,1.0
 117,117,Coppola,Brighton,D,4.5,2,0.08,0.04,0.0,0.0,0.0
 118,118,Igor,Brighton,D,4.5,2,0.0,0.0,0.0,0.0,0.0
 119,119,Costinha,Brighton,D,4.5,2,0.62,10.1,0.0,0.0,0.0
 120,120,Svoboda,Brighton,D,5.0,2,0.38,1.77,0.0,0.0,0.0
-130,130,Wieffer,Brighton,D,5.0,2,2.82,82.8,0.0,0.0,0.0
+130,130,Wieffer,Brighton,D,5.0,2,2.82,82.8,0.0,78.0,1.0
 328,328,Struijk,Brighton,D,5.0,2,0.77,16.8,0.0,0.0,0.0
-504,504,Vuskovic,Brighton,D,5.0,2,2.59,70.5,0.0,0.0,0.0
+504,504,Vuskovic,Brighton,D,5.0,2,2.59,70.5,0.0,78.0,1.0
 614,614,Hadjam,Brighton,D,4.5,2,0.5,4.0,0.0,0.0,0.0
-142,142,James,Chelsea,D,5.5,2,3.6,72.15,0.0,0.0,0.0
+142,142,James,Chelsea,D,5.5,2,3.6,72.15,1.0,10.0,1.0
 143,143,Chalobah,Chelsea,D,5.5,2,0.0,0.0,0.0,0.0,0.0
-144,144,Gusto,Chelsea,D,5.0,2,2.64,54.15,0.0,0.0,0.0
-145,145,Fofana,Chelsea,D,5.0,2,3.37,70.2,0.0,0.0,0.0
+144,144,Gusto,Chelsea,D,5.0,2,2.64,54.15,1.0,78.0,1.0
+145,145,Fofana,Chelsea,D,5.0,2,3.37,70.2,0.0,67.0,1.0
 146,146,B.Badiashile,Chelsea,D,4.5,2,0.0,0.0,0.0,0.0,0.0
 147,147,Tosin,Chelsea,D,4.5,2,0.14,2.1,0.0,0.0,0.0
-148,148,Hato,Chelsea,D,4.5,2,1.45,33.3,0.0,0.0,0.0
-149,149,Colwill,Chelsea,D,5.0,2,3.21,80.1,0.0,0.0,0.0
+148,148,Hato,Chelsea,D,4.5,2,1.45,33.3,4.0,78.0,1.0
+149,149,Colwill,Chelsea,D,5.0,2,3.21,80.1,1.0,71.0,1.0
 150,150,M.Sarr,Chelsea,D,4.5,2,0.0,0.0,0.0,0.0,0.0
-151,151,Acheampong,Chelsea,D,4.5,2,0.26,3.92,0.0,0.0,0.0
+151,151,Acheampong,Chelsea,D,4.5,2,0.26,3.92,1.0,10.0,1.0
 152,152,Palestra,Chelsea,D,5.5,2,0.65,11.7,0.0,0.0,0.0
-200,200,Lacroix,Chelsea,D,6.0,2,3.84,79.8,0.0,0.0,0.0
+200,200,Lacroix,Chelsea,D,6.0,2,3.84,79.8,1.0,78.0,1.0
 561,561,Anselmino,Chelsea,D,4.5,2,0.0,0.0,0.0,0.0,0.0
-583,583,Chavarria,Chelsea,D,5.0,2,1.19,22.06,0.0,0.0,0.0
+583,583,Chavarria,Chelsea,D,5.0,2,1.19,22.06,1.0,6.0,1.0
 91,91,Pinnock,Coventry City,D,4.5,2,0.0,0.0,1.0,12.0,1.0
 173,173,Thomas,Coventry City,D,4.0,2,4.22,81.15,8.0,77.0,1.0
 174,174,Kitching,Coventry City,D,4.0,2,0.59,6.92,0.0,0.0,0.0
@@ -758,13 +758,13 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 233,233,Mykolenko,Everton,D,4.5,2,2.69,81.75,4.0,90.0,1.0
 234,234,Patterson,Everton,D,4.5,2,0.16,0.08,0.0,0.0,0.0
 235,235,Aznou,Everton,D,4.0,2,0.0,0.0,0.0,0.0,0.0
-253,253,Andersen,Fulham,D,5.0,2,3.6,76.2,0.0,0.0,0.0
-254,254,Robinson,Fulham,D,4.5,2,3.52,78.0,0.0,0.0,0.0
+253,253,Andersen,Fulham,D,5.0,2,3.6,76.2,1.0,83.0,1.0
+254,254,Robinson,Fulham,D,4.5,2,3.52,78.0,2.0,83.0,1.0
 255,255,J.Cuenca,Fulham,D,4.5,2,0.71,13.94,0.0,0.0,0.0
 256,256,Tete,Fulham,D,4.5,2,0.73,17.0,0.0,0.0,0.0
-257,257,Bassey,Fulham,D,4.5,2,3.13,85.35,0.0,0.0,0.0
-258,258,Castagne,Fulham,D,4.5,2,2.93,74.25,0.0,0.0,0.0
-269,269,Sessegnon,Fulham,D,4.5,2,1.29,21.87,0.0,0.0,0.0
+257,257,Bassey,Fulham,D,4.5,2,3.13,85.35,2.0,83.0,1.0
+258,258,Castagne,Fulham,D,4.5,2,2.93,74.25,6.0,67.0,1.0
+269,269,Sessegnon,Fulham,D,4.5,2,1.29,21.87,1.0,15.0,1.0
 610,610,De Fougerolles,Fulham,D,4.0,2,0.46,4.95,0.0,0.0,0.0
 277,277,Egan,Hull City,D,4.0,2,3.47,86.85,9.0,90.0,1.0
 278,278,Hughes,Hull City,D,4.0,2,0.0,0.0,0.0,0.0,0.0
@@ -786,14 +786,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 307,307,Johnson,Ipswich Town,D,4.0,2,0.3,0.15,0.0,0.0,0.0
 308,308,Furlong,Ipswich Town,D,4.0,2,0.28,1.65,0.0,0.0,0.0
 592,592,Ouattara,Ipswich Town,D,4.0,2,1.2,46.05,0.0,0.0,0.0
-327,327,Bijol,Leeds,D,5.0,2,3.93,81.3,0.0,0.0,0.0
-329,329,Rodon,Leeds,D,4.5,2,3.17,81.9,0.0,0.0,0.0
-330,330,Bogle,Leeds,D,4.5,2,3.51,81.6,0.0,0.0,0.0
+327,327,Bijol,Leeds,D,5.0,2,3.93,81.3,1.0,45.0,1.0
+329,329,Rodon,Leeds,D,4.5,2,3.17,81.9,1.0,33.0,1.0
+330,330,Bogle,Leeds,D,4.5,2,3.51,81.6,2.0,67.0,1.0
 331,331,Gudmundsson,Leeds,D,4.5,2,0.88,20.55,0.0,0.0,0.0
-332,332,Justin,Leeds,D,4.5,2,3.6,79.8,0.0,0.0,0.0
+332,332,Justin,Leeds,D,4.5,2,3.6,79.8,2.0,78.0,1.0
 333,333,Bornauw,Leeds,D,4.5,2,0.0,0.0,0.0,0.0,0.0
-334,334,Muharemović,Leeds,D,5.0,2,3.77,84.0,0.0,0.0,0.0
-598,598,Elvedi,Leeds,D,4.5,2,0.5,9.35,0.0,0.0,0.0
+334,334,Muharemović,Leeds,D,5.0,2,3.77,84.0,4.0,78.0,1.0
+598,598,Elvedi,Leeds,D,4.5,2,0.5,9.35,1.0,44.0,1.0
 603,603,Lienou,Leeds,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 356,356,Virgil,Liverpool,D,6.5,2,4.42,87.75,1.0,90.0,1.0
 357,357,Frimpong,Liverpool,D,5.5,2,4.7,76.65,1.0,70.0,1.0
@@ -861,16 +861,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 509,509,Byfield,Spurs,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 510,510,Rowswell,Spurs,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 511,511,Souza,Spurs,D,4.0,2,0.23,2.61,0.0,0.0,0.0
-532,532,Ballard,Sunderland,D,5.0,2,4.36,82.05,0.0,0.0,0.0
-533,533,Mukiele,Sunderland,D,5.5,2,3.11,65.25,0.0,0.0,0.0
-534,534,Hume,Sunderland,D,4.5,2,3.66,76.2,0.0,0.0,0.0
+532,532,Ballard,Sunderland,D,5.0,2,4.36,82.05,6.0,83.0,1.0
+533,533,Mukiele,Sunderland,D,5.5,2,3.11,65.25,11.0,83.0,1.0
+534,534,Hume,Sunderland,D,4.5,2,3.66,76.2,6.0,83.0,1.0
 535,535,Alderete,Sunderland,D,5.0,2,3.71,77.55,0.0,0.0,0.0
-536,536,Reinildo,Sunderland,D,4.5,2,3.26,77.55,0.0,0.0,0.0
+536,536,Reinildo,Sunderland,D,4.5,2,3.26,77.55,6.0,83.0,1.0
 537,537,Seelt,Sunderland,D,4.5,2,0.26,4.38,0.0,0.0,0.0
 538,538,Hjelde,Sunderland,D,4.0,2,0.0,0.0,0.0,0.0,0.0
 539,539,O'Nien,Sunderland,D,4.0,2,0.6,12.06,0.0,0.0,0.0
 540,540,Masuaku,Sunderland,D,4.0,2,0.0,0.0,0.0,0.0,0.0
-541,541,Meunier,Sunderland,D,4.5,2,0.91,14.9,0.0,0.0,0.0
+541,541,Meunier,Sunderland,D,4.5,2,0.91,14.9,9.0,83.0,1.0
 612,612,Methalie,Sunderland,D,4.5,2,0.0,0.0,0.0,0.0,0.0
 7,7,Lewis-Skelly,Arsenal,M,5.5,2,2.19,59.4,0.0,0.0,0.0
 12,12,Saka,Arsenal,M,9.5,2,5.75,77.85,0.0,0.0,0.0
@@ -914,41 +914,41 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 76,76,Tóth.A,Bournemouth,M,5.0,2,0.72,13.62,0.0,0.0,0.0
 77,77,Adli,Bournemouth,M,5.0,2,0.0,0.0,0.0,0.0,0.0
 78,78,Kroupi.Jr,Bournemouth,M,7.5,2,0.0,0.0,0.0,0.0,0.0
-86,86,Lewis-Potter,Brentford,M,5.5,2,2.91,73.5,0.0,0.0,0.0
-94,94,Schade,Brentford,M,6.0,2,3.92,77.1,0.0,0.0,0.0
-95,95,O.Dango,Brentford,M,6.5,2,3.83,75.6,0.0,0.0,0.0
-96,96,Damsgaard,Brentford,M,5.5,2,1.21,21.59,0.0,0.0,0.0
+86,86,Lewis-Potter,Brentford,M,5.5,2,2.91,73.5,7.0,78.0,1.0
+94,94,Schade,Brentford,M,6.0,2,3.92,77.1,11.0,78.0,1.0
+95,95,O.Dango,Brentford,M,6.5,2,3.83,75.6,1.0,17.0,1.0
+96,96,Damsgaard,Brentford,M,5.5,2,1.21,21.59,3.0,68.0,1.0
 97,97,Jensen,Brentford,M,5.5,2,2.72,68.85,0.0,0.0,0.0
-98,98,Janelt,Brentford,M,5.0,2,2.78,70.05,0.0,0.0,0.0
+98,98,Janelt,Brentford,M,5.0,2,2.78,70.05,2.0,78.0,1.0
 99,99,Milambo,Brentford,M,5.0,2,0.0,0.0,0.0,0.0,0.0
 100,100,Carvalho,Brentford,M,5.0,2,0.5,0.25,0.0,0.0,0.0
-102,102,Yarmoliuk,Brentford,M,5.0,2,1.27,26.48,0.0,0.0,0.0
+102,102,Yarmoliuk,Brentford,M,5.0,2,1.27,26.48,1.0,9.0,1.0
 103,103,Dasilva,Brentford,M,5.0,2,0.0,0.0,0.0,0.0,0.0
-105,105,Anthony,Brentford,M,6.0,2,1.14,21.25,0.0,0.0,0.0
-565,565,M.Sangaré,Brentford,M,5.6,2,4.0,83.7,0.0,0.0,0.0
+105,105,Anthony,Brentford,M,6.0,2,1.14,21.25,2.0,60.0,1.0
+565,565,M.Sangaré,Brentford,M,5.6,2,4.0,83.7,5.0,78.0,1.0
 121,121,Mitoma,Brighton,M,6.0,2,0.0,0.0,0.0,0.0,0.0
 122,122,Minteh,Brighton,M,6.0,2,0.0,0.0,0.0,0.0,0.0
 123,123,Hinshelwood,Brighton,M,6.0,2,0.0,0.0,0.0,0.0,0.0
-124,124,Groß,Brighton,M,5.5,2,3.64,88.0,0.0,0.0,0.0
+124,124,Groß,Brighton,M,5.5,2,3.64,88.0,5.0,78.0,1.0
 126,126,O'Riley,Brighton,M,5.5,2,0.0,0.0,0.0,0.0,0.0
-127,127,Gomez,Brighton,M,5.0,2,3.46,76.8,0.0,0.0,0.0
+127,127,Gomez,Brighton,M,5.0,2,3.46,76.8,2.0,78.0,1.0
 128,128,Buonanotte,Brighton,M,5.0,2,0.0,0.0,0.0,0.0,0.0
 129,129,Ayari,Brighton,M,5.5,2,3.19,83.1,0.0,0.0,0.0
 132,132,Howell,Brighton,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 133,133,Watson,Brighton,M,5.0,2,0.0,0.0,0.0,0.0,0.0
 134,134,Oriola,Brighton,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 135,135,Yohanna,Brighton,M,5.0,2,1.07,27.3,0.0,0.0,0.0
-600,600,Osman,Brighton,M,5.0,2,0.78,16.59,0.0,0.0,0.0
-605,605,Yalcouyé,Brighton,M,4.5,2,0.96,24.15,0.0,0.0,0.0
-40,40,Rogers,Chelsea,M,7.5,2,4.82,80.85,0.0,0.0,0.0
+600,600,Osman,Brighton,M,5.0,2,0.78,16.59,1.0,4.0,1.0
+605,605,Yalcouyé,Brighton,M,4.5,2,0.96,24.15,9.0,73.0,1.0
+40,40,Rogers,Chelsea,M,7.5,2,4.82,80.85,5.0,78.0,1.0
 101,101,Henderson,Chelsea,M,5.0,2,0.96,4.5,0.0,0.0,0.0
-154,154,Palmer,Chelsea,M,9.5,2,5.52,80.7,0.0,0.0,0.0
+154,154,Palmer,Chelsea,M,9.5,2,5.52,80.7,7.0,78.0,1.0
 155,155,Enzo,Chelsea,M,7.0,2,1.03,21.66,0.0,0.0,0.0
-156,156,Neto,Chelsea,M,6.5,2,2.08,43.5,0.0,0.0,0.0
+156,156,Neto,Chelsea,M,6.5,2,2.08,43.5,8.0,67.0,1.0
 157,157,Estêvão,Chelsea,M,6.5,2,0.86,12.03,0.0,0.0,0.0
 158,158,Gittens,Chelsea,M,6.0,2,0.33,0.33,0.0,0.0,0.0
-159,159,Caicedo,Chelsea,M,5.5,2,1.79,42.92,0.0,0.0,0.0
-161,161,Lavia,Chelsea,M,5.0,2,1.97,47.4,0.0,0.0,0.0
+159,159,Caicedo,Chelsea,M,5.5,2,1.79,42.92,1.0,10.0,1.0
+161,161,Lavia,Chelsea,M,5.0,2,1.97,47.4,7.0,67.0,1.0
 163,163,D.Essugo,Chelsea,M,4.5,2,0.22,1.16,0.0,0.0,0.0
 164,164,Quenda,Chelsea,M,5.5,2,1.17,21.47,0.0,0.0,0.0
 568,568,Barco,Chelsea,M,5.5,2,1.04,18.52,0.0,0.0,0.0
@@ -993,16 +993,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 245,245,Dibling,Everton,M,5.5,2,0.24,4.3,0.0,0.0,0.0
 246,246,Röhl,Everton,M,5.0,2,2.66,76.2,2.0,85.0,1.0
 247,247,Hackney,Everton,M,5.5,2,2.17,51.75,1.0,28.0,1.0
-261,261,Iwobi,Fulham,M,5.5,2,3.51,83.85,0.0,0.0,0.0
-262,262,Smith Rowe,Fulham,M,5.5,2,1.41,25.32,0.0,0.0,0.0
+261,261,Iwobi,Fulham,M,5.5,2,3.51,83.85,2.0,83.0,1.0
+262,262,Smith Rowe,Fulham,M,5.5,2,1.41,25.32,1.0,6.0,1.0
 263,263,Kevin,Fulham,M,5.5,2,1.6,35.7,0.0,0.0,0.0
-264,264,Bobb,Fulham,M,5.5,2,3.08,71.7,0.0,0.0,0.0
-265,265,Berge,Fulham,M,5.0,2,2.66,75.9,0.0,0.0,0.0
+264,264,Bobb,Fulham,M,5.5,2,3.08,71.7,3.0,67.0,1.0
+265,265,Berge,Fulham,M,5.0,2,2.66,75.9,2.0,83.0,1.0
 266,266,Cairney,Fulham,M,5.0,2,0.0,0.0,0.0,0.0,0.0
-268,268,King,Fulham,M,5.5,2,3.22,70.65,0.0,0.0,0.0
+268,268,King,Fulham,M,5.5,2,3.22,70.65,2.0,83.0,1.0
 270,270,Reed,Fulham,M,4.5,2,0.22,0.66,0.0,0.0,0.0
-570,570,Palacios,Fulham,M,5.5,2,2.34,51.45,0.0,0.0,0.0
-580,580,Charles,Fulham,M,5.0,2,1.09,27.75,0.0,0.0,0.0
+570,570,Palacios,Fulham,M,5.5,2,2.34,51.45,1.0,76.0,1.0
+580,580,Charles,Fulham,M,5.0,2,1.09,27.75,1.0,15.0,1.0
 286,286,Belloumi,Hull City,M,5.0,2,3.45,73.05,6.0,82.0,1.0
 287,287,Millar,Hull City,M,5.0,2,1.32,29.27,6.0,31.0,1.0
 288,288,Dowell,Hull City,M,4.5,2,0.3,0.6,0.0,0.0,0.0
@@ -1035,17 +1035,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 571,571,Florentino,Ipswich Town,M,5.0,2,1.07,28.55,0.0,0.0,0.0
 591,591,Enciso,Ipswich Town,M,5.5,2,3.01,75.3,0.0,0.0,0.0
 602,602,Humphreys,Ipswich Town,M,4.5,2,0.0,0.0,0.0,0.0,0.0
-260,260,Wilson,Leeds,M,6.5,2,3.94,73.5,0.0,0.0,0.0
-335,335,Stach,Leeds,M,6.0,2,3.75,80.25,0.0,0.0,0.0
-336,336,Okafor,Leeds,M,6.0,2,2.25,42.15,0.0,0.0,0.0
-337,337,Aaronson,Leeds,M,5.5,2,2.53,51.3,0.0,0.0,0.0
-338,338,Ampadu,Leeds,M,5.5,2,3.49,85.4,0.0,0.0,0.0
+260,260,Wilson,Leeds,M,6.5,2,3.94,73.5,1.0,33.0,1.0
+335,335,Stach,Leeds,M,6.0,2,3.75,80.25,4.0,78.0,1.0
+336,336,Okafor,Leeds,M,6.0,2,2.25,42.15,2.0,68.0,1.0
+337,337,Aaronson,Leeds,M,5.5,2,2.53,51.3,1.0,45.0,1.0
+338,338,Ampadu,Leeds,M,5.5,2,3.49,85.4,2.0,78.0,1.0
 339,339,Longstaff,Leeds,M,5.0,2,0.91,10.6,0.0,0.0,0.0
 341,341,Gnonto,Leeds,M,5.0,2,0.76,3.85,0.0,0.0,0.0
 342,342,Harrison,Leeds,M,5.0,2,0.0,0.0,0.0,0.0,0.0
-343,343,James,Leeds,M,5.0,2,0.88,6.93,0.0,0.0,0.0
+343,343,James,Leeds,M,5.0,2,0.88,6.93,1.0,10.0,1.0
 344,344,Gruev,Leeds,M,5.0,2,0.51,4.44,0.0,0.0,0.0
-345,345,Tanaka,Leeds,M,5.0,2,0.83,13.52,0.0,0.0,0.0
+345,345,Tanaka,Leeds,M,5.0,2,0.83,13.52,1.0,33.0,1.0
 604,604,Cresswell,Leeds,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 366,366,Wirtz,Liverpool,M,7.5,2,4.72,72.6,4.0,90.0,1.0
 367,367,Gakpo,Liverpool,M,7.0,2,4.89,76.95,5.0,70.0,1.0
@@ -1131,16 +1131,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 524,524,Olusesi,Spurs,M,4.5,2,0.0,0.0,0.0,0.0,0.0
 525,525,Fernandes,Spurs,M,6.0,2,3.88,78.9,2.0,90.0,1.0
 601,601,Williams-Barnett,Spurs,M,4.5,2,0.0,0.0,0.0,0.0,0.0
-542,542,E.Le Fée,Sunderland,M,6.0,2,4.3,82.5,0.0,0.0,0.0
-543,543,Diarra,Sunderland,M,5.5,2,1.44,23.01,0.0,0.0,0.0
-544,544,Xhaka,Sunderland,M,5.5,2,3.7,83.7,0.0,0.0,0.0
-545,545,Sadiki,Sunderland,M,5.0,2,3.03,87.1,0.0,0.0,0.0
+542,542,E.Le Fée,Sunderland,M,6.0,2,4.3,82.5,3.0,83.0,1.0
+543,543,Diarra,Sunderland,M,5.5,2,1.44,23.01,4.0,18.0,1.0
+544,544,Xhaka,Sunderland,M,5.5,2,3.7,83.7,3.0,83.0,1.0
+545,545,Sadiki,Sunderland,M,5.0,2,3.03,87.1,3.0,83.0,1.0
 546,546,Adingra,Sunderland,M,5.0,2,0.12,0.77,0.0,0.0,0.0
 547,547,Mundle,Sunderland,M,5.0,2,0.57,1.38,0.0,0.0,0.0
 548,548,Rigg,Sunderland,M,5.0,2,0.3,3.12,0.0,0.0,0.0
 549,549,Talbi,Sunderland,M,5.5,2,1.71,38.1,0.0,0.0,0.0
 550,550,Jocelin.T,Sunderland,M,5.0,2,0.08,1.8,0.0,0.0,0.0
-551,551,Angulo,Sunderland,M,5.0,2,2.89,62.55,0.0,0.0,0.0
+551,551,Angulo,Sunderland,M,5.0,2,2.89,62.55,3.0,64.0,1.0
 613,613,Ahoka,Sunderland,M,4.5,2,0.71,4.9,0.0,0.0,0.0
 25,25,Gyökeres,Arsenal,F,7.4,2,1.37,18.0,0.0,0.0,0.0
 26,26,Havertz,Arsenal,F,7.5,2,4.4,75.75,0.0,0.0,0.0
@@ -1152,16 +1152,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 80,80,Enes Ünal,Bournemouth,F,5.5,2,0.0,0.0,0.0,0.0,0.0
 81,81,Rodríguez,Bournemouth,F,6.0,2,0.97,11.29,1.0,9.0,1.0
 608,608,Jebbison,Bournemouth,F,5.0,2,0.0,0.0,0.0,0.0,0.0
-106,106,Thiago,Brentford,F,8.0,2,4.27,86.23,0.0,0.0,0.0
+106,106,Thiago,Brentford,F,8.0,2,4.27,86.23,2.0,78.0,1.0
 107,107,Furo,Brentford,F,4.5,2,0.0,0.0,0.0,0.0,0.0
 108,108,Wilson,Brentford,F,5.5,2,0.73,4.34,0.0,0.0,0.0
 125,125,Georginio,Brighton,F,5.5,2,1.67,39.45,0.0,0.0,0.0
 137,137,Tzimas,Brighton,F,5.5,2,0.0,0.0,0.0,0.0,0.0
-138,138,Kostoulas,Brighton,F,5.5,2,1.99,46.5,0.0,0.0,0.0
+138,138,Kostoulas,Brighton,F,5.5,2,1.99,46.5,5.0,78.0,1.0
 139,139,Ferguson,Brighton,F,5.0,2,0.0,0.0,0.0,0.0,0.0
 594,594,David,Brighton,F,6.0,2,2.49,48.3,0.0,0.0,0.0
 136,136,Welbeck,Chelsea,F,6.0,2,1.35,10.13,0.0,0.0,0.0
-165,165,João Pedro,Chelsea,F,7.6,2,5.19,81.75,0.0,0.0,0.0
+165,165,João Pedro,Chelsea,F,7.6,2,5.19,81.75,10.0,78.0,1.0
 166,166,N.Jackson,Chelsea,F,6.5,2,0.25,0.25,0.0,0.0,0.0
 168,168,Marc Guiu,Chelsea,F,5.0,2,0.0,0.0,0.0,0.0,0.0
 169,169,Mheuka,Chelsea,F,4.5,2,0.0,0.0,0.0,0.0,0.0
@@ -1181,7 +1181,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 249,249,Barry,Everton,F,5.5,2,3.09,66.6,2.0,69.0,1.0
 271,271,Muniz,Fulham,F,5.5,2,1.22,11.1,0.0,0.0,0.0
 272,272,Kusi-Asare,Fulham,F,4.5,2,0.23,0.77,0.0,0.0,0.0
-569,569,Gonzalo,Fulham,F,6.0,2,3.81,72.9,0.0,0.0,0.0
+569,569,Gonzalo,Fulham,F,6.0,2,3.81,72.9,2.0,83.0,1.0
 295,295,McBurnie,Hull City,F,5.5,2,3.99,86.88,1.0,90.0,1.0
 298,298,Destan,Hull City,F,4.5,2,0.0,0.0,0.0,0.0,0.0
 299,299,Burstow,Hull City,F,4.5,2,0.0,0.0,0.0,0.0,0.0
@@ -1190,8 +1190,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 320,320,Akpom,Ipswich Town,F,5.0,2,0.73,5.2,0.0,0.0,0.0
 321,321,Walle Egeli,Ipswich Town,F,4.5,2,0.56,9.4,0.0,0.0,0.0
 322,322,Al-Hamadi,Ipswich Town,F,5.0,2,0.0,0.0,0.0,0.0,0.0
-346,346,Calvert-Lewin,Leeds,F,6.0,2,4.42,82.8,0.0,0.0,0.0
-347,347,Nmecha,Leeds,F,5.5,2,1.1,7.5,0.0,0.0,0.0
+346,346,Calvert-Lewin,Leeds,F,6.0,2,4.42,82.8,2.0,78.0,1.0
+347,347,Nmecha,Leeds,F,5.5,2,1.1,7.5,1.0,9.0,1.0
 348,348,Piroe,Leeds,F,5.0,2,0.0,0.0,0.0,0.0,0.0
 349,349,Mateo Joseph,Leeds,F,4.5,2,0.0,0.0,0.0,0.0,0.0
 379,379,Isak,Liverpool,F,9.0,2,5.29,78.45,8.0,90.0,1.0
@@ -1213,5 +1213,5 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 526,526,Solanke,Spurs,F,6.0,2,4.24,68.4,1.0,15.0,1.0
 527,527,Richarlison,Spurs,F,6.0,2,2.1,32.53,0.0,0.0,0.0
 528,528,Scarlett,Spurs,F,4.5,2,0.0,0.0,0.0,0.0,0.0
-552,552,Brobbey,Sunderland,F,6.0,2,4.22,74.4,0.0,0.0,0.0
-553,553,Isidor,Sunderland,F,5.5,2,1.26,14.76,0.0,0.0,0.0
+552,552,Brobbey,Sunderland,F,6.0,2,4.22,74.4,2.0,63.0,1.0
+553,553,Isidor,Sunderland,F,5.5,2,1.26,14.76,6.0,19.0,1.0
