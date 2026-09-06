@@ -1239,7 +1239,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 198,198,Henderson,Crystal Palace,G,5.0,3,3.1,89.09,2.0,90.0,1.0
 199,199,Benitez,Crystal Palace,G,4.5,3,0.04,0.91,0.0,0.0,0.0
 555,555,Matthews,Crystal Palace,G,4.0,3,0.0,0.0,0.0,0.0,0.0
-226,226,Pickford,Everton,G,5.5,3,3.08,90.0,0.0,0.0,0.0
+226,226,Pickford,Everton,G,5.5,3,3.08,90.0,3.0,21.0,1.0
 227,227,Travers,Everton,G,5.0,3,0.01,0.01,0.0,0.0,0.0
 228,228,King,Everton,G,4.5,3,0.0,0.0,0.0,0.0,0.0
 250,250,Leno,Fulham,G,4.5,3,3.48,89.09,1.0,90.0,1.0
@@ -1269,7 +1269,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 386,386,Bettinelli,Man City,G,4.5,3,0.0,0.0,0.0,0.0,0.0
 587,587,Rulli,Man City,G,5.0,3,0.06,0.91,0.0,0.0,0.0
 325,325,Darlow,Man Utd,G,4.5,3,0.04,0.91,0.0,0.0,0.0
-412,412,Lammens,Man Utd,G,5.0,3,3.31,89.09,0.0,0.0,0.0
+412,412,Lammens,Man Utd,G,5.0,3,3.31,89.09,1.0,21.0,1.0
 413,413,Bayindir,Man Utd,G,4.5,3,0.0,0.0,0.0,0.0,0.0
 414,414,Heaton,Man Utd,G,4.0,3,0.0,0.0,0.0,0.0,0.0
 442,442,Pope,Newcastle,G,5.0,3,0.0,0.0,0.0,0.0,0.0
@@ -1372,11 +1372,11 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 588,588,Khalaili,Crystal Palace,D,5.0,3,3.48,75.75,3.0,90.0,1.0
 633,633,Ahanor,Crystal Palace,D,4.5,3,0.77,13.08,0.0,0.0,0.0
 643,643,Chilwell,Crystal Palace,D,4.5,3,0.66,2.42,7.0,16.0,1.0
-229,229,Tarkowski,Everton,D,6.0,3,3.48,86.85,0.0,0.0,0.0
-230,230,Branthwaite,Everton,D,5.5,3,3.06,84.15,0.0,0.0,0.0
+229,229,Tarkowski,Everton,D,6.0,3,3.48,86.85,1.0,21.0,1.0
+230,230,Branthwaite,Everton,D,5.5,3,3.06,84.15,1.0,21.0,1.0
 231,231,Keane,Everton,D,4.9,3,0.53,8.25,0.0,0.0,0.0
 232,232,O'Brien,Everton,D,4.9,3,0.52,11.32,0.0,0.0,0.0
-233,233,Mykolenko,Everton,D,4.5,3,2.68,83.55,0.0,0.0,0.0
+233,233,Mykolenko,Everton,D,4.5,3,2.68,83.55,3.0,21.0,1.0
 234,234,Patterson,Everton,D,4.5,3,0.0,0.0,0.0,0.0,0.0
 235,235,Aznou,Everton,D,4.0,3,0.0,0.0,0.0,0.0,0.0
 649,649,Maitland-Niles,Everton,D,4.5,3,1.02,21.96,0.0,0.0,0.0
@@ -1443,13 +1443,13 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 396,396,Vitor Reis,Man City,D,4.5,3,0.22,0.22,0.0,0.0,0.0
 622,622,Braithwaite,Man City,D,4.0,3,0.0,0.0,0.0,0.0,0.0
 416,416,De Ligt,Man Utd,D,5.0,3,0.0,0.0,0.0,0.0,0.0
-417,417,Dalot,Man Utd,D,5.0,3,2.6,61.05,0.0,0.0,0.0
-418,418,Maguire,Man Utd,D,5.0,3,3.73,81.15,0.0,0.0,0.0
-419,419,Martinez,Man Utd,D,5.0,3,3.4,81.6,0.0,0.0,0.0
+417,417,Dalot,Man Utd,D,5.0,3,2.6,61.05,1.0,21.0,1.0
+418,418,Maguire,Man Utd,D,5.0,3,3.73,81.15,1.0,21.0,1.0
+419,419,Martinez,Man Utd,D,5.0,3,3.4,81.6,1.0,21.0,1.0
 420,420,Yoro,Man Utd,D,4.9,3,0.52,9.55,0.0,0.0,0.0
 421,421,Heaven,Man Utd,D,4.5,3,0.52,6.23,0.0,0.0,0.0
 422,422,Mazraoui,Man Utd,D,4.5,3,1.43,36.0,0.0,0.0,0.0
-423,423,Shaw,Man Utd,D,4.5,3,3.05,79.35,0.0,0.0,0.0
+423,423,Shaw,Man Utd,D,4.5,3,3.05,79.35,1.0,21.0,1.0
 424,424,Amass,Man Utd,D,4.0,3,0.23,2.21,0.0,0.0,0.0
 425,425,Fredricson,Man Utd,D,4.0,3,0.0,0.0,0.0,0.0,0.0
 445,445,Thiaw,Newcastle,D,5.0,3,3.5,87.45,-1.0,90.0,1.0
@@ -1615,15 +1615,15 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 644,644,Timber,Crystal Palace,M,5.0,3,2.65,60.6,2.0,73.0,1.0
 647,647,Osorio,Crystal Palace,M,5.5,3,0.78,11.7,1.0,1.0,1.0
 21,21,Nørgaard,Everton,M,4.9,3,1.95,41.4,0.0,0.0,0.0
-209,209,Johnson,Everton,M,5.9,3,1.55,31.8,0.0,0.0,0.0
-236,236,Dewsbury-Hall,Everton,M,6.5,3,3.97,85.27,0.0,0.0,0.0
+209,209,Johnson,Everton,M,5.9,3,1.55,31.8,1.0,21.0,1.0
+236,236,Dewsbury-Hall,Everton,M,6.5,3,3.97,85.27,1.0,21.0,1.0
 238,238,Grealish,Everton,M,6.5,3,2.25,50.4,0.0,0.0,0.0
-239,239,Garner,Everton,M,6.0,3,3.58,75.6,0.0,0.0,0.0
-242,242,George,Everton,M,5.5,3,2.69,61.95,0.0,0.0,0.0
+239,239,Garner,Everton,M,6.0,3,3.58,75.6,1.0,21.0,1.0
+242,242,George,Everton,M,5.5,3,2.69,61.95,3.0,21.0,1.0
 243,243,Alcaraz,Everton,M,5.0,3,0.58,11.7,0.0,0.0,0.0
-244,244,Armstrong,Everton,M,5.0,3,1.47,36.15,0.0,0.0,0.0
+244,244,Armstrong,Everton,M,5.0,3,1.47,36.15,0.0,21.0,1.0
 245,245,Dibling,Everton,M,5.4,3,0.41,9.15,0.0,0.0,0.0
-246,246,Röhl,Everton,M,5.0,3,2.6,75.45,0.0,0.0,0.0
+246,246,Röhl,Everton,M,5.0,3,2.6,75.45,1.0,21.0,1.0
 247,247,Hackney,Everton,M,5.5,3,1.88,42.75,0.0,0.0,0.0
 261,261,Iwobi,Fulham,M,5.5,3,3.72,83.85,2.0,82.0,1.0
 262,262,Smith Rowe,Fulham,M,5.5,3,0.82,14.68,1.0,11.0,1.0
@@ -1721,17 +1721,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 616,616,Bouaddi,Man City,M,5.5,3,0.63,7.78,1.0,14.0,1.0
 621,621,McAidoo,Man City,M,4.5,3,0.17,0.48,1.0,3.0,1.0
 628,628,Allan,Man City,M,6.0,3,0.89,5.46,0.0,0.0,0.0
-43,43,Tielemans,Man Utd,M,5.9,3,2.92,65.4,0.0,0.0,0.0
+43,43,Tielemans,Man Utd,M,5.9,3,2.92,65.4,3.0,21.0,1.0
 131,131,Baleba,Man Utd,M,5.0,3,0.0,0.0,0.0,0.0,0.0
 162,162,Andrey Santos,Man Utd,M,4.9,3,1.81,44.55,0.0,0.0,0.0
 415,415,Dorgu,Man Utd,M,5.9,3,0.94,17.0,0.0,0.0,0.0
-426,426,B.Fernandes,Man Utd,M,12.0,3,5.91,87.96,0.0,0.0,0.0
-427,427,Mbeumo,Man Utd,M,8.0,3,4.7,83.0,0.0,0.0,0.0
-428,428,Cunha,Man Utd,M,8.0,3,4.88,82.14,0.0,0.0,0.0
-429,429,Rashford,Man Utd,M,7.0,3,2.44,43.05,0.0,0.0,0.0
+426,426,B.Fernandes,Man Utd,M,12.0,3,5.91,87.96,1.0,21.0,1.0
+427,427,Mbeumo,Man Utd,M,8.0,3,4.7,83.0,1.0,21.0,1.0
+428,428,Cunha,Man Utd,M,8.0,3,4.88,82.14,1.0,21.0,1.0
+429,429,Rashford,Man Utd,M,7.0,3,2.44,43.05,1.0,21.0,1.0
 430,430,Mount,Man Utd,M,5.4,3,0.61,8.95,0.0,0.0,0.0
 431,431,Amad,Man Utd,M,5.8,3,0.0,0.0,0.0,0.0,0.0
-432,432,Mainoo,Man Utd,M,5.5,3,2.78,71.1,0.0,0.0,0.0
+432,432,Mainoo,Man Utd,M,5.5,3,2.78,71.1,4.0,21.0,1.0
 433,433,Ugarte,Man Utd,M,5.0,3,0.0,0.0,0.0,0.0,0.0
 434,434,J.Fletcher,Man Utd,M,5.0,3,0.0,0.0,0.0,0.0,0.0
 435,435,Lacey,Man Utd,M,5.0,3,0.43,2.0,0.0,0.0,0.0
@@ -1825,7 +1825,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 224,224,Nketiah,Crystal Palace,F,5.5,3,1.65,30.45,4.0,45.0,1.0
 225,225,Uche,Crystal Palace,F,5.0,3,0.0,0.0,0.0,0.0,0.0
 248,248,Beto,Everton,F,5.4,3,0.0,0.0,0.0,0.0,0.0
-249,249,Barry,Everton,F,5.5,3,4.23,81.6,0.0,0.0,0.0
+249,249,Barry,Everton,F,5.5,3,4.23,81.6,1.0,21.0,1.0
 271,271,Muniz,Fulham,F,5.5,3,0.72,5.1,1.0,7.0,1.0
 272,272,Kusi-Asare,Fulham,F,4.5,3,0.23,0.44,0.0,0.0,0.0
 569,569,Gonzalo,Fulham,F,6.0,3,4.82,82.2,2.0,90.0,1.0
