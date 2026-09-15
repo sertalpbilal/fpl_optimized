@@ -1908,7 +1908,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 554,554,Van Oevelen,Ipswich Town,G,4.5,4,0.0,0.0,0.0,0.0,0.0
 564,564,Scherpen,Ipswich Town,G,4.5,4,3.03,89.1,1.0,90.0,1.0
 326,326,Perri,Leeds,G,4.5,4,0.0,0.0,0.0,0.0,0.0
-385,385,Trafford,Leeds,G,5.0,4,3.28,89.09,0.0,0.0,0.0
+385,385,Trafford,Leeds,G,5.0,4,3.28,89.09,3.0,90.0,1.0
 625,625,Cairns,Leeds,G,4.0,4,0.01,0.01,0.0,0.0,0.0
 629,629,Zetterer,Leeds,G,4.0,4,0.05,0.91,0.0,0.0,0.0
 350,350,A.Becker,Liverpool,G,5.5,4,3.58,89.09,9.0,90.0,1.0
@@ -1927,7 +1927,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 442,442,Pope,Newcastle,G,4.9,4,0.04,0.91,0.0,0.0,0.0
 443,443,Gillespie,Newcastle,G,4.5,4,0.0,0.0,0.0,0.0,0.0
 444,444,Jaouen,Newcastle,G,4.5,4,0.01,0.01,0.0,0.0,0.0
-567,567,Horníček,Newcastle,G,5.0,4,3.19,89.08,0.0,0.0,0.0
+567,567,Horníček,Newcastle,G,5.0,4,3.19,89.08,1.0,90.0,1.0
 467,467,Sels,Nott'm Forest,G,5.0,4,3.1,89.09,3.0,90.0,1.0
 468,468,John,Nott'm Forest,G,4.5,4,0.02,0.01,0.0,0.0,0.0
 590,590,Benda,Nott'm Forest,G,4.5,4,0.0,0.0,0.0,0.0,0.0
@@ -2065,14 +2065,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 592,592,Ouattara,Ipswich Town,D,4.0,4,0.85,14.48,1.0,2.0,1.0
 327,327,Bijol,Leeds,D,5.0,4,2.1,43.2,0.0,0.0,0.0
 329,329,Rodon,Leeds,D,4.4,4,0.0,0.0,0.0,0.0,0.0
-330,330,Bogle,Leeds,D,4.5,4,3.67,77.4,0.0,0.0,0.0
-331,331,Gudmundsson,Leeds,D,4.5,4,3.54,84.45,0.0,0.0,0.0
-332,332,Justin,Leeds,D,4.5,4,3.64,76.5,0.0,0.0,0.0
+330,330,Bogle,Leeds,D,4.5,4,3.67,77.4,15.0,82.0,1.0
+331,331,Gudmundsson,Leeds,D,4.5,4,3.54,84.45,6.0,72.0,1.0
+332,332,Justin,Leeds,D,4.5,4,3.64,76.5,2.0,90.0,1.0
 333,333,Bornauw,Leeds,D,4.5,4,0.0,0.0,0.0,0.0,0.0
-334,334,Muharemović,Leeds,D,5.0,4,4.19,87.9,0.0,0.0,0.0
-598,598,Elvedi,Leeds,D,4.5,4,3.21,70.05,0.0,0.0,0.0
+334,334,Muharemović,Leeds,D,5.0,4,4.19,87.9,7.0,90.0,1.0
+598,598,Elvedi,Leeds,D,4.5,4,3.21,70.05,2.0,90.0,1.0
 603,603,Lienou,Leeds,D,4.0,4,0.0,0.0,0.0,0.0,0.0
-641,641,Bard,Leeds,D,4.5,4,0.61,0.3,0.0,0.0,0.0
+641,641,Bard,Leeds,D,4.5,4,0.61,0.3,1.0,18.0,1.0
 356,356,Virgil,Liverpool,D,6.5,4,4.26,87.9,8.0,90.0,1.0
 357,357,Frimpong,Liverpool,D,5.4,4,1.23,22.77,1.0,18.0,1.0
 358,358,Kerkez,Liverpool,D,5.4,4,3.63,73.65,1.0,45.0,1.0
@@ -2105,14 +2105,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 423,423,Shaw,Man Utd,D,4.4,4,1.86,64.05,0.0,0.0,0.0
 424,424,Amass,Man Utd,D,4.0,4,0.2,0.2,0.0,0.0,0.0
 425,425,Fredricson,Man Utd,D,4.0,4,0.0,0.0,0.0,0.0,0.0
-445,445,Thiaw,Newcastle,D,5.0,4,3.6,87.75,0.0,0.0,0.0
+445,445,Thiaw,Newcastle,D,5.0,4,3.6,87.75,2.0,90.0,1.0
 446,446,Schär,Newcastle,D,5.0,4,0.34,6.27,0.0,0.0,0.0
-447,447,Botman,Newcastle,D,5.0,4,3.99,85.95,0.0,0.0,0.0
+447,447,Botman,Newcastle,D,5.0,4,3.99,85.95,2.0,90.0,1.0
 448,448,Burn,Newcastle,D,4.9,4,0.0,0.0,0.0,0.0,0.0
-449,449,Hall,Newcastle,D,5.2,4,3.3,84.6,0.0,0.0,0.0
-450,450,Livramento,Newcastle,D,4.9,4,0.99,25.91,0.0,0.0,0.0
+449,449,Hall,Newcastle,D,5.2,4,3.3,84.6,0.0,90.0,1.0
+450,450,Livramento,Newcastle,D,4.9,4,0.99,25.91,3.0,32.0,1.0
 451,451,A.Murphy,Newcastle,D,4.0,4,0.0,0.0,0.0,0.0,0.0
-593,593,Dedić,Newcastle,D,4.5,4,2.55,68.4,0.0,0.0,0.0
+593,593,Dedić,Newcastle,D,4.5,4,2.55,68.4,0.0,57.0,1.0
 609,609,Shahar,Newcastle,D,4.0,4,0.0,0.0,0.0,0.0,0.0
 201,201,Muñoz,Nott'm Forest,D,5.4,4,2.83,61.5,2.0,90.0,1.0
 469,469,N.Williams,Nott'm Forest,D,5.0,4,3.47,84.15,2.0,90.0,1.0
@@ -2330,17 +2330,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 591,591,Enciso,Ipswich Town,M,5.5,4,3.83,84.15,2.0,90.0,1.0
 602,602,Humphreys,Ipswich Town,M,4.5,4,0.0,0.0,0.0,0.0,0.0
 619,619,Palacios,Ipswich Town,M,5.0,4,3.12,74.1,4.0,90.0,1.0
-260,260,Wilson,Leeds,M,6.3,4,1.65,25.4,0.0,0.0,0.0
-335,335,Stach,Leeds,M,6.0,4,4.2,84.75,0.0,0.0,0.0
-336,336,Okafor,Leeds,M,5.9,4,3.29,59.25,0.0,0.0,0.0
-337,337,Aaronson,Leeds,M,5.4,4,1.86,35.7,0.0,0.0,0.0
-338,338,Ampadu,Leeds,M,5.4,4,3.6,85.8,0.0,0.0,0.0
-339,339,Longstaff,Leeds,M,4.9,4,0.47,1.57,0.0,0.0,0.0
+260,260,Wilson,Leeds,M,6.3,4,1.65,25.4,1.0,18.0,1.0
+335,335,Stach,Leeds,M,6.0,4,4.2,84.75,3.0,87.0,1.0
+336,336,Okafor,Leeds,M,5.9,4,3.29,59.25,9.0,71.0,1.0
+337,337,Aaronson,Leeds,M,5.4,4,1.86,35.7,1.0,18.0,1.0
+338,338,Ampadu,Leeds,M,5.4,4,3.6,85.8,7.0,90.0,1.0
+339,339,Longstaff,Leeds,M,4.9,4,0.47,1.57,1.0,2.0,1.0
 341,341,Gnonto,Leeds,M,5.0,4,0.0,0.0,0.0,0.0,0.0
 342,342,Harrison,Leeds,M,5.0,4,0.0,0.0,0.0,0.0,0.0
-343,343,James,Leeds,M,5.0,4,0.54,5.14,0.0,0.0,0.0
+343,343,James,Leeds,M,5.0,4,0.54,5.14,1.0,7.0,1.0
 344,344,Gruev,Leeds,M,5.0,4,0.35,2.48,0.0,0.0,0.0
-345,345,Tanaka,Leeds,M,4.9,4,2.95,67.35,0.0,0.0,0.0
+345,345,Tanaka,Leeds,M,4.9,4,2.95,67.35,6.0,71.0,1.0
 604,604,Cresswell,Leeds,M,4.5,4,0.0,0.0,0.0,0.0,0.0
 648,648,Bahoya,Leeds,M,5.0,4,0.79,0.39,0.0,0.0,0.0
 366,366,Wirtz,Liverpool,M,7.4,4,5.11,79.35,3.0,90.0,1.0
@@ -2394,17 +2394,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 436,436,Collyer,Man Utd,M,5.0,4,0.0,0.0,0.0,0.0,0.0
 437,437,Bendito Mantato,Man Utd,M,4.5,4,0.0,0.0,0.0,0.0,0.0
 438,438,Fletcher,Man Utd,M,4.5,4,0.07,0.04,0.0,0.0,0.0
-405,405,N.Gonzalez,Newcastle,M,5.5,4,2.75,75.6,0.0,0.0,0.0
-453,453,Barnes,Newcastle,M,6.0,4,3.97,79.65,0.0,0.0,0.0
+405,405,N.Gonzalez,Newcastle,M,5.5,4,2.75,75.6,1.0,18.0,1.0
+453,453,Barnes,Newcastle,M,6.0,4,3.97,79.65,2.0,90.0,1.0
 454,454,Elanga,Newcastle,M,6.2,4,3.36,72.0,0.0,0.0,0.0
 456,456,J.Ramsey,Newcastle,M,4.9,4,0.96,24.3,0.0,0.0,0.0
-457,457,J.Murphy,Newcastle,M,5.9,4,0.89,18.9,0.0,0.0,0.0
+457,457,J.Murphy,Newcastle,M,5.9,4,0.89,18.9,0.0,56.0,1.0
 458,458,Joelinton,Newcastle,M,5.4,4,0.08,0.56,0.0,0.0,0.0
-459,459,L.Miley,Newcastle,M,5.5,4,2.51,68.7,0.0,0.0,0.0
-460,460,Willock,Newcastle,M,5.0,4,3.02,66.15,0.0,0.0,0.0
-461,461,Touré,Newcastle,M,5.8,4,0.57,5.0,0.0,0.0,0.0
-462,462,Steur,Newcastle,M,4.9,4,0.59,11.16,0.0,0.0,0.0
-559,559,Bamba,Newcastle,M,4.9,4,0.45,0.23,0.0,0.0,0.0
+459,459,L.Miley,Newcastle,M,5.5,4,2.51,68.7,0.0,79.0,1.0
+460,460,Willock,Newcastle,M,5.0,4,3.02,66.15,1.0,33.0,1.0
+461,461,Touré,Newcastle,M,5.8,4,0.57,5.0,6.0,33.0,1.0
+462,462,Steur,Newcastle,M,4.9,4,0.59,11.16,2.0,71.0,1.0
+559,559,Bamba,Newcastle,M,4.9,4,0.45,0.23,1.0,10.0,1.0
 480,480,Gibbs-White,Nott'm Forest,M,7.9,4,4.54,86.86,8.0,90.0,1.0
 482,482,Hudson-Odoi,Nott'm Forest,M,5.9,4,0.55,7.59,0.0,0.0,0.0
 483,483,Ndoye,Nott'm Forest,M,5.5,4,2.37,54.15,1.0,74.0,1.0
@@ -2496,8 +2496,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 321,321,Walle Egeli,Ipswich Town,F,4.5,4,0.47,0.47,0.0,0.0,0.0
 322,322,Al-Hamadi,Ipswich Town,F,5.0,4,0.0,0.0,0.0,0.0,0.0
 640,640,Flemming,Ipswich Town,F,5.5,4,1.86,40.2,5.0,27.0,1.0
-346,346,Calvert-Lewin,Leeds,F,6.0,4,5.03,84.9,0.0,0.0,0.0
-347,347,Nmecha,Leeds,F,5.4,4,0.98,6.48,0.0,0.0,0.0
+346,346,Calvert-Lewin,Leeds,F,6.0,4,5.03,84.9,10.0,77.0,1.0
+347,347,Nmecha,Leeds,F,5.4,4,0.98,6.48,1.0,12.0,1.0
 348,348,Piroe,Leeds,F,5.0,4,0.0,0.0,0.0,0.0,0.0
 349,349,Mateo Joseph,Leeds,F,4.5,4,0.0,0.0,0.0,0.0,0.0
 379,379,Isak,Liverpool,F,9.1,4,5.64,78.6,2.0,90.0,1.0
@@ -2508,10 +2508,10 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 440,440,Zirkzee,Man Utd,F,5.4,4,0.31,0.45,1.0,7.0,1.0
 441,441,Obi,Man Utd,F,4.5,4,0.0,0.0,0.0,0.0,0.0
 463,463,Woltemade,Newcastle,F,5.9,4,0.0,0.0,0.0,0.0,0.0
-464,464,Wissa,Newcastle,F,6.2,4,4.43,78.75,0.0,0.0,0.0
+464,464,Wissa,Newcastle,F,6.2,4,4.43,78.75,2.0,90.0,1.0
 465,465,Osula,Newcastle,F,5.9,4,0.18,1.76,0.0,0.0,0.0
 466,466,Neave,Newcastle,F,4.5,4,0.0,0.0,0.0,0.0,0.0
-634,634,Fernandez-Pardo,Newcastle,F,6.0,4,1.68,37.35,0.0,0.0,0.0
+634,634,Fernandez-Pardo,Newcastle,F,6.0,4,1.68,37.35,1.0,56.0,1.0
 167,167,Delap,Nott'm Forest,F,5.5,4,3.0,66.6,5.0,90.0,1.0
 490,490,Wood,Nott'm Forest,F,5.9,4,0.87,7.14,1.0,1.0,1.0
 491,491,Igor Jesus,Nott'm Forest,F,5.9,4,2.05,49.5,7.0,15.0,1.0
