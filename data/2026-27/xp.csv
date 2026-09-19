@@ -2527,7 +2527,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 2,2,Arrizabalaga,Arsenal,G,4.9,5,0.04,0.91,0.0,0.0,0.0
 3,3,Meslier,Arsenal,G,4.9,5,0.0,0.0,0.0,0.0,0.0
 29,29,M.Bizot,Aston Villa,G,4.5,5,0.04,0.91,0.0,0.0,0.0
-597,597,Suzuki,Aston Villa,G,5.0,5,3.06,89.09,0.0,0.0,0.0
+597,597,Suzuki,Aston Villa,G,5.0,5,3.06,89.09,2.0,90.0,1.0
 57,57,Petrović,Bournemouth,G,4.5,5,2.71,89.09,0.0,0.0,0.0
 58,58,Forster,Bournemouth,G,4.0,5,0.0,0.0,0.0,0.0,0.0
 59,59,Dennis,Bournemouth,G,4.0,5,0.0,0.0,0.0,0.0,0.0
@@ -2589,7 +2589,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 590,590,Benda,Nott'm Forest,G,4.5,5,0.0,0.0,0.0,0.0,0.0
 494,494,Vicario,Spurs,G,4.5,5,0.0,0.0,0.0,0.0,0.0
 495,495,Austin,Spurs,G,4.0,5,0.0,0.0,0.0,0.0,0.0
-496,496,Kinsky,Spurs,G,4.5,5,3.47,88.2,0.0,0.0,0.0
+496,496,Kinsky,Spurs,G,4.5,5,3.47,88.2,2.0,90.0,1.0
 497,497,Dubravka,Spurs,G,4.0,5,0.06,1.8,0.0,0.0,0.0
 529,529,Roefs,Sunderland,G,4.9,5,2.34,89.1,0.0,0.0,0.0
 530,530,Patterson,Sunderland,G,4.0,5,0.0,0.0,0.0,0.0,0.0
@@ -2603,16 +2603,16 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 11,11,Mosquera,Arsenal,D,5.3,5,0.51,10.45,0.0,0.0,0.0
 31,31,Konsa,Arsenal,D,4.5,5,3.98,84.75,0.0,0.0,0.0
 30,30,Digne,Aston Villa,D,4.5,5,0.0,0.0,0.0,0.0,0.0
-32,32,Cash,Aston Villa,D,4.4,5,2.1,65.94,0.0,0.0,0.0
-33,33,Mings,Aston Villa,D,4.5,5,2.42,69.82,0.0,0.0,0.0
+32,32,Cash,Aston Villa,D,4.4,5,2.1,65.94,-1.0,45.0,1.0
+33,33,Mings,Aston Villa,D,4.5,5,2.42,69.82,3.0,90.0,1.0
 34,34,Pau,Aston Villa,D,4.5,5,0.72,22.2,0.0,0.0,0.0
 36,36,Maatsen,Aston Villa,D,4.5,5,0.0,0.0,0.0,0.0,0.0
-37,37,Lindelöf,Aston Villa,D,4.5,5,2.43,77.85,0.0,0.0,0.0
+37,37,Lindelöf,Aston Villa,D,4.5,5,2.43,77.85,1.0,90.0,1.0
 38,38,A.García,Aston Villa,D,4.0,5,0.0,0.0,0.0,0.0,0.0
 39,39,Nedeljkovic,Aston Villa,D,4.0,5,0.0,0.0,0.0,0.0,0.0
-596,596,Ruggeri,Aston Villa,D,4.5,5,2.61,75.0,0.0,0.0,0.0
+596,596,Ruggeri,Aston Villa,D,4.5,5,2.61,75.0,3.0,90.0,1.0
 606,606,Rowe,Aston Villa,D,4.0,5,0.0,0.0,0.0,0.0,0.0
-611,611,Wan-Bissaka,Aston Villa,D,4.5,5,1.31,32.7,0.0,0.0,0.0
+611,611,Wan-Bissaka,Aston Villa,D,4.5,5,1.31,32.7,1.0,45.0,1.0
 630,630,Harwood-Bellis,Aston Villa,D,4.5,5,0.47,12.9,0.0,0.0,0.0
 60,60,Hill,Bournemouth,D,5.5,5,3.71,88.2,0.0,0.0,0.0
 61,61,Truffert,Bournemouth,D,5.5,5,3.47,88.11,0.0,0.0,0.0
@@ -2783,13 +2783,13 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 478,478,Netz,Nott'm Forest,D,4.4,5,0.09,0.27,0.0,0.0,0.0
 479,479,Bindon,Nott'm Forest,D,4.0,5,0.0,0.0,0.0,0.0,0.0
 581,581,Diomande,Nott'm Forest,D,5.4,5,4.74,85.8,0.0,0.0,0.0
-112,112,Van Hecke,Spurs,D,4.9,5,4.06,84.9,0.0,0.0,0.0
+112,112,Van Hecke,Spurs,D,4.9,5,4.06,84.9,6.0,90.0,1.0
 147,147,Tosin,Spurs,D,4.4,5,0.16,1.36,0.0,0.0,0.0
 498,498,Senesi,Spurs,D,5.8,5,0.48,10.05,0.0,0.0,0.0
-499,499,Pedro Porro,Spurs,D,5.4,5,3.89,75.75,0.0,0.0,0.0
+499,499,Pedro Porro,Spurs,D,5.4,5,3.89,75.75,1.0,18.0,1.0
 500,500,Romero,Spurs,D,5.0,5,0.0,0.0,0.0,0.0,0.0
-502,502,Robertson,Spurs,D,4.4,5,1.42,34.8,0.0,0.0,0.0
-503,503,Van de Ven,Spurs,D,5.0,5,3.35,83.4,0.0,0.0,0.0
+502,502,Robertson,Spurs,D,4.4,5,1.42,34.8,4.0,90.0,1.0
+503,503,Van de Ven,Spurs,D,5.0,5,3.35,83.4,1.0,90.0,1.0
 505,505,Spence,Spurs,D,4.5,5,0.0,0.0,0.0,0.0,0.0
 506,506,Udogie,Spurs,D,4.4,5,2.56,55.65,0.0,0.0,0.0
 507,507,Phillips,Spurs,D,4.5,5,0.0,0.0,0.0,0.0,0.0
@@ -2825,22 +2825,22 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 452,452,Bruno G.,Arsenal,M,6.7,5,3.16,63.6,0.0,0.0,0.0
 557,557,Tzolis,Arsenal,M,6.4,5,3.64,66.9,0.0,0.0,0.0
 35,35,Bogarde,Aston Villa,M,5.0,5,0.29,7.78,0.0,0.0,0.0
-41,41,Buendía,Aston Villa,M,5.9,5,3.53,68.7,0.0,0.0,0.0
+41,41,Buendía,Aston Villa,M,5.9,5,3.53,68.7,12.0,90.0,1.0
 44,44,Bailey,Aston Villa,M,5.4,5,0.0,0.0,0.0,0.0,0.0
-45,45,McGinn,Aston Villa,M,5.4,5,3.26,77.1,0.0,0.0,0.0
-46,46,Barkley,Aston Villa,M,5.0,5,2.84,68.7,0.0,0.0,0.0
-47,47,Kamara,Aston Villa,M,5.0,5,2.9,81.75,0.0,0.0,0.0
+45,45,McGinn,Aston Villa,M,5.4,5,3.26,77.1,6.0,83.0,1.0
+46,46,Barkley,Aston Villa,M,5.0,5,2.84,68.7,1.0,6.0,1.0
+47,47,Kamara,Aston Villa,M,5.0,5,2.9,81.75,6.0,83.0,1.0
 48,48,Onana,Aston Villa,M,4.9,5,0.0,0.0,0.0,0.0,0.0
 49,49,Iling Jr,Aston Villa,M,5.0,5,0.0,0.0,0.0,0.0,0.0
 50,50,Burrowes,Aston Villa,M,4.5,5,0.0,0.0,0.0,0.0,0.0
-51,51,George Hemmings,Aston Villa,M,4.5,5,1.59,38.55,0.0,0.0,0.0
+51,51,George Hemmings,Aston Villa,M,4.5,5,1.59,38.55,1.0,18.0,1.0
 52,52,Alysson,Aston Villa,M,5.0,5,0.9,8.51,0.0,0.0,0.0
-53,53,Manzambi,Aston Villa,M,5.9,5,1.52,34.05,0.0,0.0,0.0
-54,54,Gomes,Aston Villa,M,5.5,5,1.1,27.0,0.0,0.0,0.0
+53,53,Manzambi,Aston Villa,M,5.9,5,1.52,34.05,13.0,71.0,1.0
+54,54,Gomes,Aston Villa,M,5.5,5,1.1,27.0,4.0,90.0,1.0
 160,160,Garnacho,Aston Villa,M,5.8,5,0.73,6.71,0.0,0.0,0.0
 607,607,Lynch,Aston Villa,M,4.5,5,0.0,0.0,0.0,0.0,0.0
 618,618,Goretzka,Aston Villa,M,5.9,5,0.0,0.0,0.0,0.0,0.0
-631,631,Mbaye,Aston Villa,M,6.0,5,1.66,38.4,0.0,0.0,0.0
+631,631,Mbaye,Aston Villa,M,6.0,5,1.66,38.4,1.0,6.0,1.0
 67,67,Rayan,Bournemouth,M,6.4,5,3.7,83.33,0.0,0.0,0.0
 68,68,Tavernier,Bournemouth,M,6.1,5,4.37,83.79,0.0,0.0,0.0
 69,69,Scott,Bournemouth,M,6.1,5,4.15,85.95,0.0,0.0,0.0
@@ -3074,22 +3074,22 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 488,488,I.Sangaré,Nott'm Forest,M,4.9,5,1.13,22.11,0.0,0.0,0.0
 489,489,Yates,Nott'm Forest,M,4.5,5,0.21,1.2,0.0,0.0,0.0
 558,558,Schlager,Nott'm Forest,M,5.0,5,3.61,72.3,0.0,0.0,0.0
-403,403,Sávio,Spurs,M,6.5,5,4.1,74.85,0.0,0.0,0.0
-455,455,Tonali,Spurs,M,5.4,5,2.72,63.3,0.0,0.0,0.0
-512,512,Kudus,Spurs,M,6.5,5,1.57,27.6,0.0,0.0,0.0
+403,403,Sávio,Spurs,M,6.5,5,4.1,74.85,2.0,90.0,1.0
+455,455,Tonali,Spurs,M,5.4,5,2.72,63.3,2.0,83.0,1.0
+512,512,Kudus,Spurs,M,6.5,5,1.57,27.6,4.0,45.0,1.0
 513,513,Xavi,Spurs,M,5.9,5,0.0,0.0,0.0,0.0,0.0
 514,514,Tel,Spurs,M,5.8,5,1.91,35.1,0.0,0.0,0.0
-515,515,Maddison,Spurs,M,6.3,5,0.88,7.1,0.0,0.0,0.0
-516,516,Bentancur,Spurs,M,5.5,5,2.96,64.95,0.0,0.0,0.0
+515,515,Maddison,Spurs,M,6.3,5,0.88,7.1,1.0,24.0,1.0
+516,516,Bentancur,Spurs,M,5.5,5,2.96,64.95,4.0,83.0,1.0
 517,517,Odobert,Spurs,M,5.5,5,0.0,0.0,0.0,0.0,0.0
 518,518,P.M.Sarr,Spurs,M,4.9,5,0.0,0.0,0.0,0.0,0.0
-519,519,Gallagher,Spurs,M,5.3,5,0.95,20.58,0.0,0.0,0.0
-520,520,Bergvall,Spurs,M,5.4,5,1.14,27.6,0.0,0.0,0.0
+519,519,Gallagher,Spurs,M,5.3,5,0.95,20.58,6.0,6.0,1.0
+520,520,Bergvall,Spurs,M,5.4,5,1.14,27.6,1.0,6.0,1.0
 521,521,Kulusevski,Spurs,M,6.5,5,0.0,0.0,0.0,0.0,0.0
-522,522,Gray,Spurs,M,4.9,5,0.59,15.66,0.0,0.0,0.0
+522,522,Gray,Spurs,M,4.9,5,0.59,15.66,2.0,71.0,1.0
 523,523,Moore,Spurs,M,5.0,5,0.0,0.0,0.0,0.0,0.0
 524,524,Olusesi,Spurs,M,4.4,5,0.0,0.0,0.0,0.0,0.0
-525,525,Fernandes,Spurs,M,5.8,5,3.78,77.25,0.0,0.0,0.0
+525,525,Fernandes,Spurs,M,5.8,5,3.78,77.25,1.0,45.0,1.0
 578,578,Mudryk,Spurs,M,5.4,5,0.0,0.0,0.0,0.0,0.0
 601,601,Williams-Barnett,Spurs,M,4.5,5,0.0,0.0,0.0,0.0,0.0
 542,542,E.Le Fée,Sunderland,M,5.8,5,3.28,87.96,0.0,0.0,0.0
@@ -3108,8 +3108,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 26,26,Havertz,Arsenal,F,7.6,5,4.39,78.15,0.0,0.0,0.0
 27,27,G.Jesus,Arsenal,F,5.9,5,0.0,0.0,0.0,0.0,0.0
 55,55,Watkins,Aston Villa,F,7.8,5,0.0,0.0,0.0,0.0,0.0
-56,56,Abraham,Aston Villa,F,5.5,5,1.0,8.5,0.0,0.0,0.0
-166,166,N.Jackson,Aston Villa,F,6.5,5,3.69,76.5,0.0,0.0,0.0
+56,56,Abraham,Aston Villa,F,5.5,5,1.0,8.5,1.0,2.0,1.0
+166,166,N.Jackson,Aston Villa,F,6.5,5,3.69,76.5,6.0,87.0,1.0
 582,582,Madjo,Aston Villa,F,5.4,5,0.0,0.0,0.0,0.0,0.0
 79,79,Evanilson,Bournemouth,F,6.0,5,4.27,84.67,0.0,0.0,0.0
 80,80,Enes Ünal,Bournemouth,F,5.5,5,0.0,0.0,0.0,0.0,0.0
@@ -3175,8 +3175,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 490,490,Wood,Nott'm Forest,F,5.8,5,0.81,3.58,0.0,0.0,0.0
 491,491,Igor Jesus,Nott'm Forest,F,5.8,5,1.94,36.9,0.0,0.0,0.0
 493,493,Kalimuendo,Nott'm Forest,F,5.4,5,0.14,0.28,0.0,0.0,0.0
-401,401,Marmoush,Spurs,F,7.0,5,4.47,76.05,0.0,0.0,0.0
-526,526,Solanke,Spurs,F,5.8,5,3.6,62.1,0.0,0.0,0.0
+401,401,Marmoush,Spurs,F,7.0,5,4.47,76.05,2.0,90.0,1.0
+526,526,Solanke,Spurs,F,5.8,5,3.6,62.1,2.0,65.0,1.0
 527,527,Richarlison,Spurs,F,5.9,5,0.0,0.0,0.0,0.0,0.0
 528,528,Scarlett,Spurs,F,4.5,5,0.0,0.0,0.0,0.0,0.0
 552,552,Brobbey,Sunderland,F,5.8,5,2.81,73.05,0.0,0.0,0.0
