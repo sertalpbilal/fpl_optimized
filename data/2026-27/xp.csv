@@ -3868,7 +3868,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 140,140,Sánchez,Chelsea,G,4.9,7,0.0,0.0,0.0,0.0,0.0
 141,141,Jörgensen,Chelsea,G,5.0,7,0.0,0.0,0.0,0.0,0.0
 560,560,Penders,Chelsea,G,4.4,7,0.03,0.9,1.0,15.0,1.0
-110,110,Rushworth,Coventry City,G,4.5,7,2.62,89.09,0.0,0.0,0.0
+110,110,Rushworth,Coventry City,G,4.5,7,2.62,89.09,1.0,90.0,1.0
 171,171,Dovin,Coventry City,G,4.0,7,0.0,0.0,0.0,0.0,0.0
 172,172,Wilson,Coventry City,G,4.4,7,0.0,0.0,0.0,0.0,0.0
 623,623,Bentley,Coventry City,G,4.0,7,0.02,0.9,0.0,0.0,0.0
@@ -3917,7 +3917,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 590,590,Benda,Nott'm Forest,G,4.5,7,0.0,0.0,0.0,0.0,0.0
 494,494,Vicario,Spurs,G,4.5,7,0.0,0.0,0.0,0.0,0.0
 495,495,Austin,Spurs,G,4.0,7,0.0,0.0,0.0,0.0,0.0
-496,496,Kinsky,Spurs,G,4.5,7,3.78,88.2,0.0,0.0,0.0
+496,496,Kinsky,Spurs,G,4.5,7,3.78,88.2,2.0,90.0,1.0
 497,497,Dubravka,Spurs,G,4.0,7,0.07,1.8,0.0,0.0,0.0
 529,529,Roefs,Sunderland,G,4.9,7,3.26,89.1,2.0,90.0,1.0
 530,530,Patterson,Sunderland,G,4.0,7,0.0,0.0,0.0,0.0,0.0
@@ -3986,12 +3986,12 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 200,200,Lacroix,Chelsea,D,5.9,7,3.87,81.0,6.0,90.0,1.0
 561,561,Anselmino,Chelsea,D,4.5,7,0.0,0.0,0.0,0.0,0.0
 583,583,Chavarria,Chelsea,D,4.9,7,2.18,52.95,0.0,0.0,0.0
-91,91,Pinnock,Coventry City,D,4.5,7,3.06,87.9,0.0,0.0,0.0
-173,173,Thomas,Coventry City,D,4.0,7,3.19,85.8,0.0,0.0,0.0
+91,91,Pinnock,Coventry City,D,4.5,7,3.06,87.9,1.0,90.0,1.0
+173,173,Thomas,Coventry City,D,4.0,7,3.19,85.8,3.0,90.0,1.0
 174,174,Kitching,Coventry City,D,4.0,7,0.0,0.0,0.0,0.0,0.0
-175,175,van Ewijk,Coventry City,D,3.9,7,2.54,86.1,0.0,0.0,0.0
-176,176,Dasilva,Coventry City,D,4.0,7,1.98,82.35,0.0,0.0,0.0
-177,177,Kesler-Hayden,Coventry City,D,3.9,7,0.18,1.62,0.0,0.0,0.0
+175,175,van Ewijk,Coventry City,D,3.9,7,2.54,86.1,1.0,90.0,1.0
+176,176,Dasilva,Coventry City,D,4.0,7,1.98,82.35,0.0,90.0,1.0
+177,177,Kesler-Hayden,Coventry City,D,3.9,7,0.18,1.62,1.0,3.0,1.0
 178,178,Bidwell,Coventry City,D,4.0,7,0.0,0.0,0.0,0.0,0.0
 179,179,Latibeaudiere,Coventry City,D,3.9,7,0.26,6.75,0.0,0.0,0.0
 180,180,Woolfenden,Coventry City,D,3.9,7,0.0,0.0,0.0,0.0,0.0
@@ -4113,17 +4113,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 478,478,Netz,Nott'm Forest,D,4.4,7,0.09,0.18,0.0,0.0,0.0
 479,479,Bindon,Nott'm Forest,D,4.0,7,0.0,0.0,0.0,0.0,0.0
 581,581,Diomande,Nott'm Forest,D,5.4,7,2.78,85.8,2.0,90.0,1.0
-112,112,Van Hecke,Spurs,D,4.9,7,4.92,86.85,0.0,0.0,0.0
-147,147,Tosin,Spurs,D,4.4,7,0.16,1.35,0.0,0.0,0.0
+112,112,Van Hecke,Spurs,D,4.9,7,4.92,86.85,4.0,90.0,1.0
+147,147,Tosin,Spurs,D,4.4,7,0.16,1.35,2.0,70.0,1.0
 498,498,Senesi,Spurs,D,5.7,7,0.52,9.75,0.0,0.0,0.0
 499,499,Pedro Porro,Spurs,D,5.3,7,0.0,0.0,0.0,0.0,0.0
 500,500,Romero,Spurs,D,5.0,7,0.0,0.0,0.0,0.0,0.0
-502,502,Robertson,Spurs,D,4.4,7,2.89,53.7,0.0,0.0,0.0
-503,503,Van de Ven,Spurs,D,5.0,7,3.9,82.05,0.0,0.0,0.0
+502,502,Robertson,Spurs,D,4.4,7,2.89,53.7,5.0,68.0,1.0
+503,503,Van de Ven,Spurs,D,5.0,7,3.9,82.05,2.0,90.0,1.0
 505,505,Spence,Spurs,D,4.5,7,0.0,0.0,0.0,0.0,0.0
 506,506,Udogie,Spurs,D,4.4,7,2.36,43.8,0.0,0.0,0.0
 507,507,Phillips,Spurs,D,4.5,7,0.0,0.0,0.0,0.0,0.0
-508,508,Davies,Spurs,D,3.9,7,0.0,0.0,0.0,0.0,0.0
+508,508,Davies,Spurs,D,3.9,7,0.0,0.0,7.0,21.0,1.0
 509,509,Byfield,Spurs,D,4.0,7,0.0,0.0,0.0,0.0,0.0
 510,510,Rowswell,Spurs,D,4.0,7,0.0,0.0,0.0,0.0,0.0
 511,511,Souza,Spurs,D,4.0,7,0.0,0.0,0.0,0.0,0.0
@@ -4226,19 +4226,19 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 164,164,Quenda,Chelsea,M,5.3,7,0.2,1.04,1.0,1.0,1.0
 568,568,Barco,Chelsea,M,5.4,7,0.65,6.3,0.0,0.0,0.0
 662,662,Nicoll-Jazuli,Chelsea,M,4.5,7,0.0,0.0,0.0,0.0,0.0
-104,104,Onyeka,Coventry City,M,4.9,7,1.81,53.1,0.0,0.0,0.0
-183,183,Rudoni,Coventry City,M,4.9,7,3.39,75.15,0.0,0.0,0.0
-184,184,Grimes,Coventry City,M,4.9,7,2.58,84.3,0.0,0.0,0.0
-185,185,Sakamoto,Coventry City,M,4.8,7,0.29,2.99,0.0,0.0,0.0
-186,186,Mason-Clark,Coventry City,M,5.3,7,1.55,34.35,0.0,0.0,0.0
+104,104,Onyeka,Coventry City,M,4.9,7,1.81,53.1,1.0,30.0,1.0
+183,183,Rudoni,Coventry City,M,4.9,7,3.39,75.15,6.0,86.0,1.0
+184,184,Grimes,Coventry City,M,4.9,7,2.58,84.3,2.0,90.0,1.0
+185,185,Sakamoto,Coventry City,M,4.8,7,0.29,2.99,2.0,77.0,1.0
+186,186,Mason-Clark,Coventry City,M,5.3,7,1.55,34.35,1.0,12.0,1.0
 187,187,Eccles,Coventry City,M,4.8,7,0.0,0.0,0.0,0.0,0.0
 188,188,Torp,Coventry City,M,5.3,7,0.59,7.8,0.0,0.0,0.0
 189,189,Shepherd,Coventry City,M,4.4,7,0.0,0.0,0.0,0.0,0.0
 190,190,Tchaouna,Coventry City,M,5.3,7,0.83,21.3,0.0,0.0,0.0
 191,191,Borges Rodrigues,Coventry City,M,4.5,7,0.0,0.0,0.0,0.0,0.0
 192,192,Andrews,Coventry City,M,4.5,7,0.0,0.0,0.0,0.0,0.0
-575,575,Yirenkyi,Coventry City,M,4.8,7,1.91,55.5,0.0,0.0,0.0
-584,584,Hamer,Coventry City,M,5.3,7,0.59,9.65,0.0,0.0,0.0
+575,575,Yirenkyi,Coventry City,M,4.8,7,1.91,55.5,0.0,59.0,1.0
+584,584,Hamer,Coventry City,M,5.3,7,0.59,9.65,1.0,12.0,1.0
 655,655,Gboho,Coventry City,M,5.5,7,0.0,0.0,0.0,0.0,0.0
 42,42,Guessand,Crystal Palace,M,5.4,7,0.28,3.62,0.0,0.0,0.0
 208,208,Sarr,Crystal Palace,M,6.2,7,2.74,55.8,0.0,0.0,0.0
@@ -4408,21 +4408,21 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 489,489,Yates,Nott'm Forest,M,4.4,7,0.22,2.7,0.0,0.0,0.0
 558,558,Schlager,Nott'm Forest,M,5.0,7,2.98,82.2,4.0,90.0,1.0
 403,403,Sávio,Spurs,M,6.5,7,5.55,81.3,0.0,0.0,0.0
-455,455,Tonali,Spurs,M,5.3,7,3.87,84.0,0.0,0.0,0.0
-512,512,Kudus,Spurs,M,6.5,7,5.27,75.15,0.0,0.0,0.0
+455,455,Tonali,Spurs,M,5.3,7,3.87,84.0,4.0,90.0,1.0
+512,512,Kudus,Spurs,M,6.5,7,5.27,75.15,6.0,86.0,1.0
 513,513,Xavi,Spurs,M,5.9,7,0.0,0.0,0.0,0.0,0.0
-514,514,Tel,Spurs,M,5.7,7,1.06,11.05,0.0,0.0,0.0
-515,515,Maddison,Spurs,M,6.2,7,1.05,9.94,0.0,0.0,0.0
+514,514,Tel,Spurs,M,5.7,7,1.06,11.05,1.0,3.0,1.0
+515,515,Maddison,Spurs,M,6.2,7,1.05,9.94,9.0,68.0,1.0
 516,516,Bentancur,Spurs,M,5.5,7,0.0,0.0,0.0,0.0,0.0
 517,517,Odobert,Spurs,M,5.5,7,0.4,6.37,0.0,0.0,0.0
 518,518,P.M.Sarr,Spurs,M,4.9,7,0.0,0.0,0.0,0.0,0.0
-519,519,Gallagher,Spurs,M,5.3,7,3.09,57.6,0.0,0.0,0.0
+519,519,Gallagher,Spurs,M,5.3,7,3.09,57.6,1.0,21.0,1.0
 520,520,Bergvall,Spurs,M,5.3,7,2.48,53.55,0.0,0.0,0.0
-521,521,Kulusevski,Spurs,M,6.5,7,0.23,4.35,0.0,0.0,0.0
-522,522,Gray,Spurs,M,4.9,7,3.14,84.0,0.0,0.0,0.0
+521,521,Kulusevski,Spurs,M,6.5,7,0.23,4.35,1.0,3.0,1.0
+522,522,Gray,Spurs,M,4.9,7,3.14,84.0,2.0,90.0,1.0
 523,523,Moore,Spurs,M,5.0,7,0.0,0.0,0.0,0.0,0.0
 524,524,Olusesi,Spurs,M,4.4,7,0.0,0.0,0.0,0.0,0.0
-525,525,Fernandes,Spurs,M,5.7,7,1.91,37.05,0.0,0.0,0.0
+525,525,Fernandes,Spurs,M,5.7,7,1.91,37.05,1.0,19.0,1.0
 578,578,Mudryk,Spurs,M,5.3,7,0.0,0.0,0.0,0.0,0.0
 601,601,Williams-Barnett,Spurs,M,4.5,7,0.0,0.0,0.0,0.0,0.0
 542,542,E.Le Fée,Sunderland,M,5.7,7,4.06,83.55,4.0,90.0,1.0
@@ -4462,12 +4462,12 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 169,169,Mheuka,Chelsea,F,4.5,7,0.0,0.0,0.0,0.0,0.0
 170,170,Emegha,Chelsea,F,4.9,7,0.0,0.0,0.0,0.0,0.0
 193,193,Wright,Coventry City,F,5.3,7,0.0,0.0,0.0,0.0,0.0
-194,194,Thomas-Asante,Coventry City,F,5.0,7,2.42,62.1,0.0,0.0,0.0
+194,194,Thomas-Asante,Coventry City,F,5.0,7,2.42,62.1,5.0,77.0,1.0
 195,195,Simms,Coventry City,F,4.9,7,0.54,2.04,0.0,0.0,0.0
 196,196,Markelo,Coventry City,F,5.0,7,0.0,0.0,0.0,0.0,0.0
 197,197,Bassette,Coventry City,F,4.5,7,0.0,0.0,0.0,0.0,0.0
-492,492,Awoniyi,Coventry City,F,5.4,7,2.0,41.55,0.0,0.0,0.0
-599,599,Cherif,Coventry City,F,5.0,7,1.74,40.65,0.0,0.0,0.0
+492,492,Awoniyi,Coventry City,F,5.4,7,2.0,41.55,1.0,30.0,1.0
+599,599,Cherif,Coventry City,F,5.0,7,1.74,40.65,1.0,59.0,1.0
 222,222,Strand Larsen,Crystal Palace,F,6.0,7,3.1,70.5,2.0,60.0,1.0
 223,223,Mateta,Crystal Palace,F,6.3,7,0.46,7.95,1.0,29.0,1.0
 224,224,Nketiah,Crystal Palace,F,5.5,7,0.82,15.72,1.0,29.0,1.0
@@ -4509,8 +4509,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 490,490,Wood,Nott'm Forest,F,5.8,7,1.11,20.22,1.0,5.0,1.0
 491,491,Igor Jesus,Nott'm Forest,F,5.7,7,0.0,0.0,0.0,0.0,0.0
 493,493,Kalimuendo,Nott'm Forest,F,5.4,7,0.15,1.47,1.0,17.0,1.0
-401,401,Marmoush,Spurs,F,7.0,7,2.85,41.7,0.0,0.0,0.0
-526,526,Solanke,Spurs,F,5.8,7,5.33,74.85,0.0,0.0,0.0
+401,401,Marmoush,Spurs,F,7.0,7,2.85,41.7,9.0,86.0,1.0
+526,526,Solanke,Spurs,F,5.8,7,5.33,74.85,4.0,90.0,1.0
 527,527,Richarlison,Spurs,F,5.9,7,0.0,0.0,0.0,0.0,0.0
 528,528,Scarlett,Spurs,F,4.5,7,0.0,0.0,0.0,0.0,0.0
 552,552,Brobbey,Sunderland,F,5.7,7,3.02,60.45,0.0,0.0,0.0
