@@ -5184,7 +5184,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 552,552,Brobbey,Sunderland,F,5.7,8,1.95,39.3,2.0,64.0,1.0
 553,553,Isidor,Sunderland,F,5.5,8,0.6,6.53,0.0,0.0,0.0
 651,651,J.Angulo,Sunderland,F,4.5,8,0.0,0.0,0.0,0.0,0.0
-1,1,Raya,Arsenal,G,6.2,9,3.27,89.09,0.0,0.0,0.0
+1,1,Raya,Arsenal,G,6.2,9,3.27,89.09,5.0,90.0,1.0
 2,2,Arrizabalaga,Arsenal,G,4.9,9,0.04,0.91,0.0,0.0,0.0
 3,3,Meslier,Arsenal,G,4.9,9,0.0,0.0,0.0,0.0,0.0
 29,29,M.Bizot,Aston Villa,G,4.5,9,0.04,0.91,0.0,0.0,0.0
@@ -5231,7 +5231,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 385,385,Trafford,Leeds,G,5.0,9,3.23,89.09,2.0,90.0,1.0
 625,625,Cairns,Leeds,G,4.0,9,0.0,0.0,0.0,0.0,0.0
 629,629,Zetterer,Leeds,G,4.0,9,0.04,0.91,0.0,0.0,0.0
-350,350,A.Becker,Liverpool,G,5.5,9,3.11,89.09,0.0,0.0,0.0
+350,350,A.Becker,Liverpool,G,5.5,9,3.11,89.09,2.0,90.0,1.0
 351,351,Mamardashvili,Liverpool,G,4.8,9,0.04,0.91,0.0,0.0,0.0
 352,352,Woodman,Liverpool,G,4.0,9,0.0,0.0,0.0,0.0,0.0
 353,353,Pecsi,Liverpool,G,4.0,9,0.0,0.0,0.0,0.0,0.0
@@ -5258,14 +5258,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 529,529,Roefs,Sunderland,G,4.9,9,3.51,89.1,1.0,90.0,1.0
 530,530,Patterson,Sunderland,G,4.0,9,0.0,0.0,0.0,0.0,0.0
 531,531,Ellborg,Sunderland,G,4.4,9,0.04,0.91,0.0,0.0,0.0
-4,4,Gabriel,Arsenal,D,8.0,9,4.14,87.9,0.0,0.0,0.0
-5,5,J.Timber,Arsenal,D,6.5,9,1.85,44.4,0.0,0.0,0.0
+4,4,Gabriel,Arsenal,D,8.0,9,4.14,87.9,6.0,90.0,1.0
+5,5,J.Timber,Arsenal,D,6.5,9,1.85,44.4,5.0,90.0,1.0
 6,6,Saliba,Arsenal,D,5.9,9,0.0,0.0,0.0,0.0,0.0
-8,8,Calafiori,Arsenal,D,5.9,9,2.84,65.7,0.0,0.0,0.0
-9,9,Hincapie,Arsenal,D,5.2,9,0.85,19.0,0.0,0.0,0.0
+8,8,Calafiori,Arsenal,D,5.9,9,2.84,65.7,8.0,90.0,1.0
+9,9,Hincapie,Arsenal,D,5.2,9,0.85,19.0,1.0,6.0,1.0
 10,10,White,Arsenal,D,5.4,9,1.84,42.6,0.0,0.0,0.0
 11,11,Mosquera,Arsenal,D,5.2,9,0.48,5.8,0.0,0.0,0.0
-31,31,Konsa,Arsenal,D,4.7,9,3.27,83.25,0.0,0.0,0.0
+31,31,Konsa,Arsenal,D,4.7,9,3.27,83.25,10.0,90.0,1.0
 30,30,Digne,Aston Villa,D,4.5,9,0.0,0.0,0.0,0.0,0.0
 32,32,Cash,Aston Villa,D,4.3,9,3.44,86.68,1.0,90.0,1.0
 33,33,Mings,Aston Villa,D,4.5,9,1.65,38.25,0.0,0.0,0.0
@@ -5394,17 +5394,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 598,598,Elvedi,Leeds,D,4.5,9,3.14,79.65,2.0,90.0,1.0
 603,603,Lienou,Leeds,D,4.0,9,0.0,0.0,0.0,0.0,0.0
 641,641,Bard,Leeds,D,4.5,9,0.33,5.88,0.0,0.0,0.0
-356,356,Virgil,Liverpool,D,6.4,9,3.67,88.65,0.0,0.0,0.0
+356,356,Virgil,Liverpool,D,6.4,9,3.67,88.65,1.0,90.0,1.0
 357,357,Frimpong,Liverpool,D,5.2,9,0.0,0.0,0.0,0.0,0.0
-358,358,Kerkez,Liverpool,D,5.3,9,2.89,76.95,0.0,0.0,0.0
+358,358,Kerkez,Liverpool,D,5.3,9,2.89,76.95,1.0,80.0,1.0
 359,359,Gomez,Liverpool,D,4.9,9,0.26,4.31,0.0,0.0,0.0
 360,360,Bradley,Liverpool,D,4.9,9,0.0,0.0,0.0,0.0,0.0
 361,361,Lucky,Liverpool,D,4.0,9,0.0,0.0,0.0,0.0,0.0
-362,362,Jacquet,Liverpool,D,5.1,9,3.57,86.84,0.0,0.0,0.0
+362,362,Jacquet,Liverpool,D,5.1,9,3.57,86.84,2.0,90.0,1.0
 363,363,Leoni,Liverpool,D,3.9,9,0.0,0.0,0.0,0.0,0.0
-364,364,Tsimikas,Liverpool,D,4.9,9,0.51,13.5,0.0,0.0,0.0
+364,364,Tsimikas,Liverpool,D,4.9,9,0.51,13.5,1.0,9.0,1.0
 365,365,Ramsay,Liverpool,D,4.0,9,0.0,0.0,0.0,0.0,0.0
-579,579,Araujo,Liverpool,D,5.4,9,3.11,85.95,0.0,0.0,0.0
+579,579,Araujo,Liverpool,D,5.4,9,3.11,85.95,4.0,80.0,1.0
 387,387,O'Reilly,Man City,D,6.2,9,1.73,35.36,1.0,26.0,1.0
 388,388,Guéhi,Man City,D,6.0,9,2.79,66.75,0.0,0.0,0.0
 389,389,Matheus N.,Man City,D,5.9,9,2.86,63.0,2.0,90.0,1.0
@@ -5475,21 +5475,21 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 540,540,Masuaku,Sunderland,D,4.0,9,0.0,0.0,0.0,0.0,0.0
 541,541,Meunier,Sunderland,D,4.4,9,2.5,48.9,1.0,15.0,1.0
 612,612,Methalie,Sunderland,D,4.5,9,0.41,5.16,0.0,0.0,0.0
-7,7,Lewis-Skelly,Arsenal,M,5.4,9,0.99,28.05,0.0,0.0,0.0
+7,7,Lewis-Skelly,Arsenal,M,5.4,9,0.99,28.05,0.0,28.0,1.0
 12,12,Saka,Arsenal,M,9.5,9,0.0,0.0,0.0,0.0,0.0
-13,13,Rice,Arsenal,M,7.4,9,3.34,76.35,0.0,0.0,0.0
+13,13,Rice,Arsenal,M,7.4,9,3.34,76.35,8.0,90.0,1.0
 14,14,Eze,Arsenal,M,6.2,9,4.13,76.8,0.0,0.0,0.0
-15,15,Ødegaard,Arsenal,M,6.7,9,4.06,79.35,0.0,0.0,0.0
-16,16,Madueke,Arsenal,M,6.2,9,2.68,58.35,0.0,0.0,0.0
-17,17,Merino,Arsenal,M,5.7,9,1.51,33.15,0.0,0.0,0.0
+15,15,Ødegaard,Arsenal,M,6.7,9,4.06,79.35,3.0,87.0,1.0
+16,16,Madueke,Arsenal,M,6.2,9,2.68,58.35,2.0,90.0,1.0
+17,17,Merino,Arsenal,M,5.7,9,1.51,33.15,1.0,2.0,1.0
 18,18,Martinelli,Arsenal,M,6.3,9,0.0,0.0,0.0,0.0,0.0
 19,19,Zubimendi,Arsenal,M,5.2,9,0.87,9.72,0.0,0.0,0.0
 20,20,Dowman,Arsenal,M,5.3,9,0.0,0.0,0.0,0.0,0.0
 22,22,Nwaneri,Arsenal,M,5.4,9,0.0,0.0,0.0,0.0,0.0
 23,23,Fábio Vieira,Arsenal,M,5.5,9,0.0,0.0,0.0,0.0,0.0
 24,24,Nelson,Arsenal,M,5.5,9,0.0,0.0,0.0,0.0,0.0
-452,452,Bruno G.,Arsenal,M,6.7,9,2.66,60.3,0.0,0.0,0.0
-557,557,Tzolis,Arsenal,M,6.1,9,1.4,28.2,0.0,0.0,0.0
+452,452,Bruno G.,Arsenal,M,6.7,9,2.66,60.3,3.0,61.0,1.0
+557,557,Tzolis,Arsenal,M,6.1,9,1.4,28.2,3.0,83.0,1.0
 35,35,Bogarde,Aston Villa,M,4.9,9,0.13,1.74,0.0,0.0,0.0
 41,41,Buendía,Aston Villa,M,5.9,9,3.18,50.25,1.0,24.0,1.0
 44,44,Bailey,Aston Villa,M,5.4,9,0.0,0.0,0.0,0.0,0.0
@@ -5668,22 +5668,22 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 345,345,Tanaka,Leeds,M,4.9,9,2.95,76.05,2.0,64.0,1.0
 604,604,Cresswell,Leeds,M,4.5,9,0.0,0.0,0.0,0.0,0.0
 648,648,Bahoya,Leeds,M,4.9,9,0.17,3.55,1.0,6.0,1.0
-366,366,Wirtz,Liverpool,M,7.2,9,3.84,79.35,0.0,0.0,0.0
-367,367,Gakpo,Liverpool,M,7.1,9,3.55,72.75,0.0,0.0,0.0
-368,368,Szoboszlai,Liverpool,M,6.7,9,1.52,31.35,0.0,0.0,0.0
-369,369,Ngumoha,Liverpool,M,5.7,9,1.07,20.94,0.0,0.0,0.0
+366,366,Wirtz,Liverpool,M,7.2,9,3.84,79.35,2.0,80.0,1.0
+367,367,Gakpo,Liverpool,M,7.1,9,3.55,72.75,2.0,66.0,1.0
+368,368,Szoboszlai,Liverpool,M,6.7,9,1.52,31.35,1.0,31.0,1.0
+369,369,Ngumoha,Liverpool,M,5.7,9,1.07,20.94,1.0,23.0,1.0
 370,370,Chiesa,Liverpool,M,5.3,9,0.08,0.08,0.0,0.0,0.0
 371,371,Gravenberch,Liverpool,M,5.8,9,2.72,72.15,0.0,0.0,0.0
-372,372,Mac Allister,Liverpool,M,5.4,9,3.18,81.75,0.0,0.0,0.0
+372,372,Mac Allister,Liverpool,M,5.4,9,3.18,81.75,1.0,90.0,1.0
 373,373,C.Jones,Liverpool,M,5.5,9,0.0,0.0,0.0,0.0,0.0
 374,374,Endo,Liverpool,M,4.8,9,0.16,0.08,0.0,0.0,0.0
-375,375,Nyoni,Liverpool,M,4.8,9,0.43,11.7,0.0,0.0,0.0
+375,375,Nyoni,Liverpool,M,4.8,9,0.43,11.7,1.0,58.0,1.0
 376,376,Bajcetic,Liverpool,M,5.0,9,0.0,0.0,0.0,0.0,0.0
-377,377,Munoz,Liverpool,M,6.5,9,0.6,10.96,0.0,0.0,0.0
+377,377,Munoz,Liverpool,M,6.5,9,0.6,10.96,1.0,9.0,1.0
 378,378,McConnell,Liverpool,M,4.4,9,0.0,0.0,0.0,0.0,0.0
-381,381,Koumas,Liverpool,M,5.0,9,0.27,3.57,0.0,0.0,0.0
+381,381,Koumas,Liverpool,M,5.0,9,0.27,3.57,1.0,9.0,1.0
 383,383,Elliott,Liverpool,M,5.4,9,0.0,0.0,0.0,0.0,0.0
-627,627,Barcola,Liverpool,M,8.1,9,3.88,77.55,0.0,0.0,0.0
+627,627,Barcola,Liverpool,M,8.1,9,3.88,77.55,1.0,90.0,1.0
 155,155,Enzo,Man City,M,6.9,9,5.18,87.93,2.0,63.0,1.0
 237,237,Ndiaye,Man City,M,5.8,9,4.27,77.25,2.0,78.0,1.0
 397,397,Semenyo,Man City,M,8.2,9,0.0,0.0,0.0,0.0,0.0
@@ -5774,8 +5774,8 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 613,613,Ahoka,Sunderland,M,4.4,9,0.0,0.0,0.0,0.0,0.0
 646,646,Fofana,Sunderland,M,5.5,9,1.25,22.2,1.0,15.0,1.0
 668,668,Tutierov,Sunderland,M,5.0,9,0.31,3.1,0.0,0.0,0.0
-25,25,Gyökeres,Arsenal,F,7.0,9,1.26,23.55,0.0,0.0,0.0
-26,26,Havertz,Arsenal,F,7.4,9,3.78,77.08,0.0,0.0,0.0
+25,25,Gyökeres,Arsenal,F,7.0,9,1.26,23.55,1.0,6.0,1.0
+26,26,Havertz,Arsenal,F,7.4,9,3.78,77.08,9.0,83.0,1.0
 27,27,G.Jesus,Arsenal,F,5.9,9,0.0,0.0,0.0,0.0,0.0
 55,55,Watkins,Aston Villa,F,7.8,9,0.0,0.0,0.0,0.0,0.0
 56,56,Abraham,Aston Villa,F,5.5,9,0.81,1.88,0.0,0.0,0.0
@@ -5829,7 +5829,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 347,347,Nmecha,Leeds,F,5.3,9,1.03,8.5,1.0,25.0,1.0
 348,348,Piroe,Leeds,F,5.0,9,0.0,0.0,0.0,0.0,0.0
 349,349,Mateo Joseph,Leeds,F,4.5,9,0.0,0.0,0.0,0.0,0.0
-379,379,Isak,Liverpool,F,9.1,9,4.43,80.85,0.0,0.0,0.0
+379,379,Isak,Liverpool,F,9.1,9,4.43,80.85,2.0,90.0,1.0
 380,380,Ekitiké,Liverpool,F,7.4,9,0.0,0.0,0.0,0.0,0.0
 382,382,Danns,Liverpool,F,4.5,9,0.0,0.0,0.0,0.0,0.0
 411,411,Haaland,Man City,F,15.8,9,6.43,85.41,2.0,90.0,1.0
