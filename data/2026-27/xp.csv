@@ -6533,7 +6533,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 58,58,Forster,Bournemouth,G,4.0,11,0.0,0.0,0.0,0.0,0.0
 59,59,Dennis,Bournemouth,G,4.0,11,0.0,0.0,0.0,0.0,0.0
 615,615,Di Gregorio,Bournemouth,G,4.5,11,0.06,0.91,0.0,0.0,0.0
-82,82,Kelleher,Brentford,G,5.0,11,3.72,89.09,0.0,0.0,0.0
+82,82,Kelleher,Brentford,G,5.0,11,3.72,89.09,6.0,90.0,1.0
 83,83,Valdimarsson,Brentford,G,4.4,11,0.04,0.91,0.0,0.0,0.0
 661,661,Balcombe,Brentford,G,4.0,11,0.0,0.0,0.0,0.0,0.0
 109,109,Verbruggen,Brighton,G,4.7,11,3.97,89.09,2.0,90.0,1.0
@@ -6550,7 +6550,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 198,198,Henderson,Crystal Palace,G,4.9,11,3.25,89.09,2.0,90.0,1.0
 199,199,Benitez,Crystal Palace,G,4.5,11,0.04,0.91,0.0,0.0,0.0
 555,555,Matthews,Crystal Palace,G,4.0,11,0.0,0.0,0.0,0.0,0.0
-226,226,Pickford,Everton,G,5.5,11,3.07,89.09,0.0,0.0,0.0
+226,226,Pickford,Everton,G,5.5,11,3.07,89.09,1.0,90.0,1.0
 227,227,Travers,Everton,G,5.0,11,0.04,0.91,0.0,0.0,0.0
 228,228,King,Everton,G,4.5,11,0.0,0.0,0.0,0.0,0.0
 250,250,Leno,Fulham,G,4.5,11,2.44,90.0,2.0,90.0,1.0
@@ -6629,14 +6629,14 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 566,566,Silva,Bournemouth,D,5.1,11,4.55,87.3,8.0,90.0,1.0
 573,573,Sanchez,Bournemouth,D,4.4,11,0.0,0.0,0.0,0.0,0.0
 84,84,Collins,Brentford,D,5.4,11,0.0,0.0,0.0,0.0,0.0
-85,85,Van den Berg,Brentford,D,4.9,11,3.81,79.35,0.0,0.0,0.0
-87,87,Ajer,Brentford,D,4.5,11,4.37,87.9,0.0,0.0,0.0
-88,88,Kayode,Brentford,D,4.5,11,3.7,82.2,0.0,0.0,0.0
+85,85,Van den Berg,Brentford,D,4.9,11,3.81,79.35,6.0,90.0,1.0
+87,87,Ajer,Brentford,D,4.5,11,4.37,87.9,6.0,90.0,1.0
+88,88,Kayode,Brentford,D,4.5,11,3.7,82.2,6.0,90.0,1.0
 89,89,Henry,Brentford,D,4.4,11,0.0,0.0,0.0,0.0,0.0
 90,90,Hickey,Brentford,D,4.5,11,0.0,0.0,0.0,0.0,0.0
 92,92,Ji-soo,Brentford,D,4.4,11,0.0,0.0,0.0,0.0,0.0
 93,93,Schuster,Brentford,D,4.5,11,0.73,12.45,0.0,0.0,0.0
-620,620,Diouf,Brentford,D,4.4,11,0.9,19.26,0.0,0.0,0.0
+620,620,Diouf,Brentford,D,4.4,11,0.9,19.26,1.0,16.0,1.0
 660,660,Fredrick,Brentford,D,4.0,11,0.0,0.0,0.0,0.0,0.0
 113,113,F.Kadıoğlu,Brighton,D,4.3,11,3.32,66.15,0.0,10.0,1.0
 114,114,Boscagli,Brighton,D,4.5,11,4.07,73.35,7.0,66.0,1.0
@@ -6688,11 +6688,11 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 588,588,Khalaili,Crystal Palace,D,5.0,11,2.3,49.5,1.0,72.0,1.0
 633,633,Ahanor,Crystal Palace,D,4.5,11,0.69,10.83,0.0,0.0,0.0
 643,643,Chilwell,Crystal Palace,D,4.4,11,0.53,5.4,0.0,0.0,0.0
-229,229,Tarkowski,Everton,D,6.2,11,3.88,86.4,0.0,0.0,0.0
-230,230,Branthwaite,Everton,D,5.5,11,3.78,87.75,0.0,0.0,0.0
-231,231,Keane,Everton,D,4.7,11,0.27,1.23,0.0,0.0,0.0
-232,232,O'Brien,Everton,D,4.8,11,1.17,32.4,0.0,0.0,0.0
-233,233,Mykolenko,Everton,D,4.6,11,3.13,85.8,0.0,0.0,0.0
+229,229,Tarkowski,Everton,D,6.2,11,3.88,86.4,-4.0,39.0,1.0
+230,230,Branthwaite,Everton,D,5.5,11,3.78,87.75,2.0,90.0,1.0
+231,231,Keane,Everton,D,4.7,11,0.27,1.23,1.0,21.0,1.0
+232,232,O'Brien,Everton,D,4.8,11,1.17,32.4,2.0,90.0,1.0
+233,233,Mykolenko,Everton,D,4.6,11,3.13,85.8,1.0,90.0,1.0
 234,234,Patterson,Everton,D,4.5,11,0.0,0.0,0.0,0.0,0.0
 235,235,Aznou,Everton,D,4.0,11,0.0,0.0,0.0,0.0,0.0
 649,649,Maitland-Niles,Everton,D,4.5,11,0.75,10.27,0.0,0.0,0.0
@@ -6861,18 +6861,18 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 76,76,Tóth.A,Bournemouth,M,4.9,11,0.0,0.0,0.0,0.0,0.0
 77,77,Adli,Bournemouth,M,4.8,11,0.75,10.85,0.0,0.0,0.0
 78,78,Kroupi.Jr,Bournemouth,M,7.3,11,2.41,40.95,1.0,21.0,1.0
-86,86,Lewis-Potter,Brentford,M,5.5,11,3.18,75.15,0.0,0.0,0.0
-94,94,Schade,Brentford,M,6.1,11,4.72,81.0,0.0,0.0,0.0
-95,95,O.Dango,Brentford,M,6.2,11,4.41,78.26,0.0,0.0,0.0
-96,96,Damsgaard,Brentford,M,5.3,11,1.15,22.14,0.0,0.0,0.0
-97,97,Jensen,Brentford,M,5.4,11,2.31,51.6,0.0,0.0,0.0
-98,98,Janelt,Brentford,M,5.0,11,3.72,85.32,0.0,0.0,0.0
+86,86,Lewis-Potter,Brentford,M,5.5,11,3.18,75.15,16.0,73.0,1.0
+94,94,Schade,Brentford,M,6.1,11,4.72,81.0,1.0,24.0,1.0
+95,95,O.Dango,Brentford,M,6.2,11,4.41,78.26,3.0,65.0,1.0
+96,96,Damsgaard,Brentford,M,5.3,11,1.15,22.14,3.0,90.0,1.0
+97,97,Jensen,Brentford,M,5.4,11,2.31,51.6,4.0,16.0,1.0
+98,98,Janelt,Brentford,M,5.0,11,3.72,85.32,10.0,81.0,1.0
 99,99,Milambo,Brentford,M,5.0,11,0.0,0.0,0.0,0.0,0.0
-100,100,Carvalho,Brentford,M,5.0,11,0.16,0.75,0.0,0.0,0.0
-102,102,Yarmoliuk,Brentford,M,4.7,11,2.51,61.5,0.0,0.0,0.0
+100,100,Carvalho,Brentford,M,5.0,11,0.16,0.75,6.0,9.0,1.0
+102,102,Yarmoliuk,Brentford,M,4.7,11,2.51,61.5,3.0,73.0,1.0
 103,103,Dasilva,Brentford,M,4.8,11,0.0,0.0,0.0,0.0,0.0
-105,105,Anthony,Brentford,M,5.9,11,2.34,44.55,0.0,0.0,0.0
-565,565,M.Sangaré,Brentford,M,5.4,11,2.35,48.9,0.0,0.0,0.0
+105,105,Anthony,Brentford,M,5.9,11,2.34,44.55,10.0,80.0,1.0
+565,565,M.Sangaré,Brentford,M,5.4,11,2.35,48.9,1.0,8.0,1.0
 657,657,Nunes,Brentford,M,4.5,11,0.0,0.0,0.0,0.0,0.0
 121,121,Mitoma,Brighton,M,5.9,11,0.0,0.0,0.0,0.0,0.0
 122,122,Minteh,Brighton,M,5.8,11,1.69,28.98,1.0,23.0,1.0
@@ -6935,17 +6935,17 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 595,595,Gozo,Crystal Palace,M,4.9,11,0.0,0.0,0.0,0.0,0.0
 644,644,Timber,Crystal Palace,M,5.0,11,2.88,67.8,2.0,72.0,1.0
 647,647,Osorio,Crystal Palace,M,5.4,11,0.52,8.94,1.0,1.0,1.0
-21,21,Nørgaard,Everton,M,4.8,11,1.01,10.98,0.0,0.0,0.0
-209,209,Johnson,Everton,M,5.8,11,1.34,28.05,0.0,0.0,0.0
-236,236,Dewsbury-Hall,Everton,M,6.7,11,4.04,86.43,0.0,0.0,0.0
-238,238,Grealish,Everton,M,6.5,11,2.3,50.96,0.0,0.0,0.0
-239,239,Garner,Everton,M,6.0,11,3.96,85.35,0.0,0.0,0.0
-242,242,George,Everton,M,5.5,11,2.3,55.35,0.0,0.0,0.0
+21,21,Nørgaard,Everton,M,4.8,11,1.01,10.98,1.0,5.0,1.0
+209,209,Johnson,Everton,M,5.8,11,1.34,28.05,1.0,21.0,1.0
+236,236,Dewsbury-Hall,Everton,M,6.7,11,4.04,86.43,2.0,68.0,1.0
+238,238,Grealish,Everton,M,6.5,11,2.3,50.96,1.0,45.0,1.0
+239,239,Garner,Everton,M,6.0,11,3.96,85.35,4.0,84.0,1.0
+242,242,George,Everton,M,5.5,11,2.3,55.35,1.0,45.0,1.0
 243,243,Alcaraz,Everton,M,4.8,11,0.18,2.38,0.0,0.0,0.0
-244,244,Armstrong,Everton,M,5.0,11,3.04,80.85,0.0,0.0,0.0
+244,244,Armstrong,Everton,M,5.0,11,3.04,80.85,2.0,90.0,1.0
 245,245,Dibling,Everton,M,5.3,11,0.66,15.0,0.0,0.0,0.0
-246,246,Röhl,Everton,M,4.9,11,2.99,83.25,0.0,0.0,0.0
-247,247,Hackney,Everton,M,5.3,11,0.95,10.49,0.0,0.0,0.0
+246,246,Röhl,Everton,M,4.9,11,2.99,83.25,2.0,68.0,1.0
+247,247,Hackney,Everton,M,5.3,11,0.95,10.49,1.0,21.0,1.0
 654,654,Graham,Everton,M,4.4,11,0.0,0.0,0.0,0.0,0.0
 261,261,Iwobi,Fulham,M,5.4,11,3.23,80.25,1.0,69.0,1.0
 262,262,Smith Rowe,Fulham,M,5.2,11,0.0,0.0,0.0,0.0,0.0
@@ -7129,7 +7129,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 608,608,Jebbison,Bournemouth,F,5.0,11,0.0,0.0,0.0,0.0,0.0
 106,106,Thiago,Brentford,F,7.8,11,0.0,0.0,0.0,0.0,0.0
 107,107,Furo,Brentford,F,4.4,11,0.0,0.0,0.0,0.0,0.0
-108,108,Wilson,Brentford,F,5.3,11,4.42,69.0,0.0,0.0,0.0
+108,108,Wilson,Brentford,F,5.3,11,4.42,69.0,2.0,90.0,1.0
 125,125,Georginio,Brighton,F,5.2,11,1.34,17.1,2.0,66.0,1.0
 137,137,Tzimas,Brighton,F,5.4,11,0.0,0.0,0.0,0.0,0.0
 138,138,Kostoulas,Brighton,F,5.8,11,4.73,76.05,1.0,23.0,1.0
@@ -7152,7 +7152,7 @@ index,ID,Name,Team,Pos,price,gw,xp,xmin,rp,rmin,games
 224,224,Nketiah,Crystal Palace,F,5.4,11,2.96,48.9,1.0,11.0,1.0
 225,225,Uche,Crystal Palace,F,5.0,11,0.0,0.0,0.0,0.0,0.0
 248,248,Beto,Everton,F,5.4,11,0.0,0.0,0.0,0.0,0.0
-249,249,Barry,Everton,F,5.7,11,4.35,86.38,0.0,0.0,0.0
+249,249,Barry,Everton,F,5.7,11,4.35,86.38,2.0,68.0,1.0
 271,271,Muniz,Fulham,F,5.3,11,1.05,14.93,8.0,82.0,1.0
 272,272,Kusi-Asare,Fulham,F,4.3,11,0.0,0.0,0.0,0.0,0.0
 569,569,Gonzalo,Fulham,F,5.8,11,3.36,72.9,1.0,13.0,1.0
